@@ -11,10 +11,17 @@ Component({
         selectedIcon: "home-filled"
       },
       {
+        pagePath: "pages/daily-record/index",
+        text: "记录",
+        icon: "edit-1",
+        selectedIcon: "edit-1-filled"
+      },
+      {
         pagePath: "pages/ai-assistant/index",
         text: "小暖",
         icon: "chat",
-        selectedIcon: "chat-filled"
+        selectedIcon: "chat-filled",
+        isCenter: true  // 标记为中心按钮
       },
       {
         pagePath: "pages/records/index",

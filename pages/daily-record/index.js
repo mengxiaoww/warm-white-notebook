@@ -821,7 +821,7 @@ Page({
 
       this.getTabBar().setData({
 
-        selected: 0
+        selected: 1
 
       });
 

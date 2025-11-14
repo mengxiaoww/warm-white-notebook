@@ -1,6 +1,30 @@
 <view class="tab-bar">
-  <view class="tab-bar-item" wx:for="{{list}}" wx:key="index" bindtap="switchTab" data-path="{{item.pagePath}}" data-index="{{index}}">
-    <t-icon name="{{selected === index ? item.selectedIcon : item.icon}}" size="48rpx" color="{{selected === index ? '#FFB800' : '#999999'}}" />
-    <view class="tab-bar-text" style="color: {{selected === index ? '#FFB800' : '#999999'}}">{{item.text}}</view>
+  <view
+    class="tab-bar-item {{item.isCenter ? 'tab-bar-center' : ''}}"
+    wx:for="{{list}}"
+    wx:key="index"
+    bindtap="switchTab"
+    data-path="{{item.pagePath}}"
+    data-index="{{index}}"
+  >
+    <!-- 中心AI按钮特殊样式 -->
+    <view wx:if="{{item.isCenter}}" class="center-button">
+      <view class="center-button-glow"></view>
+      <view class="center-button-inner {{selected === index ? 'active' : ''}}">
+        <t-icon name="{{selected === index ? item.selectedIcon : item.icon}}" size="56rpx" color="#FFFFFF" />
+      </view>
+    </view>
+
+    <!-- 普通按钮 -->
+    <block wx:else>
+      <t-icon
+        name="{{selected === index ? item.selectedIcon : item.icon}}"
+        size="48rpx"
+        color="{{selected === index ? selectedColor : color}}"
+      />
+      <view class="tab-bar-text" style="color: {{selected === index ? selectedColor : color}}">
+        {{item.text}}
+      </view>
+    </block>
   </view>
-</view> 
+</view>

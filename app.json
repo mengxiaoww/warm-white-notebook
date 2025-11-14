@@ -80,6 +80,10 @@
         "text": "首页"
       },
       {
+        "pagePath": "pages/daily-record/index",
+        "text": "记录"
+      },
+      {
         "pagePath": "pages/ai-assistant/index",
         "text": "小暖"
       },

@@ -125,6 +125,63 @@
         </view>
       </view>
     </view>
+
+    <!-- 健康数据概览 -->
+    <view class="health-overview-section">
+      <view class="section-header-row">
+        <view class="section-title-group">
+          <t-icon name="chart-bubble" size="48rpx" color="#FF9800" />
+          <text class="section-title">健康概览</text>
+        </view>
+        <view class="view-more-btn" bindtap="navigateToHealthChart">
+          <text>查看详情</text>
+          <t-icon name="chevron-right" size="32rpx" color="#FF9800" />
+        </view>
+      </view>
+
+      <view class="health-cards-container">
+        <!-- 血常规卡片 -->
+        <view class="health-card blood-card">
+          <view class="health-card-header">
+            <text class="health-card-title">血常规</text>
+            <text class="health-card-badge">最近7天</text>
+          </view>
+          <view class="health-card-body">
+            <view class="health-metric">
+              <text class="metric-label">白细胞</text>
+              <text class="metric-value">{{healthOverview.wbc || '--'}}</text>
+              <text class="metric-unit">×10⁹/L</text>
+            </view>
+            <view class="health-metric">
+              <text class="metric-label">血小板</text>
+              <text class="metric-value">{{healthOverview.plt || '--'}}</text>
+              <text class="metric-unit">×10⁹/L</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 病毒指标卡片 -->
+        <view class="health-card virus-card">
+          <view class="health-card-header">
+            <text class="health-card-title">病毒指标</text>
+            <text class="health-card-badge">最近记录</text>
+          </view>
+          <view class="health-card-body">
+            <view class="health-metric">
+              <text class="metric-label">EB病毒</text>
+              <text class="metric-value">{{healthOverview.ebv || '--'}}</text>
+              <text class="metric-unit">IU/mL</text>
+            </view>
+            <view class="health-metric">
+              <text class="metric-label">巨细胞</text>
+              <text class="metric-value">{{healthOverview.cmv || '--'}}</text>
+              <text class="metric-unit">IU/mL</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
     <!-- 日历组件 -->
     <view class="calendar-section">
       <!-- 未展开状态：直接显示日期条在顶部 -->
