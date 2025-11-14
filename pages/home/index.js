@@ -157,7 +157,8 @@ Page({
         hasLoadedBefore: true,
         chartDataByGroup: [],
         latestValueByGroup: [],
-        hasShownLoginTip: true
+        hasShownLoginTip: true,
+        keyDates: []
       });
       return;
     }
@@ -166,8 +167,18 @@ Page({
       this.setData({ hasShownLoginTip: false });
     }
 
-    const profileId = app.globalData.currentProfile?.profileId;
-    this.loadHomeMilestones(openid, profileId);
+    // 获取profileId - 使用与原版相同的方式
+    let profileId = '';
+    if (app.globalData && app.globalData.currentProfile) {
+      profileId = app.globalData.currentProfile.profileId;
+    } else if (app.getCurrentProfileId) {
+      profileId = app.getCurrentProfileId();
+    }
+
+    // 加载里程碑数据
+    if (openid && profileId) {
+      this.loadHomeMilestones(openid, profileId);
+    }
 
     if (app.globalData.shouldRefreshChart) {
       app.globalData.shouldRefreshChart = false;
@@ -1119,40 +1130,52 @@ Page({
     }
   },
 
-  async loadHomeMilestones(openid, profileId) {
+  loadHomeMilestones(openid, profileId) {
     if (!openid || !profileId) {
       this.setData({ keyDates: [], isSingleMilestone: false });
-      return;
+      return Promise.resolve();
     }
 
-    try {
-      const res = await db.collection('keyDates').where({ openid: openid, profileId }).get();
-      const keyDates = (res.data || []).map(item => {
-        const statusObj = this.getMilestoneStatus(item.date);
-        return {
-          id: item._id,
-          title: item.title || item.name || '未命名',
-          date: item.date,
-          dateFormatted: this.formatDateForDisplay(item.date),
-          statusObj
-        };
-      }).sort((a, b) => {
-        const diffA = a.statusObj.daysDiff;
-        const diffB = b.statusObj.daysDiff;
-        if (diffA === diffB) return new Date(a.date) - new Date(b.date);
-        if (diffA >= 0 && diffB >= 0) return diffA - diffB;
-        if (diffA < 0 && diffB < 0) return diffB - diffA;
-        return diffA >= 0 ? -1 : 1;
-      });
+    console.log('=== 加载首页暖光里程碑 ===');
+    console.log('openid:', openid);
+    console.log('profileId:', profileId);
 
-      this.setData({
-        keyDates,
-        isSingleMilestone: keyDates.length === 1
+    return db.collection('keyDates')
+      .where({ openid: openid, profileId: profileId })
+      .get()
+      .then(res => {
+        console.log('查询到的里程碑数量:', res.data.length);
+        console.log('查询结果:', res.data);
+
+        const keyDates = (res.data || []).map(item => {
+          const statusObj = this.getMilestoneStatus(item.date);
+          return {
+            id: item._id,
+            title: item.title || item.name || '未命名',
+            date: item.date,
+            dateFormatted: this.formatDateForDisplay(item.date),
+            statusObj
+          };
+        }).sort((a, b) => {
+          const diffA = a.statusObj.daysDiff;
+          const diffB = b.statusObj.daysDiff;
+          if (diffA === diffB) return new Date(a.date) - new Date(b.date);
+          if (diffA >= 0 && diffB >= 0) return diffA - diffB;
+          if (diffA < 0 && diffB < 0) return diffB - diffA;
+          return diffA >= 0 ? -1 : 1;
+        });
+
+        console.log('处理后的里程碑:', keyDates);
+
+        this.setData({
+          keyDates,
+          isSingleMilestone: keyDates.length === 1
+        });
+      })
+      .catch(error => {
+        console.error('加载暖光里程碑失败:', error);
+        this.setData({ keyDates: [], isSingleMilestone: false });
       });
-    } catch (error) {
-      console.error('加载暖光里程碑失败:', error);
-      this.setData({ keyDates: [], isSingleMilestone: false });
-    }
   },
 
   getMilestoneStatus(dateStr) {
