@@ -1,0 +1,91 @@
+<view class="ai-assistant-page">
+  <!-- 头部区域 -->
+  <view class="ai-header">
+    <view class="ai-avatar-container">
+      <view class="ai-avatar-glow"></view>
+      <view class="ai-avatar">
+        <t-icon name="chat" size="60rpx" color="#FFFFFF" />
+      </view>
+    </view>
+    <view class="ai-title-group">
+      <text class="ai-title">小暖</text>
+      <text class="ai-subtitle">您的健康智能助手</text>
+    </view>
+  </view>
+
+  <!-- 聊天消息区域 -->
+  <scroll-view class="message-container" scroll-y scroll-into-view="{{scrollToId}}" enhanced show-scrollbar="false">
+    <!-- 欢迎消息 -->
+    <view wx:if="{{messages.length === 0}}" class="welcome-message">
+      <view class="welcome-icon-wrapper">
+        <t-icon name="chat" size="60rpx" color="#FFB84D" />
+      </view>
+      <text class="welcome-title">你好,我是小暖</text>
+      <text class="welcome-desc">我可以帮你记录和分析健康数据</text>
+
+      <!-- 快捷功能卡片 -->
+      <view class="quick-actions">
+        <view class="action-card" bindtap="quickAction" data-action="record">
+          <t-icon name="edit" size="40rpx" color="#FFB84D" />
+          <text>快速记录</text>
+        </view>
+        <view class="action-card" bindtap="quickAction" data-action="analyze">
+          <t-icon name="chart-bubble" size="40rpx" color="#FFB84D" />
+          <text>数据分析</text>
+        </view>
+        <view class="action-card" bindtap="quickAction" data-action="suggest">
+          <t-icon name="tips" size="40rpx" color="#FFB84D" />
+          <text>健康建议</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 消息列表 -->
+    <view wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}" class="message-item {{item.role}}">
+      <view wx:if="{{item.role === 'assistant'}}" class="message-avatar">
+        <t-icon name="chat" size="40rpx" color="#FFB84D" />
+      </view>
+
+      <view class="message-bubble {{item.role}}">
+        <text class="message-text">{{item.content}}</text>
+        <text class="message-time">{{item.time}}</text>
+      </view>
+
+      <view wx:if="{{item.role === 'user'}}" class="message-avatar user-avatar">
+        <t-icon name="user" size="40rpx" color="#fff" />
+      </view>
+    </view>
+
+    <!-- 加载中提示 -->
+    <view wx:if="{{isLoading}}" class="message-item assistant">
+      <view class="message-avatar">
+        <t-icon name="chat" size="40rpx" color="#FFB84D" />
+      </view>
+      <view class="message-bubble assistant loading">
+        <view class="loading-dots">
+          <view class="dot"></view>
+          <view class="dot"></view>
+          <view class="dot"></view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-container">
+    <view class="input-wrapper">
+      <input
+        class="message-input"
+        value="{{inputValue}}"
+        bindinput="onInput"
+        bindconfirm="sendMessage"
+        placeholder="输入消息..."
+        placeholder-style="color: #999"
+        confirm-type="send"
+      />
+      <view class="send-button {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
+        <t-icon name="send" size="40rpx" color="{{inputValue ? '#FFB84D' : '#ccc'}}" />
+      </view>
+    </view>
+  </view>
+</view>

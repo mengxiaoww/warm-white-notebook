@@ -5,22 +5,22 @@ Component({
     selectedColor: "#FFB84D",
     list: [
       {
-        pagePath: "pages/daily-record/index",
-        text: "每日记录",
-        icon: "edit-1",
-        selectedIcon: "edit-1-filled"
+        pagePath: "pages/home/index",
+        text: "首页",
+        icon: "home",
+        selectedIcon: "home-filled"
       },
       {
-        pagePath: "pages/health-profile/index",
-        text: "健康档案",
+        pagePath: "pages/ai-assistant/index",
+        text: "小暖",
+        icon: "chat",
+        selectedIcon: "chat-filled"
+      },
+      {
+        pagePath: "pages/records/index",
+        text: "档案",
         icon: "file-1",
         selectedIcon: "file-1-filled"
-      },
-      {
-        pagePath: "pages/health-chart/index",
-        text: "健康图谱",
-        icon: "chart-bubble",
-        selectedIcon: "chart-bubble-filled"
       },
       {
         pagePath: "pages/profile/index",

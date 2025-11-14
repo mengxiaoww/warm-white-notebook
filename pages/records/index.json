@@ -1,0 +1,23 @@
+{
+  "usingComponents": {
+    "t-button": "../../miniprogram_npm/tdesign-miniprogram/button/button",
+    "t-input": "../../miniprogram_npm/tdesign-miniprogram/input/input",
+    "t-cell": "../../miniprogram_npm/tdesign-miniprogram/cell/cell",
+    "t-cell-group": "../../miniprogram_npm/tdesign-miniprogram/cell-group/cell-group",
+    "t-icon": "../../miniprogram_npm/tdesign-miniprogram/icon/icon",
+    "t-tabs": "../../miniprogram_npm/tdesign-miniprogram/tabs/tabs",
+    "t-tab-panel": "../../miniprogram_npm/tdesign-miniprogram/tab-panel/tab-panel",
+    "t-calendar": "../../miniprogram_npm/tdesign-miniprogram/calendar/calendar",
+    "t-date-time-picker": "../../miniprogram_npm/tdesign-miniprogram/date-time-picker/date-time-picker",
+    "t-popup": "../../miniprogram_npm/tdesign-miniprogram/popup/popup",
+    "t-dialog": "../../miniprogram_npm/tdesign-miniprogram/dialog/dialog",
+    "t-toast": "../../miniprogram_npm/tdesign-miniprogram/toast/toast",
+    "t-message": "../../miniprogram_npm/tdesign-miniprogram/message/message",
+    "t-upload": "../../miniprogram_npm/tdesign-miniprogram/upload/upload",
+    "t-image": "../../miniprogram_npm/tdesign-miniprogram/image/image",
+    "t-navbar": "../../miniprogram_npm/tdesign-miniprogram/navbar/navbar"
+  },
+  "enablePullDownRefresh": false,
+  "backgroundTextStyle": "light",
+  "backgroundColor": "#f5f5f5"
+}

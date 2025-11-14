@@ -1,0 +1,22 @@
+{
+  "navigationBarTitleText": "暖白记事本",
+  "navigationBarBackgroundColor": "#FFB84D",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-cell": "tdesign-miniprogram/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-tabs": "tdesign-miniprogram/tabs/tabs",
+    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
+    "t-calendar": "tdesign-miniprogram/calendar/calendar",
+    "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-message": "tdesign-miniprogram/message/message",
+    "t-upload": "tdesign-miniprogram/upload/upload",
+    "t-image": "tdesign-miniprogram/image/image"
+  }
+}

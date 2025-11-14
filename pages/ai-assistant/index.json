@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon"
+  },
+  "navigationBarTitleText": "小暖",
+  "navigationBarBackgroundColor": "#FFB84D",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": false
+}

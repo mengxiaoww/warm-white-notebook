@@ -1,11 +1,14 @@
 {
-  "entryPagePath": "pages/daily-record/index",
+  "entryPagePath": "pages/home/index",
   "pages": [
+    "pages/home/index",
+    "pages/ai-assistant/index",
+    "pages/records/index",
+    "pages/profile/index",
+    "pages/webview/index",
     "pages/daily-record/index",
     "pages/health-profile/index",
-    "pages/health-chart/index",
-    "pages/profile/index",
-    "pages/webview/index"
+    "pages/health-chart/index"
   ],
   "subPackages": [
     {
@@ -50,13 +53,13 @@
     }
   ],
   "preloadRule": {
-    "pages/health-profile/index": {
+    "pages/records/index": {
       "network": "all",
       "packages": [
         "tests"
       ]
     },
-    "pages/daily-record/index": {
+    "pages/home/index": {
       "network": "all",
       "packages": [
         "records"
@@ -73,16 +76,16 @@
     "custom": true,
     "list": [
       {
-        "pagePath": "pages/daily-record/index",
-        "text": "每日记录"
+        "pagePath": "pages/home/index",
+        "text": "首页"
       },
       {
-        "pagePath": "pages/health-profile/index",
-        "text": "健康档案"
+        "pagePath": "pages/ai-assistant/index",
+        "text": "小暖"
       },
       {
-        "pagePath": "pages/health-chart/index",
-        "text": "健康图谱"
+        "pagePath": "pages/records/index",
+        "text": "档案"
       },
       {
         "pagePath": "pages/profile/index",
