@@ -183,8 +183,8 @@ class SimpleChart {
     ctx.strokeStyle = '#F5F5F5'; // 更淡的网格线
     ctx.lineWidth = 1;
 
-    // 绘制4条网格线，与Y轴5个标签位置对齐（不包括顶部和底部边界）
-    for (let i = 1; i < 4; i++) {
+    // 绘制4条网格线，与Y轴5个标签位置对齐（不包括顶部边界，包括底部）
+    for (let i = 1; i <= 4; i++) {
       const y = area.y + (area.height / 4) * i; // 改为/4以匹配Y轴标签
       ctx.beginPath();
       ctx.moveTo(area.x, y);
