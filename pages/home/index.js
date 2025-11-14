@@ -614,9 +614,10 @@ Page({
         name: dataType.name,
         type: 'line',
         data: data.map(item => item.value),
-        smooth: 0.6, // 🎨 使用数值控制平滑度，0.6 = 非常平滑圆润
+        smooth: 0.4, // 🎨 贝塞尔曲线平滑度：0.4 = 柔滑自然（0-1，值越大越平滑）
+        smoothMonotone: 'x', // 🎨 单调平滑：沿x轴方向保持单调性，避免过度弯曲
         symbol: 'circle',
-        symbolSize: 8,
+        symbolSize: 10, // 🎨 数据点大小：10px 更圆润醒目
         showSymbol: true,
         // 🎨 优美的渐变填充面积
         areaStyle: {
@@ -656,53 +657,57 @@ Page({
           shadowOffsetY: 2
         },
         lineStyle: {
-          width: 2.5, // 更细的线条，现代感
+          width: 3, // 🎨 线条宽度：3px 更柔和圆润
           color: dataType.color,
           shadowColor: dataType.color,
-          shadowBlur: 8,
-          shadowOffsetY: 2
+          shadowBlur: 12, // 🎨 增强阴影模糊，营造柔和感
+          shadowOffsetY: 3,
+          cap: 'round', // 🎨 圆角端点
+          join: 'round' // 🎨 圆角连接
         },
         itemStyle: {
           color: '#fff',
           borderColor: dataType.color,
-          borderWidth: 2.5,
+          borderWidth: 3, // 🎨 数据点边框增粗，更明显
           shadowColor: dataType.color,
-          shadowBlur: 6,
-          shadowOffsetY: 2
+          shadowBlur: 8,
+          shadowOffsetY: 3
         },
         emphasis: {
-          scale: true,
+          scale: 1.3, // 🎨 悬浮放大倍数：1.3x 更明显
           focus: 'series',
           itemStyle: {
             color: dataType.color,
             borderColor: '#fff',
-            borderWidth: 3,
-            shadowBlur: 10,
+            borderWidth: 4, // 🎨 强调状态边框更粗
+            shadowBlur: 16, // 🎨 强调状态阴影更柔和
             shadowColor: dataType.color
           },
           label: {
             show: true,
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: 'bold'
           }
         },
         markLine: dataType.normalRange && dataType.normalRange[0] !== dataType.normalRange[1] ? {
           silent: true,
+          symbol: ['none', 'none'], // 🎨 去掉箭头，更简洁
           lineStyle: {
             color: '#4CAF50',
             type: 'dashed',
-            width: 2,
-            opacity: 0.6
+            width: 1.5, // 🎨 稍细的虚线，更精致
+            opacity: 0.5, // 🎨 降低不透明度，更柔和
+            dashOffset: 5 // 🎨 虚线偏移，增加视觉效果
           },
           label: {
             show: true,
             position: 'end',
-            fontSize: 8,
+            fontSize: 10, // 🎨 标签字体稍大，更清晰
             color: '#4CAF50',
-            fontWeight: 'normal',
-            backgroundColor: 'transparent',
-            borderWidth: 0,
-            padding: 0
+            fontWeight: '500',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)', // 🎨 添加半透明背景
+            padding: [2, 6],
+            borderRadius: 3
           },
           data: [
             { yAxis: dataType.normalRange[0], name: '下限' },
