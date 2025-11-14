@@ -120,15 +120,16 @@ Component({
 
       this.initReady = true;
 
-      // 获取系统信息
-      const systemInfo = wx.getSystemInfoSync();
-      const isMobile = systemInfo.platform !== 'devtools';
+      // 获取系统信息 - 使用新API
+      const deviceInfo = wx.getDeviceInfo();
+      const windowInfo = wx.getWindowInfo();
+      const isMobile = deviceInfo.platform !== 'devtools';
 
       if (isMobile) {
         // 移动端：高度与CSS保持一致
         // 450rpx ≈ 225px，确保canvas高度不超过容器
         const baseHeight = 220; // 基础高度与CSS容器匹配
-        const screenWidth = systemInfo.screenWidth || 375;
+        const screenWidth = windowInfo.screenWidth || 375;
         const scaleFactor = Math.min(Math.max(screenWidth / 375, 0.8), 1.3); // 限制缩放范围
         const chartHeight = Math.min(Math.round(baseHeight * scaleFactor), 225); // 确保不超过CSS容器高度
         this.createChartDirect(screenWidth - 40, chartHeight);
@@ -147,7 +148,8 @@ Component({
 
         // 移动端立即执行，不延迟
         const ctx = wx.createCanvasContext(canvasId, this);
-        const dpr = wx.getSystemInfoSync().pixelRatio;
+        const windowInfo = wx.getWindowInfo();
+        const dpr = windowInfo.pixelRatio;
 
         const canvas = {
           width: width,
@@ -190,7 +192,8 @@ Component({
         const canvasId = this.properties.canvasId;
 
         const ctx = wx.createCanvasContext(canvasId, this);
-        const dpr = wx.getSystemInfoSync().pixelRatio;
+        const windowInfo = wx.getWindowInfo();
+        const dpr = windowInfo.pixelRatio;
 
         const canvas = {
           width: width,
