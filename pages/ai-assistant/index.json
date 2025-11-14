@@ -2,7 +2,7 @@
   "usingComponents": {
     "t-icon": "tdesign-miniprogram/icon/icon"
   },
-  "navigationBarTitleText": "小暖",
+  "navigationBarTitleText": "暖白记事本",
   "navigationBarBackgroundColor": "#FFB84D",
   "navigationBarTextStyle": "white",
   "enablePullDownRefresh": false

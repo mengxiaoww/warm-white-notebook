@@ -12,6 +12,9 @@ Page({
 
   onLoad() {
     // 页面加载时的初始化
+    wx.setNavigationBarTitle({
+      title: '暖白记事本'
+    });
   },
 
   onShow() {
@@ -106,7 +109,7 @@ Page({
           messages: [
             {
               role: 'system',
-              content: '你是一个专业的健康助手,名叫小暖。你的任务是帮助血液肿瘤患者记录和管理他们的健康数据,提供专业的健康建议。请用温暖、专业、易懂的语言回答用户的问题。'
+              content: '你是一个专业的健康助手,名叫暖白记事本。你的任务是帮助血液肿瘤患者记录和管理他们的健康数据,提供专业的健康建议。请用温暖、专业、易懂的语言回答用户的问题。'
             },
             ...this.data.messages.slice(-5).map(msg => ({
               role: msg.role,
@@ -132,28 +135,6 @@ Page({
           reject(error);
         }
       });
-    });
-  },
-
-  // 快捷操作
-  quickAction(e) {
-    const action = e.currentTarget.dataset.action;
-
-    let promptMessage = '';
-    switch (action) {
-      case 'record':
-        promptMessage = '我想记录今天的健康数据';
-        break;
-      case 'analyze':
-        promptMessage = '帮我分析最近的健康趋势';
-        break;
-      case 'suggest':
-        promptMessage = '给我一些健康建议';
-        break;
-    }
-
-    this.setData({
-      inputValue: promptMessage
     });
   },
 

@@ -10281,3 +10281,57 @@
     transform: translateY(0);
   }
 }
+
+/* 记录页头部 */
+.record-page-header {
+  margin: 32rpx 24rpx 0;
+  padding: 32rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #fff8f0, #ffe0b2);
+  box-shadow: 0 12rpx 32rpx rgba(255, 152, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+}
+
+.record-title-group {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.record-title-texts {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.record-subtitle {
+  font-size: 26rpx;
+  color: #8c6d46;
+  margin-top: 6rpx;
+}
+
+.record-header-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.record-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 16rpx 0;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.35);
+  font-size: 26rpx;
+  color: #bf7b11;
+  border: 1rpx solid rgba(255, 152, 0, 0.2);
+}

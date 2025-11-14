@@ -18,7 +18,7 @@ Component({
       },
       {
         pagePath: "pages/ai-assistant/index",
-        text: "小暖",
+        text: "暖白记事本",
         icon: "chat",
         selectedIcon: "chat-filled",
         isCenter: true  // 标记为中心按钮

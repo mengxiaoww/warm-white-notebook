@@ -616,7 +616,6 @@ Page({
     setTimeout(() => {
 
       this.checkLoginAndLoadData()
-      this.loadBanners() // 加载轮播图
 
     }, 500)
 
@@ -11979,6 +11978,13 @@ Page({
       clearInterval(this.dataSyncChecker)
       this.dataSyncChecker = null
     }
+  },
+
+  // 导航到健康图谱页面
+  navigateToHealthChart() {
+    wx.navigateTo({
+      url: '/pages/health-chart/index'
+    })
   },
 
   // 分享功能

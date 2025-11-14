@@ -8,7 +8,7 @@
       </view>
     </view>
     <view class="ai-title-group">
-      <text class="ai-title">小暖</text>
+      <text class="ai-title">暖白记事本</text>
       <text class="ai-subtitle">您的健康智能助手</text>
     </view>
   </view>
@@ -20,24 +20,8 @@
       <view class="welcome-icon-wrapper">
         <t-icon name="chat" size="60rpx" color="#FFB84D" />
       </view>
-      <text class="welcome-title">你好,我是小暖</text>
+      <text class="welcome-title">你好,我是暖白记事本</text>
       <text class="welcome-desc">我可以帮你记录和分析健康数据</text>
-
-      <!-- 快捷功能卡片 -->
-      <view class="quick-actions">
-        <view class="action-card" bindtap="quickAction" data-action="record">
-          <t-icon name="edit" size="40rpx" color="#FFB84D" />
-          <text>快速记录</text>
-        </view>
-        <view class="action-card" bindtap="quickAction" data-action="analyze">
-          <t-icon name="chart-bubble" size="40rpx" color="#FFB84D" />
-          <text>数据分析</text>
-        </view>
-        <view class="action-card" bindtap="quickAction" data-action="suggest">
-          <t-icon name="tips" size="40rpx" color="#FFB84D" />
-          <text>健康建议</text>
-        </view>
-      </view>
     </view>
 
     <!-- 消息列表 -->

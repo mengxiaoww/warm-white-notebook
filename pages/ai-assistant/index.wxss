@@ -111,38 +111,6 @@
   margin-bottom: 48rpx;
 }
 
-/* 快捷操作 */
-.quick-actions {
-  display: flex;
-  gap: 24rpx;
-  width: 100%;
-  justify-content: center;
-}
-
-.action-card {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32rpx 16rpx;
-  background: #FFFFFF;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-}
-
-.action-card:active {
-  transform: scale(0.95);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.12);
-}
-
-.action-card text {
-  font-size: 24rpx;
-  color: #666;
-  margin-top: 16rpx;
-}
-
 /* 消息项 */
 .message-item {
   display: flex;

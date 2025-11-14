@@ -1,5 +1,6 @@
 // 使用本地简化版本的echarts
 import echarts from '../../ec-canvas/echarts';
+const healthChartConfig = require('../../utils/healthChartConfig');
 
 // 初始化图表函数
 function initChart(canvas, width, height, dpr) {
@@ -31,223 +32,21 @@ Page({
     hasLoadedBefore: false, // 标记页面是否已加载过数据
 
     // 数据类型分组配置
-    dataTypeGroups: [
-      {
-        id: 'blood',
-        name: '血常规',
-        color: '#FFB84D',
-        types: [0, 1, 2, 3] // 白细胞、血小板、血红蛋白、中性粒细胞
-      },
-      {
-        id: 'liver',
-        name: '肝功能',
-        color: '#FF9800',
-        types: [4, 5, 6, 7] // ALT、AST、总胆红素、直接胆红素
-      },
-      {
-        id: 'kidney',
-        name: '肾功能',
-        color: '#FFCC80',
-        types: [8, 9, 10] // 肌酐、尿素氮、尿酸
-      },
-      {
-        id: 'virus',
-        name: '病毒指标',
-        color: '#FFB84D',
-        types: [11, 12] // EB病毒、巨细胞病毒
-      },
-      {
-        id: 'enzyme',
-        name: '酶类指标',
-        color: '#FF9800',
-        types: [13] // 乳酸脱氢酶
-      }
-    ],
+    dataTypeGroups: healthChartConfig.dataTypeGroups,
+
 
     // 每个分组的选中状态
     selectedTypeByGroup: [0, 4, 8, 11, 13], // 每个分组默认选中第一个类型
     selectedTimeByGroup: [1, 1, 1, 1, 1], // 每个分组默认选中30天
 
     // 数据类型配置 - 专业医学配色方案
-    dataTypes: [
-      {
-        key: 'wbc',
-        name: '白细胞',
-        unit: '×10⁹/L',
-        icon: 'W',
-        iconBg: '#FFB84D', // 使用统一的橘黄色
-        color: '#FFB84D',  // 使用统一的橘黄色
-        lightColor: '#FFF3E0',
-        normalRange: [4.0, 10.0],
-        collection: 'bloodTests',
-        desc: '免疫细胞'
-      },
-      {
-        key: 'plt',
-        name: '血小板',
-        unit: '×10⁹/L',
-        icon: 'P',
-        iconBg: '#FFCC80', // 使用统一的淡橘黄色
-        color: '#FF9800',  // 使用统一的深橘黄色
-        lightColor: '#FFF3E0',
-        normalRange: [100, 300],
-        collection: 'bloodTests',
-        desc: '凝血功能'
-      },
-      {
-        key: 'hgb',
-        name: '血红蛋白',
-        unit: 'g/L',
-        icon: 'H',
-        iconBg: '#FFB84D', // 使用统一的橘黄色
-        color: '#FFB84D',  // 使用统一的橘黄色
-        lightColor: '#FFF3E0',
-        normalRange: [120, 160],
-        collection: 'bloodTests',
-        desc: '载氧能力'
-      },
-      {
-        key: 'neut',
-        name: '中性粒细胞',
-        unit: '×10⁹/L',
-        icon: 'N',
-        iconBg: '#FFB84D', // 使用统一的橘黄色
-        color: '#FFB84D',  // 使用统一的橘黄色
-        lightColor: '#FFF3E0',
-        normalRange: [2.0, 7.0],
-        collection: 'bloodTests',
-        desc: '感染指标'
-      },
-      {
-        key: 'alt',
-        name: 'ALT',
-        unit: 'U/L',
-        icon: 'ALT',
-        iconBg: '#FF9800',
-        color: '#FF9800',
-        lightColor: '#FFF3E0',
-        normalRange: [9, 50],
-        collection: 'liverFunctionTests',
-        desc: '谷丙转氨酶'
-      },
-      {
-        key: 'ast',
-        name: 'AST',
-        unit: 'U/L',
-        icon: 'AST',
-        iconBg: '#FF9800',
-        color: '#FF9800',
-        lightColor: '#FFF3E0',
-        normalRange: [15, 40],
-        collection: 'liverFunctionTests',
-        desc: '谷草转氨酶'
-      },
-      {
-        key: 'tbil',
-        name: '总胆红素',
-        unit: 'μmol/L',
-        icon: 'TBIL',
-        iconBg: '#FF9800',
-        color: '#FF9800',
-        lightColor: '#FFF3E0',
-        normalRange: [3.4, 17.1],
-        collection: 'liverFunctionTests',
-        desc: '肝功能指标'
-      },
-      {
-        key: 'dbil',
-        name: '直接胆红素',
-        unit: 'μmol/L',
-        icon: 'DBIL',
-        iconBg: '#FF9800',
-        color: '#FF9800',
-        lightColor: '#FFF3E0',
-        normalRange: [1.7, 6.8],
-        collection: 'liverFunctionTests',
-        desc: '肝功能指标'
-      },
-      {
-        key: 'cr',
-        name: '肌酐',
-        unit: 'μmol/L',
-        icon: 'CR',
-        iconBg: '#FFCC80',
-        color: '#FFCC80',
-        lightColor: '#FFF3E0',
-        normalRange: [44, 133],
-        collection: 'kidneyFunctionTests',
-        desc: '肾功能指标'
-      },
-      {
-        key: 'bun',
-        name: '尿素氮',
-        unit: 'mmol/L',
-        icon: 'BUN',
-        iconBg: '#FFCC80',
-        color: '#FFCC80',
-        lightColor: '#FFF3E0',
-        normalRange: [2.9, 8.2],
-        collection: 'kidneyFunctionTests',
-        desc: '肾功能指标'
-      },
-      {
-        key: 'ua',
-        name: '尿酸',
-        unit: 'μmol/L',
-        icon: 'UA',
-        iconBg: '#FFCC80',
-        color: '#FFCC80',
-        lightColor: '#FFF3E0',
-        normalRange: [208, 428],
-        collection: 'kidneyFunctionTests',
-        desc: '肾功能指标'
-      },
-      {
-        key: 'ebvDna',
-        name: 'EB病毒',
-        unit: 'IU/mL',
-        icon: 'E',
-        iconBg: '#FFB84D',
-        color: '#FFB84D',
-        lightColor: '#FFF3E0',
-        normalRange: [0, 0],
-        collection: 'ebvRecords',
-        desc: 'DNA定量'
-      },
-      {
-        key: 'hcmvDna',
-        name: '巨细胞病毒',
-        unit: 'IU/mL',
-        icon: 'C',
-        iconBg: '#FFB84D',
-        color: '#FFB84D',
-        lightColor: '#FFF3E0',
-        normalRange: [0, 0],
-        collection: 'cmvRecords',
-        desc: 'DNA定量'
-      },
-      {
-        key: 'ldh',
-        name: '乳酸脱氢酶',
-        unit: 'U/L',
-        icon: 'L',
-        iconBg: '#FF9800',
-        color: '#FF9800',
-        lightColor: '#FFF3E0',
-        normalRange: [100, 240],
-        collection: 'ldhRecords',
-        desc: 'LDH水平'
-      }
-    ],
+    dataTypes: healthChartConfig.dataTypes,
+
 
     // 时间范围配置
-    timeRanges: [
-      { id: 7, label: '7天' },
-      { id: 30, label: '30天' },
-      { id: 90, label: '90天' },
-      { id: 180, label: '180天' },
-      { id: 0, label: '全部' }
-    ],
+    timeRanges: healthChartConfig.timeRanges,
+
+
 
     // 状态
     loading: true,
