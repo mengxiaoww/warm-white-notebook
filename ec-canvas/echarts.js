@@ -183,9 +183,10 @@ class SimpleChart {
     ctx.strokeStyle = '#F5F5F5'; // 更淡的网格线
     ctx.lineWidth = 1;
 
-    // 绘制4条网格线，与Y轴5个标签位置对齐（不包括顶部边界，包括底部）
-    for (let i = 1; i <= 4; i++) {
-      const y = area.y + (area.height / 4) * i; // 改为/4以匹配Y轴标签
+    // 绘制4条网格线：顶部边界+中间3条（i=0,1,2,3）
+    // 跳过i=4因为它与X轴重合，改为绘制顶部边界使总共有4条可见横线
+    for (let i = 0; i <= 3; i++) {
+      const y = area.y + (area.height / 4) * i;
       ctx.beginPath();
       ctx.moveTo(area.x, y);
       ctx.lineTo(area.x + area.width, y);
