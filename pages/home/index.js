@@ -35,6 +35,15 @@ Page({
     keyDates: [],
     isSingleMilestone: false,
 
+    // 弹窗状态
+    showKeyDatePopup: false,
+    showKeyDateEditPopup: false,
+    editingKeyDate: null,
+    keyDateForm: {
+      title: '',
+      date: ''
+    },
+
     // 数据类型分组配置
     dataTypeGroups: healthChartConfig.dataTypeGroups,
 
@@ -1111,18 +1120,13 @@ Page({
   },
 
   async loadHomeMilestones(openid, profileId) {
-    console.log('loadHomeMilestones called with:', { openid, profileId });
-
     if (!openid || !profileId) {
-      console.log('loadHomeMilestones: missing openid or profileId');
       this.setData({ keyDates: [], isSingleMilestone: false });
       return;
     }
 
     try {
       const res = await db.collection('keyDates').where({ _openid: openid, profileId }).get();
-      console.log('keyDates query result:', res);
-
       const keyDates = (res.data || []).map(item => {
         const statusObj = this.getMilestoneStatus(item.date);
         return {
@@ -1140,8 +1144,6 @@ Page({
         if (diffA < 0 && diffB < 0) return diffB - diffA;
         return diffA >= 0 ? -1 : 1;
       });
-
-      console.log('processed keyDates:', keyDates);
 
       this.setData({
         keyDates,
@@ -1201,25 +1203,171 @@ Page({
     return `${month}/${day}`;
   },
 
-  // 跳转到关键日管理（每日记录页面）
-  navigateToKeyDates() {
-    console.log('navigateToKeyDates clicked');
+  // 显示暖光里程碑设置弹窗
+  showKeyDatePopup() {
     const app = getApp();
     const openid = app.getOpenIdIfLoggedIn();
+    const currentProfileId = app.getCurrentProfileId();
 
     if (!openid) {
-      console.log('navigateToKeyDates: user not logged in');
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
+      wx.showToast({ title: '请先登录', icon: 'none' });
       return;
     }
 
-    console.log('navigateToKeyDates: navigating to daily-record');
-    wx.navigateTo({
-      url: '/pages/daily-record/index'
+    // 显示弹窗前先加载最新数据
+    this.loadHomeMilestones(openid, currentProfileId).then(() => {
+      this.setData({ showKeyDatePopup: true });
+    }).catch(() => {
+      this.setData({ showKeyDatePopup: true });
     });
+  },
+
+  // 关闭暖光里程碑设置弹窗
+  closeKeyDatePopup(e) {
+    if (e && e.detail !== undefined && typeof e.detail.visible === 'boolean') {
+      this.setData({ showKeyDatePopup: e.detail.visible });
+    } else {
+      this.setData({ showKeyDatePopup: false });
+    }
+  },
+
+  // 显示添加/编辑暖光里程碑弹窗
+  showKeyDateEditPopup() {
+    const defaultDate = new Date().toISOString().split('T')[0];
+    this.setData({
+      showKeyDatePopup: false,
+      showKeyDateEditPopup: true,
+      editingKeyDate: null,
+      keyDateForm: {
+        title: '',
+        date: defaultDate
+      }
+    });
+  },
+
+  // 关闭编辑弹窗
+  closeKeyDateEditPopup(e) {
+    if (e && e.detail !== undefined && typeof e.detail.visible === 'boolean') {
+      this.setData({ showKeyDateEditPopup: e.detail.visible });
+    } else {
+      this.setData({ showKeyDateEditPopup: false });
+    }
+  },
+
+  // 返回列表
+  backToKeyDateList() {
+    this.setData({
+      showKeyDateEditPopup: false,
+      showKeyDatePopup: true
+    });
+  },
+
+  // 编辑暖光里程碑
+  editKeyDate(e) {
+    const id = e.currentTarget.dataset.id;
+    const keyDate = this.data.keyDates.find(item => item.id === id);
+
+    if (!keyDate) {
+      wx.showToast({ title: '数据错误', icon: 'none' });
+      return;
+    }
+
+    this.setData({
+      showKeyDatePopup: false,
+      showKeyDateEditPopup: true,
+      editingKeyDate: keyDate,
+      keyDateForm: {
+        title: keyDate.title,
+        date: keyDate.date
+      }
+    });
+  },
+
+  // 删除里程碑
+  async deleteKeyDate(e) {
+    const id = e.currentTarget.dataset.id;
+
+    const res = await new Promise(resolve => {
+      wx.showModal({
+        title: '确认删除',
+        content: '确定要删除这个里程碑吗？',
+        success: res => resolve(res.confirm)
+      });
+    });
+
+    if (!res) return;
+
+    try {
+      await db.collection('keyDates').doc(id).remove();
+      wx.showToast({ title: '删除成功', icon: 'success' });
+
+      const app = getApp();
+      const openid = app.getOpenIdIfLoggedIn();
+      const profileId = app.getCurrentProfileId();
+      await this.loadHomeMilestones(openid, profileId);
+    } catch (error) {
+      console.error('删除失败:', error);
+      wx.showToast({ title: '删除失败', icon: 'none' });
+    }
+  },
+
+  // 表单输入
+  onKeyDateTitleInput(e) {
+    this.setData({ 'keyDateForm.title': e.detail.value });
+  },
+
+  onKeyDateChange(e) {
+    this.setData({ 'keyDateForm.date': e.detail.value });
+  },
+
+  // 保存里程碑
+  async saveKeyDate() {
+    const { title, date } = this.data.keyDateForm;
+
+    if (!title || !date) {
+      wx.showToast({ title: '请填写完整信息', icon: 'none' });
+      return;
+    }
+
+    const app = getApp();
+    const openid = app.getOpenIdIfLoggedIn();
+    const profileId = app.getCurrentProfileId();
+
+    if (!openid || !profileId) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    try {
+      if (this.data.editingKeyDate) {
+        // 更新
+        await db.collection('keyDates').doc(this.data.editingKeyDate.id).update({
+          data: { title, date }
+        });
+        wx.showToast({ title: '更新成功', icon: 'success' });
+      } else {
+        // 新增
+        await db.collection('keyDates').add({
+          data: {
+            _openid: openid,
+            profileId,
+            title,
+            date,
+            createTime: new Date()
+          }
+        });
+        wx.showToast({ title: '添加成功', icon: 'success' });
+      }
+
+      await this.loadHomeMilestones(openid, profileId);
+      this.setData({
+        showKeyDateEditPopup: false,
+        showKeyDatePopup: true
+      });
+    } catch (error) {
+      console.error('保存失败:', error);
+      wx.showToast({ title: '保存失败', icon: 'none' });
+    }
   },
 
 

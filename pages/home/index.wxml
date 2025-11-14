@@ -48,7 +48,7 @@
               </view>
             </view>
             <!-- 只有在有里程碑数据时才显示编辑按钮 -->
-            <view class="milestone-edit-btn" wx:if="{{keyDates && keyDates.length > 0}}" bindtap="navigateToKeyDates">
+            <view class="milestone-edit-btn" wx:if="{{keyDates && keyDates.length > 0}}" bindtap="showKeyDatePopup">
               <t-icon name="edit" size="32rpx" color="#FF9800" />
             </view>
           </view>
@@ -57,7 +57,7 @@
               <!-- 超过6个时使用滚动视图 -->
               <scroll-view wx:if="{{keyDates && keyDates.length > 6}}" scroll-x class="milestone-scroll">
                 <view class="milestone-grid-scroll">
-                  <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" bindtap="navigateToKeyDates">
+                  <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" bindtap="editKeyDate" data-id="{{item.id}}">
                     <view class="milestone-card-header">
                       <view class="milestone-card-title">{{item.title}}</view>
                       <view class="milestone-card-date">{{item.dateFormatted}}</view>
@@ -77,8 +77,8 @@
                 </view>
               </scroll-view>
               <!-- 6个或以下时使用普通网格，整个区域可点击 -->
-              <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else>
-                <view class="milestone-card {{isSingleMilestone ? 'single-card' : ''}}" wx:for="{{keyDates}}" wx:key="id" bindtap="navigateToKeyDates">
+              <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else bindtap="showKeyDatePopup">
+                <view class="milestone-card {{isSingleMilestone ? 'single-card' : ''}}" wx:for="{{keyDates}}" wx:key="id" bindtap="editKeyDate" data-id="{{item.id}}">
                   <view class="milestone-card-header">
                     <view class="milestone-card-title">{{item.title}}</view>
                     <view class="milestone-card-date">{{item.dateFormatted}}</view>
@@ -97,7 +97,7 @@
                 </view>
               </view>
             </block>
-            <view class="milestone-empty" wx:else bindtap="navigateToKeyDates">
+            <view class="milestone-empty" wx:else bindtap="showKeyDateEditPopup">
               <view class="empty-state-premium">
                 <view class="empty-icon-wrapper">
                   <view class="empty-icon-pulse"></view>
@@ -155,4 +155,72 @@
     </scroll-view>
   </view>
   <!-- 结束 content-wrapper -->
+
+  <!-- 里程碑管理弹窗 -->
+  <t-popup visible="{{showKeyDatePopup}}" bind:visible-change="closeKeyDatePopup" placement="bottom"
+    show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">编辑</text>
+        <view class="milestone-close-btn" bindtap="closeKeyDatePopup">
+          <t-icon name="close" size="28rpx" />
+        </view>
+      </view>
+      <view class="key-date-list">
+        <view class="key-date-item" wx:for="{{keyDates}}" wx:key="id">
+          <view class="date-info" bindtap="editKeyDate" data-id="{{item.id}}">
+            <text class="date-label">{{item.title}}</text>
+            <text class="date-value">{{item.dateFormatted || item.date}}</text>
+          </view>
+          <view class="key-date-actions">
+            <view class="key-date-action-btn key-date-edit-btn" catchtap="editKeyDate" data-id="{{item.id}}">
+              <t-icon name="edit" size="26rpx" color="white" />
+            </view>
+            <view class="key-date-action-btn key-date-delete-btn" catchtap="deleteKeyDate" data-id="{{item.id}}">
+              <t-icon name="delete" size="26rpx" color="white" />
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="add-key-date" bindtap="showKeyDateEditPopup">
+        <text>添加</text>
+      </view>
+    </view>
+  </t-popup>
+
+  <!-- 添加/编辑里程碑弹窗 -->
+  <t-popup visible="{{showKeyDateEditPopup}}" bind:visible-change="closeKeyDateEditPopup" placement="bottom"
+    show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">
+          <text wx:if="{{editingKeyDate}}">编辑</text>
+          <text wx:else>添加</text>
+        </text>
+        <view class="milestone-close-btn" bindtap="closeKeyDateEditPopup">
+          <t-icon name="close" size="28rpx" />
+        </view>
+      </view>
+      <view class="milestone-edit-form">
+        <view class="milestone-form-item">
+          <text class="milestone-form-label">选择日期</text>
+          <picker mode="date" value="{{keyDateForm.date}}" bindchange="onKeyDateChange">
+            <view class="milestone-date-picker">
+              <text class="milestone-date-text">{{keyDateForm.date || '请选择日期'}}</text>
+              <t-icon name="caret-down" size="24rpx" color="#666" />
+            </view>
+          </picker>
+        </view>
+        <view class="milestone-form-item">
+          <text class="milestone-form-label">标题</text>
+          <input class="milestone-form-input" value="{{keyDateForm.title}}" bindinput="onKeyDateTitleInput"
+            placeholder="请输入标题" />
+        </view>
+      </view>
+      <view class="milestone-popup-footer">
+        <view class="milestone-cancel-btn" bindtap="backToKeyDateList">返回</view>
+        <view class="milestone-save-btn" bindtap="saveKeyDate">完成</view>
+      </view>
+    </view>
+  </t-popup>
 </view>
