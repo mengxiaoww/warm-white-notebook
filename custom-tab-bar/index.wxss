@@ -34,12 +34,13 @@
 
 /* 中心按钮容器 - 突出显示 */
 .tab-bar-center {
-  flex: 1.2;
+  flex: 1;
   height: 100%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 16rpx;
+  position: relative;
 }
 
 /* 中心按钮 - 悬浮圆形按钮 */

@@ -10285,133 +10285,52 @@
 /* ==================== 健康数据概览 ==================== */
 .health-overview-section {
   margin: 32rpx 24rpx;
-  animation: fadeInUp 0.6s ease-out;
+
+/* ==================== 健康图谱入口 ==================== */
+.health-chart-entry {
+  margin: 32rpx 24rpx;
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFE0B2 100%);
+  border-radius: 24rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 4rpx 20rpx rgba(255, 184, 77, 0.15);
+  border: 2rpx solid rgba(255, 184, 77, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.section-header-row {
+.health-chart-entry:active {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 28rpx rgba(255, 184, 77, 0.25);
+}
+
+.entry-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24rpx;
+  margin-bottom: 16rpx;
 }
 
-.section-title-group {
+.entry-title-group {
   display: flex;
   align-items: center;
   gap: 12rpx;
 }
 
-.section-title {
+.entry-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #333;
+  color: #FF9800;
 }
 
-.view-more-btn {
+.entry-action {
   display: flex;
   align-items: center;
   gap: 4rpx;
   font-size: 26rpx;
   color: #FF9800;
-  transition: all 0.3s ease;
 }
 
-.view-more-btn:active {
-  opacity: 0.7;
-  transform: scale(0.95);
-}
-
-/* 健康卡片容器 */
-.health-cards-container {
-  display: flex;
-  gap: 20rpx;
-}
-
-.health-card {
-  flex: 1;
-  background: linear-gradient(135deg, #FFF8F0 0%, #FFFFFF 100%);
-  border-radius: 24rpx;
-  padding: 28rpx;
-  box-shadow: 0 4rpx 20rpx rgba(255, 184, 77, 0.12);
-  border: 2rpx solid rgba(255, 184, 77, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.health-card:active {
-  transform: translateY(-4rpx);
-  box-shadow: 0 8rpx 28rpx rgba(255, 184, 77, 0.2);
-}
-
-.health-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24rpx;
-  padding-bottom: 16rpx;
-  border-bottom: 2rpx solid rgba(255, 184, 77, 0.15);
-}
-
-.health-card-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #FF9800;
-}
-
-.health-card-badge {
-  font-size: 20rpx;
-  color: #999;
-  padding: 4rpx 12rpx;
-  background: rgba(255, 184, 77, 0.1);
-  border-radius: 12rpx;
-}
-
-.health-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-}
-
-.health-metric {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.metric-label {
+.entry-description {
   font-size: 24rpx;
   color: #666;
-  flex: 1;
-}
-
-.metric-value {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #333;
-  margin: 0 8rpx;
-}
-
-.metric-unit {
-  font-size: 20rpx;
-  color: #999;
-}
-
-/* 卡片特殊效果 */
-.blood-card {
-  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
-}
-
-.virus-card {
-  background: linear-gradient(135deg, #FFE0B2 0%, #FFCC80 100%);
-}
-
-/* 动画 */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30rpx);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  line-height: 1.6;
 }
