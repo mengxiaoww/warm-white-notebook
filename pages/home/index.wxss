@@ -251,11 +251,12 @@ page {
 .time-option {
   padding: 5rpx 10rpx;
   border-radius: var(--radius-sm);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   min-width: 44rpx;
   text-align: center;
+  cursor: pointer;
 }
 
 .time-option::before {
@@ -267,7 +268,7 @@ page {
   bottom: -1rpx;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
   border-radius: var(--radius-sm);
   z-index: -1;
 }
@@ -277,15 +278,15 @@ page {
 }
 
 .time-option.active {
-  transform: translateY(-1rpx);
-  box-shadow: 0 2rpx 8rpx var(--primary-alpha-20);
+  transform: translateY(-1rpx) scale(1.02);
+  box-shadow: 0 3rpx 10rpx var(--primary-alpha-20);
 }
 
 .time-label {
   font-size: 22rpx;
   font-weight: 500;
   color: var(--text-secondary);
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   position: relative;
   z-index: 1;
 }
@@ -293,7 +294,7 @@ page {
 .time-option.active .time-label {
   color: white;
   font-weight: 600;
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.15);
 }
 
 /* ==================== 类型选择器 - 胶囊式精致设计 ==================== */
@@ -310,12 +311,13 @@ page {
   background: var(--bg-card);
   border: 2rpx solid var(--border-light);
   border-radius: var(--radius-pill);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   box-shadow:
     0 2rpx 6rpx var(--primary-alpha-05),
     0 1rpx 2rpx rgba(0, 0, 0, 0.02);
+  cursor: pointer;
 }
 
 .type-pill::before {
@@ -327,8 +329,8 @@ page {
   bottom: -2rpx;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   opacity: 0;
-  transition: all 0.4s ease;
-  transform: scale(0.8);
+  transition: all 0.3s ease;
+  transform: scale(0.9);
   border-radius: var(--radius-pill);
   z-index: -1;
 }
@@ -340,8 +342,11 @@ page {
 
 .type-pill.active {
   border-color: transparent;
-  transform: translateY(-2rpx);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-2rpx) scale(1.02);
+  box-shadow:
+    0 6rpx 20rpx rgba(255, 184, 77, 0.25),
+    0 3rpx 10rpx rgba(255, 184, 77, 0.15),
+    0 1rpx 3rpx rgba(255, 152, 0, 0.1);
 }
 
 .type-label {
@@ -356,7 +361,7 @@ page {
 .type-pill.active .type-label {
   color: white;
   font-weight: 600;
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.15);
 }
 
 /* ==================== 图表区域 - 高级卡片设计 ==================== */
@@ -368,6 +373,15 @@ page {
   border: 1rpx solid var(--border-light);
   position: relative;
   margin-bottom: 8rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chart-area:active {
+  transform: translateY(1rpx);
+  box-shadow:
+    0 1rpx 4rpx rgba(255, 184, 77, 0.06),
+    0 4rpx 12rpx rgba(255, 184, 77, 0.08),
+    0 8rpx 16rpx rgba(255, 184, 77, 0.04);
 }
 
 .chart-area::before {
@@ -383,6 +397,7 @@ page {
       var(--primary-alpha-30) 50%,
       var(--primary-alpha-20) 80%,
       transparent 100%);
+  z-index: 1;
 }
 
 /* ==================== 图表容器 ==================== */
@@ -1025,11 +1040,19 @@ page {
 }
 
 .milestone-unit-text {
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 600;
-  color: #FF9800;
-  opacity: 0.9;
+  background: linear-gradient(135deg,
+      #FF9800 0%,
+      #FFB84D 60%,
+      #FFCC80 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  opacity: 0.95;
   letter-spacing: 0.5rpx;
+  line-height: 1.2;
 }
 
 .milestone-empty {
