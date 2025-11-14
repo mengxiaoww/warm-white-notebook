@@ -70,6 +70,7 @@
                         <block wx:else>
                           <text class="milestone-prefix-text">{{item.statusObj.prefix}}</text>
                           <text class="milestone-days-highlight">{{item.statusObj.daysNumber}}</text>
+                          <text class="milestone-unit-text">{{item.statusObj.suffix}}</text>
                         </block>
                       </view>
                     </view>
@@ -91,6 +92,7 @@
                       <block wx:else>
                         <text class="milestone-prefix-text">{{item.statusObj.prefix}}</text>
                         <text class="milestone-days-highlight">{{item.statusObj.daysNumber}}</text>
+                        <text class="milestone-unit-text">{{item.statusObj.suffix}}</text>
                       </block>
                     </view>
                   </view>
@@ -141,7 +143,7 @@
           <!-- 无数据状态 -->
           <view wx:else class="empty-state">
             <view class="empty-icon">
-              <t-icon name="chart-line" size="120rpx" color="#E0E0E0" />
+              <t-icon name="chart-line" size="120rpx" color="#FFB84D" />
             </view>
             <text class="empty-message">
               暂无{{dataTypes[selectedTypeByGroup[groupIndex]].name}}数据
