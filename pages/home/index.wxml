@@ -52,7 +52,7 @@
             <block wx:if="{{keyDates.length > 0}}">
               <scroll-view wx:if="{{keyDates.length > 6}}" scroll-x class="milestone-scroll">
                 <view class="milestone-grid-scroll">
-                  <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" bindtap="onMilestoneCardTap">
+                  <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" catchtap="onMilestoneCardTap">
                     <view class="milestone-card-header">
                       <view class="milestone-card-title">{{item.title}}</view>
                       <view class="milestone-card-date">{{item.dateFormatted}}</view>
@@ -73,7 +73,7 @@
                 </view>
               </scroll-view>
               <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else>
-                <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" bindtap="onMilestoneCardTap">
+                <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" catchtap="onMilestoneCardTap">
                   <view class="milestone-card-header">
                     <view class="milestone-card-title">{{item.title}}</view>
                     <view class="milestone-card-date">{{item.dateFormatted}}</view>
@@ -93,7 +93,7 @@
                 </view>
               </view>
             </block>
-            <view class="milestone-empty" wx:else bindtap="onMilestoneEmptyTap">
+            <view class="milestone-empty" wx:else catchtap="onMilestoneEmptyTap">
               <view class="empty-state-premium">
                 <view class="empty-icon-wrapper">
                   <view class="empty-icon-pulse"></view>
