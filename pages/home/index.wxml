@@ -47,12 +47,17 @@
                 <text class="milestone-subtitle">记录治疗关键日</text>
               </view>
             </view>
+            <!-- 只有在有里程碑数据时才显示编辑按钮 -->
+            <view class="milestone-edit-btn" wx:if="{{keyDates && keyDates.length > 0}}" bindtap="navigateToKeyDates">
+              <t-icon name="edit" size="32rpx" color="#FF9800" />
+            </view>
           </view>
           <view class="milestone-content">
-            <block wx:if="{{keyDates.length > 0}}">
-              <scroll-view wx:if="{{keyDates.length > 6}}" scroll-x class="milestone-scroll">
+            <block wx:if="{{keyDates && keyDates.length > 0}}">
+              <!-- 超过6个时使用滚动视图 -->
+              <scroll-view wx:if="{{keyDates && keyDates.length > 6}}" scroll-x class="milestone-scroll">
                 <view class="milestone-grid-scroll">
-                  <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" catchtap="onMilestoneCardTap">
+                  <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" bindtap="navigateToKeyDates">
                     <view class="milestone-card-header">
                       <view class="milestone-card-title">{{item.title}}</view>
                       <view class="milestone-card-date">{{item.dateFormatted}}</view>
@@ -60,20 +65,20 @@
                     <view class="milestone-card-body">
                       <view class="milestone-text-line">
                         <block wx:if="{{item.statusObj.isToday}}">
-                          <text class="milestone-full-text">今天</text>
+                          <text class="milestone-full-text">{{item.statusObj.fullText}}</text>
                         </block>
                         <block wx:else>
                           <text class="milestone-prefix-text">{{item.statusObj.prefix}}</text>
                           <text class="milestone-days-highlight">{{item.statusObj.daysNumber}}</text>
-                          <text class="milestone-suffix-text">{{item.statusObj.suffix}}</text>
                         </block>
                       </view>
                     </view>
                   </view>
                 </view>
               </scroll-view>
-              <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else>
-                <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" catchtap="onMilestoneCardTap">
+              <!-- 6个或以下时使用普通网格 -->
+              <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else bindtap="navigateToKeyDates">
+                <view class="milestone-card {{isSingleMilestone ? 'single-card' : ''}}" wx:for="{{keyDates}}" wx:key="id">
                   <view class="milestone-card-header">
                     <view class="milestone-card-title">{{item.title}}</view>
                     <view class="milestone-card-date">{{item.dateFormatted}}</view>
@@ -81,25 +86,24 @@
                   <view class="milestone-card-body">
                     <view class="milestone-text-line">
                       <block wx:if="{{item.statusObj.isToday}}">
-                        <text class="milestone-full-text">今天</text>
+                        <text class="milestone-full-text">{{item.statusObj.fullText}}</text>
                       </block>
                       <block wx:else>
                         <text class="milestone-prefix-text">{{item.statusObj.prefix}}</text>
                         <text class="milestone-days-highlight">{{item.statusObj.daysNumber}}</text>
-                        <text class="milestone-suffix-text">{{item.statusObj.suffix}}</text>
                       </block>
                     </view>
                   </view>
                 </view>
               </view>
             </block>
-            <view class="milestone-empty" wx:else catchtap="onMilestoneEmptyTap">
+            <view class="milestone-empty" wx:else bindtap="navigateToKeyDates">
               <view class="empty-state-premium">
                 <view class="empty-icon-wrapper">
                   <view class="empty-icon-pulse"></view>
                   <t-icon name="add" size="28rpx" color="#999" />
                 </view>
-                <text class="empty-text">暂无关键日，去记录一个吧</text>
+                <text class="empty-text">轻触记录</text>
               </view>
             </view>
           </view>
