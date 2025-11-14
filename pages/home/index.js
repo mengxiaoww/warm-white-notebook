@@ -400,7 +400,8 @@ Page({
 
         if (chartData.length > 0) {
           const latest = chartData[chartData.length - 1].value;
-          latestValue = latest.toFixed(1) + dataType.unit;
+          // 智能格式化：整数不显示小数点
+          latestValue = this.formatNumber(latest) + dataType.unit;
         }
       }
 
@@ -421,6 +422,19 @@ Page({
         [`latestValueByGroup[${groupIndex}]`]: '--'
       });
     }
+  },
+
+  // 智能格式化数字：整数不显示小数点
+  formatNumber(value, decimals = 1) {
+    if (value == null || isNaN(value)) return '';
+
+    const num = Number(value);
+    // 如果是整数，直接返回整数
+    if (Number.isInteger(num)) {
+      return num.toString();
+    }
+    // 如果有小数，保留指定位数
+    return num.toFixed(decimals);
   },
 
   // 为特定数据类型处理数据

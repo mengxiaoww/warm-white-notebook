@@ -365,7 +365,7 @@ class SimpleChart {
 
     ctx.save(); // 保存上下文状态
 
-    // Y轴标签
+    // Y轴标签 - 使用智能格式化
     ctx.fillStyle = '#666';
     ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textAlign = 'right';
@@ -374,7 +374,7 @@ class SimpleChart {
     for (let i = 0; i <= 4; i++) {
       const value = min + (max - min) * (4 - i) / 4;
       const y = area.y + (area.height / 4) * i;
-      ctx.fillText(value.toFixed(1), area.x - 10, y);
+      ctx.fillText(this.formatNumber(value), area.x - 10, y);
     }
 
     // X轴标签 - 支持滚动显示
@@ -434,8 +434,8 @@ class SimpleChart {
     ctx.shadowOffsetY = 0;
 
     points.forEach(point => {
-      // 只显示数值
-      const value = point.value.toFixed(1);
+      // 使用智能格式化显示数值
+      const value = this.formatNumber(point.value);
 
       // 计算标签位置（所有标签都在数据点上方）
       const labelX = point.x;
@@ -547,6 +547,19 @@ class SimpleChart {
     ctx.closePath();
   }
 
+  // 辅助方法：智能格式化数字 - 整数不显示小数点
+  formatNumber(value, decimals = 1) {
+    if (value == null || isNaN(value)) return '';
+
+    const num = Number(value);
+    // 如果是整数，直接返回整数
+    if (Number.isInteger(num)) {
+      return num.toString();
+    }
+    // 如果有小数，保留指定位数
+    return num.toFixed(decimals);
+  }
+
   // 辅助方法：将十六进制颜色转换为rgba格式
   hexToRgba(hex, alpha = 1) {
     // 移除#号
@@ -567,12 +580,65 @@ class SimpleChart {
 
   drawNoData() {
     const ctx = this.ctx;
+    const centerX = this.width / 2;
+    const centerY = this.height / 2;
 
-    ctx.fillStyle = '#ccc';
-    ctx.font = '16px sans-serif';
+    ctx.save();
+
+    // 绘制背景渐变
+    const gradient = ctx.createLinearGradient(0, 0, 0, this.height);
+    gradient.addColorStop(0, '#FFFBF5');
+    gradient.addColorStop(1, '#FFF8F0');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    // 绘制柔和的光晕效果
+    const glowGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 100);
+    glowGradient.addColorStop(0, 'rgba(255, 184, 77, 0.15)');
+    glowGradient.addColorStop(0.5, 'rgba(255, 184, 77, 0.08)');
+    glowGradient.addColorStop(1, 'rgba(255, 184, 77, 0)');
+    ctx.fillStyle = glowGradient;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    // 绘制图表图标（简化的图表线条）
+    ctx.strokeStyle = 'rgba(255, 184, 77, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // 绘制简化的曲线
+    const iconSize = 60;
+    const startX = centerX - iconSize;
+    const startY = centerY - 10;
+
+    ctx.beginPath();
+    ctx.moveTo(startX, startY + 15);
+    ctx.quadraticCurveTo(startX + iconSize / 3, startY - 10, startX + iconSize * 2 / 3, startY + 5);
+    ctx.quadraticCurveTo(startX + iconSize, startY + 20, startX + iconSize * 2, startY - 5);
+    ctx.stroke();
+
+    // 绘制数据点
+    ctx.fillStyle = 'rgba(255, 184, 77, 0.4)';
+    [startX, startX + iconSize * 2 / 3, startX + iconSize * 2].forEach((x, i) => {
+      const y = i === 0 ? startY + 15 : (i === 1 ? startY + 5 : startY - 5);
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+
+    // 绘制文字
+    ctx.fillStyle = '#FFB84D';
+    ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('暂无数据', this.width / 2, this.height / 2);
+    ctx.fillText('暂无数据', centerX, centerY + 40);
+
+    // 绘制提示文字
+    ctx.fillStyle = '#CCCCCC';
+    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('记录数据后，这里将显示趋势图表', centerX, centerY + 62);
+
+    ctx.restore();
   }
 
   // 模拟事件方法
