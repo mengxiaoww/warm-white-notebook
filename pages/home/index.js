@@ -1111,13 +1111,18 @@ Page({
   },
 
   async loadHomeMilestones(openid, profileId) {
+    console.log('loadHomeMilestones called with:', { openid, profileId });
+
     if (!openid || !profileId) {
+      console.log('loadHomeMilestones: missing openid or profileId');
       this.setData({ keyDates: [], isSingleMilestone: false });
       return;
     }
 
     try {
       const res = await db.collection('keyDates').where({ _openid: openid, profileId }).get();
+      console.log('keyDates query result:', res);
+
       const keyDates = (res.data || []).map(item => {
         const statusObj = this.getMilestoneStatus(item.date);
         return {
@@ -1135,6 +1140,8 @@ Page({
         if (diffA < 0 && diffB < 0) return diffB - diffA;
         return diffA >= 0 ? -1 : 1;
       });
+
+      console.log('processed keyDates:', keyDates);
 
       this.setData({
         keyDates,
@@ -1196,10 +1203,12 @@ Page({
 
   // 跳转到关键日管理（每日记录页面）
   navigateToKeyDates() {
+    console.log('navigateToKeyDates clicked');
     const app = getApp();
     const openid = app.getOpenIdIfLoggedIn();
 
     if (!openid) {
+      console.log('navigateToKeyDates: user not logged in');
       wx.showToast({
         title: '请先登录',
         icon: 'none'
@@ -1207,6 +1216,7 @@ Page({
       return;
     }
 
+    console.log('navigateToKeyDates: navigating to daily-record');
     wx.navigateTo({
       url: '/pages/daily-record/index'
     });
