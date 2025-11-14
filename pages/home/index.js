@@ -1117,7 +1117,7 @@ Page({
     }
 
     try {
-      const res = await db.collection('keyDates').where({ openid, profileId }).get();
+      const res = await db.collection('keyDates').where({ _openid: openid, profileId }).get();
       const keyDates = (res.data || []).map(item => {
         const statusObj = this.getMilestoneStatus(item.date);
         return {
@@ -1194,8 +1194,8 @@ Page({
     return `${month}/${day}`;
   },
 
-  // 点击里程碑卡片
-  onMilestoneCardTap() {
+  // 跳转到关键日管理（每日记录页面）
+  navigateToKeyDates() {
     const app = getApp();
     const openid = app.getOpenIdIfLoggedIn();
 
@@ -1208,25 +1208,7 @@ Page({
     }
 
     wx.navigateTo({
-      url: '/pages/daily-record/index?scrollToMilestone=true'
-    });
-  },
-
-  // 点击空白里程碑区域
-  onMilestoneEmptyTap() {
-    const app = getApp();
-    const openid = app.getOpenIdIfLoggedIn();
-
-    if (!openid) {
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
-      return;
-    }
-
-    wx.navigateTo({
-      url: '/pages/daily-record/index?scrollToMilestone=true'
+      url: '/pages/daily-record/index'
     });
   },
 
