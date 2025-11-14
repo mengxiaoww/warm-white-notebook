@@ -1,0 +1,9 @@
+{
+  "name": "fixProfileData",
+  "version": "1.0.0",
+  "description": "修复历史数据的 profileId 字段",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

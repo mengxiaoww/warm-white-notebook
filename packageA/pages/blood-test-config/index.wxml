@@ -1,0 +1,221 @@
+<view class="page-container">
+  <!-- 自定义导航栏 -->
+  <t-navbar title="配置录入项" class="navbar" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+    <view slot="left" class="custom-back-btn" bindtap="goBack">
+      <t-icon name="chevron-left" size="48rpx" color="white" />
+    </view>
+  </t-navbar>
+  <!-- 内容区域 -->
+  <view class="content">
+    <!-- 提示文字 -->
+    <view class="tips">
+      <text>提示：前4项为必选核心指标，其他项目可自由配置</text>
+    </view>
+    <!-- 当前编辑日期提示 -->
+    <view class="date-status-tips">
+      <view class="date-status-header">
+        <view class="date-text-wrapper">
+          <t-icon name="calendar" size="32rpx" color="#FFB84D" />
+          <text class="date-text">正在配置：{{editingDate || '未指定日期'}}</text>
+        </view>
+        <view class="date-type-badge {{dateType}}">
+          <text wx:if="{{dateType === 'today'}}">今日</text>
+          <text wx:elif="{{dateType === 'past'}}">历史</text>
+          <text wx:elif="{{dateType === 'future'}}">未来</text>
+        </view>
+      </view>
+      <view class="data-hint">
+        <view wx:if="{{dateType === 'today'}}" class="hint-item">
+          <t-icon name="lightbulb" size="28rpx" color="#FFB84D" />
+          <text>今日修改将对未来所有日期生效，让您无需重复配置</text>
+        </view>
+        <view wx:elif="{{dateType === 'past'}}" class="hint-item">
+          <t-icon name="lock-on" size="28rpx" color="#999" />
+          <text>历史日期修改仅对{{editingDate}}生效，不影响其他日期</text>
+        </view>
+        <view wx:elif="{{dateType === 'future'}}" class="hint-item">
+          <t-icon name="play-circle" size="28rpx" color="#1890ff" />
+          <text>未来日期修改仅对{{editingDate}}生效</text>
+        </view>
+        <text wx:else>每个日期的配置项是独立的</text>
+      </view>
+      <!-- 配置继承提示 -->
+      <view class="inherit-hint" wx:if="{{configInheritInfo.isInherited}}">
+        <t-icon name="info-circle" size="28rpx" color="#1890ff" />
+        <text class="inherit-text">当前配置继承自 {{configInheritInfo.inheritedFrom}}</text>
+      </view>
+    </view>
+    <!-- 指标列表 -->
+    <scroll-view scroll-y="{{true}}" class="scroll-container" enhanced="{{true}}" show-scrollbar="{{false}}">
+      <view class="indicators-container">
+        <!-- 预设指标组 -->
+        <view class="indicator-group">
+          <!-- 白细胞 (必选) -->
+          <view class="indicator-item required-item">
+            <t-checkbox checked="{{selectedIndicators.wbc}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <view class="indicator-info">
+              <view class="indicator-name">白</view>
+              <view class="indicator-text">
+                <text class="indicator-fullname">{{indicatorConfigs.wbc.name}}</text>
+                <text class="required-tag">必选</text>
+              </view>
+            </view>
+          </view>
+          <!-- 中性粒细胞数 (必选) -->
+          <view class="indicator-item required-item">
+            <t-checkbox checked="{{selectedIndicators.neut}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <view class="indicator-info">
+              <view class="indicator-name">粒</view>
+              <view class="indicator-text">
+                <text class="indicator-fullname">{{indicatorConfigs.neut.name}}</text>
+                <text class="required-tag">必选</text>
+              </view>
+            </view>
+          </view>
+          <!-- 血红蛋白 (必选) -->
+          <view class="indicator-item required-item">
+            <t-checkbox checked="{{selectedIndicators.hgb}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <view class="indicator-info">
+              <view class="indicator-name">红</view>
+              <view class="indicator-text">
+                <text class="indicator-fullname">{{indicatorConfigs.hgb.name}}</text>
+                <text class="required-tag">必选</text>
+              </view>
+            </view>
+          </view>
+          <!-- 血小板 (必选) -->
+          <view class="indicator-item required-item">
+            <t-checkbox checked="{{selectedIndicators.plt}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <view class="indicator-info">
+              <view class="indicator-name">板</view>
+              <view class="indicator-text">
+                <text class="indicator-fullname">{{indicatorConfigs.plt.name}}</text>
+                <text class="required-tag">必选</text>
+              </view>
+            </view>
+          </view>
+          <!-- 更多预设指标 -->
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="rbc" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.rbc}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="rbc">
+              <view class="indicator-info">
+                <view class="indicator-name">红</view>
+                <text class="indicator-fullname">{{indicatorConfigs.rbc.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="crp" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.crp}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="crp">
+              <view class="indicator-info">
+                <view class="indicator-name">C</view>
+                <text class="indicator-fullname">{{indicatorConfigs.crp.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="hct" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.hct}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="hct">
+              <view class="indicator-info">
+                <view class="indicator-name">压</view>
+                <text class="indicator-fullname">{{indicatorConfigs.hct.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="lymph" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.lymph}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="lymph">
+              <view class="indicator-info">
+                <view class="indicator-name">淋</view>
+                <text class="indicator-fullname">{{indicatorConfigs.lymph.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="mono" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.mono}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="mono">
+              <view class="indicator-info">
+                <view class="indicator-name">单</view>
+                <text class="indicator-fullname">{{indicatorConfigs.mono.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+        </view>
+        <!-- 自定义指标组 -->
+        <view class="indicator-group" wx:if="{{customIndicators.length > 0}}">
+          <view class="group-title">自定义指标</view>
+          <view class="indicator-item" wx:for="{{customIndicators}}" wx:key="id">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="{{item.id}}" data-type="custom">
+              <t-checkbox checked="{{selectedIndicators[item.id]}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="{{item.id}}">
+              <view class="indicator-info">
+                <text class="indicator-fullname">{{item.fullName}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <!-- 底部按钮组 - 固定在页面底部 -->
+    <view class="bottom-buttons">
+      <!-- 返回按钮 -->
+      <view class="bottom-back-btn" bindtap="goBack">
+        <t-icon name="chevron-left" size="32rpx" color="white" />
+        <text>返回</text>
+      </view>
+      <!-- 定义更多指标按钮 -->
+      <view class="define-more-btn" bindtap="defineMoreIndicators">
+        <t-icon name="add" size="32rpx" color="white" />
+        <text>定义更多指标</text>
+      </view>
+    </view>
+  </view>
+  <!-- 编辑指标底部弹窗 -->
+  <t-popup visible="{{editDialogVisible}}" placement="bottom" bind:visible-change="onPopupVisibleChange">
+    <view class="edit-popup-content">
+      <!-- 弹窗头部 -->
+      <view class="edit-popup-header">
+        <view class="edit-popup-title">{{isAddMode ? '添加指标' : '编辑指标'}}</view>
+        <view class="edit-popup-close" bindtap="cancelEdit">
+          <t-icon name="close" size="40rpx" color="#666" />
+        </view>
+      </view>
+      <!-- 表单内容 -->
+      <view class="edit-form-content">
+        <view class="edit-form-item">
+          <text class="edit-label">指标名称</text>
+          <input class="edit-input" value="{{editForm.name}}" placeholder="请输入指标名称" bindinput="onEditFormInput" data-field="name" />
+        </view>
+        <view class="edit-form-item">
+          <text class="edit-label">单位</text>
+          <input class="edit-input" value="{{editForm.unit}}" placeholder="请输入单位" bindinput="onEditFormInput" data-field="unit" />
+        </view>
+      </view>
+      <!-- 底部按钮 -->
+      <view class="edit-popup-buttons">
+        <view class="edit-btn edit-cancel-btn" bindtap="cancelEdit">取消</view>
+        <view class="edit-btn edit-delete-btn" wx:if="{{isCustomIndicator}}" bindtap="deleteCustomIndicator">
+          删除
+        </view>
+        <view class="edit-btn edit-confirm-btn" bindtap="confirmEdit">确定</view>
+      </view>
+    </view>
+  </t-popup>
+</view>

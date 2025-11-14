@@ -1,0 +1,8 @@
+<image
+  wx:if="{{isMedicalIcon}}"
+  class="custom-icon-image {{className}}"
+  src="{{iconUrl}}"
+  mode="aspectFit"
+  style="width: {{size}}rpx; height: {{size}}rpx;"
+/>
+<t-icon wx:else name="{{name}}" size="{{size}}rpx" color="{{color}}" class="{{className}}" />

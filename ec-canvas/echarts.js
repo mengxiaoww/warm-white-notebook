@@ -1,0 +1,549 @@
+// 简化的图表绘制实现
+
+class SimpleChart {
+  constructor(canvas, options) {
+
+    this.canvas = canvas;
+    this.ctx = canvas.ctx || canvas.getContext('2d');
+    this.width = canvas.width || 300;
+
+    // iOS系统检测和高度适配
+    let defaultHeight = 400;
+    try {
+      const systemInfo = wx.getSystemInfoSync();
+      const isIOS = systemInfo.system && systemInfo.system.toLowerCase().indexOf('ios') > -1;
+      defaultHeight = isIOS ? 350 : 400; // iOS使用更小的默认高度
+    } catch (e) {
+      // 如果获取系统信息失败，使用默认值
+    }
+
+    this.height = canvas.height || defaultHeight;
+    this.option = {};
+
+    // 滚动相关状态
+    this.maxScrollX = 0; // 最大滚动距离
+    this.dataPointWidth = 30; // 每个数据点占用的宽度
+    this.visibleDataCount = 0; // 可见数据点数量
+    this.needsScrollbar = false; // 是否需要显示滚动条
+
+  }
+
+  setOption(option) {
+    this.option = option;
+    this.lastOption = null; // 清除缓存
+
+    setTimeout(() => {
+      this.render();
+    }, 100);
+  }
+
+  render() {
+    if (!this.ctx) {
+      return;
+    }
+
+    try {
+      // 清空画布并设置白色背景
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.fillRect(0, 0, this.width, this.height);
+
+      // 绘制图表
+      this.drawChart();
+
+      // 立即绘制到Canvas，不使用延迟 - iOS优化
+      if (this.canvas.draw) {
+        this.canvas.draw(true); // 使用同步绘制
+      }
+
+    } catch (error) {
+      // 静默处理错误
+    }
+  }
+
+  drawChart() {
+    const series = this.option.series?.[0];
+    if (!series || !series.data || series.data.length === 0) {
+      this.drawNoData();
+      return;
+    }
+
+    // 计算绘图区域 - 为X轴标签和滚动条预留更多空间
+    const topPadding = 40;
+    const bottomPadding = 60; // 为X轴标签预留空间
+    const sidePadding = 50;   // 恢复合理的左右空间
+
+    const chartArea = {
+      x: sidePadding,
+      y: topPadding,
+      width: this.width - sidePadding * 2,
+      height: this.height - topPadding - bottomPadding
+    };
+
+    // 计算滚动相关参数
+    this.calculateScrollParams(series.data, chartArea);
+
+    // 绘制坐标轴
+    this.drawAxis(chartArea);
+
+    // 绘制折线
+    this.drawLine(series, chartArea);
+
+    // 绘制dataZoom滚动条（如果配置了）
+    if (this.option.dataZoom && this.option.dataZoom.length > 0) {
+      this.drawDataZoom(chartArea);
+    }
+  }
+
+  // 简化：禁用滚动功能，直接显示所有数据
+  calculateScrollParams(data, chartArea) {
+    // 暂时禁用滚动条功能，确保图表正常显示
+    this.needsScrollbar = false;
+    this.scrollX = 0;
+    this.maxScrollX = 0;
+    this.dataPointWidth = 50;
+    this.visibleDataCount = data.length;
+  }
+
+  // 绘制滚动条
+  drawScrollbar(chartArea) {
+    if (!this.needsScrollbar) return;
+
+    const ctx = this.ctx;
+    const scrollbarHeight = 8; // 增加高度，便于拖动
+    const scrollbarY = chartArea.y + chartArea.height + 48; // 调整位置
+    const scrollbarX = chartArea.x;
+    const scrollbarWidth = chartArea.width;
+
+    // 记录滚动条区域供触摸检测使用
+    this.scrollbarArea = {
+      x: scrollbarX,
+      y: scrollbarY,
+      width: scrollbarWidth,
+      height: scrollbarHeight
+    };
+
+
+    ctx.save();
+
+    // 绘制滚动条背景（圆角）
+    ctx.fillStyle = '#E5E5E5';
+    this.roundRect(ctx, scrollbarX, scrollbarY, scrollbarWidth, scrollbarHeight, scrollbarHeight / 2);
+    ctx.fill();
+
+    // 计算滑块位置和大小（与ec-canvas.js完全一致的逻辑）
+    const totalData = this.option.series[0].data.length;
+    const thumbWidth = Math.max(24, (this.visibleDataCount / totalData) * scrollbarWidth);
+
+    // 使用简单的百分比计算，确保与calculateScrollFromScrollbarPosition完全一致
+    let thumbProgress = 0;
+    if (this.maxScrollX > 0) {
+      thumbProgress = this.scrollX / this.maxScrollX;
+      // 严格限制在0-1范围内，彻底避免边界问题
+      thumbProgress = Math.max(0, Math.min(1, thumbProgress));
+    }
+
+    // 使用正确的滑块位置计算
+    const thumbX = scrollbarX + thumbProgress * (scrollbarWidth - thumbWidth);
+
+
+    // 绘制滑块（圆角，带阴影）
+    ctx.fillStyle = '#FFB84D';
+    ctx.shadowColor = 'rgba(255, 184, 77, 0.3)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 1;
+    this.roundRect(ctx, thumbX, scrollbarY, thumbWidth, scrollbarHeight, scrollbarHeight / 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  drawAxis(area) {
+    const ctx = this.ctx;
+    const dataType = this.option.dataType || {};
+    const themeColor = dataType.color || '#FFB84D'; // 统一淡雅橘黄色主题
+
+    // 绘制X轴
+    ctx.beginPath();
+    ctx.strokeStyle = '#E0E0E0'; // 轴线用浅灰色
+    ctx.lineWidth = 1;
+    ctx.moveTo(area.x, area.y + area.height);
+    ctx.lineTo(area.x + area.width, area.y + area.height);
+    ctx.stroke();
+
+    // 绘制Y轴
+    ctx.beginPath();
+    ctx.strokeStyle = '#E0E0E0';
+    ctx.lineWidth = 1;
+    ctx.moveTo(area.x, area.y);
+    ctx.lineTo(area.x, area.y + area.height);
+    ctx.stroke();
+
+    // 绘制网格线
+    ctx.strokeStyle = '#F5F5F5'; // 更淡的网格线
+    ctx.lineWidth = 1;
+
+    for (let i = 1; i < 5; i++) {
+      const y = area.y + (area.height / 5) * i;
+      ctx.beginPath();
+      ctx.moveTo(area.x, y);
+      ctx.lineTo(area.x + area.width, y);
+      ctx.stroke();
+    }
+  }
+
+  drawLine(series, area) {
+    const ctx = this.ctx;
+    const data = series.data;
+    const dataType = this.option.dataType || {};
+    const themeColor = '#FFB84D'; // 强制使用淡雅橘黄色主题
+
+
+    if (data.length === 0) return;
+
+    // 计算数据范围
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const range = max - min || 1;
+
+    // 根据dataZoom配置计算可见数据
+    let visibleData, points;
+    let startIndex = 0;
+    let endIndex = data.length;
+
+    // 检查是否有dataZoom配置
+    if (this.option.dataZoom && this.option.dataZoom.length > 0) {
+      const dataZoom = this.option.dataZoom[0];
+      const start = dataZoom.start || 0;
+      const end = dataZoom.end || 100;
+
+      startIndex = Math.floor((start / 100) * data.length);
+      endIndex = Math.ceil((end / 100) * data.length);
+      endIndex = Math.min(endIndex, data.length);
+
+      visibleData = data.slice(startIndex, endIndex);
+    } else {
+      visibleData = data;
+    }
+
+    // 生成点位置 - 给第一个数据点留出适当间距，避免标签挡住Y轴
+    points = visibleData.map((value, index) => {
+      const actualIndex = startIndex + index;
+      // 第一个数据点从合理位置开始，其他数据点均匀分布
+      const startOffset = 0.06; // 前6%留空，刚好避免标签遮挡Y轴
+      const availableWidth = 1 - startOffset; // 可用宽度94%
+      let x;
+      if (visibleData.length === 1) {
+        // 单个数据点显示在和多个数据点第一个位置相同的地方
+        x = area.x + startOffset * area.width;
+      } else {
+        x = area.x + (startOffset + (index / (visibleData.length - 1)) * availableWidth) * area.width;
+      }
+      const y = area.y + area.height - ((value - min) / range) * area.height;
+      return { x, y, value, originalIndex: actualIndex };
+    });
+
+    // 绘制区域填充
+    if (series.areaStyle) {
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, area.y + area.height);
+      points.forEach(point => {
+        ctx.lineTo(point.x, point.y);
+      });
+      ctx.lineTo(points[points.length - 1].x, area.y + area.height);
+      ctx.closePath();
+
+      // 使用橘黄色的半透明填充 - 转换为rgba格式
+      const rgbaColor = this.hexToRgba(themeColor, 0.25);
+      ctx.fillStyle = rgbaColor;
+      ctx.fill();
+    }
+
+    // 绘制折线
+    if (points.length > 1) {
+      ctx.beginPath();
+      ctx.strokeStyle = themeColor;
+      ctx.lineWidth = 3;
+
+      points.forEach((point, index) => {
+        if (index === 0) {
+          ctx.moveTo(point.x, point.y);
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
+      });
+      ctx.stroke();
+    }
+
+    // 绘制数据点
+    points.forEach(point => {
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
+      ctx.fillStyle = themeColor;
+      ctx.fill();
+
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // 绘制标签
+    this.drawLabels(points, area, { min, max });
+
+    // 绘制数据点数值标签
+    this.drawDataLabels(points, series);
+  }
+
+  drawLabels(points, area, { min, max }) {
+    const ctx = this.ctx;
+
+    ctx.save(); // 保存上下文状态
+
+    // Y轴标签
+    ctx.fillStyle = '#666';
+    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i <= 4; i++) {
+      const value = min + (max - min) * (4 - i) / 4;
+      const y = area.y + (area.height / 4) * i;
+      ctx.fillText(value.toFixed(1), area.x - 10, y);
+    }
+
+    // X轴标签 - 支持滚动显示
+    const xAxis = this.option.xAxis || {};
+    const allDates = xAxis.data || [];
+
+
+    if (allDates.length > 0 && points.length > 0) {
+      // 重新设置文字样式，确保iOS兼容
+      ctx.fillStyle = '#666';
+      ctx.font = 'bold 10px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+
+      // 为每个数据点显示对应的日期标签，确保一一对应
+      points.forEach((point, index) => {
+        // 获取对应的日期标签（使用originalIndex确保正确映射）
+        const dateIndex = point.originalIndex !== undefined ? point.originalIndex : index;
+        const dateLabel = allDates[dateIndex];
+
+        if (dateLabel && point.x >= area.x && point.x <= area.x + area.width) {
+          const labelY = area.y + area.height + 15; // 增加距离避免被遮挡
+
+          // 确保绘制在Canvas范围内
+          if (labelY < this.height - 5) {
+            // 每个数据点都显示日期标签，不做筛选
+            ctx.fillText(dateLabel, point.x, labelY);
+          }
+        }
+      });
+    }
+
+    ctx.restore(); // 恢复上下文状态
+  }
+
+  drawDataLabels(points, series) {
+    const ctx = this.ctx;
+
+    // 检查是否需要显示数据点标签
+    const label = series.label;
+    if (!label || (label.normal && !label.normal.show) || (!label.normal && !label.show)) {
+      return;
+    }
+
+    ctx.save();
+
+    // 设置标签样式 - 只绘制文字，无背景
+    ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#333';
+
+    // 确保无阴影和背景
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    points.forEach(point => {
+      // 只显示数值
+      const value = point.value.toFixed(1);
+
+      // 计算标签位置（所有标签都在数据点上方）
+      const labelX = point.x;
+      const labelY = point.y - 18;
+
+      // 直接绘制文字，不绘制任何背景
+      ctx.fillText(value, labelX, labelY);
+    });
+
+    ctx.restore();
+  }
+
+  // 绘制dataZoom滚动条 - iOS兼容版本
+  drawDataZoom(chartArea) {
+    if (!this.option.dataZoom || this.option.dataZoom.length === 0) return;
+
+    const dataZoom = this.option.dataZoom[0];
+    const data = this.option.series[0].data;
+
+    if (!data || data.length <= 5) return;
+
+    // 检查是否需要滚动条：如果显示范围接近100%就隐藏
+    const startPercent = dataZoom.start || 0;
+    const endPercent = dataZoom.end || 100;
+    const displayRange = endPercent - startPercent;
+
+    // 如果显示范围超过95%，认为不需要滚动条
+    if (displayRange >= 95) {
+      return; // 隐藏滚动条
+    }
+
+    const ctx = this.ctx;
+    const height = 12; // 适中的高度，确保iOS可见
+    // 基于chartArea计算，与X轴保持合理距离
+    const desiredGap = 35; // 与X轴标签保持充足间距，约10rpx
+    let y = chartArea.y + chartArea.height + desiredGap;
+    // 防止超出canvas底部
+    if (y + height > this.height - 6) {
+      y = this.height - height - 6;
+    }
+    const x = chartArea.x + 15;
+    const width = chartArea.width - 30;
+
+    // 扩大触摸区域，确保拖拽灵敏
+    this.dataZoomArea = { x: x - 15, y: y - 10, width: width + 30, height: height + 20 };
+    // 记录精确的轨道区域与滑块区域，供交互命中计算
+    this.dataZoomTrackRect = { x, y, width, height };
+
+    ctx.save();
+
+    // 清除所有特效，确保iOS兼容
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // 绘制背景轨道 - 使用兼容的圆角方法
+    ctx.fillStyle = '#E0E0E0';
+    this.roundRect(ctx, x, y, width, height, height / 2);
+    ctx.fill();
+
+    // 计算滑块位置和大小
+    const start = dataZoom.start || 0;
+    const end = dataZoom.end || 100;
+    const startPos = x + (start / 100) * width;
+    const endPos = x + (end / 100) * width;
+    const sliderWidth = Math.max(40, endPos - startPos);
+    this.dataZoomHandleRect = { x: startPos, y, width: sliderWidth, height };
+
+    // 绘制滑块主体 - 使用实心橘色，不用渐变
+    ctx.fillStyle = '#FFB84D';
+    this.roundRect(ctx, startPos, y, sliderWidth, height, height / 2);
+    ctx.fill();
+
+    // 绘制滑块边框
+    ctx.strokeStyle = '#FF9800';
+    ctx.lineWidth = 2;
+    this.roundRect(ctx, startPos, y, sliderWidth, height, height / 2);
+    ctx.stroke();
+
+    // 绘制拖拽指示器 - 使用简单的竖线
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+
+    const centerX = startPos + sliderWidth / 2;
+    const lineHeight = height * 0.4;
+    const lineTop = y + (height - lineHeight) / 2;
+
+    // 绘制3条竖线
+    for (let i = -1; i <= 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(centerX + i * 4, lineTop);
+      ctx.lineTo(centerX + i * 4, lineTop + lineHeight);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  // 辅助方法：绘制圆角矩形
+  roundRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + width, y, x + width, y + height, radius);
+    ctx.arcTo(x + width, y + height, x, y + height, radius);
+    ctx.arcTo(x, y + height, x, y, radius);
+    ctx.arcTo(x, y, x + width, y, radius);
+    ctx.closePath();
+  }
+
+  // 辅助方法：将十六进制颜色转换为rgba格式
+  hexToRgba(hex, alpha = 1) {
+    // 移除#号
+    hex = hex.replace('#', '');
+
+    // 将3位颜色扩展为6位
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+
+    // 解析RGB值
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  drawNoData() {
+    const ctx = this.ctx;
+
+    ctx.fillStyle = '#ccc';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('暂无数据', this.width / 2, this.height / 2);
+  }
+
+  // 模拟事件方法
+  on(event, handler) {
+
+  }
+
+  dispatchAction(action) {
+
+  }
+
+  resize() {
+
+    this.render();
+  }
+
+  dispose() {
+
+  }
+
+  getZr() {
+    return {
+      handler: {
+        dispatch: () => { }
+      }
+    };
+  }
+}
+
+// 导出初始化函数
+function init(canvas, theme, options) {
+  return new SimpleChart(canvas, options);
+}
+
+function setCanvasCreator() {
+
+}
+
+export { init, setCanvasCreator };
+export default { init, setCanvasCreator };

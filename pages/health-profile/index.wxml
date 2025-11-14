@@ -1,0 +1,1046 @@
+<!-- pages/health-profile/index.wxml -->
+<view class="page-container">
+  <!-- 骨架屏加载 -->
+  <view class="skeleton-wrapper" wx:if="{{isPageLoading}}">
+    <!-- Tab骨架 -->
+    <view class="skeleton-tabs">
+      <view class="skeleton-tab" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+    </view>
+    <!-- 筛选器骨架 -->
+    <view class="skeleton-filters">
+      <view class="skeleton-filter-item" wx:for="{{[1,2]}}" wx:key="*this">
+        <view class="skeleton-circle-small"></view>
+        <view class="skeleton-text skeleton-text-medium"></view>
+      </view>
+    </view>
+    <!-- 统计卡片骨架 -->
+    <view class="skeleton-stats">
+      <view class="skeleton-stat" wx:for="{{[1,2,3]}}" wx:key="*this">
+        <view class="skeleton-text skeleton-text-short"></view>
+        <view class="skeleton-text skeleton-text-medium"></view>
+      </view>
+    </view>
+
+    <!-- 🔥 根据视图模式显示不同的骨架 -->
+    <!-- 表格视图骨架 -->
+    <view class="skeleton-table" wx:if="{{viewMode === 'table'}}">
+      <view class="skeleton-table-container">
+        <!-- 表格头部 -->
+        <view class="skeleton-table-header">
+          <view class="skeleton-table-cell skeleton-table-header-cell" wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+            <view class="skeleton-text skeleton-text-short"></view>
+          </view>
+        </view>
+        <!-- 表格行 -->
+        <view class="skeleton-table-row" wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+          <view class="skeleton-table-cell" wx:for="{{[1,2,3,4,5]}}" wx:key="*this" wx:for-item="col">
+            <view class="skeleton-text skeleton-text-medium"></view>
+          </view>
+          <view class="skeleton-shimmer"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 时间线视图骨架（原有的记录列表骨架） -->
+    <view class="skeleton-records" wx:else>
+      <view class="skeleton-record-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+        <view class="skeleton-record-header">
+          <view class="skeleton-text skeleton-text-date"></view>
+          <view class="skeleton-badge"></view>
+        </view>
+        <view class="skeleton-record-content">
+          <view class="skeleton-text skeleton-text-long"></view>
+          <view class="skeleton-text skeleton-text-medium"></view>
+        </view>
+        <view class="skeleton-shimmer"></view>
+      </view>
+    </view>
+  </view>
+  <!-- 实际内容 -->
+  <view class="content-wrapper {{isPageLoading ? 'content-hidden' : 'content-visible'}}">
+    <!-- 3D装饰背景 -->
+    <view class="bg-decoration">
+      <view class="bg-gradient"></view>
+      <view class="bg-orbs">
+        <view class="orb orb-1"></view>
+        <view class="orb orb-2"></view>
+        <view class="orb orb-3"></view>
+      </view>
+    </view>
+    <!-- 页面内容 -->
+    <view class="content-container">
+      <!-- 炫酷Tab切换 -->
+      <view class="tab-container">
+        <view class="tab-background"></view>
+        <view class="tab-indicator tab-indicator-{{activeTab}}"></view>
+        <view class="tab-item {{activeTab === 'health' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="health">
+          <view class="tab-icon-wrapper">
+            <t-icon name="brightness" size="44rpx" color="{{activeTab === 'health' ? '#fff' : '#FF8F00'}}" />
+            <view class="tab-pulse {{activeTab === 'health' ? 'active' : ''}}"></view>
+          </view>
+          <text class="tab-text">健康监测</text>
+        </view>
+        <view class="tab-item {{activeTab === 'medication' ? 'tab-active' : ''}}" bindtap="switchTab"
+          data-tab="medication">
+          <view class="tab-icon-wrapper">
+            <t-icon name="book" size="44rpx" color="{{activeTab === 'medication' ? '#fff' : '#FF9800'}}" />
+            <view class="tab-pulse {{activeTab === 'medication' ? 'active' : ''}}"></view>
+          </view>
+          <text class="tab-text">用药档案</text>
+        </view>
+        <view class="tab-item {{activeTab === 'checkReport' ? 'tab-active' : ''}}" bindtap="switchTab"
+          data-tab="checkReport">
+          <view class="tab-icon-wrapper">
+            <t-icon name="folder-open" size="44rpx" color="{{activeTab === 'checkReport' ? '#fff' : '#FF9800'}}" />
+            <view class="tab-pulse {{activeTab === 'checkReport' ? 'active' : ''}}"></view>
+          </view>
+          <text class="tab-text">就医档案</text>
+        </view>
+        <view class="tab-item {{activeTab === 'expense' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="expense">
+          <view class="tab-icon-wrapper">
+            <t-icon name="wallet" size="44rpx" color="{{activeTab === 'expense' ? '#fff' : '#FF9800'}}" />
+            <view class="tab-pulse {{activeTab === 'expense' ? 'active' : ''}}"></view>
+          </view>
+          <text class="tab-text">费用记录</text>
+        </view>
+      </view>
+      <!-- 健康监测内容 -->
+      <view class="health-monitoring" wx:if="{{activeTab === 'health'}}">
+        <!-- 悬浮视图切换按钮 -->
+        <view class="floating-toggle" bindtap="switchViewMode">
+          <view class="floating-btn">
+            <t-icon name="{{viewMode === 'timeline' ? 'bulletpoint' : 'view-list'}}" size="40rpx" color="#fff"></t-icon>
+          </view>
+          <view class="floating-tooltip">{{viewMode === 'timeline' ? '时间轴' : '表格视图'}}</view>
+        </view>
+        <!-- 筛选区域 -->
+        <view class="filter-section">
+          <view class="filter-row">
+            <view class="filter-item" bindtap="showDateFilter">
+              <view class="filter-icon-wrapper">
+                <t-icon name="calendar" size="36rpx" color="#FF9800" />
+                <view class="filter-icon-glow"></view>
+              </view>
+              <text class="filter-text">{{dateFilterText}}</text>
+              <view class="filter-arrow">
+                <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
+              </view>
+            </view>
+            <view class="filter-item" bindtap="showDataTypeFilter">
+              <view class="filter-icon-wrapper">
+                <t-icon name="filter-2" size="36rpx" color="#FF9800" />
+                <view class="filter-icon-glow"></view>
+              </view>
+              <text class="filter-text">{{dataTypeFilterText}}</text>
+              <view class="filter-arrow">
+                <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 紧凑统计栏 -->
+        <!-- <view class="compact-stats-bar">
+          <view class="compact-stat-item">
+            <text class="compact-number">{{healthStats.totalRecords}}</text>
+            <text class="compact-label">记录天数</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{healthStats.recentDays}}</text>
+            <text class="compact-label">连续天数</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{healthStats.abnormalCount}}</text>
+            <text class="compact-label">异常天数</text>
+          </view>
+        </view> -->
+        <!-- 表格视图 -->
+        <view class="health-table" wx:if="{{viewMode === 'table'}}">
+          <!-- 横向滚动容器 -->
+          <view class="table-scroll">
+            <view class="{{tableContainerClass || 'table-container'}}">
+              <!-- 表格头部 -->
+              <view class="table-header">
+                <view class="table-cell date-cell">日期</view>
+                <view wx:for="{{currentTestConfig.columns}}" wx:for-item="column" wx:key="key"
+                  class="table-cell data-cell">
+                  <view class="cell-content">
+                    <text class="cell-label">{{column.label}}</text>
+                    <text class="cell-unit" wx:if="{{column.unit}}">({{column.unit}})</text>
+                  </view>
+                </view>
+              </view>
+              <!-- 表格数据行 -->
+              <view class="table-body">
+                <view wx:for="{{tableViewData}}" wx:key="originalDate" class="table-row">
+                  <view class="table-cell date-cell">{{item.date}}</view>
+                  <view wx:for="{{currentTestConfig.columns}}" wx:for-item="column" wx:key="key"
+                    class="table-cell data-cell">
+                    <text class="cell-value">
+                      {{item.testData[column.key] !== undefined && item.testData[column.key] !== null &&
+                      item.testData[column.key] !== '' ? item.testData[column.key] : '-'}}
+                    </text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 时间轴视图 -->
+        <view class="health-records" wx:if="{{viewMode === 'timeline'}}">
+          <!-- <view class="section-header">
+          <view class="section-icon-wrapper">
+            <t-icon name="pen" size="36rpx" color="#FF8F00" />
+            <view class="section-icon-pulse"></view>
+          </view>
+          <text class="section-title">健康记录</text>
+          <view class="section-decoration"></view>
+        </view> -->
+          <!-- 时间轴视图 -->
+          <view class="health-timeline" wx:if="{{viewMode === 'timeline'}}">
+            <view wx:for="{{healthRecords}}" wx:key="date" class="timeline-item">
+              <!-- 时间轴点 -->
+              <view class="timeline-dot"></view>
+              <!-- 内容区域 -->
+              <view class="timeline-content">
+                <!-- 日期头部 -->
+                <view class="timeline-header">
+                  <view class="timeline-left">
+                    <view class="timeline-full-date">{{item.date}}</view>
+                    <view class="timeline-date">{{item.dateDisplay}}</view>
+                  </view>
+                  <view class="timeline-weekday">{{item.weekday}}</view>
+                </view>
+                <!-- 健康记录内容 -->
+                <view class="health-records-list">
+                  <!-- 血常规 -->
+                  <view wx:if="{{item.bloodData}}" class="health-record-item" bindtap="navigateToBlood"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="blood-drop" size="32" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">血常规</view>
+                      <view class="record-summary compact-grid">
+                        <view wx:if="{{item.bloodData.wbc || item.bloodData.wbc === 0}}" class="summary-data-item">
+                          <view class="data-label">白细胞</view>
+                          <view class="data-value">{{item.bloodData.wbc}}</view>
+                        </view>
+                        <view wx:if="{{item.bloodData.hgb || item.bloodData.hgb === 0}}" class="summary-data-item">
+                          <view class="data-label">血红蛋白</view>
+                          <view class="data-value">{{item.bloodData.hgb}}</view>
+                        </view>
+                        <view wx:if="{{item.bloodData.plt || item.bloodData.plt === 0}}" class="summary-data-item">
+                          <view class="data-label">血小板</view>
+                          <view class="data-value">{{item.bloodData.plt}}</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 检查报告 -->
+                  <view wx:if="{{item.checkReportData}}" class="health-record-item" bindtap="navigateToCheckReport"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <t-icon name="assignment" size="32rpx" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">检查报告</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">检查项目</view>
+                          <view class="data-value">
+                            {{item.checkReportData.projectName || '未填写'}}
+                          </view>
+                        </view>
+                        <view class="summary-data-item">
+                          <view class="data-label">检查结果</view>
+                          <view class="data-value status-badge status-{{item.checkReportData.resultType || 'unknown'}}">
+                            {{item.checkReportData.resultTypeLabel || '未知'}}
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- EB病毒 -->
+                  <view wx:if="{{item.ebvData}}" class="health-record-item" bindtap="navigateToEbv"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <t-icon name="zoom-in" size="32rpx" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">EB病毒</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">病毒载量</view>
+                          <view class="data-value">{{item.ebvData.ebvDna || '0'}}</view>
+                        </view>
+                        <view class="summary-data-item">
+                          <view class="data-label">检测结果</view>
+                          <view
+                            class="data-value status-badge {{item.ebvData.ebvDna == '0' || item.ebvData.ebvDna === 0 || !item.ebvData.ebvDna ? 'negative' : 'positive'}}">
+                            {{item.ebvData.ebvDna == '0' || item.ebvData.ebvDna === 0 || !item.ebvData.ebvDna ? '阴性' :
+                            '阳性'}}
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- CMV病毒 -->
+                  <view wx:if="{{item.cmvData}}" class="health-record-item" bindtap="navigateToCmv"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <t-icon name="search" size="32rpx" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">巨细胞病毒</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">病毒载量</view>
+                          <view class="data-value">{{item.cmvData.hcmvDna || '0'}}</view>
+                        </view>
+                        <view class="summary-data-item">
+                          <view class="data-label">检测结果</view>
+                          <view
+                            class="data-value status-badge {{item.cmvData.hcmvDna == '0' || item.cmvData.hcmvDna === 0 || !item.cmvData.hcmvDna ? 'negative' : 'positive'}}">
+                            {{item.cmvData.hcmvDna == '0' || item.cmvData.hcmvDna === 0 || !item.cmvData.hcmvDna ? '阴性'
+                            : '阳性'}}
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 乳酸脱氢酶 -->
+                  <view wx:if="{{item.ldhData}}" class="health-record-item" bindtap="navigateToLdh"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="enzyme" size="32" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">乳酸脱氢酶</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">数值</view>
+                          <view class="data-value">{{item.ldhData.ldh}}</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 肝功能 -->
+                  <view wx:if="{{item.liverData}}" class="health-record-item" bindtap="navigateToLiver"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="liver" size="32" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">肝功能</view>
+                      <view class="record-summary compact-grid">
+                        <view wx:if="{{item.liverData.alt || item.liverData.alt === 0}}" class="summary-data-item">
+                          <view class="data-label">ALT</view>
+                          <view class="data-value">{{item.liverData.alt}}</view>
+                        </view>
+                        <view wx:if="{{item.liverData.ast || item.liverData.ast === 0}}" class="summary-data-item">
+                          <view class="data-label">AST</view>
+                          <view class="data-value">{{item.liverData.ast}}</view>
+                        </view>
+                        <view wx:if="{{item.liverData.tbil || item.liverData.tbil === 0}}" class="summary-data-item">
+                          <view class="data-label">总胆红素</view>
+                          <view class="data-value">{{item.liverData.tbil}}</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 肾功能 -->
+                  <view wx:if="{{item.kidneyData}}" class="health-record-item" bindtap="navigateToKidney"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <t-icon name="filter" size="32rpx" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">肾功能</view>
+                      <view class="record-summary compact-grid">
+                        <view
+                          wx:if="{{item.kidneyData.cr || item.kidneyData.creatinine || item.kidneyData.cr === 0 || item.kidneyData.creatinine === 0}}"
+                          class="summary-data-item">
+                          <view class="data-label">肌酐</view>
+                          <view class="data-value">
+                            {{item.kidneyData.cr || item.kidneyData.creatinine}}
+                          </view>
+                        </view>
+                        <view wx:if="{{item.kidneyData.bun || item.kidneyData.bun === 0}}" class="summary-data-item">
+                          <view class="data-label">尿素</view>
+                          <view class="data-value">{{item.kidneyData.bun}}</view>
+                        </view>
+                        <view wx:if="{{item.kidneyData.ua || item.kidneyData.ua === 0}}" class="summary-data-item">
+                          <view class="data-label">尿酸</view>
+                          <view class="data-value">{{item.kidneyData.ua}}</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 尿量记录 -->
+                  <view wx:if="{{item.urineData}}" class="health-record-item" bindtap="navigateToUrine"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <t-icon name="fill-color-1" size="32rpx" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">尿量记录</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">记录次数</view>
+                          <view class="data-value">{{item.urineData.count || 0}}</view>
+                        </view>
+                        <view class="summary-data-item">
+                          <view class="data-label">总量</view>
+                          <view class="data-value">{{item.urineData.totalVolume}}</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 排便记录 -->
+                  <view wx:if="{{item.stoolData}}" class="health-record-item" bindtap="navigateToStool"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <t-icon name="layers" size="32rpx" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">排便记录</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">记录次数</view>
+                          <view class="data-value">{{item.stoolData.count}}</view>
+                        </view>
+                        <view wx:if="{{item.stoolData.hasAbnormal !== undefined}}" class="summary-data-item">
+                          <view class="data-label">状态</view>
+                          <view class="data-value status-badge {{item.stoolData.hasAbnormal ? 'abnormal' : 'normal'}}">
+                            {{item.stoolData.hasAbnormal ? '异常' : '正常'}}
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <!-- 表格说明 -->
+          <view class="table-legend" wx:if="{{currentTestConfig}}">
+            <view class="legend-header">
+              <medical-icon name="{{currentTestConfig.icon}}" size="24" color="#FF9800" />
+            </view>
+            <view class="legend-content">
+              <view wx:for="{{currentTestConfig.columns}}" wx:key="key" class="legend-item"
+                wx:if="{{item.normalRange}}">
+                <text class="legend-label">{{item.label}}:</text>
+                <text class="legend-range">{{item.normalRange}} {{item.unit}}</text>
+              </view>
+            </view>
+          </view>
+          <!-- 炫酷空状态 -->
+          <view class="empty-state" wx:if="{{viewMode === 'timeline' && healthRecords.length === 0}}">
+            <view class="empty-icon-wrapper">
+              <t-icon name="heart" size="120rpx" color="#FFB74D" />
+              <view class="empty-icon-pulse"></view>
+            </view>
+            <text class="empty-text">暂无健康记录</text>
+            <text class="empty-hint">开始记录您的健康数据吧</text>
+            <view class="empty-decoration"></view>
+          </view>
+          <!-- 表格模式空状态 -->
+          <view class="empty-state" wx:if="{{viewMode === 'table' && tableViewData.length === 0}}">
+            <view class="empty-icon-wrapper">
+              <t-icon name="table" size="120rpx" color="#FFB74D" />
+              <view class="empty-icon-pulse"></view>
+            </view>
+            <text class="empty-text">暂无{{currentTestConfig.name}}记录</text>
+            <text class="empty-hint">请选择其他检测项目或添加记录</text>
+            <view class="empty-decoration"></view>
+          </view>
+        </view>
+      </view>
+      <!-- 炫酷用药档案内容 -->
+      <view class="medication-archive" wx:if="{{activeTab === 'medication'}}">
+        <!-- 日期筛选区域 -->
+        <view class="filter-section">
+          <view class="filter-row">
+            <view class="filter-item" bindtap="showDateFilter">
+              <view class="filter-icon-wrapper">
+                <t-icon name="calendar" size="36rpx" color="#FF9800" />
+                <view class="filter-icon-glow"></view>
+              </view>
+              <text class="filter-text">{{dateFilterText}}</text>
+              <view class="filter-arrow">
+                <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 紧凑用药统计栏 -->
+        <!-- <view class="compact-stats-bar">
+          <view class="compact-stat-item">
+            <text class="compact-number">{{medicationStats.totalDays}}</text>
+            <text class="compact-label">服药天数</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{medicationStats.totalMedicationsTaken}}</text>
+            <text class="compact-label">总服药次数</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{medicationStats.averagePerDay}}</text>
+            <text class="compact-label">平均每天</text>
+          </view>
+        </view> -->
+        <!-- 用药档案时间轴 -->
+        <view class="medication-timeline" wx:if="{{dailyMedicationRecords.length > 0}}">
+          <view class="timeline-item" wx:for="{{dailyMedicationRecords}}" wx:key="date">
+            <view class="timeline-dot"></view>
+            <view class="timeline-content">
+              <view class="unified-timeline-card">
+                <view class="timeline-header-integrated">
+                  <view class="timeline-left">
+                    <view class="timeline-date">{{item.displayDate}}</view>
+                  </view>
+                  <view class="timeline-relative-time">{{item.relativeTime || item.weekday}}</view>
+                </view>
+                <view class="medication-records-integrated">
+                  <view class="medication-record-unified" wx:for="{{item.takenMedicines}}" wx:for-item="medicine"
+                    wx:key="id" bindtap="navigateToMedication" data-date="{{item.originalDateKey}}">
+                    <view class="medicine-main-info">
+                      <view class="medicine-name">{{medicine.name}}</view>
+                      <view class="medicine-dosage">{{medicine.dosage}}</view>
+                    </view>
+                    <view class="medicine-details">
+                      <view class="medicine-time-info">
+                        <view class="time-label">服用时间</view>
+                        <view class="time-value">
+                          {{medicine.timesPerDayText || (medicine.takenTimes.length > 0 ? medicine.takenTimes.join('、')
+                          : '未设置')}}
+                        </view>
+                      </view>
+                      <view class="medicine-progress-info">
+                        <view class="progress-label">完成度</view>
+                        <view class="progress-container">
+                          <view class="progress-percentage">{{medicine.completionRate}}%</view>
+                          <view class="progress-bar-clean">
+                            <view class="progress-fill-clean" style="width: {{medicine.completionRate}}%"></view>
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{dailyMedicationRecords.length === 0}}">
+          <view class="empty-icon-wrapper">
+            <t-icon name="candy" size="120rpx" color="#FFB74D" />
+            <view class="empty-icon-pulse"></view>
+          </view>
+          <text class="empty-text">暂无服药记录</text>
+          <text class="empty-hint">开始记录您的用药情况吧</text>
+          <view class="empty-decoration"></view>
+        </view>
+      </view>
+      <!-- 检查报告内容 -->
+      <view class="check-report-archive" wx:if="{{activeTab === 'checkReport'}}">
+        <!-- 筛选区域 -->
+        <view class="filter-section">
+          <view class="filter-row">
+            <view class="filter-item" bindtap="showDateFilter">
+              <view class="filter-icon-wrapper">
+                <t-icon name="calendar" size="36rpx" color="#FF9800" />
+                <view class="filter-icon-glow"></view>
+              </view>
+              <text class="filter-text">{{dateFilterText}}</text>
+              <view class="filter-arrow">
+                <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
+              </view>
+            </view>
+            <view class="filter-item" bindtap="showMedicalRecordTypeFilter">
+              <view class="filter-icon-wrapper">
+                <t-icon name="edit" size="36rpx" color="#FF9800" />
+                <view class="filter-icon-glow"></view>
+              </view>
+              <text class="filter-text">{{medicalRecordTypeFilterText}}</text>
+              <view class="filter-arrow">
+                <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 紧凑统计栏 -->
+        <view class="compact-stats-bar">
+          <view class="compact-stat-item">
+            <text class="compact-number">{{checkReportStats.totalReports}}</text>
+            <text class="compact-label">检查总数</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{checkReportStats.normalCount}}</text>
+            <text class="compact-label">正常报告</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{checkReportStats.abnormalCount}}</text>
+            <text class="compact-label">异常报告</text>
+          </view>
+        </view>
+        <!-- 检查报告时间轴 -->
+        <view class="medication-timeline" wx:if="{{checkReports.length > 0}}">
+          <view class="timeline-item" wx:for="{{checkReports}}" wx:key="id">
+            <view class="timeline-dot"></view>
+            <view class="timeline-content">
+              <view class="unified-timeline-card" bindtap="navigateToMedicalRecordDetail" data-id="{{item.id}}"
+                data-date="{{item.date}}" data-record-type="{{item.recordType}}">
+                <view class="timeline-header-integrated">
+                  <view class="timeline-left">
+                    <view class="timeline-date">{{item.displayDate}}</view>
+                  </view>
+                  <view class="timeline-relative-time">{{item.relativeTime || item.weekday}}</view>
+                </view>
+                <view class="check-report-content">
+                  <view class="report-header">
+                    <view class="report-title-row">
+                      <view class="report-icon-wrapper">
+                        <t-icon name="assignment" size="40rpx" color="#FFB84D" />
+                      </view>
+                      <view class="report-project-name">{{item.projectName || '未填写检查项目'}}</view>
+                    </view>
+                    <view class="result-badge result-{{item.resultType}}">
+                      {{item.resultTypeLabel}}
+                    </view>
+                  </view>
+                  <view class="report-meta-info">
+                    <view class="meta-item">
+                      <text class="meta-label">检查日期：</text>
+                      <text class="meta-value">{{item.testDate || item.date}}</text>
+                    </view>
+                    <view class="meta-item" wx:if="{{item.hospital}}">
+                      <text class="meta-label">医院：</text>
+                      <text class="meta-value">{{item.hospital}}</text>
+                    </view>
+                  </view>
+                  <!-- 检查报告图片 -->
+                  <view class="report-images report-images-count-{{item.images.length}}"
+                    wx:if="{{item.images && item.images.length > 0}}" catchtap="stopPropagation">
+                    <image wx:for="{{item.images}}" wx:key="imgIndex" wx:for-item="imageItem" wx:for-index="imgIndex"
+                      src="{{imageItem.url || imageItem}}" class="report-image" mode="aspectFill"
+                      catchtap="previewReportImage" data-images="{{item.images}}"
+                      data-current="{{imageItem.url || imageItem}}" />
+                  </view>
+                  <!-- 详细结果 -->
+                  <view class="result-detail" wx:if="{{item.detailedResults}}">
+                    <text class="result-text">{{item.detailedResults}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{checkReports.length === 0}}">
+          <view class="empty-icon-wrapper">
+            <t-icon name="folder-open" size="120rpx" color="#FFB74D" />
+            <view class="empty-icon-pulse"></view>
+          </view>
+          <text class="empty-text">暂无就医档案</text>
+          <text class="empty-hint">开始记录您的就医档案吧</text>
+          <view class="empty-decoration"></view>
+        </view>
+      </view>
+      <!-- 费用记录内容 -->
+      <view class="expense-archive" wx:if="{{activeTab === 'expense'}}">
+        <!-- 筛选区域 -->
+        <view class="filter-section">
+          <view class="filter-row">
+            <view class="filter-item" bindtap="showDateFilter">
+              <view class="filter-icon-wrapper">
+                <t-icon name="calendar" size="36rpx" color="#FF9800" />
+                <view class="filter-icon-glow"></view>
+              </view>
+              <text class="filter-text">{{dateFilterText}}</text>
+              <view class="filter-arrow">
+                <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
+              </view>
+            </view>
+            <view class="filter-item" bindtap="showExpenseTypeFilter">
+              <view class="filter-icon-wrapper">
+                <t-icon name="filter-2" size="36rpx" color="#FF9800" />
+                <view class="filter-icon-glow"></view>
+              </view>
+              <text class="filter-text">{{expenseTypeFilterText}}</text>
+              <view class="filter-arrow">
+                <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 费用统计卡片 -->
+        <view class="expense-stats-card">
+          <view class="expense-stats-header">
+            <view class="stats-title-row">
+              <t-icon name="chart-pie" size="40rpx" color="#FF9800" />
+              <text class="stats-title">费用统计</text>
+            </view>
+            <!-- <text class="stats-period">{{dateFilterText}}</text> -->
+          </view>
+          <view class="expense-stats-main">
+            <view class="total-expense-display">
+              <text class="expense-currency">¥</text>
+              <text class="expense-amount">{{expenseStats.totalExpense}}</text>
+            </view>
+            <text class="expense-label">总费用</text>
+          </view>
+          <view class="expense-breakdown-grid">
+            <view class="breakdown-grid-item">
+              <view class="breakdown-icon-wrapper">
+                <t-icon name="secured" size="32rpx" color="#4CAF50" />
+              </view>
+              <view class="breakdown-info">
+                <text class="breakdown-label">医保支付</text>
+                <text class="breakdown-amount">¥{{expenseStats.medicalInsurance}}</text>
+              </view>
+            </view>
+            <view class="breakdown-grid-item">
+              <view class="breakdown-icon-wrapper">
+                <t-icon name="wallet" size="32rpx" color="#FF9800" />
+              </view>
+              <view class="breakdown-info">
+                <text class="breakdown-label">自费支付</text>
+                <text class="breakdown-amount">¥{{expenseStats.selfPay}}</text>
+              </view>
+            </view>
+            <view class="breakdown-grid-item">
+              <view class="breakdown-icon-wrapper">
+                <t-icon name="shop" size="32rpx" color="#2196F3" />
+              </view>
+              <view class="breakdown-info">
+                <text class="breakdown-label">商保支付</text>
+                <text class="breakdown-amount">¥{{expenseStats.commercialInsurance}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 紧凑统计栏 -->
+        <view class="compact-stats-bar">
+          <view class="compact-stat-item">
+            <text class="compact-number">{{expenseStats.recordCount}}</text>
+            <text class="compact-label">记录数</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{expenseStats.avgExpensePerDay}}</text>
+            <text class="compact-label">日均费用</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="compact-stat-item">
+            <text class="compact-number">{{expenseChartData.categories.length}}</text>
+            <text class="compact-label">费用类型</text>
+          </view>
+        </view>
+        <!-- 费用记录时间轴 -->
+        <view class="medication-timeline" wx:if="{{expenseRecords.length > 0}}">
+          <view class="timeline-item" wx:for="{{expenseRecords}}" wx:key="date">
+            <view class="timeline-dot"></view>
+            <view class="timeline-content">
+              <view class="unified-timeline-card" bindtap="navigateToExpenseDetail"
+                data-date="{{item.originalDateKey}}">
+                <view class="timeline-header-integrated">
+                  <view class="timeline-left">
+                    <view class="timeline-date">{{item.displayDate}}</view>
+                  </view>
+                  <view class="timeline-relative-time">{{item.relativeTime || item.weekday}}</view>
+                </view>
+                <view class="expense-day-summary">
+                  <view class="expense-day-header">
+                    <view class="expense-count-badge">
+                      <t-icon name="receipt" size="28rpx" color="#FF9800" />
+                      <text class="count-text">{{item.records.length}}笔</text>
+                    </view>
+                    <view class="expense-day-total">
+                      <text class="day-total-label">当日总计</text>
+                      <text class="day-total-amount">¥{{item.totalAmount}}</text>
+                    </view>
+                  </view>
+                  <view class="expense-records-list">
+                    <view class="expense-record-item" wx:for="{{item.records}}" wx:for-item="record" wx:key="_id">
+                      <view class="record-left">
+                        <view class="record-type-time">
+                          <text class="record-type">{{record.expenseType}}</text>
+                          <text class="record-time">{{record.time}}</text>
+                        </view>
+                        <view class="record-details" wx:if="{{record.projectName || record.hospital}}">
+                          <text class="detail-text" wx:if="{{record.projectName}}">
+                            {{record.projectName}}
+                          </text>
+                          <text class="detail-separator" wx:if="{{record.projectName && record.hospital}}">
+                            ·
+                          </text>
+                          <text class="detail-text" wx:if="{{record.hospital}}">
+                            {{record.hospital}}
+                          </text>
+                        </view>
+                      </view>
+                      <view class="record-right">
+                        <text class="record-amount">¥{{record.amount}}</text>
+                        <view class="payment-method-badge {{record.paymentMethodClass}}">
+                          {{record.paymentMethod}}
+                        </view>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{expenseRecords.length === 0}}">
+          <view class="empty-icon-wrapper">
+            <t-icon name="wallet" size="120rpx" color="#FFB74D" />
+            <view class="empty-icon-pulse"></view>
+          </view>
+          <text class="empty-text">暂无费用记录</text>
+          <text class="empty-hint">开始记录您的医疗费用吧</text>
+          <view class="empty-decoration"></view>
+        </view>
+      </view>
+    </view>
+    <!-- 日期筛选弹窗 -->
+    <t-popup visible="{{showDateFilterPopup}}" bind:visible-change="closeDateFilter" placement="bottom">
+      <view class="bottom-filter-popup">
+        <view class="bottom-popup-header">
+          <view class="bottom-popup-drag-bar"></view>
+          <text class="bottom-popup-title">选择时间范围</text>
+          <view class="bottom-popup-close" bindtap="closeDateFilter">
+            <t-icon name="close" size="32rpx" color="#666" />
+          </view>
+        </view>
+        <scroll-view scroll-y="{{true}}" class="bottom-filter-options" show-scrollbar="{{false}}"
+          enable-flex="{{true}}">
+          <view class="bottom-filter-option {{selectedDateFilter === item.value ? 'selected' : ''}}"
+            wx:for="{{dateFilterOptions}}" wx:key="value" bindtap="selectDateFilter" data-value="{{item.value}}">
+            <view class="bottom-option-content">
+              <view class="bottom-option-indicator"></view>
+              <text class="bottom-option-text">{{item.label}}</text>
+            </view>
+            <view class="bottom-option-check {{selectedDateFilter === item.value ? 'checked' : ''}}">
+              <t-icon name="check" size="28rpx" color="#fff" wx:if="{{selectedDateFilter === item.value}}" />
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </t-popup>
+    <!-- 数据类型筛选弹窗 -->
+    <t-popup visible="{{showDataTypeFilterPopup}}" bind:visible-change="closeDataTypeFilter" placement="bottom">
+      <view class="bottom-filter-popup">
+        <view class="bottom-popup-header">
+          <view class="bottom-popup-drag-bar"></view>
+          <text class="bottom-popup-title">选择数据类型</text>
+          <view class="bottom-popup-close" bindtap="closeDataTypeFilter">
+            <t-icon name="close" size="32rpx" color="#666" />
+          </view>
+        </view>
+        <scroll-view scroll-y="{{true}}" class="bottom-filter-options" show-scrollbar="{{false}}"
+          enable-flex="{{true}}">
+          <view class="bottom-filter-option {{selectedDataTypeFilter === item.value ? 'selected' : ''}}"
+            wx:for="{{dataTypeFilterOptions}}" wx:key="value" bindtap="selectDataTypeFilter"
+            data-value="{{item.value}}">
+            <view class="bottom-option-content">
+              <view class="bottom-option-indicator"></view>
+              <text class="bottom-option-text">{{item.label}}</text>
+            </view>
+            <view class="bottom-option-check {{selectedDataTypeFilter === item.value ? 'checked' : ''}}">
+              <t-icon name="check" size="28rpx" color="#fff" wx:if="{{selectedDataTypeFilter === item.value}}" />
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </t-popup>
+    <!-- 费用类型筛选弹窗 -->
+    <t-popup visible="{{showExpenseTypeFilterPopup}}" bind:visible-change="closeExpenseTypeFilter" placement="bottom">
+      <view class="bottom-filter-popup">
+        <view class="bottom-popup-header">
+          <view class="bottom-popup-drag-bar"></view>
+          <text class="bottom-popup-title">选择费用类型</text>
+          <view class="bottom-popup-close" bindtap="closeExpenseTypeFilter">
+            <t-icon name="close" size="32rpx" color="#666" />
+          </view>
+        </view>
+        <scroll-view scroll-y="{{true}}" class="bottom-filter-options" show-scrollbar="{{false}}"
+          enable-flex="{{true}}">
+          <view class="bottom-filter-option {{selectedExpenseTypeFilter === item.value ? 'selected' : ''}}"
+            wx:for="{{expenseTypeFilterOptions}}" wx:key="value" bindtap="selectExpenseTypeFilter"
+            data-value="{{item.value}}">
+            <view class="bottom-option-content">
+              <view class="bottom-option-indicator"></view>
+              <text class="bottom-option-text">{{item.label}}</text>
+            </view>
+            <view class="bottom-option-check {{selectedExpenseTypeFilter === item.value ? 'checked' : ''}}">
+              <t-icon name="check" size="28rpx" color="#fff" wx:if="{{selectedExpenseTypeFilter === item.value}}" />
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </t-popup>
+    <!-- 就医档案类型筛选弹窗 -->
+    <t-popup visible="{{showMedicalRecordTypeFilterPopup}}" bind:visible-change="closeMedicalRecordTypeFilter"
+      placement="bottom">
+      <view class="bottom-filter-popup">
+        <view class="bottom-popup-header">
+          <view class="bottom-popup-drag-bar"></view>
+          <text class="bottom-popup-title">选择记录类型</text>
+          <view class="bottom-popup-close" bindtap="closeMedicalRecordTypeFilter">
+            <t-icon name="close" size="32rpx" color="#666" />
+          </view>
+        </view>
+        <scroll-view scroll-y="{{true}}" class="bottom-filter-options" show-scrollbar="{{false}}"
+          enable-flex="{{true}}">
+          <view class="bottom-filter-option {{selectedMedicalRecordTypeFilter === item.value ? 'selected' : ''}}"
+            wx:for="{{medicalRecordTypeFilterOptions}}" wx:key="value" bindtap="selectMedicalRecordTypeFilter"
+            data-value="{{item.value}}">
+            <view class="bottom-option-content">
+              <view class="bottom-option-indicator"></view>
+              <text class="bottom-option-text">{{item.label}}</text>
+            </view>
+            <view class="bottom-option-check {{selectedMedicalRecordTypeFilter === item.value ? 'checked' : ''}}">
+              <t-icon name="check" size="28rpx" color="#fff"
+                wx:if="{{selectedMedicalRecordTypeFilter === item.value}}" />
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </t-popup>
+    <!-- 炫酷3D健康记录详情弹窗 -->
+    <t-popup visible="{{showHealthDetailPopup}}" bind:visible-change="closeHealthDetail" placement="center">
+      <view class="health-detail-popup">
+        <view class="popup-3d-container">
+          <view class="popup-bg-orbs">
+            <view class="popup-orb popup-orb-1"></view>
+            <view class="popup-orb popup-orb-2"></view>
+          </view>
+          <view class="detail-header">
+            <view class="detail-title-container">
+              <view class="detail-icon-wrapper">
+                <medical-icon name="{{currentHealthDetail.icon}}" size="52" color="#FF8F00" />
+                <view class="detail-icon-halo"></view>
+              </view>
+              <text class="detail-title">{{currentHealthDetail.title}}</text>
+            </view>
+            <view class="detail-close" bindtap="closeHealthDetail">
+              <view class="close-button-3d">
+                <t-icon name="close" size="32rpx" color="#FF8F00" />
+              </view>
+            </view>
+          </view>
+          <scroll-view class="detail-content" scroll-y="true" enhanced="true" show-scrollbar="false">
+            <!-- 炫酷3D基本信息 -->
+            <view class="detail-section">
+              <view class="section-title-3d">
+                <view class="section-title-icon">
+                  <t-icon name="info-circle" size="32rpx" color="#FF8F00" />
+                </view>
+                <text>基本信息</text>
+                <view class="section-title-line"></view>
+              </view>
+              <view class="info-row">
+                <view class="info-label-wrapper">
+                  <t-icon name="calendar" size="24rpx" color="#FFB74D" />
+                  <text class="info-label">检测日期</text>
+                </view>
+                <text class="info-value">{{currentHealthDetail.date}}</text>
+              </view>
+              <view class="info-row" wx:if="{{currentHealthDetail.time}}">
+                <view class="info-label-wrapper">
+                  <t-icon name="time" size="24rpx" color="#FFB74D" />
+                  <text class="info-label">检测时间</text>
+                </view>
+                <text class="info-value">{{currentHealthDetail.time}}</text>
+              </view>
+              <view class="info-row" wx:if="{{currentHealthDetail.hospital}}">
+                <view class="info-label-wrapper">
+                  <t-icon name="location" size="24rpx" color="#FFB74D" />
+                  <text class="info-label">检测医院</text>
+                </view>
+                <text class="info-value">{{currentHealthDetail.hospital}}</text>
+              </view>
+            </view>
+            <!-- 统一的检测指标详情显示 -->
+            <view class="detail-section" wx:if="{{currentHealthDetail.details}}">
+              <view class="section-title-3d">
+                <view class="section-title-icon">
+                  <medical-icon name="{{currentHealthDetail.icon}}" size="32" color="#FF8F00" />
+                </view>
+                <text>检测指标</text>
+                <view class="section-title-line"></view>
+              </view>
+              <view class="indicators-grid-3d">
+                <view class="indicator-item-3d" wx:for="{{currentHealthDetail.details}}" wx:key="name">
+                  <view class="indicator-3d-bg"></view>
+                  <view class="indicator-status {{item.isAbnormal ? 'abnormal' : 'normal'}}"></view>
+                  <text class="indicator-name {{item.isAbnormal ? 'abnormal' : ''}}">
+                    {{item.name}}
+                  </text>
+                  <text class="indicator-value {{item.isAbnormal ? 'abnormal' : ''}}">
+                    {{item.value}}
+                  </text>
+                  <text class="indicator-reference">{{item.reference}}</text>
+                </view>
+              </view>
+            </view>
+            <!-- 备注信息 -->
+            <view class="detail-section" wx:if="{{currentHealthDetail.notes}}">
+              <view class="section-title">备注信息</view>
+              <text class="notes-text">{{currentHealthDetail.notes}}</text>
+            </view>
+          </scroll-view>
+          <view class="detail-footer">
+            <view class="detail-button-3d" bindtap="closeHealthDetail">
+              <view class="button-3d-bg"></view>
+              <view class="button-content">
+                <text class="button-text">关闭</text>
+              </view>
+              <view class="button-shine"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </t-popup>
+    <!-- Toast提示 -->
+    <t-toast id="t-toast" />
+  </view>
+  <!-- 结束 content-wrapper -->
+</view>

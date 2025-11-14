@@ -1,0 +1,925 @@
+.page-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 自定义导航栏 - 橙色主题 */
+.navbar {
+  background: linear-gradient(135deg, #FFB84D, #FFB84D);
+  border-bottom: none;
+  padding-top: 44px;
+  padding-top: env(safe-area-inset-top);
+  box-shadow: 0 2rpx 16rpx rgba(255, 143, 0, 0.2);
+}
+
+/* 内容区域 */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 0;
+  padding-bottom: 160rpx; /* 为固定底部按钮留出空间 */
+}
+
+/* 提示文字 */
+.tips {
+  padding: 20rpx 30rpx;
+  font-size: 26rpx;
+  color: #999;
+  background: white;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+/* 当前日期状态提示 - 橙色主题 */
+.date-status-tips {
+  background: linear-gradient(135deg, #FFF8F0, #FFE8CC);
+  border: 1rpx solid rgba(255, 143, 0, 0.2);
+  border-radius: 16rpx;
+  margin: 20rpx 30rpx 30rpx 30rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(255, 143, 0, 0.1);
+}
+
+.date-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.date-text-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.hint-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6rpx;
+}
+
+.date-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.status-text {
+  font-size: 24rpx;
+  color: #FFB84D;
+  background: rgba(255, 143, 0, 0.1);
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+}
+
+.shortname-hint {
+  margin-top: 10rpx;
+}
+
+.status-text.no-data {
+  color: #999;
+  background: rgba(153, 153, 153, 0.1);
+}
+
+.data-hint {
+  font-size: 22rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 日期类型标签 */
+.date-type-badge {
+  font-size: 20rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 10rpx;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.date-type-badge.today {
+  background: linear-gradient(135deg, #FF5722, #E91E63);
+  color: white;
+  box-shadow: 0 2rpx 6rpx rgba(255, 87, 34, 0.3);
+}
+
+.date-type-badge.past {
+  background: linear-gradient(135deg, #9E9E9E, #616161);
+  color: white;
+  box-shadow: 0 2rpx 6rpx rgba(158, 158, 158, 0.3);
+}
+
+.date-type-badge.future {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+  color: white;
+  box-shadow: 0 2rpx 6rpx rgba(33, 150, 243, 0.3);
+}
+
+/* 滚动容器 */
+.scroll-container {
+  flex: 1;
+  background: #f5f5f5;
+  height: 0;
+}
+
+/* 指标容器 */
+.indicators-container {
+  padding: 20rpx;
+  padding-bottom: 40rpx; /* 确保滚动时内容不被底部按钮遮挡 */
+}
+
+/* 指标组 */
+.indicator-group {
+  background: white;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  border: 1rpx solid rgba(255, 143, 0, 0.1);
+}
+
+.group-title {
+  padding: 20rpx 30rpx;
+  font-size: 28rpx;
+  color: #999;
+  background: #f5f5f5;
+  font-weight: 500;
+}
+
+/* 指标项 */
+.indicator-item {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  background: white !important;
+  transition: background 0.3s;
+}
+
+/* 禁用所有指标项的active状态背景变化 */
+.indicator-item:active {
+  background: white !important;
+}
+
+.indicator-item:last-child {
+  border-bottom: none;
+}
+
+/* 确保必选项始终保持白色背景 */
+.required-item {
+  background: white !important;
+  padding: 30rpx;
+}
+
+/* 复选框区域 */
+.checkbox-area {
+  padding: 30rpx;
+  padding-right: 0;
+}
+
+/* 指标内容区域 */
+.indicator-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  padding-left: 20rpx;
+  transition: background 0.3s;
+}
+
+.indicator-content:active {
+  background: #f5f5f5 !important;
+}
+
+/* 复选框样式 */
+.indicator-item t-checkbox {
+  margin-right: 20rpx;
+  background: transparent !important;
+}
+
+.custom-checkbox {
+  --td-checkbox-icon-size: 36rpx !important;
+  --td-checkbox-icon-checked-color: #FFB84D !important;
+  --td-checkbox-icon-border-color: #dcdcdc !important;
+  --td-checkbox-icon-border-width: 3rpx !important;
+  --td-checkbox-icon-checked-bg-color: #FFB84D !important;
+  --td-checkbox-icon-unchecked-color: #dcdcdc !important;
+  background: transparent !important;
+}
+
+.custom-checkbox .t-checkbox__icon {
+  --td-checkbox-icon-checked-color: #FFB84D !important;
+  --td-checkbox-icon-checked-bg-color: #FFB84D !important;
+}
+
+/* 确保required-checkbox没有任何背景 */
+.required-checkbox {
+  background: transparent !important;
+}
+
+.required-checkbox .t-checkbox__icon {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-color: transparent !important;
+  color: #999 !important;
+  width: 36rpx !important;
+  height: 36rpx !important;
+}
+
+/* 强制清除所有可能的背景 */
+.required-checkbox,
+.required-checkbox .t-checkbox,
+.required-checkbox .t-checkbox__icon,
+.required-checkbox .t-checkbox__input,
+.required-checkbox .t-checkbox__label {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 只显示勾选符号，不要边框和填充 */
+.required-checkbox.t-checkbox--disabled .t-checkbox__icon {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-color: transparent !important;
+  color: #999 !important;
+  width: 36rpx !important;
+  height: 36rpx !important;
+}
+
+
+
+/* 必选checkbox的专门样式 - 禁用状态只显示勾选符号 */
+.required-checkbox {
+  --td-checkbox-icon-disabled-color: #999 !important;
+  --td-checkbox-icon-disabled-bg-color: transparent !important;
+  --td-checkbox-icon-disabled-border-color: transparent !important;
+}
+
+.required-checkbox.t-checkbox--disabled .t-checkbox__icon {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-color: transparent !important;
+  color: #999 !important;
+  opacity: 1 !important;
+  width: 36rpx !important;
+  height: 36rpx !important;
+}
+
+/* 超强选择器 - 禁用状态只显示勾选符号 */
+.indicator-item .required-checkbox.t-checkbox--disabled .t-checkbox__icon,
+.indicator-item .required-checkbox[disabled] .t-checkbox__icon,
+.required-item .required-checkbox .t-checkbox__icon {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-color: transparent !important;
+  color: #999 !important;
+  opacity: 1 !important;
+  width: 36rpx !important;
+  height: 36rpx !important;
+}
+
+/* 指标信息 */
+.indicator-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.indicator-name {
+  width: 60rpx;
+  height: 48rpx;
+  background: #FFF8F0;
+  color: #FFB84D;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* 指标文字容器 */
+.indicator-text {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.indicator-fullname {
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* 必选标签 */
+.required-tag {
+  font-size: 22rpx;
+  color: #FF6B6B;
+  background: #FFE8E8;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+  white-space: nowrap;
+}
+
+/* 必选指标项样式 */
+.required-item {
+  position: relative;
+}
+
+.required-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: linear-gradient(to bottom, #FF6B6B, #FFB6B6);
+  border-radius: 0 6rpx 6rpx 0;
+}
+
+/* 指标值 */
+.indicator-value {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-right: 16rpx;
+}
+
+.indicator-value text:first-child {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.unit {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 立体化底部按钮组 */
+.bottom-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.04);
+  display: flex;
+  gap: 20rpx;
+  z-index: 100;
+}
+
+/* 立体化返回按钮 */
+.bottom-back-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, #6C7B7F 0%, #5A6A6E 100%);
+  border-radius: 12rpx;
+  color: white;
+  font-size: 30rpx;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8rpx 24rpx rgba(108, 123, 127, 0.4),
+    0 4rpx 12rpx rgba(90, 106, 110, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.bottom-back-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%
+  );
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.bottom-back-btn:active {
+  background: linear-gradient(135deg, #5A6A6E 0%, #4A5A5E 100%);
+  transform: scale(0.96) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 12rpx rgba(108, 123, 127, 0.5),
+    0 2rpx 6rpx rgba(90, 106, 110, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+
+/* 立体化定义更多指标按钮 - 橙色主题 */
+.define-more-btn {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%);
+  border-radius: 12rpx;
+  color: white;
+  font-size: 30rpx;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8rpx 24rpx rgba(255, 143, 0, 0.4),
+    0 4rpx 12rpx rgba(245, 124, 0, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.define-more-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%
+  );
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.define-more-btn:active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%);
+  transform: scale(0.96) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 12rpx rgba(255, 143, 0, 0.5),
+    0 2rpx 6rpx rgba(245, 124, 0, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+
+/* 修复导航栏样式 */
+.t-navbar__placeholder {
+  visibility: hidden;
+}
+
+.t-navbar {
+  --td-navbar-bg-color: transparent;
+}
+
+/* 强制设置导航栏标题样式 - 使用更具体的选择器 */
+.navbar .t-navbar__title,
+.navbar .t-navbar__center,
+.navbar .t-navbar__center text,
+.navbar .t-navbar__center .t-navbar__title {
+  color: white !important;
+  font-size: 34rpx !important;
+  font-weight: 500 !important;
+}
+
+/* 导航栏所有图标颜色 */
+.navbar .t-icon,
+.navbar .t-navbar__left .t-icon,
+.navbar .t-navbar__right .t-icon {
+  color: white !important;
+}
+
+/* 更强的选择器确保样式生效 */
+.page-container .navbar .t-navbar__title {
+  color: white !important;
+  font-size: 34rpx !important;
+  font-weight: 500 !important;
+}
+
+/* 自定义返回按钮样式 */
+.custom-back-btn {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
+}
+
+.custom-back-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
+}
+
+/* 编辑弹窗样式 */
+.edit-popup-content {
+  background: white;
+  border-radius: 32rpx 32rpx 0 0;
+  overflow: hidden;
+}
+
+.edit-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40rpx 40rpx 20rpx 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.edit-popup-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.edit-popup-close {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.edit-popup-close:active {
+  background: #f5f5f5;
+}
+
+.edit-form-content {
+  padding: 40rpx;
+  padding-bottom: 20rpx;
+}
+
+.edit-form-item {
+  margin-bottom: 40rpx;
+}
+
+.edit-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.edit-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.edit-input {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  background: #f8f8f8;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.edit-input:focus {
+  background: white;
+  border-color: #FFB84D;
+  box-shadow: 0 0 0 4rpx rgba(255, 143, 0, 0.1);
+}
+
+.edit-input::placeholder {
+  color: #999;
+}
+
+/* 范围输入区域 */
+.range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.range-input {
+  flex: 1;
+}
+
+.range-separator {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+  margin: 0 8rpx;
+}
+
+/* 立体化弹窗按钮区域 */
+.edit-popup-buttons {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 40rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.edit-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 立体化取消按钮 */
+.edit-cancel-btn {
+  background: linear-gradient(135deg, #f0f0f0 0%, #e6e6e6 100%);
+  color: #666;
+  box-shadow: 
+    0 8rpx 24rpx rgba(102, 102, 102, 0.2),
+    0 4rpx 12rpx rgba(230, 230, 230, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.8);
+  border: 2rpx solid rgba(255, 255, 255, 0.6);
+}
+
+.edit-cancel-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%
+  );
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.edit-cancel-btn:active {
+  background: linear-gradient(135deg, #e6e6e6 0%, #d9d9d9 100%);
+  transform: scale(0.96) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 12rpx rgba(102, 102, 102, 0.3),
+    0 2rpx 6rpx rgba(230, 230, 230, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.6);
+}
+
+/* 立体化确认按钮 - 橙色主题 */
+.edit-confirm-btn {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%);
+  color: white;
+  box-shadow: 
+    0 8rpx 24rpx rgba(255, 143, 0, 0.4),
+    0 4rpx 12rpx rgba(245, 124, 0, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+}
+
+.edit-confirm-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%
+  );
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.edit-confirm-btn:active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%);
+  transform: scale(0.96) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 12rpx rgba(255, 143, 0, 0.5),
+    0 2rpx 6rpx rgba(245, 124, 0, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+
+/* 立体化删除按钮 */
+.edit-delete-btn {
+  background: linear-gradient(135deg, #FF6B6B 0%, #E55757 100%);
+  color: white;
+  box-shadow: 
+    0 8rpx 24rpx rgba(255, 107, 107, 0.4),
+    0 4rpx 12rpx rgba(229, 87, 87, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+}
+
+.edit-delete-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%
+  );
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.edit-delete-btn:active {
+  background: linear-gradient(135deg, #E55757 0%, #D94545 100%);
+  transform: scale(0.96) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 12rpx rgba(255, 107, 107, 0.5),
+    0 2rpx 6rpx rgba(229, 87, 87, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+
+/* 自定义日期选择器样式 - 橙色主题 */
+.t-date-time-picker__confirm {
+  color: white !important;
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%) !important;
+  border-radius: 12rpx !important;
+  padding: 12rpx 24rpx !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4rpx 12rpx rgba(255, 143, 0, 0.3) !important;
+  border: 2rpx solid rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s !important;
+}
+
+.t-date-time-picker__confirm:active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%) !important;
+  transform: scale(0.96) !important;
+  box-shadow: 0 2rpx 8rpx rgba(255, 143, 0, 0.4) !important;
+}
+
+/* 自定义日期选择器样式 - 兼容picker组件 */
+.t-picker__confirm {
+  color: white !important;
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%) !important;
+  border-radius: 12rpx !important;
+  padding: 12rpx 24rpx !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4rpx 12rpx rgba(255, 143, 0, 0.3) !important;
+  border: 2rpx solid rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s !important;
+}
+
+.t-picker__confirm:active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%) !important;
+  transform: scale(0.96) !important;
+  box-shadow: 0 2rpx 8rpx rgba(255, 143, 0, 0.4) !important;
+}
+
+/* 全局覆盖所有日期选择器确定按钮样式 - 橙色主题 */
+page .t-date-time-picker .t-picker__toolbar .t-button--primary,
+page .t-picker .t-button--primary,
+page .t-date-time-picker__confirm,
+page .t-picker__confirm {
+  color: white !important;
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%) !important;
+  border-radius: 12rpx !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4rpx 12rpx rgba(255, 143, 0, 0.3) !important;
+  border: 2rpx solid rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s !important;
+  padding: 12rpx 24rpx !important;
+}
+
+page .t-date-time-picker .t-picker__toolbar .t-button--primary:active,
+page .t-picker .t-button--primary:active,
+page .t-date-time-picker__confirm:active,
+page .t-picker__confirm:active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%) !important;
+  transform: scale(0.96) !important;
+  box-shadow: 0 2rpx 8rpx rgba(255, 143, 0, 0.4) !important;
+}
+
+/* 日期选择器工具栏 - 橙色主题 */
+.t-date-time-picker .t-picker__toolbar {
+  background: linear-gradient(135deg, rgba(255, 143, 0, 0.05) 0%, rgba(245, 124, 0, 0.08) 50%, rgba(255, 255, 255, 0.95) 100%) !important;
+  border-bottom: 1rpx solid rgba(255, 143, 0, 0.15) !important;
+  padding: 20rpx 30rpx !important;
+  box-shadow: 0 2rpx 8rpx rgba(255, 143, 0, 0.08) !important;
+}
+
+/* 优化日期选择器标题 - 橙色主题 */
+.t-date-time-picker .t-picker__title {
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  color: #FFB84D !important;
+  text-shadow: 0 1rpx 3rpx rgba(255, 143, 0, 0.1) !important;
+}
+
+/* 日期选择器选中项 - 橙色主题 */
+.t-date-time-picker .t-picker-item--selected {
+  color: #FFB84D !important;
+  font-weight: 500 !important;
+}
+
+/* 日期选择器取消按钮 */
+.t-date-time-picker .t-picker__cancel {
+  color: #666 !important;
+}
+
+/* 日期选择器容器 */
+.t-date-time-picker .t-popup__content {
+  border-radius: 24rpx 24rpx 0 0 !important;
+}
+
+/* 未保存更改提示样式 */
+.unsaved-hint {
+  background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+  border: 1rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  margin: 12rpx 30rpx;
+  padding: 16rpx 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+  animation: pulse-warning 2s ease-in-out infinite;
+}
+
+.unsaved-text {
+  font-size: 24rpx;
+  color: #FFB84D;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* 继承提示样式优化 */
+.inherit-hint {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 12rpx;
+  padding: 12rpx 16rpx;
+  background: linear-gradient(135deg, #E3F2FD, #E8F5E8);
+  border-radius: 8rpx;
+  border: 1rpx solid rgba(25, 144, 255, 0.2);
+}
+
+.inherit-text {
+  font-size: 22rpx;
+  color: #1565C0;
+  font-weight: 500;
+}
+
+/* 返回按钮未保存状态 */
+.bottom-back-btn.has-changes {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%);
+  animation: pulse-orange 1.5s ease-in-out infinite;
+  box-shadow: 
+    0 8rpx 24rpx rgba(255, 152, 0, 0.4),
+    0 4rpx 12rpx rgba(245, 124, 0, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+}
+
+.bottom-back-btn.has-changes:active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FFB84D 100%);
+  box-shadow: 
+    0 4rpx 12rpx rgba(255, 152, 0, 0.5),
+    0 2rpx 6rpx rgba(245, 124, 0, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+
+/* 动画效果 */
+@keyframes pulse-warning {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes pulse-orange {
+  0%, 100% {
+    box-shadow: 
+      0 8rpx 24rpx rgba(255, 152, 0, 0.4),
+      0 4rpx 12rpx rgba(245, 124, 0, 0.3),
+      inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 12rpx 32rpx rgba(255, 152, 0, 0.6),
+      0 6rpx 16rpx rgba(245, 124, 0, 0.4),
+      inset 0 2rpx 4rpx rgba(255, 255, 255, 0.4);
+  }
+}

@@ -1,0 +1,209 @@
+<view class="page-container">
+  <!-- 自定义导航栏 -->
+  <view class="navbar">
+    <t-navbar title="检查报告" bind:left-click="navigateBack" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+      <view slot="left" class="custom-back-btn" bindtap="navigateBack">
+        <t-icon name="chevron-left" size="48rpx" color="white" />
+      </view>
+      <view slot="right" class="navbar-right">
+        <t-icon name="ellipsis" size="48rpx" color="white" bindtap="showMoreMenu" />
+      </view>
+    </t-navbar>
+  </view>
+  <!-- 内容区域 -->
+  <view class="content">
+    <!-- 日期选择区域 -->
+    <view class="date-section">
+      <view class="date-selector" bindtap="showDatePicker">
+        <text class="date-text">{{selectedDate}}</text>
+        <t-icon name="calendar" size="32rpx" color="#666" />
+      </view>
+      <view class="quick-input-btns">
+        <t-button theme="primary" size="small" icon="add" bindtap="addCheckRecord" class="add-record-btn">
+          添加记录
+        </t-button>
+      </view>
+    </view>
+    <!-- 滚动容器 -->
+    <scroll-view class="scroll-container" scroll-y>
+      <view class="form-container">
+        <!-- 今日检查报告统计 -->
+        <view class="clinic-summary" wx:if="{{checkReports.length > 0}}">
+          <view class="summary-header">
+            <text class="summary-title">今日检查报告</text>
+            <text class="summary-count">{{checkReports.length}} 份</text>
+          </view>
+        </view>
+        <!-- 检查报告列表 -->
+        <view class="clinic-records-list" wx:if="{{checkReports.length > 0}}">
+          <view class="clinic-record-item" wx:for="{{checkReports}}" wx:key="_id">
+            <!-- 优化布局的信息展示卡片 -->
+            <view class="record-content">
+              <!-- 顶部信息行：项目名称、记录日期、检查结果 -->
+              <view class="record-header">
+                <view class="project-info">
+                  <text class="project-name">{{item.projectName}}</text>
+                  <view class="result-badge result-{{item.resultType}}">
+                    {{item.resultTypeLabel}}
+                  </view>
+                </view>
+                <view class="record-date" wx:if="{{item.recordDate}}">{{item.recordDate}}</view>
+              </view>
+              <!-- 检查结果区域 -->
+              <view class="medical-info" wx:if="{{item.detailedResults}}">
+                <!-- 详细检查结果 -->
+                <view class="info-item">
+                  <text class="info-label">详细检查结果</text>
+                  <view class="info-content">{{item.detailedResults}}</view>
+                </view>
+                x
+              </view>
+              <!-- 图片附件 -->
+              <view class="medical-info" wx:if="{{item.images && item.images.length > 0}}">
+                <view class="info-item">
+                  <text class="info-label">报告附件</text>
+                  <view class="image-preview-list">
+                    <image class="report-image-thumb" wx:for="{{item.images}}" wx:for-item="imageItem" wx:key="{{imageItem.url || index}}" src="{{imageItem.url || imageItem}}" bindtap="previewReportImage" binderror="onImageError" bindload="onImageLoad" data-images="{{item.images}}" data-current="{{imageItem.url || imageItem}}" mode="aspectFill" lazy-load="true" show-menu-by-longpress="true" />
+                  </view>
+                </view>
+              </view>
+              <!-- 检查信息为空时的提示 -->
+              <view class="medical-info-empty" wx:if="{{!item.detailedResults}}">
+                <text class="empty-tips">暂无详细检查结果</text>
+              </view>
+              <!-- 底部信息行：备注 - 有内容时才显示 -->
+              <view class="record-bottom" wx:if="{{item.notes}}">
+                <!-- 备注信息 -->
+                <view class="notes-info">
+                  <view class="notes-text">备注：{{item.notes}}</view>
+                </view>
+              </view>
+              <!-- 操作按钮 -->
+              <view class="record-actions">
+                <view class="action-btn edit-btn" catchtap="editRecord" data-id="{{item._id}}">
+                  编辑
+                </view>
+                <view class="action-btn delete-btn" catchtap="deleteRecord" data-id="{{item._id}}">
+                  删除
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{checkReports.length === 0}}">
+          <t-icon name="assignment" size="120rpx" color="#ddd" />
+          <text class="empty-text">暂无检查报告</text>
+          <text class="empty-hint">点击右上角添加检查报告</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  <!-- 日期选择器 -->
+  <t-date-time-picker visible="{{datePickerVisible}}" value="{{selectedDateTimestamp}}" mode="date" title="选择日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" bind:visible-change="onDateVisibleChange" />
+  <!-- 检查报告弹窗 -->
+  <t-popup visible="{{showCheckReportDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+    <view class="clinic-popup-content">
+      <view class="clinic-popup-header">
+        <text class="clinic-popup-title">{{isEditMode ? '编辑检查报告' : '添加检查报告'}}</text>
+        <view class="clinic-popup-close" bindtap="closeCheckReportDialog">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+      <scroll-view class="clinic-form-container" scroll-y>
+        <view class="clinic-form-content">
+          <view class="form-section">
+            <view class="form-item">
+              <text class="form-label">报告日期</text>
+              <view class="visit-time-input" bindtap="showRecordDatePicker">
+                <text class="visit-time-text">{{checkReportForm.recordDate || '点击选择报告日期'}}</text>
+                <t-icon name="calendar" size="32rpx" color="#999" />
+              </view>
+            </view>
+            <view class="form-item">
+              <text class="form-label">检查项目名称</text>
+              <t-input value="{{checkReportForm.projectName}}" placeholder="请输入检查项目名称" bind:change="onFormInput" data-field="projectName" class="form-input" />
+            </view>
+          </view>
+          <!-- 检查结果 -->
+          <view class="form-section">
+            <text class="section-label">检查结果</text>
+            <view class="form-item">
+              <text class="form-label">详细检查结果</text>
+              <t-textarea value="{{checkReportForm.detailedResults}}" placeholder="请输入详细检查结果和数据" bind:change="onFormInput" data-field="detailedResults" class="form-textarea" maxlength="800" indicator />
+            </view>
+            <view class="form-item">
+              <text class="form-label">检查结果</text>
+              <view class="option-cards">
+                <view class="option-card {{checkReportForm.resultType === item.value ? 'option-card-active' : ''}}" wx:for="{{resultTypeOptions}}" wx:key="value" bindtap="selectResultType" data-value="{{item.value}}" data-label="{{item.label}}">
+                  <text class="option-card-text">{{item.label}}</text>
+                  <t-icon wx:if="{{checkReportForm.resultType === item.value}}" name="check-circle-filled" size="32rpx" color="#FF9800" class="option-check-icon" />
+                </view>
+              </view>
+            </view>
+          </view>
+          <!-- 报告附件 -->
+          <view class="form-section">
+            <text class="section-label">报告附件</text>
+            <view class="form-item">
+              <text class="form-label">报告图片</text>
+              <view class="image-upload-area">
+                <!-- 自定义图片上传 -->
+                <view class="custom-upload-container">
+                  <!-- 图片预览列表 -->
+                  <view class="upload-image-list" wx:if="{{checkReportForm.images && checkReportForm.images.length > 0}}">
+                    <view class="upload-image-item" wx:for="{{checkReportForm.images}}" wx:key="index">
+                      <image src="{{item.url}}" mode="aspectFill" class="upload-image" catchtap="previewUploadImage" data-images="{{checkReportForm.images}}" data-current="{{item.url}}" />
+                      <view class="upload-image-delete" catchtap="removeUploadImage" data-index="{{index}}">
+                        <t-icon name="close" size="32rpx" color="#fff" />
+                      </view>
+                    </view>
+                  </view>
+                  <!-- 添加图片按钮 -->
+                  <view class="upload-add-btn" wx:if="{{!checkReportForm.images || checkReportForm.images.length < 9}}" bindtap="chooseAndUploadImage">
+                    <t-icon name="add" size="48rpx" color="#999" />
+                    <text class="upload-add-text">添加图片</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="form-section">
+            <view class="form-item">
+              <text class="form-label">备注</text>
+              <t-textarea value="{{checkReportForm.notes}}" placeholder="其他需要记录的信息" bind:change="onFormInput" data-field="notes" class="form-textarea" maxlength="300" indicator />
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+      <view class="clinic-popup-buttons">
+        <view class="clinic-btn clinic-cancel-btn" bindtap="closeCheckReportDialog">取消</view>
+        <view class="clinic-btn clinic-confirm-btn" bindtap="saveCheckReport">
+          {{isEditMode ? '保存' : '添加'}}
+        </view>
+      </view>
+    </view>
+  </t-popup>
+  <!-- 记录日期选择器 -->
+  <t-date-time-picker visible="{{recordDatePickerVisible}}" value="{{recordDateTimestamp}}" mode="date" title="选择记录日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onRecordDateConfirm" bind:cancel="onRecordDateCancel" bind:visible-change="onRecordDateVisibleChange" />
+  <!-- 检查日期选择器 -->
+  <t-date-time-picker visible="{{checkDatePickerVisible}}" value="{{checkDateTimestamp}}" mode="date" title="选择检查日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onCheckDateConfirm" bind:cancel="onCheckDateCancel" bind:visible-change="onCheckDateVisibleChange" />
+  <!-- 报告日期选择器 -->
+  <t-date-time-picker visible="{{reportDatePickerVisible}}" value="{{reportDateTimestamp}}" mode="date" title="选择报告日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onReportDateConfirm" bind:cancel="onReportDateCancel" bind:visible-change="onReportDateVisibleChange" />
+  <!-- 报告类型选择器 -->
+  <t-popup visible="{{reportTypePickerVisible}}" placement="bottom" bind:visible-change="onReportTypePickerChange">
+    <view class="picker-container">
+      <view class="picker-header">
+        <view class="picker-title">选择报告类型</view>
+        <view class="picker-close" bindtap="onReportTypeCancel">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+      <view class="picker-list">
+        <view class="picker-item {{item.value === selectedReportType ? 'selected' : ''}}" wx:for="{{reportTypeOptions}}" wx:key="value" bindtap="selectReportType" data-value="{{item.value}}" data-label="{{item.label}}">
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+  </t-popup>
+</view>

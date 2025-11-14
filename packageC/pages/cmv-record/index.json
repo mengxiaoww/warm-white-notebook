@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "巨细胞病毒",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar"
+  }
+}

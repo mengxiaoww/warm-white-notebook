@@ -1,0 +1,115 @@
+{
+  "entryPagePath": "pages/daily-record/index",
+  "pages": [
+    "pages/daily-record/index",
+    "pages/health-profile/index",
+    "pages/health-chart/index",
+    "pages/profile/index",
+    "pages/webview/index"
+  ],
+  "subPackages": [
+    {
+      "root": "packageA",
+      "name": "tests",
+      "pages": [
+        "pages/blood-test/index",
+        "pages/blood-test-config/index",
+        "pages/liver-function/index",
+        "pages/liver-function-config/index",
+        "pages/kidney-function/index",
+        "pages/kidney-function-config/index",
+        "pages/organ-function-record/index"
+      ]
+    },
+    {
+      "root": "packageB",
+      "name": "records",
+      "pages": [
+        "pages/medication/index",
+        "pages/clinic-record/index",
+        "pages/check-report/index",
+        "pages/urine-record/index",
+        "pages/stool-record/index",
+        "pages/expense-record/index",
+        "pages/virus-record/index",
+        "pages/complete-profile/index",
+        "pages/add-profile/index"
+      ]
+    },
+    {
+      "root": "packageC",
+      "name": "virus",
+      "pages": [
+        "pages/ebv-record/index",
+        "pages/ebv-config/index",
+        "pages/cmv-record/index",
+        "pages/cmv-config/index",
+        "pages/ldh-record/index",
+        "pages/ldh-config/index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/health-profile/index": {
+      "network": "all",
+      "packages": [
+        "tests"
+      ]
+    },
+    "pages/daily-record/index": {
+      "network": "all",
+      "packages": [
+        "records"
+      ]
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFB84D",
+    "navigationBarTitleText": "暖白记事本",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/daily-record/index",
+        "text": "每日记录"
+      },
+      {
+        "pagePath": "pages/health-profile/index",
+        "text": "健康档案"
+      },
+      {
+        "pagePath": "pages/health-chart/index",
+        "text": "健康图谱"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-cell": "tdesign-miniprogram/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-tabs": "tdesign-miniprogram/tabs/tabs",
+    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
+    "t-calendar": "tdesign-miniprogram/calendar/calendar",
+    "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-message": "tdesign-miniprogram/message/message",
+    "t-upload": "tdesign-miniprogram/upload/upload",
+    "t-image": "tdesign-miniprogram/image/image",
+    "medical-icon": "/components/medical-icon/index"
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

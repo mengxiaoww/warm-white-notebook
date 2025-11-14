@@ -1,0 +1,116 @@
+<!-- pages/complete-profile/index.wxml -->
+<view class="page">
+  <!-- 头像上传区 - 优化版 -->
+  <view class="avatar-section">
+    <view class="avatar-wrapper">
+      <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image wx:if="{{selectedAvatar}}" src="{{selectedAvatar}}" mode="aspectFill" class="avatar-pic" />
+        <view wx:else class="avatar-empty">
+          <view class="avatar-icon-wrapper">
+            <t-icon name="camera" size="80rpx" color="#FFB800" />
+          </view>
+        </view>
+      </button>
+      <view class="avatar-badge" wx:if="{{selectedAvatar}}">
+        <t-icon name="check-circle-filled" size="48rpx" color="#52C41A" />
+      </view>
+    </view>
+    <view class="avatar-text-wrap">
+      <text class="avatar-text">点击上传头像</text>
+      <text class="avatar-required">*</text>
+    </view>
+  </view>
+
+  <!-- 表单区 -->
+  <view class="form-list">
+    <!-- 昵称 -->
+    <view class="form-cell">
+      <view class="cell-label">
+        <text class="label-text">昵称</text>
+        <text class="star">*</text>
+      </view>
+      <input class="cell-input" type="nickname" value="{{selectedNickname}}" bindinput="onNicknameInput" placeholder="请输入昵称" maxlength="20" />
+    </view>
+
+    <!-- 性别 -->
+    <view class="form-cell">
+      <view class="cell-label">
+        <text class="label-text">性别</text>
+        <text class="star">*</text>
+      </view>
+      <view class="gender-box">
+        <view class="gender-item {{selectedGender === 'male' ? 'on' : ''}}" bindtap="selectGender" data-gender="male">
+          <t-icon name="gender-male" size="36rpx" />
+          <text>男</text>
+        </view>
+        <view class="gender-item {{selectedGender === 'female' ? 'on' : ''}}" bindtap="selectGender" data-gender="female">
+          <t-icon name="gender-female" size="36rpx" />
+          <text>女</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 年龄 -->
+    <view class="form-cell">
+      <view class="cell-label">
+        <text class="label-text">年龄</text>
+        <text class="star">*</text>
+      </view>
+      <input class="cell-input" type="number" value="{{selectedAge}}" bindinput="onAgeInput" placeholder="请输入年龄" maxlength="3" />
+    </view>
+
+    <!-- 疾病类型 -->
+    <view class="form-cell arrow" bindtap="showDiseaseSelector">
+      <view class="cell-label">
+        <text class="label-text">疾病类型</text>
+        <text class="star">*</text>
+      </view>
+      <view class="cell-value {{selectedDiseaseText ? '' : 'placeholder'}}">{{selectedDiseaseText || '请选择'}}</view>
+      <t-icon name="chevron-right" size="32rpx" color="#C0C0C0" />
+    </view>
+
+    <!-- 就诊医院 -->
+    <view class="form-cell">
+      <view class="cell-label">
+        <text class="label-text">就诊医院</text>
+      </view>
+      <input class="cell-input" value="{{selectedHospital}}" bindinput="onHospitalInput" placeholder="请输入医院名称" />
+    </view>
+  </view>
+
+  <!-- 完成按钮 -->
+  <view class="btn-area">
+    <button class="save-btn {{canConfirm ? '' : 'disabled'}}" bindtap="confirmLogin">
+      <text class="btn-text">{{confirmBtnText}}</text>
+    </button>
+  </view>
+</view>
+
+<!-- 疾病选择弹窗 -->
+<t-popup visible="{{showDiseasePopup}}" bind:visible-change="closeDiseasePopup" placement="bottom">
+  <view class="popup-wrap">
+    <view class="popup-hd">
+      <view class="popup-back" wx:if="{{currentLevel === 'secondary'}}" bindtap="backToPrimary">
+        <t-icon name="chevron-left" size="40rpx" color="#333" />
+      </view>
+      <view class="popup-tit">
+        {{currentLevel === 'primary' ? '选择疾病分类' : browsingPrimaryCategory.name}}
+      </view>
+      <view class="popup-close" bindtap="closeDiseasePopup">
+        <t-icon name="close" size="32rpx" color="#666" />
+      </view>
+    </view>
+    <scroll-view scroll-y class="popup-bd">
+      <view wx:if="{{currentLevel === 'primary'}}" class="cat-grid">
+        <view wx:for="{{diseaseCategories}}" wx:key="id" class="cat {{browsingPrimaryCategory && browsingPrimaryCategory.id === item.id ? 'cur' : ''}}" bindtap="selectPrimaryCategory" data-id="{{item.id}}">
+          {{item.name}}
+        </view>
+      </view>
+      <view wx:if="{{currentLevel === 'secondary' && browsingPrimaryCategory}}" class="cat-grid">
+        <view wx:for="{{browsingPrimaryCategory.children}}" wx:key="id" class="cat {{browsingSecondaryCategory && browsingSecondaryCategory.id === item.id ? 'cur' : ''}}" bindtap="selectSecondaryCategory" data-id="{{item.id}}">
+          {{item.name}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</t-popup>

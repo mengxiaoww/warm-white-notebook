@@ -1,0 +1,71 @@
+<view class="health-chart-page">
+  <!-- 骨架屏加载 -->
+  <view class="skeleton-wrapper" wx:if="{{isPageLoading}}">
+    <view class="skeleton-chart-section" wx:for="{{[1,2,3]}}" wx:key="*this">
+      <!-- 标题和时间选择骨架 -->
+      <view class="skeleton-header">
+        <view class="skeleton-text skeleton-text-title"></view>
+        <view class="skeleton-time-pills">
+          <view class="skeleton-pill" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+        </view>
+      </view>
+      <!-- 类型选择骨架 -->
+      <view class="skeleton-type-pills">
+        <view class="skeleton-pill-large" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+      </view>
+      <!-- 图表区域骨架 -->
+      <view class="skeleton-chart">
+        <view class="skeleton-shimmer"></view>
+      </view>
+    </view>
+  </view>
+  <!-- 实际内容 -->
+  <view class="content-wrapper {{isPageLoading ? 'content-hidden' : 'content-visible'}}">
+    <!-- 主要内容区域 -->
+    <scroll-view class="content" scroll-y enhanced show-scrollbar="false">
+      <!-- 所有分组的图表 -->
+      <view wx:for="{{dataTypeGroups}}" wx:for-index="groupIndex" wx:key="id" class="chart-section">
+        <!-- 分组标题和时间选择 -->
+        <view class="section-header">
+          <text class="section-title">{{item.name}}</text>
+          <view class="time-options">
+            <view wx:for="{{timeRanges}}" wx:key="id" class="time-option {{selectedTimeByGroup[groupIndex] === index ? 'active' : ''}}" bindtap="onChartTimeChange" data-group="{{groupIndex}}" data-time="{{index}}">
+              <text class="time-label">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+        <!-- 数据类型选择 -->
+        <view class="type-selector">
+          <view wx:for="{{item.types}}" wx:for-item="typeIndex" wx:key="*this" class="type-pill {{selectedTypeByGroup[groupIndex] === typeIndex ? 'active' : ''}}" bindtap="onGroupTypeChange" data-group="{{groupIndex}}" data-type="{{typeIndex}}">
+            <text class="type-label">{{dataTypes[typeIndex].name}}</text>
+          </view>
+        </view>
+        <!-- 图表区域 -->
+        <view class="chart-area">
+          <!-- 有数据时显示图表 -->
+          <view wx:if="{{chartDataByGroup[groupIndex] && chartDataByGroup[groupIndex].length > 0}}" class="chart-container">
+            <ec-canvas id="chart-group-{{groupIndex}}" canvas-id="chart-group-{{groupIndex}}" ec="{{chartConfigByGroup[groupIndex]}}" class="chart-canvas"></ec-canvas>
+            <!-- 图表底部信息 -->
+            <!-- <view class="chart-footer">
+            <text class="record-count">{{chartDataByGroup[groupIndex].length}} 条记录</text>
+            <text class="latest-info">最新: {{latestValueByGroup[groupIndex] || '--'}}</text>
+          </view> -->
+          </view>
+          <!-- 无数据状态 -->
+          <view wx:else class="empty-state">
+            <view class="empty-icon">
+              <t-icon name="chart-line" size="120rpx" color="#E0E0E0" />
+            </view>
+            <text class="empty-message">
+              暂无{{dataTypes[selectedTypeByGroup[groupIndex]].name}}数据
+            </text>
+            <text class="empty-tip">记录数据后，这里将显示趋势图表</text>
+          </view>
+        </view>
+      </view>
+      <!-- 底部安全区域 -->
+      <view class="bottom-space"></view>
+    </scroll-view>
+  </view>
+  <!-- 结束 content-wrapper -->
+</view>

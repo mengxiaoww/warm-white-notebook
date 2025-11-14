@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "乳酸脱氢酶",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar"
+  }
+}

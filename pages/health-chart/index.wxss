@@ -1,0 +1,626 @@
+/* pages/health-chart/index.wxss - 现代轻奢健康图表页面 */
+
+/* ==================== CSS变量系统 ==================== */
+page {
+  --primary-color: #FFB84D;
+  --primary-dark: #FF9800;
+  --primary-light: #FFCC80;
+  --primary-alpha-05: rgba(255, 184, 77, 0.05);
+  --primary-alpha-10: rgba(255, 184, 77, 0.1);
+  --primary-alpha-15: rgba(255, 184, 77, 0.15);
+  --primary-alpha-20: rgba(255, 184, 77, 0.2);
+  --primary-alpha-30: rgba(255, 184, 77, 0.3);
+
+  /* 背景色系 */
+  --bg-primary: #FDFCFA;
+  --bg-secondary: #FAF8F4;
+  --bg-tertiary: #F7F4EF;
+  --bg-card: #FFFFFF;
+
+  /* 文字色系 */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --text-quaternary: #CCCCCC;
+
+  /* 边框和阴影 */
+  --border-light: rgba(255, 184, 77, 0.12);
+  --border-medium: rgba(255, 184, 77, 0.2);
+  --shadow-card:
+    0 2rpx 8rpx rgba(255, 184, 77, 0.08),
+    0 8rpx 24rpx rgba(255, 184, 77, 0.12),
+    0 16rpx 32rpx rgba(255, 184, 77, 0.06);
+  --shadow-hover:
+    0 4rpx 16rpx rgba(255, 184, 77, 0.15),
+    0 12rpx 36rpx rgba(255, 184, 77, 0.18),
+    0 24rpx 48rpx rgba(255, 184, 77, 0.08);
+
+  /* 圆角系统 */
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 20rpx;
+  --radius-2xl: 24rpx;
+  --radius-pill: 50rpx;
+}
+
+/* ==================== 骨架屏加载动画 ==================== */
+.skeleton-wrapper {
+  padding: 32rpx 24rpx;
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+  min-height: 100vh;
+  animation: skeleton-fade-in 0.3s ease-out;
+}
+
+@keyframes skeleton-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.content-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.content-visible {
+  opacity: 1;
+  animation: content-fade-in 0.4s ease-out;
+}
+
+@keyframes content-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      transparent 100%);
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-chart-section {
+  background: var(--bg-card);
+  border-radius: var(--radius-2xl);
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--shadow-card);
+}
+
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.skeleton-text {
+  background: linear-gradient(90deg, #E8E4DD 0%, #F0EDE8 50%, #E8E4DD 100%);
+  border-radius: var(--radius-sm);
+  height: 28rpx;
+}
+
+.skeleton-text-title {
+  width: 120rpx;
+  height: 32rpx;
+}
+
+.skeleton-time-pills {
+  display: flex;
+  gap: 12rpx;
+}
+
+.skeleton-pill {
+  width: 60rpx;
+  height: 48rpx;
+  background: linear-gradient(135deg, #E8E4DD 0%, #F0EDE8 100%);
+  border-radius: var(--radius-pill);
+}
+
+.skeleton-type-pills {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+  flex-wrap: wrap;
+}
+
+.skeleton-pill-large {
+  width: 120rpx;
+  height: 56rpx;
+  background: linear-gradient(135deg, #E8E4DD 0%, #F0EDE8 100%);
+  border-radius: var(--radius-pill);
+}
+
+.skeleton-chart {
+  width: 100%;
+  height: 400rpx;
+  background: linear-gradient(135deg, #F7F4EF 0%, #FAF8F4 100%);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==================== 页面基础设置 ==================== */
+page {
+  background: linear-gradient(180deg,
+      var(--bg-primary) 0%,
+      var(--bg-secondary) 50%,
+      var(--bg-tertiary) 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden;
+}
+
+.health-chart-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg,
+      var(--bg-primary) 0%,
+      var(--bg-secondary) 50%,
+      var(--bg-tertiary) 100%);
+  position: relative;
+}
+
+/* ==================== 主内容区域 ==================== */
+.content {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 42rpx 24rpx 100rpx 24rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== 图表分组容器 ==================== */
+.chart-section {
+  margin-bottom: 40rpx;
+  position: relative;
+}
+
+.chart-section:last-child {
+  margin-bottom: 60rpx;
+}
+
+/* ==================== 分组头部设计 ==================== */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 0 8rpx;
+  position: relative;
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8rpx;
+  left: 0;
+  width: 60rpx;
+  height: 4rpx;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  border-radius: 2rpx;
+}
+
+/* ==================== 时间选择器 - 原生按钮设计 ==================== */
+.time-options {
+  display: flex;
+  gap: 4rpx;
+  background: var(--bg-card);
+  padding: 3rpx;
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 1rpx 3rpx var(--primary-alpha-05),
+    0 1rpx 2rpx rgba(0, 0, 0, 0.02);
+  border: 1rpx solid var(--border-light);
+}
+
+.time-option {
+  padding: 5rpx 10rpx;
+  border-radius: var(--radius-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 44rpx;
+  text-align: center;
+}
+
+.time-option::before {
+  content: '';
+  position: absolute;
+  top: -1rpx;
+  left: -1rpx;
+  right: -1rpx;
+  bottom: -1rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: var(--radius-sm);
+  z-index: -1;
+}
+
+.time-option.active::before {
+  opacity: 1;
+}
+
+.time-option.active {
+  transform: translateY(-1rpx);
+  box-shadow: 0 2rpx 8rpx var(--primary-alpha-20);
+}
+
+.time-label {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.time-option.active .time-label {
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== 类型选择器 - 胶囊式精致设计 ==================== */
+.type-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+  padding: 0 8rpx;
+}
+
+.type-pill {
+  padding: 14rpx 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid var(--border-light);
+  border-radius: var(--radius-pill);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2rpx 6rpx var(--primary-alpha-05),
+    0 1rpx 2rpx rgba(0, 0, 0, 0.02);
+}
+
+.type-pill::before {
+  content: '';
+  position: absolute;
+  top: -2rpx;
+  left: -2rpx;
+  right: -2rpx;
+  bottom: -2rpx;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  opacity: 0;
+  transition: all 0.4s ease;
+  transform: scale(0.8);
+  border-radius: var(--radius-pill);
+  z-index: -1;
+}
+
+.type-pill.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.type-pill.active {
+  border-color: transparent;
+  transform: translateY(-2rpx);
+  box-shadow: var(--shadow-hover);
+}
+
+.type-label {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.type-pill.active .type-label {
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== 图表区域 - 高级卡片设计 ==================== */
+.chart-area {
+  background: var(--bg-card);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid var(--border-light);
+  position: relative;
+  margin-bottom: 8rpx;
+}
+
+.chart-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--primary-alpha-20) 20%,
+      var(--primary-alpha-30) 50%,
+      var(--primary-alpha-20) 80%,
+      transparent 100%);
+}
+
+/* ==================== 图表容器 ==================== */
+.chart-container {
+  position: relative;
+  /* 兼容性优化 */
+  overflow: visible;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* 允许触摸事件穿透，不阻止滚动 */
+  touch-action: pan-y;
+}
+
+.chart-canvas {
+  width: 100%;
+  height: 445rpx;
+  /* 默认高度 */
+  display: block;
+  padding: 16rpx;
+  box-sizing: border-box;
+  overflow: visible;
+  /* 优化 */
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* 强制硬件加速 */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  /* 解决canvas阻止滚动问题 */
+  pointer-events: auto;
+}
+
+
+/* ==================== 图表底部信息栏 ==================== */
+.chart-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg,
+      var(--bg-secondary) 0%,
+      var(--bg-tertiary) 100%);
+  border-top: 1rpx solid var(--border-light);
+  position: relative;
+}
+
+.chart-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24rpx;
+  right: 24rpx;
+  height: 1rpx;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--primary-alpha-15) 50%,
+      transparent 100%);
+}
+
+.record-count {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.latest-info {
+  font-size: 24rpx;
+  color: var(--primary-color);
+  font-weight: 600;
+  background: var(--primary-alpha-10);
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-md);
+  border: 1rpx solid var(--primary-alpha-20);
+}
+
+/* ==================== 空状态设计 ==================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 450rpx;
+  /* 默认高度 */
+  text-align: center;
+  background: linear-gradient(135deg,
+      var(--bg-secondary) 0%,
+      var(--bg-tertiary) 100%);
+  position: relative;
+}
+
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200rpx;
+  height: 200rpx;
+  background: radial-gradient(circle, var(--primary-alpha-10) 0%, var(--primary-alpha-05) 50%, transparent 100%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.empty-icon {
+  margin-bottom: 24rpx;
+  position: relative;
+  z-index: 1;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-message {
+  font-size: 32rpx;
+  color: var(--text-secondary);
+  margin-bottom: 16rpx;
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.empty-tip {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  position: relative;
+  z-index: 1;
+  line-height: 1.4;
+  max-width: 400rpx;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+/* ==================== 底部安全区域 ==================== */
+.bottom-space {
+  height: 80rpx;
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 375px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16rpx;
+  }
+
+  .time-options {
+    align-self: flex-end;
+  }
+
+  .type-selector {
+    padding: 0 4rpx;
+  }
+
+  .content {
+    padding: 20rpx 16rpx;
+  }
+}
+
+/* ==================== 滚动优化 ==================== */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* ==================== 微交互动画 ==================== */
+.chart-section {
+  animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chart-section:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.chart-section:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.chart-section:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 点击反馈 */
+.type-pill:active {
+  transform: translateY(0rpx) scale(0.96);
+}
+
+.time-option:active {
+  transform: translateY(0rpx) scale(0.95);
+}
+
+/* ==================== ECharts画布优化 ==================== */
+.chart-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: var(--radius-lg);
+}
+
+/* ==================== 背景装饰元素 ==================== */
+/* ==================== Canvas层级优化 ==================== */
+
+.health-chart-page::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, var(--primary-alpha-05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, var(--primary-alpha-05) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 40%, var(--primary-alpha-05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}

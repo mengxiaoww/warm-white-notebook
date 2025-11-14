@@ -1,0 +1,299 @@
+<view class="page-container">
+  <!-- 导航栏 -->
+  <t-navbar title="EB/巨细胞病毒" left-arrow bind:go-back="goBack" />
+  <!-- 页面内容 -->
+  <view class="content-container">
+    <!-- 今日统计 -->
+    <view class="today-stats">
+      <view class="stats-header">
+        <view class="stats-title">今日检测</view>
+        <view class="stats-count">{{todayStats.count}}次</view>
+      </view>
+      <view class="stats-details" wx:if="{{todayStats.count > 0}}">
+        <view class="stats-item">
+          <text class="stats-label">状态：</text>
+          <view class="stats-status {{todayStats.hasAbnormal ? 'status-warning' : 'status-normal'}}">
+            <view class="status-indicator"></view>
+            <text class="status-text">{{todayStats.hasAbnormal ? '有异常' : '正常'}}</text>
+          </view>
+        </view>
+        <view class="stats-item" wx:if="{{todayStats.hasAbnormal}}">
+          <text class="stats-label">异常：</text>
+          <text class="abnormal-info">{{todayStats.abnormalInfo}}</text>
+        </view>
+      </view>
+    </view>
+    <!-- 记录列表 -->
+    <view class="records-section">
+      <view class="section-header">
+        <text class="section-title">检测记录</text>
+      </view>
+      <view class="records-list" wx:if="{{records.length > 0}}">
+        <view class="record-item {{item.hasAbnormal ? 'record-abnormal' : ''}}" wx:for="{{records}}" wx:key="_id" bindtap="showDetail" data-id="{{item._id}}">
+          <view class="record-header">
+            <view class="record-date-time">
+              <text class="record-date">{{item.displayDate}}</text>
+              <text class="record-time">{{item.time}}</text>
+            </view>
+            <view class="record-status {{item.hasAbnormal ? 'status-warning' : 'status-normal'}}">
+              <view class="status-indicator-small"></view>
+              <text class="status-text">{{item.hasAbnormal ? '异常' : '正常'}}</text>
+            </view>
+          </view>
+          <view class="record-content">
+            <view class="virus-results">
+              <view class="virus-item" wx:if="{{item.ebvResult}}">
+                <text class="virus-label">EB病毒：</text>
+                <view class="virus-result {{item.ebvResult === '阳性' || item.ebvResult === '强阳性' ? 'result-positive' : 'result-negative'}}">
+                  {{item.ebvResult}}
+                </view>
+              </view>
+              <view class="virus-item" wx:if="{{item.cmvResult}}">
+                <text class="virus-label">巨细胞病毒：</text>
+                <view class="virus-result {{item.cmvResult === '阳性' || item.cmvResult === '强阳性' ? 'result-positive' : 'result-negative'}}">
+                  {{item.cmvResult}}
+                </view>
+              </view>
+            </view>
+            <view class="record-extra" wx:if="{{item.hospital || item.notesPreview}}">
+              <text class="extra-info" wx:if="{{item.hospital}}">医院：{{item.hospital}}</text>
+              <text class="extra-info" wx:if="{{item.notesPreview}}">备注：{{item.notesPreview}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{records.length === 0}}">
+        <t-icon name="precise-monitor" size="120rpx" color="#ddd" />
+        <text class="empty-text">暂无病毒检测记录</text>
+        <text class="empty-hint">点击下方按钮添加检测结果</text>
+      </view>
+    </view>
+  </view>
+  <!-- 添加按钮 -->
+  <view class="add-button-container">
+    <t-button theme="primary" size="large" icon="add" bind:tap="showAddDialog">添加检测记录</t-button>
+  </view>
+</view>
+<!-- 添加/编辑记录弹窗 -->
+<t-popup visible="{{showAddPopup}}" bind:visible-change="closeAddDialog" placement="bottom" show-overlay="{{true}}">
+  <view class="virus-popup-content">
+    <view class="virus-popup-header">
+      <text class="virus-popup-title">{{isEditing ? '编辑' : '添加'}}病毒检测记录</text>
+      <view class="virus-popup-close" bindtap="closeAddDialog">
+        <t-icon name="close" size="32rpx" color="#666" />
+      </view>
+    </view>
+    <scroll-view class="virus-form-container" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <view class="virus-form-content">
+        <view class="form-section">
+          <view class="form-item">
+            <text class="form-label">检测日期</text>
+            <view class="picker-input" bindtap="showDateSelector">
+              <text class="picker-text">{{formData.date || '请选择日期'}}</text>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="form-item">
+            <text class="form-label">检测时间</text>
+            <view class="picker-input" bindtap="showTimeSelector">
+              <text class="picker-text">{{formData.time || '请选择时间'}}</text>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="form-item">
+            <text class="form-label">检测方法</text>
+            <view class="picker-input" bindtap="showTestMethodSelector">
+              <text class="picker-text">{{formData.testMethod || '请选择检测方法'}}</text>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="form-item">
+            <text class="form-label">检测医院</text>
+            <t-input value="{{formData.hospital}}" placeholder="请输入检测医院" bind:change="onHospitalInput" class="form-input" />
+          </view>
+        </view>
+        <!-- EB病毒 -->
+        <view class="form-section">
+          <text class="section-label">EB病毒</text>
+          <view class="form-item">
+            <text class="form-label">DNA载量</text>
+            <t-input value="{{formData.ebvDNA}}" placeholder="请输入DNA载量（如：<500 IU/mL）" bind:change="onEbvDNAInput" class="form-input" />
+          </view>
+          <view class="form-item">
+            <text class="form-label">检测结果</text>
+            <view class="picker-input" bindtap="showEbvResultSelector">
+              <text class="picker-text">{{formData.ebvResult || '请选择检测结果'}}</text>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+        </view>
+        <!-- 巨细胞病毒 -->
+        <view class="form-section">
+          <text class="section-label">巨细胞病毒</text>
+          <view class="form-item">
+            <text class="form-label">DNA载量</text>
+            <t-input value="{{formData.cmvDNA}}" placeholder="请输入DNA载量（如：<500 IU/mL）" bind:change="onCmvDNAInput" class="form-input" />
+          </view>
+          <view class="form-item">
+            <text class="form-label">检测结果</text>
+            <view class="picker-input" bindtap="showCmvResultSelector">
+              <text class="picker-text">{{formData.cmvResult || '请选择检测结果'}}</text>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+        </view>
+        <view class="form-section">
+          <view class="form-item">
+            <text class="form-label">备注</text>
+            <t-textarea value="{{formData.notes}}" placeholder="请输入备注信息（可选）" bind:change="onNotesInput" maxlength="200" class="form-textarea" />
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <!-- 按钮区域 -->
+    <view class="virus-popup-buttons">
+      <view class="virus-btn virus-cancel-btn" bindtap="closeAddDialog">取消</view>
+      <view class="virus-btn virus-confirm-btn" bindtap="saveRecord">
+        {{isEditing ? '更新' : '保存'}}
+      </view>
+    </view>
+  </view>
+</t-popup>
+<!-- 详情弹窗 -->
+<t-popup visible="{{showDetailPopup}}" bind:visible-change="closeDetailDialog" placement="center" show-overlay="{{true}}">
+  <view class="record-detail-popup" wx:if="{{selectedRecord}}">
+    <view class="detail-header">
+      <text class="detail-title">病毒检测详情</text>
+      <view class="detail-close" bindtap="closeDetailDialog">
+        <t-icon name="close" size="32rpx" color="#666" />
+      </view>
+    </view>
+    <scroll-view class="detail-content" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <view class="detail-section">
+        <view class="detail-item">
+          <text class="detail-label">检测时间</text>
+          <text class="detail-value">{{selectedRecord.time}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedRecord.testMethod}}">
+          <text class="detail-label">检测方法</text>
+          <text class="detail-value">{{selectedRecord.testMethod}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedRecord.hospital}}">
+          <text class="detail-label">检测医院</text>
+          <text class="detail-value">{{selectedRecord.hospital}}</text>
+        </view>
+      </view>
+      <!-- EB病毒 -->
+      <view class="detail-section" wx:if="{{selectedRecord.ebvResult || selectedRecord.ebvDNA}}">
+        <view class="detail-section-title">
+          <t-icon name="precise-monitor" size="32rpx" color="white" />
+          EB病毒
+        </view>
+        <view class="detail-item" wx:if="{{selectedRecord.ebvDNA}}">
+          <text class="detail-label">DNA载量</text>
+          <text class="detail-value">{{selectedRecord.ebvDNA}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedRecord.ebvResult}}">
+          <text class="detail-label">检测结果</text>
+          <text class="detail-value result-highlight {{selectedRecord.ebvResult === '阳性' || selectedRecord.ebvResult === '强阳性' ? 'result-positive' : 'result-negative'}}">
+            {{selectedRecord.ebvResult}}
+          </text>
+        </view>
+      </view>
+      <!-- 巨细胞病毒 -->
+      <view class="detail-section" wx:if="{{selectedRecord.cmvResult || selectedRecord.cmvDNA}}">
+        <view class="detail-section-title">
+          <t-icon name="precise-monitor" size="32rpx" color="white" />
+          巨细胞病毒
+        </view>
+        <view class="detail-item" wx:if="{{selectedRecord.cmvDNA}}">
+          <text class="detail-label">DNA载量</text>
+          <text class="detail-value">{{selectedRecord.cmvDNA}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedRecord.cmvResult}}">
+          <text class="detail-label">检测结果</text>
+          <text class="detail-value result-highlight {{selectedRecord.cmvResult === '阳性' || selectedRecord.cmvResult === '强阳性' ? 'result-positive' : 'result-negative'}}">
+            {{selectedRecord.cmvResult}}
+          </text>
+        </view>
+      </view>
+      <!-- 备注 -->
+      <view class="detail-section" wx:if="{{selectedRecord.notes}}">
+        <view class="detail-item">
+          <text class="detail-label">备注</text>
+        </view>
+        <view class="detail-item detail-text-item">
+          <view class="detail-text-value">{{selectedRecord.notes}}</view>
+        </view>
+      </view>
+    </scroll-view>
+    <!-- 操作按钮 -->
+    <view class="detail-buttons">
+      <view class="detail-btn detail-edit-btn" bindtap="editRecord" data-id="{{selectedRecord._id}}">
+        编辑
+      </view>
+      <view class="detail-btn detail-delete-btn" bindtap="deleteRecord" data-id="{{selectedRecord._id}}">
+        删除
+      </view>
+      <view class="milestone-close-btn" bindtap="closeDetailDialog">
+        <t-icon name="close" size="28rpx" />
+      </view>
+    </view>
+  </view>
+</t-popup>
+<!-- 日期选择器 -->
+<t-date-time-picker visible="{{showDatePicker}}" mode="date" title="选择日期" value="{{formData.date}}" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" />
+<!-- 时间选择器 -->
+<t-date-time-picker visible="{{showTimePicker}}" mode="time" title="选择时间" value="{{formData.time}}" bind:confirm="onTimeConfirm" bind:cancel="onTimeCancel" />
+<!-- EB病毒结果选择器 -->
+<t-popup visible="{{showEbvResultPicker}}" bind:visible-change="closeEbvResultPicker" placement="bottom">
+  <view class="picker-popup">
+    <view class="picker-header">
+      <text class="picker-title">选择EB病毒结果</text>
+      <view class="picker-close" bindtap="closeEbvResultPicker">
+        <t-icon name="close" size="32rpx" color="#666" />
+      </view>
+    </view>
+    <scroll-view class="picker-options" scroll-y="true">
+      <view class="picker-option-item {{item.value === currentEbvResult ? 'picker-option-active' : ''}}" wx:for="{{ebvResultOptions}}" wx:key="value" bindtap="selectEbvResult" data-value="{{item.value}}">
+        <text class="option-text">{{item.label}}</text>
+        <t-icon name="check" size="32rpx" color="#9C27B0" wx:if="{{item.value === currentEbvResult}}" />
+      </view>
+    </scroll-view>
+  </view>
+</t-popup>
+<!-- 巨细胞病毒结果选择器 -->
+<t-popup visible="{{showCmvResultPicker}}" bind:visible-change="closeCmvResultPicker" placement="bottom">
+  <view class="picker-popup">
+    <view class="picker-header">
+      <text class="picker-title">选择巨细胞病毒结果</text>
+      <view class="picker-close" bindtap="closeCmvResultPicker">
+        <t-icon name="close" size="32rpx" color="#666" />
+      </view>
+    </view>
+    <scroll-view class="picker-options" scroll-y="true">
+      <view class="picker-option-item {{item.value === currentCmvResult ? 'picker-option-active' : ''}}" wx:for="{{cmvResultOptions}}" wx:key="value" bindtap="selectCmvResult" data-value="{{item.value}}">
+        <text class="option-text">{{item.label}}</text>
+        <t-icon name="check" size="32rpx" color="#9C27B0" wx:if="{{item.value === currentCmvResult}}" />
+      </view>
+    </scroll-view>
+  </view>
+</t-popup>
+<!-- 检测方法选择器 -->
+<t-popup visible="{{showTestMethodPicker}}" bind:visible-change="closeTestMethodPicker" placement="bottom">
+  <view class="picker-popup">
+    <view class="picker-header">
+      <text class="picker-title">选择检测方法</text>
+      <view class="picker-close" bindtap="closeTestMethodPicker">
+        <t-icon name="close" size="32rpx" color="#666" />
+      </view>
+    </view>
+    <scroll-view class="picker-options" scroll-y="true">
+      <view class="picker-option-item {{item.value === currentTestMethod ? 'picker-option-active' : ''}}" wx:for="{{testMethodOptions}}" wx:key="value" bindtap="selectTestMethod" data-value="{{item.value}}">
+        <text class="option-text">{{item.label}}</text>
+        <t-icon name="check" size="32rpx" color="#9C27B0" wx:if="{{item.value === currentTestMethod}}" />
+      </view>
+    </scroll-view>
+  </view>
+</t-popup>

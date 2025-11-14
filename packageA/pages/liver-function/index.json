@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar"
+  },
+  "navigationStyle": "custom"
+}

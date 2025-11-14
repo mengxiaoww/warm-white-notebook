@@ -1,0 +1,195 @@
+<!-- 用药记录页面 -->
+<view class="medication-container">
+  <!-- 顶部操作栏 -->
+  <view class="navbar">
+    <t-navbar title="用药记录" bind:left-click="navigateBack" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+      <view slot="left" class="custom-back-btn" bindtap="navigateBack">
+        <t-icon name="chevron-left" size="48rpx" color="white" />
+      </view>
+      <view slot="right" class="navbar-right">
+        <t-icon name="ellipsis" size="48rpx" color="white" bindtap="showMoreMenu" />
+      </view>
+    </t-navbar>
+  </view>
+  <view class="header-bar">
+    <view class="date-section" bindtap="showDatePicker">
+      <text class="date-text">{{selectedDate}}</text>
+      <t-icon name="caret-down-small" size="20" />
+    </view>
+    <view class="action-buttons">
+      <t-button theme="primary" size="small" icon="add" bindtap="addMedicine" class="add-record-btn">
+        添加药品
+      </t-button>
+    </view>
+  </view>
+  <!-- 今日用药状态 -->
+  <view class="today-status" wx:if="{{medicines.length > 0}}">
+    <view class="status-card">
+      <view class="status-header">
+        <text class="status-title">今日用药</text>
+        <text class="status-count">{{todayMedicineCount}} 种</text>
+      </view>
+      <view class="status-summary">
+        <text class="taken-count">已服用 {{takenCount}} 种</text>
+        <text class="pending-count" wx:if="{{pendingCount > 0}}">待服用 {{pendingCount}} 种</text>
+      </view>
+    </view>
+  </view>
+  <!-- 药品列表 -->
+  <view class="medicine-list" wx:if="{{medicines.length > 0}}">
+    <t-swipe-cell wx:for="{{medicines}}" wx:key="id">
+      <view class="medicine-card {{item.statusClass}}">
+        <view class="medicine-header">
+          <view class="medicine-info">
+            <text class="medicine-name">{{item.name}}</text>
+            <text class="medicine-dosage">{{item.dosage}}</text>
+          </view>
+          <view class="medicine-actions">
+            <!-- 状态显示 -->
+            <view class="medicine-status">
+              <text class="status-text {{item.statusClass}}">{{item.statusText}}</text>
+            </view>
+            <!-- 删除/停止按钮 -->
+            <view class="action-btn" bindtap="deleteMedicine" data-id="{{item.id}}">
+              <t-icon name="{{item.isHistoricalDate ? 'delete' : 'close-circle'}}" size="14" color="#666" />
+              <text class="action-text">{{item.isHistoricalDate ? '删除' : '停止'}}</text>
+            </view>
+            <!-- 只有没有设置分时段时才显示总开关 -->
+            <view wx:if="{{!item.timesPerDay || item.timesPerDay.length === 0}}" class="switch-container">
+              <text class="switch-label">{{item.taken ? '已服用' : '未服用'}}</text>
+              <t-switch value="{{item.taken}}" bindchange="toggleMedicineTaken" data-id="{{item.id}}" size="small" disabled="{{item.isFutureDate}}" />
+            </view>
+          </view>
+        </view>
+        <view class="medicine-details">
+          <view class="detail-item" wx:if="{{item.timesPerDayText}}">
+            <t-icon name="time" size="16" />
+            <text class="detail-text">{{item.timesPerDayText}}</text>
+          </view>
+          <view class="detail-item">
+            <t-icon name="calendar" size="16" />
+            <text class="detail-text">{{item.startDate}} 至 {{item.endDate}}</text>
+          </view>
+        </view>
+        <!-- 分时段服药状态 -->
+        <view class="medicine-time-slots" wx:if="{{item.timesPerDay && item.timesPerDay.length > 0}}">
+          <view class="time-slot-item" wx:for="{{item.timesPerDay}}" wx:key="*this" wx:for-item="timeSlot">
+            <view class="time-slot-info">
+              <text class="time-slot-label">{{timeSlot}}</text>
+              <text class="slot-status-text">
+                {{item.timeSlotStatus && item.timeSlotStatus[timeSlot] ? '已服用' : '未服用'}}
+              </text>
+            </view>
+            <t-switch value="{{item.timeSlotStatus && item.timeSlotStatus[timeSlot]}}" bindchange="toggleTimeSlotTaken" data-id="{{item.id}}" data-time-slot="{{timeSlot}}" size="small" disabled="{{item.isFutureDate}}" />
+          </view>
+        </view>
+        <view class="medicine-notes" wx:if="{{item.notes}}">
+          <text class="notes-text">备注：{{item.notes}}</text>
+        </view>
+      </view>
+      <view slot="right" class="swipe-actions">
+        <view class="swipe-btn edit-btn" bindtap="editMedicine" data-id="{{item.id}}">
+          <t-icon name="edit" size="20" />
+          <text>编辑</text>
+        </view>
+        <view class="swipe-btn delete-btn" bindtap="deleteMedicine" data-id="{{item.id}}">
+          <t-icon name="delete" size="20" />
+          <text>删除</text>
+        </view>
+      </view>
+    </t-swipe-cell>
+  </view>
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <t-icon name="candy" size="120" color="#ddd" />
+    <text class="empty-text">暂无用药记录</text>
+    <text class="empty-hint">点击"添加药品"开始记录</text>
+  </view>
+  <!-- 日期选择器 -->
+  <t-date-time-picker title="选择日期" visible="{{datePickerVisible}}" mode="date" value="{{selectedDateTimestamp}}" format="YYYY-MM-DD" bindconfirm="onDateConfirm" bindcancel="onDateCancel" />
+  <!-- 添加/编辑药品弹窗 -->
+  <t-popup visible="{{showMedicineDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+    <view class="medicine-dialog">
+      <view class="dialog-header">
+        <text class="dialog-title">{{isEditMode ? '编辑药品' : '添加药品'}}</text>
+        <view class="milestone-close-btn" bindtap="closeMedicineDialog">
+          <t-icon name="close" size="28rpx" />
+        </view>
+      </view>
+      <scroll-view class="dialog-content" scroll-y>
+        <t-cell-group>
+          <view bindtap="setPopupFocus" data-index="0">
+            <t-input label="药品名称" placeholder="请输入药品名称" value="{{medicineForm.name}}" bindchange="onFormInput" data-field="name" clearable bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="0" data-total="3" />
+          </view>
+          <view bindtap="setPopupFocus" data-index="1">
+            <t-input label="剂量规格" placeholder="如：500mg、10ml" value="{{medicineForm.dosage}}" bindchange="onFormInput" data-field="dosage" clearable bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="1" data-total="3" />
+          </view>
+          <t-cell title="服药时间" clickable bindtap="showTimeSelector">
+            <view slot="note" class="time-display">
+              <block wx:if="{{medicineForm.timesPerDayText}}">
+                <text class="selected-times">{{medicineForm.timesPerDayText}}</text>
+              </block>
+              <block wx:else>
+                <text class="placeholder">请选择服药时间</text>
+              </block>
+              <!-- 调试信息 -->
+              <!-- <text style="font-size: 20rpx; color: red; display: block;">调试: {{medicineForm.timesPerDay ? medicineForm.timesPerDay.length : 0}} 项 - {{medicineForm.timesPerDay}}</text> -->
+            </view>
+          </t-cell>
+          <t-cell title="开始日期" clickable bindtap="showStartDatePicker">
+            <text slot="note">{{medicineForm.startDate}}</text>
+          </t-cell>
+          <t-cell title="结束日期" clickable bindtap="showEndDatePicker">
+            <text slot="note">{{medicineForm.endDate}}</text>
+          </t-cell>
+          <view bindtap="setPopupFocus" data-index="2">
+            <t-input label="备注" placeholder="如：饭后服用" value="{{medicineForm.notes}}" bindchange="onFormInput" data-field="notes" type="textarea" maxlength="100" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="2" data-total="3" />
+          </view>
+        </t-cell-group>
+      </scroll-view>
+      <view class="dialog-footer">
+        <view class="cancel-btn" bindtap="closeMedicineDialog">取消</view>
+        <view class="save-btn" bindtap="saveMedicine">保存</view>
+      </view>
+    </view>
+  </t-popup>
+  <!-- 浮动的下一项/完成按钮（弹窗中） - 移到弹窗外以正确fixed定位 -->
+  <view wx:if="{{popupFocusIndex >= 0 && showMedicineDialog}}" class="floating-next-btn" catchtap="{{popupFocusIndex === 2 ? 'completePopupInput' : 'goToNextPopupInput'}}" data-index="{{popupFocusIndex}}">
+    <t-icon name="{{popupFocusIndex === 2 ? 'check' : 'chevron-down'}}" size="48rpx" color="white" />
+  </view>
+  <!-- 服药时间选择弹窗 -->
+  <t-popup visible="{{showTimeSelector}}" placement="bottom" bind:visible-change="onTimeSelectorVisibleChange">
+    <view class="time-selector">
+      <view class="selector-header">
+        <text class="selector-title">选择服药时间</text>
+        <view class="confirm-time-btn" bindtap="confirmTimeSelection">确定</view>
+      </view>
+      <view class="time-options">
+        <t-checkbox-group value="{{tempTimesPerDay}}" bindchange="onTimeSelect">
+          <view class="time-option-item">
+            <t-checkbox style="width: 520rpx;" value="早" label="早上" />
+            <view class="time-icon">🌅</view>
+          </view>
+          <view class="time-option-item">
+            <t-checkbox style="width: 520rpx;" value="中" label="中午" />
+            <view class="time-icon">☀️</view>
+          </view>
+          <view class="time-option-item">
+            <t-checkbox style="width: 520rpx;" value="晚" label="晚上" />
+            <view class="time-icon">🌙</view>
+          </view>
+          <view class="time-option-item">
+            <t-checkbox style="width: 520rpx;" value="睡前" label="睡前" />
+            <view class="time-icon">😴</view>
+          </view>
+        </t-checkbox-group>
+      </view>
+    </view>
+  </t-popup>
+  <!-- 开始日期选择器 -->
+  <t-date-time-picker title="选择开始日期" visible="{{startDatePickerVisible}}" mode="date" value="{{startDateTimestamp}}" format="YYYY-MM-DD" bindconfirm="onStartDateConfirm" bindcancel="onStartDateCancel" />
+  <!-- 结束日期选择器 -->
+  <t-date-time-picker title="选择结束日期" visible="{{endDatePickerVisible}}" mode="date" value="{{endDateTimestamp}}" format="YYYY-MM-DD" bindconfirm="onEndDateConfirm" bindcancel="onEndDateCancel" />
+  <!-- Dialog -->
+  <t-dialog id="t-dialog" />
+</view>

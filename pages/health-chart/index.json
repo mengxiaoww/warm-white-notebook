@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "ec-canvas": "../../ec-canvas/ec-canvas"
+  }
+}

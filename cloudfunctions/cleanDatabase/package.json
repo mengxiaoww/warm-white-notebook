@@ -1,0 +1,9 @@
+{
+  "name": "cleanDatabase",
+  "version": "1.0.0",
+  "description": "清理数据库，保留指定用户数据",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

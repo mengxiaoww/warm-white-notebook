@@ -1,0 +1,9 @@
+{
+  "name": "listAllUsers",
+  "version": "1.0.0",
+  "description": "列出所有用户及其档案和记录统计",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

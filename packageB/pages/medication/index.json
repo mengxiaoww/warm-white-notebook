@@ -1,0 +1,13 @@
+{
+  "usingComponents": {
+    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar",
+    "t-swipe-cell": "/miniprogram_npm/tdesign-miniprogram/swipe-cell/swipe-cell",
+    "t-switch": "/miniprogram_npm/tdesign-miniprogram/switch/switch",
+    "t-stepper": "/miniprogram_npm/tdesign-miniprogram/stepper/stepper",
+    "t-radio": "/miniprogram_npm/tdesign-miniprogram/radio/radio",
+    "t-radio-group": "/miniprogram_npm/tdesign-miniprogram/radio-group/radio-group",
+    "t-checkbox": "/miniprogram_npm/tdesign-miniprogram/checkbox/checkbox",
+    "t-checkbox-group": "/miniprogram_npm/tdesign-miniprogram/checkbox-group/checkbox-group"
+  },
+  "navigationStyle": "custom"
+}
