@@ -1126,7 +1126,7 @@ Page({
     }
 
     try {
-      const res = await db.collection('keyDates').where({ _openid: openid, profileId }).get();
+      const res = await db.collection('keyDates').where({ openid: openid, profileId }).get();
       const keyDates = (res.data || []).map(item => {
         const statusObj = this.getMilestoneStatus(item.date);
         return {
@@ -1349,7 +1349,7 @@ Page({
         // 新增
         await db.collection('keyDates').add({
           data: {
-            _openid: openid,
+            openid,
             profileId,
             title,
             date,
