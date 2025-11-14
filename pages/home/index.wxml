@@ -76,9 +76,9 @@
                   </view>
                 </view>
               </scroll-view>
-              <!-- 6个或以下时使用普通网格 -->
-              <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else bindtap="navigateToKeyDates">
-                <view class="milestone-card {{isSingleMilestone ? 'single-card' : ''}}" wx:for="{{keyDates}}" wx:key="id">
+              <!-- 6个或以下时使用普通网格，整个区域可点击 -->
+              <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else>
+                <view class="milestone-card {{isSingleMilestone ? 'single-card' : ''}}" wx:for="{{keyDates}}" wx:key="id" bindtap="navigateToKeyDates">
                   <view class="milestone-card-header">
                     <view class="milestone-card-title">{{item.title}}</view>
                     <view class="milestone-card-date">{{item.dateFormatted}}</view>

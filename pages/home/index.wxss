@@ -660,89 +660,222 @@ page {
 }
 
 .milestone-section {
-  background: #fff;
+  box-sizing: border-box;
+  width: 712rpx;
+  background: #FFFFFF;
   border-radius: 32rpx;
-  padding: 24rpx;
-  box-shadow: 0 16rpx 40rpx rgba(255, 152, 0, 0.12);
+  padding: 25rpx;
+  margin: 0 auto 15rpx auto;
+  box-shadow:
+    0 16rpx 40rpx rgba(212, 165, 116, 0.15),
+    0 8rpx 20rpx rgba(212, 165, 116, 0.12),
+    0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+  border: 1rpx solid rgba(212, 165, 116, 0.15);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
+/* 标题栏 - 完全参考个人档案的section-header */
 .milestone-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: none;
+  position: relative;
+}
+
+/* 装饰性下划线 */
+.milestone-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(212, 165, 116, 0.3) 20%,
+      rgba(212, 165, 116, 0.6) 50%,
+      rgba(212, 165, 116, 0.3) 80%,
+      transparent 100%);
+  border-radius: 2rpx;
 }
 
 .milestone-title-wrap {
   display: flex;
   align-items: center;
-  gap: 14rpx;
+  gap: 8rpx;
 }
 
 .milestone-title-group {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 2rpx;
 }
 
 .milestone-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #FF9800;
+  letter-spacing: 0.5rpx;
 }
 
 .milestone-subtitle {
-  font-size: 24rpx;
-  color: #a66b2b;
+  font-size: 22rpx;
+  color: #999;
+  font-weight: 400;
+  letter-spacing: 0.2rpx;
+}
+
+/* 编辑按钮 - 完全使用公共样式 */
+.milestone-edit-btn {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  background: linear-gradient(145deg, #FFF8F0 0%, #FFFFFF 100%);
+  border-radius: 24rpx;
+  color: #FF9800;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow:
+    0 6rpx 16rpx rgba(212, 165, 116, 0.2),
+    0 3rpx 8rpx rgba(212, 165, 116, 0.15),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid rgba(212, 165, 116, 0.25);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5rpx;
+}
+
+.milestone-edit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.8) 50%,
+      transparent 100%);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.milestone-edit-btn:active {
+  background: linear-gradient(145deg, #FFEFDE 0%, #FFF8F0 100%);
+  box-shadow:
+    0 3rpx 8rpx rgba(212, 165, 116, 0.25),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.6);
+  transform: translateY(1rpx);
+}
+
+.milestone-edit-text {
+  margin-left: 8rpx;
 }
 
 .milestone-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
+  min-height: 140rpx;
 }
 
+/* 里程碑网格 - 简单有效的2列布局 */
 .milestone-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16rpx 0;
+  width: 100%;
 }
 
-.milestone-grid.single-item {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.milestone-grid.single-item .milestone-card {
-  max-width: 100%;
-}
-
+/* 滚动视图样式 - 超过6个里程碑时使用 */
 .milestone-scroll {
-  white-space: nowrap;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .milestone-grid-scroll {
-  display: inline-flex;
-  gap: 20rpx;
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+  padding-bottom: 10rpx;
+  width: max-content;
 }
 
 .milestone-grid-scroll .milestone-card {
-  width: 400rpx;
+  width: 320rpx;
   flex-shrink: 0;
 }
 
+/* 里程碑卡片 - 简单固定宽度 */
 .milestone-card {
-  border-radius: 28rpx;
+  width: 49%;
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 50%, #ffffff 100%);
+  border-radius: 24rpx;
   padding: 24rpx;
-  background: linear-gradient(135deg, #fff8f0 0%, #fffaf5 50%, #fff 100%);
   box-shadow:
-    0 8rpx 24rpx rgba(255, 152, 0, 0.12),
-    0 2rpx 8rpx rgba(255, 152, 0, 0.08),
+    0 8rpx 32rpx rgba(212, 165, 116, 0.12),
+    0 4rpx 16rpx rgba(212, 165, 116, 0.08),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.04),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
-  border: 1rpx solid rgba(255, 184, 77, 0.15);
+  border: 1rpx solid rgba(212, 165, 116, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
+/* 单个里程碑时占满整行 */
+.milestone-grid.single-item {
+  justify-content: flex-start;
+}
+
+.milestone-card.single-card {
+  width: 100%;
+  /* 横向布局，左右分布 */
+  flex-direction: row;
+  align-items: center;
+  padding: 32rpx 40rpx;
+  min-height: 180rpx;
+}
+
+/* 单个里程碑的头部信息 */
+.milestone-card.single-card .milestone-card-header {
+  flex: 1;
+  margin-bottom: 0;
+  margin-right: 32rpx;
+}
+
+/* 单个里程碑的主体（数字区域） */
+.milestone-card.single-card .milestone-card-body {
+  flex: none;
+  width: auto;
+  text-align: right;
+}
+
+/* 单个里程碑时数字样式调整 - 适配多位数 */
+.milestone-card.single-card .milestone-days-text {
+  font-size: 88rpx;
+  line-height: 1;
+}
+
+.milestone-card.single-card .milestone-status-text {
+  font-size: 26rpx;
+}
+
+.milestone-card.single-card .milestone-unit-text {
+  font-size: 30rpx;
+}
+
+/* 卡片内光效 */
 .milestone-card::before {
   content: '';
   position: absolute;
@@ -751,95 +884,209 @@ page {
   right: 0;
   height: 2rpx;
   background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 184, 77, 0.5) 50%,
-    transparent 100%);
+      transparent 0%,
+      rgba(255, 255, 255, 0.9) 50%,
+      transparent 100%);
+  border-radius: 24rpx 24rpx 0 0;
 }
 
 .milestone-card:active {
-  transform: scale(0.98);
+  transform: scale(0.96) translateY(1rpx);
   box-shadow:
-    0 4rpx 12rpx rgba(255, 152, 0, 0.15),
-    0 1rpx 4rpx rgba(255, 152, 0, 0.1);
+    0 6rpx 24rpx rgba(212, 165, 116, 0.15),
+    0 3rpx 12rpx rgba(212, 165, 116, 0.12),
+    0 2rpx 6rpx rgba(0, 0, 0, 0.06),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.6);
 }
 
+/* 卡片头部 - 精致版式 */
 .milestone-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
-  padding-bottom: 12rpx;
-  border-bottom: 1rpx dashed rgba(255, 152, 0, 0.15);
+  margin-bottom: 12rpx;
+  position: relative;
+  z-index: 2;
 }
 
 .milestone-card-title {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 700;
   color: #2c2c2c;
+  line-height: 1.2;
+  margin-bottom: 8rpx;
   letter-spacing: 0.5rpx;
-  max-width: 60%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .milestone-card-date {
   font-size: 24rpx;
-  color: #bf7b11;
+  color: #999;
   font-weight: 500;
-  background: rgba(255, 184, 77, 0.08);
-  padding: 4rpx 12rpx;
-  border-radius: 12rpx;
+  opacity: 0.8;
+  letter-spacing: 0.2rpx;
 }
 
+/* 卡片主体 - 左对齐倒数日显示 */
 .milestone-card-body {
+  flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 60rpx;
+  justify-content: flex-start;
+  text-align: left;
+  position: relative;
+  z-index: 2;
 }
 
 .milestone-text-line {
   display: flex;
   align-items: baseline;
+  justify-content: flex-start;
   gap: 6rpx;
-}
-
-.milestone-prefix-text,
-.milestone-suffix-text {
-  font-size: 26rpx;
-  color: #bf7b11;
-  font-weight: 500;
-}
-
-.milestone-days-highlight {
-  font-size: 48rpx;
-  font-weight: 800;
-  color: #ff9800;
   line-height: 1;
-  text-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.3);
+}
+
+.milestone-status-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #2c2c2c;
+  opacity: 0.8;
+  letter-spacing: 0.5rpx;
+  min-width: 80rpx;
+  white-space: nowrap;
 }
 
 .milestone-full-text {
-  font-size: 32rpx;
+  font-size: 42rpx;
+  font-weight: 600;
+  background: linear-gradient(135deg,
+      #FF9800 0%,
+      #FFB84D 40%,
+      #FFCC80 70%,
+      #FFE0B3 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.2);
+}
+
+.milestone-prefix-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #666;
+  margin-right: 8rpx;
+  line-height: 1.2;
+}
+
+.milestone-days-highlight {
+  font-size: 34rpx;
   font-weight: 700;
-  color: #ff9800;
-  text-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.25);
+  background: linear-gradient(135deg,
+      #FF9800 0%,
+      #FFB84D 40%,
+      #FFCC80 70%,
+      #FFE0B3 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  line-height: 1.2;
+  text-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.2);
+}
+
+.milestone-days-text {
+  font-size: 72rpx;
+  font-weight: 900;
+  background: linear-gradient(135deg,
+      #FF9800 0%,
+      #FFB84D 40%,
+      #FFCC80 70%,
+      #FFE0B3 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  line-height: 0.9;
+  margin: 0 4rpx;
+  text-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.2);
+  position: relative;
+}
+
+/* 数字阴影效果 */
+.milestone-days-text::before {
+  content: attr(data-days);
+  position: absolute;
+  top: 2rpx;
+  left: 2rpx;
+  color: rgba(255, 152, 0, 0.08);
+  z-index: -1;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.milestone-unit-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #FF9800;
+  opacity: 0.9;
+  letter-spacing: 0.5rpx;
 }
 
 .milestone-empty {
-  border-radius: 24rpx;
-  padding: 48rpx 24rpx;
-  background: linear-gradient(135deg, #fff8f0 0%, #fff5e6 100%);
-  text-align: center;
-  border: 2rpx dashed rgba(255, 152, 0, 0.25);
-  cursor: pointer;
-  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48rpx 32rpx;
+  background: linear-gradient(145deg, #FAFAFA 0%, #F8F8F8 100%);
+  border-radius: 20rpx;
+  border: 2rpx solid rgba(255, 184, 77, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
-.milestone-empty:active {
-  transform: scale(0.98);
-  background: linear-gradient(135deg, #fff5e6 0%, #fff8f0 100%);
+.milestone-empty::before {
+  content: '';
+  position: absolute;
+  top: -10rpx;
+  left: -10rpx;
+  right: -10rpx;
+  bottom: -10rpx;
+  background: linear-gradient(45deg,
+      rgba(255, 184, 77, 0.05) 0%,
+      rgba(255, 204, 128, 0.03) 25%,
+      rgba(255, 184, 77, 0.05) 50%,
+      rgba(255, 204, 128, 0.03) 75%,
+      rgba(255, 184, 77, 0.05) 100%);
+  background-size: 40rpx 40rpx;
+  opacity: 0.3;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.1;
+  }
+}
+
+.milestone-empty .empty-title {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  margin-top: 16rpx;
+  font-weight: 600;
+  z-index: 2;
+  position: relative;
+}
+
+.milestone-empty .empty-desc {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  margin-top: 8rpx;
+  z-index: 2;
+  position: relative;
+  opacity: 0.8;
 }
 
 .milestone-empty .empty-text {
@@ -847,6 +1094,8 @@ page {
   color: #bf7b11;
   font-size: 28rpx;
   font-weight: 500;
+  z-index: 2;
+  position: relative;
 }
 
 .empty-state-premium {
@@ -886,8 +1135,6 @@ page {
     opacity: 0;
   }
 }
-
-
 /* ==================== 背景装饰元素 ==================== */
 /* ==================== Canvas层级优化 ==================== */
 
