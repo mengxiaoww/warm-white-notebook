@@ -243,13 +243,43 @@ class SimpleChart {
       return { x, y, value, originalIndex: actualIndex };
     });
 
-    // 绘制区域填充
+    // 绘制区域填充 - 支持平滑曲线
     if (series.areaStyle) {
+      const smooth = series.smooth;
+
       ctx.beginPath();
       ctx.moveTo(points[0].x, area.y + area.height);
-      points.forEach(point => {
-        ctx.lineTo(point.x, point.y);
-      });
+      ctx.lineTo(points[0].x, points[0].y);
+
+      if (smooth && points.length > 2) {
+        // 使用贝塞尔曲线绘制平滑填充
+        for (let i = 0; i < points.length - 1; i++) {
+          const current = points[i];
+          const next = points[i + 1];
+
+          if (i === 0) {
+            const controlX = current.x + (next.x - current.x) * 0.5;
+            const controlY = current.y + (next.y - current.y) * 0.5;
+            ctx.quadraticCurveTo(controlX, controlY, next.x, next.y);
+          } else {
+            const prev = points[i - 1];
+            const smoothness = typeof smooth === 'number' ? smooth : 0.4;
+
+            const cp1x = current.x + (next.x - prev.x) * smoothness * 0.5;
+            const cp1y = current.y + (next.y - prev.y) * smoothness * 0.5;
+            const cp2x = next.x - (points[Math.min(i + 2, points.length - 1)].x - current.x) * smoothness * 0.5;
+            const cp2y = next.y - (points[Math.min(i + 2, points.length - 1)].y - current.y) * smoothness * 0.5;
+
+            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, next.x, next.y);
+          }
+        }
+      } else {
+        // 直线连接
+        points.forEach(point => {
+          ctx.lineTo(point.x, point.y);
+        });
+      }
+
       ctx.lineTo(points[points.length - 1].x, area.y + area.height);
       ctx.closePath();
 
@@ -259,19 +289,55 @@ class SimpleChart {
       ctx.fill();
     }
 
-    // 绘制折线
+    // 绘制折线 - 支持平滑曲线
     if (points.length > 1) {
       ctx.beginPath();
       ctx.strokeStyle = themeColor;
       ctx.lineWidth = 3;
+      ctx.lineCap = 'round'; // 圆角端点
+      ctx.lineJoin = 'round'; // 圆角连接
 
-      points.forEach((point, index) => {
-        if (index === 0) {
-          ctx.moveTo(point.x, point.y);
-        } else {
-          ctx.lineTo(point.x, point.y);
+      // 检查是否启用平滑曲线
+      const smooth = series.smooth;
+
+      if (smooth && points.length > 2) {
+        // 使用贝塞尔曲线绘制平滑曲线
+        ctx.moveTo(points[0].x, points[0].y);
+
+        for (let i = 0; i < points.length - 1; i++) {
+          const current = points[i];
+          const next = points[i + 1];
+
+          if (i === 0) {
+            // 第一段：使用二次贝塞尔曲线
+            const controlX = current.x + (next.x - current.x) * 0.5;
+            const controlY = current.y + (next.y - current.y) * 0.5;
+            ctx.quadraticCurveTo(controlX, controlY, next.x, next.y);
+          } else {
+            // 中间段：使用三次贝塞尔曲线实现更平滑的效果
+            const prev = points[i - 1];
+            const smoothness = typeof smooth === 'number' ? smooth : 0.4;
+
+            // 计算控制点
+            const cp1x = current.x + (next.x - prev.x) * smoothness * 0.5;
+            const cp1y = current.y + (next.y - prev.y) * smoothness * 0.5;
+            const cp2x = next.x - (points[Math.min(i + 2, points.length - 1)].x - current.x) * smoothness * 0.5;
+            const cp2y = next.y - (points[Math.min(i + 2, points.length - 1)].y - current.y) * smoothness * 0.5;
+
+            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, next.x, next.y);
+          }
         }
-      });
+      } else {
+        // 直线连接
+        points.forEach((point, index) => {
+          if (index === 0) {
+            ctx.moveTo(point.x, point.y);
+          } else {
+            ctx.lineTo(point.x, point.y);
+          }
+        });
+      }
+
       ctx.stroke();
     }
 
