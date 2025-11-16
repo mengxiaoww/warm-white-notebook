@@ -343,6 +343,30 @@ Page({
     }
   },
 
+  // 新建对话
+  newChat() {
+    if (this.data.messages.length === 0) return;
+
+    wx.showModal({
+      title: '新建对话',
+      content: '是否保存当前对话并新建？',
+      confirmText: '新建',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({
+            messages: [],
+            inputValue: ''
+          });
+          wx.showToast({
+            title: '已新建对话',
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
   // 清空对话
   clearChat() {
     wx.showModal({

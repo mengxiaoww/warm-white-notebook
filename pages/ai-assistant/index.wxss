@@ -1,42 +1,74 @@
-/* ==================== 参考ChatGPT设计的现代化界面 ==================== */
+/* ==================== ChatGPT风格AI助手界面 ==================== */
 
 /* 页面整体布局 */
 .ai-assistant-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%);
+  background: #F7F7F8;
   position: relative;
 }
 
-/* 清除按钮 */
-.clear-chat-btn {
+/* ==================== 顶部工具栏 ==================== */
+.chat-header {
   position: fixed;
-  top: 100rpx;
-  right: 32rpx;
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 88rpx;
   background: #FFFFFF;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border-bottom: 1rpx solid #E5E5EA;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24rpx;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.header-left,
+.header-right {
+  width: 100rpx;
+  display: flex;
+  align-items: center;
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.header-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.new-chat-btn,
+.clear-btn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: #F5F5F5;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.clear-chat-btn:active {
-  transform: scale(0.9);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+.new-chat-btn:active,
+.clear-btn:active {
+  background: #ECECF1;
+  transform: scale(0.95);
 }
 
-/* 消息容器 */
+/* ==================== 消息容器 ==================== */
 .message-container {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 180rpx;
+  padding-top: 88rpx;
+  padding-bottom: 160rpx;
   background: transparent;
 }
 
@@ -99,7 +131,7 @@
   max-width: 560rpx;
 }
 
-/* 示例问题 - 横向滚动胶囊设计 */
+/* 示例问题 */
 .example-questions {
   width: 100%;
   padding: 0 48rpx;
@@ -140,11 +172,6 @@
   color: #FF9F4D;
 }
 
-/* 隐藏快捷操作 */
-.quick-actions {
-  display: none;
-}
-
 /* ==================== 聊天消息 ==================== */
 .message-item {
   display: flex;
@@ -167,14 +194,10 @@
 }
 
 .message-item.user {
-  background: transparent;
   flex-direction: row-reverse;
 }
 
-.message-item.assistant {
-  background: transparent;
-}
-
+/* 头像样式 */
 .message-avatar {
   width: 56rpx;
   height: 56rpx;
@@ -183,10 +206,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
-.user-avatar {
+.message-avatar.user {
   background: linear-gradient(135deg, #FFB84D 0%, #FF9F4D 100%);
 }
 
@@ -194,7 +217,7 @@
   background: linear-gradient(135deg, #5B8DEF 0%, #6FA3FF 100%);
 }
 
-.system-avatar {
+.message-avatar.system {
   background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
 }
 
@@ -202,11 +225,11 @@
 .message-bubble {
   flex: 1;
   max-width: calc(100% - 76rpx);
+  display: flex;
+  flex-direction: column;
 }
 
 .message-item.user .message-bubble {
-  display: flex;
-  flex-direction: column;
   align-items: flex-end;
 }
 
@@ -222,6 +245,7 @@
   margin-bottom: 6rpx;
 }
 
+/* 用户消息气泡 */
 .message-item.user .message-text {
   background: linear-gradient(135deg, #FFB84D 0%, #FF9F4D 100%);
   color: #FFFFFF;
@@ -229,11 +253,20 @@
   box-shadow: 0 2rpx 12rpx rgba(255, 184, 77, 0.3);
 }
 
+/* AI消息气泡 */
 .message-item.assistant .message-text {
   background: #FFFFFF;
   color: #2C2C2C;
   border-radius: 18rpx 18rpx 18rpx 4rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 系统消息气泡 */
+.message-item.system .message-text {
+  background: #F0F9FF;
+  color: #1A73E8;
+  border-radius: 12rpx;
+  text-align: center;
 }
 
 .message-time {
@@ -243,10 +276,10 @@
 }
 
 /* 加载动画 */
-.message-item .loading-dots {
+.loading-dots {
   display: flex;
   gap: 8rpx;
-  padding: 16rpx 0;
+  padding: 16rpx 24rpx;
 }
 
 .loading-dots .dot {
@@ -276,11 +309,6 @@
   }
 }
 
-/* 错误消息 */
-.message-bubble.error .message-text {
-  color: #EF4444;
-}
-
 /* ==================== 输入框区域 ==================== */
 .input-container {
   position: fixed;
@@ -288,30 +316,23 @@
   left: 0;
   right: 0;
   background: #FFFFFF;
-  padding: 20rpx 32rpx;
-  padding-bottom: calc(20rpx + env(safe-area-inset-bottom) + 100rpx);
+  padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom) + 100rpx);
   z-index: 9999;
   box-sizing: border-box;
-  border-top: 1rpx solid #F0F0F0;
+  border-top: 1rpx solid #E5E5EA;
 }
 
 .input-wrapper {
   display: flex;
   align-items: center;
   gap: 12rpx;
-  background: #FFFFFF;
-  border: 2rpx solid #EEEEEE;
+  background: #F7F7F8;
   border-radius: 32rpx;
   padding: 12rpx 12rpx 12rpx 24rpx;
   max-width: 700rpx;
   margin: 0 auto;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
-}
-
-.input-wrapper:focus-within {
-  border-color: #FFB84D;
-  box-shadow: 0 6rpx 32rpx rgba(255, 184, 77, 0.25);
 }
 
 .message-input {
@@ -339,7 +360,7 @@
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: #F5F5F5;
+  background: #EEEEEE;
 }
 
 .send-button.active {

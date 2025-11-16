@@ -1,11 +1,23 @@
 <view class="ai-assistant-page">
-  <!-- 顶部清除按钮 -->
-  <view wx:if="{{messages.length > 0}}" class="clear-chat-btn" bindtap="clearChat">
-    <t-icon name="delete" size="32rpx" color="#999999" />
+  <!-- 顶部工具栏 -->
+  <view class="chat-header">
+    <view class="header-left">
+      <view class="new-chat-btn" bindtap="newChat">
+        <t-icon name="add" size="32rpx" color="#666666" />
+      </view>
+    </view>
+    <view class="header-center">
+      <text class="header-title">暖白记事本</text>
+    </view>
+    <view class="header-right">
+      <view wx:if="{{messages.length > 0}}" class="clear-btn" bindtap="clearChat">
+        <t-icon name="delete" size="32rpx" color="#666666" />
+      </view>
+    </view>
   </view>
 
   <!-- 聊天消息区域 -->
-  <scroll-view class="message-container" scroll-y scroll-into-view="{{scrollToId}}" enhanced show-scrollbar="false">
+  <scroll-view class="message-container" scroll-y scroll-into-view="{{scrollToId}}" enhanced show-scrollbar="{{false}}">
     <!-- 欢迎消息 -->
     <view wx:if="{{messages.length === 0}}" class="welcome-message">
       <view class="welcome-icon-wrapper">
@@ -27,30 +39,34 @@
 
     <!-- 消息列表 -->
     <view wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}" class="message-item {{item.role}}">
-      <view wx:if="{{item.role === 'assistant'}}" class="message-avatar">
-        <t-icon name="chat" size="40rpx" color="#FFB84D" />
+      <!-- AI助手头像 -->
+      <view wx:if="{{item.role === 'assistant'}}" class="message-avatar assistant">
+        <t-icon name="chat" size="36rpx" color="#FFFFFF" />
       </view>
 
-      <view wx:if="{{item.role === 'system'}}" class="message-avatar system-avatar">
-        <t-icon name="check-circle" size="40rpx" color="#4CAF50" />
+      <!-- 系统消息头像 -->
+      <view wx:elif="{{item.role === 'system'}}" class="message-avatar system">
+        <t-icon name="check-circle" size="36rpx" color="#FFFFFF" />
       </view>
 
-      <view class="message-bubble {{item.role}} {{item.isError ? 'error' : ''}}">
+      <!-- 消息内容 -->
+      <view class="message-bubble">
         <text class="message-text">{{item.content}}</text>
         <text class="message-time">{{item.time}}</text>
       </view>
 
-      <view wx:if="{{item.role === 'user'}}" class="message-avatar user-avatar">
-        <t-icon name="user" size="40rpx" color="#fff" />
+      <!-- 用户头像 -->
+      <view wx:if="{{item.role === 'user'}}" class="message-avatar user">
+        <t-icon name="user" size="36rpx" color="#FFFFFF" />
       </view>
     </view>
 
     <!-- 加载中提示 -->
     <view wx:if="{{isLoading}}" class="message-item assistant">
-      <view class="message-avatar">
-        <t-icon name="chat" size="40rpx" color="#FFB84D" />
+      <view class="message-avatar assistant">
+        <t-icon name="chat" size="36rpx" color="#FFFFFF" />
       </view>
-      <view class="message-bubble assistant loading">
+      <view class="message-bubble">
         <view class="loading-dots">
           <view class="dot"></view>
           <view class="dot"></view>
@@ -73,7 +89,7 @@
         confirm-type="send"
       />
       <view class="send-button {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
-        <t-icon name="send" size="44rpx" color="{{inputValue ? '#FFFFFF' : '#BBBBBB'}}" />
+        <t-icon name="send" size="40rpx" color="{{inputValue ? '#FFFFFF' : '#BBBBBB'}}" />
       </view>
     </view>
   </view>
