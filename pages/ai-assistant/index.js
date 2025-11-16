@@ -8,6 +8,10 @@ Page({
     isLoading: false,
     scrollToId: '',
 
+    // 历史对话抽屉
+    showHistoryDrawer: false,
+    conversations: [], // 历史对话列表
+
     // 快捷操作（整合后的版本）
     quickActions: [
       { id: 'blood', text: '记录血常规', icon: 'heart' },
@@ -368,15 +372,83 @@ Page({
   },
 
   // 显示历史对话抽屉
-  showHistoryDrawer() {
-    wx.showToast({
-      title: '历史对话功能开发中',
-      icon: 'none',
-      duration: 2000
+  async showHistoryDrawer() {
+    // 加载历史对话列表
+    await this.loadConversations();
+
+    this.setData({
+      showHistoryDrawer: true
     });
-    // TODO: 未来实现历史对话列表侧边栏
-    // 可以使用 wx.navigateTo 跳转到历史对话列表页面
-    // 或者使用自定义弹出层组件显示历史对话列表
+  },
+
+  // 隐藏历史对话抽屉
+  hideHistoryDrawer() {
+    this.setData({
+      showHistoryDrawer: false
+    });
+  },
+
+  // 加载历史对话列表
+  async loadConversations() {
+    try {
+      const app = getApp();
+      const openid = app.getOpenIdIfLoggedIn();
+      if (!openid) return;
+
+      // 按时间分组统计对话
+      const res = await db.collection('aiChatHistory')
+        .where({ openid: openid })
+        .orderBy('createTime', 'desc')
+        .limit(100)
+        .get();
+
+      // 按日期分组对话
+      const conversationMap = {};
+      res.data.forEach(msg => {
+        const date = msg.createTime.toLocaleDateString();
+        if (!conversationMap[date]) {
+          conversationMap[date] = {
+            date: date,
+            messages: [],
+            firstMessage: msg.content.substring(0, 30) + '...'
+          };
+        }
+        conversationMap[date].messages.push(msg);
+      });
+
+      const conversations = Object.values(conversationMap);
+
+      this.setData({ conversations });
+    } catch (error) {
+      console.error('加载历史对话失败:', error);
+    }
+  },
+
+  // 加载某个历史对话
+  async loadConversation(e) {
+    const { date } = e.currentTarget.dataset;
+    const conversation = this.data.conversations.find(c => c.date === date);
+
+    if (conversation) {
+      const messages = conversation.messages.map(item => ({
+        id: item._id,
+        role: item.role,
+        content: item.content,
+        time: item.time
+      }));
+
+      this.setData({
+        messages: messages,
+        showHistoryDrawer: false
+      });
+
+      setTimeout(() => this.scrollToBottom(), 200);
+    }
+  },
+
+  // 阻止事件冒泡
+  stopPropagation() {
+    // 空函数，用于阻止点击穿透
   },
 
   // 清空对话

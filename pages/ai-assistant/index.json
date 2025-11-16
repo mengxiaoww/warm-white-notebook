@@ -2,6 +2,8 @@
   "usingComponents": {
     "t-icon": "tdesign-miniprogram/icon/icon"
   },
-  "navigationStyle": "custom",
+  "navigationBarTitleText": "暖白记事本",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
   "enablePullDownRefresh": false
 }

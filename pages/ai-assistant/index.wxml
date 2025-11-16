@@ -93,4 +93,32 @@
       </view>
     </view>
   </view>
+
+  <!-- 历史对话抽屉 -->
+  <view class="history-drawer {{showHistoryDrawer ? 'show' : ''}}" catchtap="hideHistoryDrawer">
+    <view class="history-content" catchtap="stopPropagation">
+      <view class="history-header">
+        <text class="history-title">历史对话</text>
+        <view class="history-close" bindtap="hideHistoryDrawer">
+          <t-icon name="close" size="40rpx" color="#666666" />
+        </view>
+      </view>
+
+      <scroll-view class="history-list" scroll-y>
+        <view wx:if="{{conversations.length === 0}}" class="history-empty">
+          <t-icon name="chat-off" size="120rpx" color="#CCCCCC" />
+          <text class="empty-text">暂无历史对话</text>
+        </view>
+
+        <view wx:for="{{conversations}}" wx:key="date" class="history-item" bindtap="loadConversation" data-date="{{item.date}}">
+          <view class="history-item-header">
+            <t-icon name="chat" size="36rpx" color="#10A37F" />
+            <text class="history-date">{{item.date}}</text>
+          </view>
+          <text class="history-preview">{{item.firstMessage}}</text>
+          <text class="history-count">{{item.messages.length}} 条消息</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
 </view>
