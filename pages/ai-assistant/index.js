@@ -180,12 +180,16 @@ Page({
     } catch (error) {
       console.error('AI调用失败:', error);
 
-      // 判断是否是API密钥问题
+      // 判断错误类型并给出具体提示
       let errorContent = '抱歉,我遇到了一些问题,请稍后再试。';
 
-      if (error.message && error.message.includes('401')) {
+      const errorMsg = error.message || '';
+
+      if (errorMsg.includes('504003') || errorMsg.includes('timed out') || errorMsg.includes('FUNCTIONS_TIME_LIMIT_EXCEEDED')) {
+        errorContent = '⚠️ 云函数执行超时\n\n这可能是因为：\n1. 云函数超时设置太短(默认3秒)\n2. AI服务响应较慢\n\n解决方法：\n1. 打开云函数 callSiliconFlowAI/config.json\n2. 确认 timeout 设置为 60 秒\n3. 重新上传并部署云函数\n4. 如已配置,请稍后重试';
+      } else if (errorMsg.includes('401')) {
         errorContent = '⚠️ AI服务认证失败\n\n这是因为API密钥已过期或无效。\n\n解决方法：\n1. 访问 https://cloud.siliconflow.cn/account/ak\n2. 获取新的API密钥\n3. 在云函数 callSiliconFlowAI/config.js 中更新密钥\n4. 重新上传云函数';
-      } else if (error.message && error.message.includes('timeout')) {
+      } else if (errorMsg.includes('timeout')) {
         errorContent = '⚠️ 请求超时\n\n网络连接较慢或服务器响应超时,请稍后重试。';
       } else {
         errorContent = '抱歉,我遇到了一些问题,请稍后再试。\n\n错误信息: ' + (error.message || '未知错误');
@@ -205,7 +209,7 @@ Page({
       });
 
       wx.showToast({
-        title: error.message && error.message.includes('401') ? 'API密钥失效' : '请求失败',
+        title: errorMsg.includes('504003') ? '云函数超时' : (errorMsg.includes('401') ? 'API密钥失效' : '请求失败'),
         icon: 'none',
         duration: 2000
       });
