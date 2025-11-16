@@ -290,6 +290,8 @@
   background: #FAFAFA;
   border-radius: 24rpx;
   padding: 8rpx 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.2s ease;
 }
 
 .input-wrapper:focus-within {
