@@ -305,9 +305,8 @@
   background: transparent;
   border: none;
   outline: none;
-  min-height: 44rpx;
-  max-height: 200rpx;
-  line-height: 1.5;
+  height: 120rpx;
+  line-height: 40rpx;
   padding: 0;
   width: 100%;
 }

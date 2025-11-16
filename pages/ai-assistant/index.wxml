@@ -96,7 +96,7 @@
         placeholder="有什么可以帮您..."
         adjust-position="{{false}}"
         confirm-type="send"
-        auto-height
+        fixed="{{true}}"
         maxlength="-1"
         show-confirm-bar="{{false}}"
       />
