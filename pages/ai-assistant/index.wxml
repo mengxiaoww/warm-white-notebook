@@ -4,22 +4,14 @@
     <!-- 欢迎消息 -->
     <view wx:if="{{messages.length === 0}}" class="welcome-message">
       <view class="welcome-icon-wrapper">
-        <t-icon name="chat" size="48rpx" color="#FFFFFF" />
+        <t-icon name="chat" size="56rpx" color="#FFFFFF" />
       </view>
       <text class="welcome-title">暖白记事本</text>
       <text class="welcome-desc">您的智能健康助手，可以解答健康问题，也可以帮您记录健康数据</text>
 
-      <!-- 快捷操作 -->
-      <view class="quick-actions">
-        <view wx:for="{{quickActions}}" wx:key="id" class="quick-action-btn" bindtap="onQuickAction" data-action="{{item.id}}">
-          <t-icon name="{{item.icon}}" size="32rpx" color="#FFB84D" />
-          <text>{{item.text}}</text>
-        </view>
-      </view>
-
       <!-- 示例问题 -->
       <view class="example-questions">
-        <text class="example-title">你可以这样问我</text>
+        <text class="example-title">试试这些问题</text>
         <view class="example-list">
           <view wx:for="{{exampleQuestions}}" wx:key="index" class="example-item" bindtap="onExampleClick" data-question="{{item}}">
             {{item}}
@@ -71,12 +63,12 @@
         value="{{inputValue}}"
         bindinput="onInput"
         bindconfirm="sendMessage"
-        placeholder="输入健康问题或数据（如：白细胞3.2）..."
-        placeholder-style="color: #999"
+        placeholder="有什么可以帮您..."
+        adjust-position="{{false}}"
         confirm-type="send"
       />
       <view class="send-button {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
-        <t-icon name="send" size="40rpx" color="{{inputValue ? '#FFB84D' : '#ccc'}}" />
+        <t-icon name="send" size="44rpx" color="{{inputValue ? '#FFFFFF' : '#BBBBBB'}}" />
       </view>
     </view>
   </view>
