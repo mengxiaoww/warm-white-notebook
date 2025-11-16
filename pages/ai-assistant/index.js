@@ -40,6 +40,14 @@ Page({
     this.loadHistoryMessages();
   },
 
+  onReady() {
+    // 设置右上角菜单按钮
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage']
+    });
+  },
+
   onShow() {
     // 更新TabBar选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {

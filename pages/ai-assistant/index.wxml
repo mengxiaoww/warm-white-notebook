@@ -1,4 +1,9 @@
 <view class="ai-assistant-page">
+  <!-- 顶部清除按钮 -->
+  <view wx:if="{{messages.length > 0}}" class="clear-chat-btn" bindtap="clearChat">
+    <t-icon name="delete" size="32rpx" color="#999999" />
+  </view>
+
   <!-- 聊天消息区域 -->
   <scroll-view class="message-container" scroll-y scroll-into-view="{{scrollToId}}" enhanced show-scrollbar="false">
     <!-- 欢迎消息 -->

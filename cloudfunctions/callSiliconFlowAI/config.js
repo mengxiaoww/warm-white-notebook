@@ -2,7 +2,8 @@
 // 硅基流动API配置 - 直接使用本地配置，不依赖环境变量
 
 module.exports = {
-  // 硅基流动API密钥（已配置）
+  // 硅基流动API密钥（需要更新为有效密钥）
+  // 如果出现401错误，请访问 https://cloud.siliconflow.cn/account/ak 获取新密钥
   SILICONFLOW_API_KEY: 'sk-cndegqdbkovskqyxtggodvbnbrkjhvvothawanetjlabmqva',
 
   // API配置
