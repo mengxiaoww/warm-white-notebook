@@ -1,13 +1,13 @@
 <view class="ai-assistant-page">
-  <!-- 顶部浮动按钮 -->
-  <view class="float-header">
-    <view class="menu-btn" bindtap="showHistoryDrawer">
-      <t-icon name="menu" size="40rpx" color="#FFFFFF" />
-      <text>历史</text>
+  <!-- 顶部操作按钮 -->
+  <view class="top-actions">
+    <view class="action-btn" bindtap="clearAllMessages">
+      <t-icon name="delete" size="32rpx" color="#FFFFFF" />
+      <text>清除记录</text>
     </view>
-    <view class="new-chat-btn" bindtap="newChat">
-      <t-icon name="edit" size="40rpx" color="#FFFFFF" />
-      <text>新建</text>
+    <view class="action-btn" bindtap="showSettings">
+      <t-icon name="setting" size="32rpx" color="#FFFFFF" />
+      <text>设置</text>
     </view>
   </view>
 
@@ -41,26 +41,34 @@
 
     <!-- 消息列表 -->
     <view wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}" class="message-item {{item.role}}">
-      <!-- AI助手头像 -->
-      <view wx:if="{{item.role === 'assistant'}}" class="message-avatar assistant">
-        <t-icon name="chat" size="40rpx" color="#FFFFFF" />
-      </view>
+      <!-- 用户消息：无头像，无时间，文字靠右 -->
+      <block wx:if="{{item.role === 'user'}}">
+        <view class="message-bubble">
+          <text class="message-text">{{item.content}}</text>
+        </view>
+      </block>
 
-      <!-- 系统消息头像 -->
-      <view wx:elif="{{item.role === 'system'}}" class="message-avatar system">
-        <t-icon name="check-circle" size="40rpx" color="#FFFFFF" />
-      </view>
+      <!-- AI助手消息：头像在左边 -->
+      <block wx:elif="{{item.role === 'assistant'}}">
+        <view class="message-avatar assistant">
+          <t-icon name="chat" size="40rpx" color="#FFFFFF" />
+        </view>
+        <view class="message-bubble">
+          <text class="message-text">{{item.content}}</text>
+          <text class="message-time">{{item.time}}</text>
+        </view>
+      </block>
 
-      <!-- 消息内容 -->
-      <view class="message-bubble">
-        <text class="message-text">{{item.content}}</text>
-        <text class="message-time">{{item.time}}</text>
-      </view>
-
-      <!-- 用户头像 -->
-      <view wx:if="{{item.role === 'user'}}" class="message-avatar user">
-        <t-icon name="user" size="40rpx" color="#FFFFFF" />
-      </view>
+      <!-- 系统消息：头像在左边 -->
+      <block wx:elif="{{item.role === 'system'}}">
+        <view class="message-avatar system">
+          <t-icon name="check-circle" size="40rpx" color="#FFFFFF" />
+        </view>
+        <view class="message-bubble">
+          <text class="message-text">{{item.content}}</text>
+          <text class="message-time">{{item.time}}</text>
+        </view>
+      </block>
     </view>
 
     <!-- 加载中提示 -->
@@ -81,6 +89,11 @@
   <!-- 输入区域 -->
   <view class="input-container">
     <view class="input-wrapper">
+      <!-- 图片上传按钮 -->
+      <view class="image-upload-btn" bindtap="chooseImage">
+        <t-icon name="image" size="48rpx" color="#FFB84D" />
+      </view>
+
       <input
         class="message-input"
         value="{{inputValue}}"
@@ -94,33 +107,15 @@
         <t-icon name="send" size="44rpx" color="{{inputValue ? '#FFFFFF' : '#999999'}}" />
       </view>
     </view>
-  </view>
 
-  <!-- 历史对话抽屉 -->
-  <view class="history-drawer {{showHistoryDrawer ? 'show' : ''}}" catchtap="hideHistoryDrawer">
-    <view class="history-content" catchtap="stopPropagation">
-      <view class="history-header">
-        <text class="history-title">历史对话</text>
-        <view class="history-close" bindtap="hideHistoryDrawer">
-          <t-icon name="close" size="40rpx" color="#FFFFFF" />
-        </view>
+    <!-- 已选择的图片预览 -->
+    <view wx:if="{{selectedImage}}" class="image-preview">
+      <image class="preview-image" src="{{selectedImage}}" mode="aspectFill" />
+      <view class="remove-image" bindtap="removeImage">
+        <t-icon name="close-circle-filled" size="48rpx" color="#FF4444" />
       </view>
-
-      <scroll-view class="history-list" scroll-y>
-        <view wx:if="{{conversations.length === 0}}" class="history-empty">
-          <t-icon name="chat-off" size="120rpx" color="#CCCCCC" />
-          <text class="empty-text">暂无历史对话</text>
-        </view>
-
-        <view wx:for="{{conversations}}" wx:key="date" class="history-item" bindtap="loadConversation" data-date="{{item.date}}">
-          <view class="history-item-header">
-            <t-icon name="chat" size="36rpx" color="#FF9F4D" />
-            <text class="history-date">{{item.date}}</text>
-          </view>
-          <text class="history-preview">{{item.firstMessage}}</text>
-          <text class="history-count">{{item.messages.length}} 条消息</text>
-        </view>
-      </scroll-view>
     </view>
   </view>
+
+  <!-- 去掉历史对话抽屉 -->
 </view>

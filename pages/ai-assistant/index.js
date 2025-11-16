@@ -7,20 +7,9 @@ Page({
     inputValue: '',
     isLoading: false,
     scrollToId: '',
+    selectedImage: '', // 选中的图片
 
-    // 历史对话抽屉
-    showHistoryDrawer: false,
-    conversations: [], // 历史对话列表
-
-    // 快捷操作（整合后的版本）
-    quickActions: [
-      { id: 'blood', text: '记录血常规', icon: 'heart' },
-      { id: 'liver', text: '记录肝功能', icon: 'file-copy' },
-      { id: 'kidney', text: '记录肾功能', icon: 'file-copy' },
-      { id: 'virus', text: '记录病毒学', icon: 'file-copy' }
-    ],
-
-    // 示例问题（整合后的版本）
+    // 示例问题
     exampleQuestions: [
       '白细胞低怎么办？',
       '化疗后如何护理？',
@@ -34,7 +23,7 @@ Page({
       title: '暖白记事本'
     });
 
-    // 设置右上角清空按钮
+    // 设置导航栏颜色
     wx.setNavigationBarColor({
       frontColor: '#ffffff',
       backgroundColor: '#FFB84D'
@@ -45,11 +34,7 @@ Page({
   },
 
   onReady() {
-    // 设置右上角菜单按钮
-    wx.showShareMenu({
-      withShareTicket: true,
-      menus: ['shareAppMessage']
-    });
+    // 页面渲染完成
   },
 
   onShow() {
@@ -418,21 +403,33 @@ Page({
         .limit(100)
         .get();
 
+      console.log('历史对话数据:', res.data); // 调试日志
+
       // 按日期分组对话
       const conversationMap = {};
       res.data.forEach(msg => {
-        const date = msg.createTime.toLocaleDateString();
+        // 确保 createTime 是 Date 对象
+        const createTime = msg.createTime instanceof Date ? msg.createTime : new Date(msg.createTime);
+        // 格式化日期为 YYYY/MM/DD
+        const year = createTime.getFullYear();
+        const month = String(createTime.getMonth() + 1).padStart(2, '0');
+        const day = String(createTime.getDate()).padStart(2, '0');
+        const date = `${year}/${month}/${day}`;
+
+        console.log('消息日期:', date, '消息内容:', msg.content.substring(0, 20)); // 调试日志
+
         if (!conversationMap[date]) {
           conversationMap[date] = {
             date: date,
             messages: [],
-            firstMessage: msg.content.substring(0, 30) + '...'
+            firstMessage: msg.content.substring(0, 30) + (msg.content.length > 30 ? '...' : '')
           };
         }
         conversationMap[date].messages.push(msg);
       });
 
       const conversations = Object.values(conversationMap);
+      console.log('分组后的对话数量:', conversations.length); // 调试日志
 
       this.setData({ conversations });
     } catch (error) {
@@ -460,6 +457,94 @@ Page({
 
       setTimeout(() => this.scrollToBottom(), 200);
     }
+  },
+
+  // 选择图片
+  chooseImage() {
+    const that = this;
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success(res) {
+        const tempFilePath = res.tempFilePaths[0];
+        that.setData({
+          selectedImage: tempFilePath
+        });
+      }
+    });
+  },
+
+  // 移除图片
+  removeImage() {
+    this.setData({
+      selectedImage: ''
+    });
+  },
+
+  // 清除所有记录
+  clearAllMessages() {
+    const that = this;
+    wx.showModal({
+      title: '清除记录',
+      content: '确定要清除所有聊天记录吗？此操作不可恢复。',
+      confirmText: '清除',
+      confirmColor: '#FF4444',
+      success(res) {
+        if (res.confirm) {
+          that.setData({
+            messages: [],
+            selectedImage: ''
+          });
+          wx.showToast({
+            title: '已清除',
+            icon: 'success'
+          });
+
+          // 同时删除数据库中的记录
+          const app = getApp();
+          const openid = app.getOpenIdIfLoggedIn();
+          if (openid) {
+            db.collection('aiChatHistory')
+              .where({ openid: openid })
+              .remove()
+              .then(() => {
+                console.log('数据库记录已清除');
+              })
+              .catch(err => {
+                console.error('清除数据库记录失败:', err);
+              });
+          }
+        }
+      }
+    });
+  },
+
+  // 显示设置
+  showSettings() {
+    wx.showActionSheet({
+      itemList: ['更换AI模型', '调整回复风格', '查看使用说明'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          wx.showToast({
+            title: '功能开发中',
+            icon: 'none'
+          });
+        } else if (res.tapIndex === 1) {
+          wx.showToast({
+            title: '功能开发中',
+            icon: 'none'
+          });
+        } else if (res.tapIndex === 2) {
+          wx.showModal({
+            title: '使用说明',
+            content: '1. 您可以直接提问健康相关问题\n2. 您可以描述检验数据，AI会自动帮您记录\n3. 支持上传检验报告图片进行识别',
+            showCancel: false,
+            confirmText: '知道了'
+          });
+        }
+      }
+    });
   },
 
   // 阻止事件冒泡
