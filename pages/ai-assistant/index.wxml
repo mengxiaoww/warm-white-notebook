@@ -4,10 +4,10 @@
     <!-- 欢迎消息 -->
     <view wx:if="{{messages.length === 0}}" class="welcome-message">
       <view class="welcome-icon-wrapper">
-        <t-icon name="heart" size="64rpx" color="#FFB84D" />
+        <t-icon name="chat" size="48rpx" color="#FFFFFF" />
       </view>
-      <text class="welcome-title">你好，我是暖白助手</text>
-      <text class="welcome-desc">我可以帮你解答健康问题，也可以帮你记录健康数据</text>
+      <text class="welcome-title">暖白记事本</text>
+      <text class="welcome-desc">您的智能健康助手，可以解答健康问题，也可以帮您记录健康数据</text>
 
       <!-- 快捷操作 -->
       <view class="quick-actions">
