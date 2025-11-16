@@ -1,27 +1,27 @@
 <view class="ai-assistant-page">
-  <!-- 顶部工具栏 -->
-  <view class="chat-header">
-    <view class="header-left">
-      <view class="new-chat-btn" bindtap="newChat">
-        <t-icon name="add" size="32rpx" color="#666666" />
-      </view>
+  <!-- 顶部浮动按钮 -->
+  <view class="float-header">
+    <view class="menu-btn" bindtap="showHistoryDrawer">
+      <t-icon name="menu" size="48rpx" color="#1A1A1A" />
     </view>
-    <view class="header-center">
-      <text class="header-title">暖白记事本</text>
-    </view>
-    <view class="header-right">
-      <view wx:if="{{messages.length > 0}}" class="clear-btn" bindtap="clearChat">
-        <t-icon name="delete" size="32rpx" color="#666666" />
-      </view>
+    <view class="new-chat-btn" bindtap="newChat">
+      <t-icon name="edit" size="48rpx" color="#1A1A1A" />
     </view>
   </view>
 
   <!-- 聊天消息区域 -->
-  <scroll-view class="message-container" scroll-y scroll-into-view="{{scrollToId}}" enhanced show-scrollbar="{{false}}">
+  <scroll-view
+    class="message-container"
+    scroll-y
+    scroll-into-view="{{scrollToId}}"
+    enhanced
+    show-scrollbar="{{false}}"
+    scroll-with-animation="{{true}}">
+
     <!-- 欢迎消息 -->
     <view wx:if="{{messages.length === 0}}" class="welcome-message">
       <view class="welcome-icon-wrapper">
-        <t-icon name="chat" size="56rpx" color="#FFFFFF" />
+        <t-icon name="chat" size="64rpx" color="#FFFFFF" />
       </view>
       <text class="welcome-title">暖白记事本</text>
       <text class="welcome-desc">您的智能健康助手，可以解答健康问题，也可以帮您记录健康数据</text>
@@ -41,12 +41,12 @@
     <view wx:for="{{messages}}" wx:key="id" id="msg-{{item.id}}" class="message-item {{item.role}}">
       <!-- AI助手头像 -->
       <view wx:if="{{item.role === 'assistant'}}" class="message-avatar assistant">
-        <t-icon name="chat" size="36rpx" color="#FFFFFF" />
+        <t-icon name="chat" size="40rpx" color="#FFFFFF" />
       </view>
 
       <!-- 系统消息头像 -->
       <view wx:elif="{{item.role === 'system'}}" class="message-avatar system">
-        <t-icon name="check-circle" size="36rpx" color="#FFFFFF" />
+        <t-icon name="check-circle" size="40rpx" color="#FFFFFF" />
       </view>
 
       <!-- 消息内容 -->
@@ -57,14 +57,14 @@
 
       <!-- 用户头像 -->
       <view wx:if="{{item.role === 'user'}}" class="message-avatar user">
-        <t-icon name="user" size="36rpx" color="#FFFFFF" />
+        <t-icon name="user" size="40rpx" color="#FFFFFF" />
       </view>
     </view>
 
     <!-- 加载中提示 -->
     <view wx:if="{{isLoading}}" class="message-item assistant">
       <view class="message-avatar assistant">
-        <t-icon name="chat" size="36rpx" color="#FFFFFF" />
+        <t-icon name="chat" size="40rpx" color="#FFFFFF" />
       </view>
       <view class="message-bubble">
         <view class="loading-dots">
@@ -89,7 +89,7 @@
         confirm-type="send"
       />
       <view class="send-button {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
-        <t-icon name="send" size="40rpx" color="{{inputValue ? '#FFFFFF' : '#BBBBBB'}}" />
+        <t-icon name="send" size="44rpx" color="{{inputValue ? '#FFFFFF' : '#999999'}}" />
       </view>
     </view>
   </view>
