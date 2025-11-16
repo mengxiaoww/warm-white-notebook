@@ -24,13 +24,17 @@
   - 日历视图与当日详情弹窗（当日所有记录聚合展示）
   - **功能项自定义编辑**：支持拖拽排序与显示开关控制，个性化功能项布局，配置数据按档案保存至云端
 
-- AI助手"暖白记事本"（`pages/ai-assistant`）
+- AI助手"暖白助手"（`pages/ai-assistant`）
 
-  - 智能对话：基于硅基流动API的国产大模型(通义千问)
-  - 健康咨询：专业的血液肿瘤相关健康建议
-  - 快速记录：通过对话快速记录健康数据
-  - 数据分析：智能分析健康趋势
-  - 温暖陪伴：贴合"暖白"主题的温馨交互体验
+  - **双模式智能交互**：
+    - 健康咨询模式：基于GLM-4-9B-Chat的专业血液肿瘤健康咨询
+    - 智能记录模式：通过自然语言快速记录健康数据
+  - **智能数据解析**：自动识别并解析血常规、肝肾功能、病毒学等检验指标
+  - **自动数据保存**：AI解析后的数据自动保存到对应的健康档案集合
+  - **对话历史**：保存完整对话记录到`aiChatHistory`集合，支持跨设备同步
+  - **快捷操作**：智能记录模式下提供快捷按钮（血常规/肝功能/肾功能/病毒学）
+  - **示例引导**：健康咨询模式下提供常见问题示例（白细胞低怎么办/化疗护理/GVHD解释等）
+  - **温暖交互**：贴合"暖白"主题的渐变橘黄UI设计
 
 - 健康档案（`pages/records`，原health-profile）
 
@@ -58,10 +62,10 @@
 
 - 微信小程序（基础库 ≥ 2.2.3），自定义 TabBar（`custom-tab-bar`）
 - 微信云开发（`wx.cloud`）+ 云数据库
-- 云函数：`getOpenId`、`initDatabase`、`ocrFunction`
+- 云函数：`getOpenId`、`initDatabase`、`ocrFunction`、`callSiliconFlowAI`
 - 组件库：TDesign Miniprogram（已 `miniprogram_npm` 集成）
 - 图表：ECharts（本地简化版）+ 自定义 `ec-canvas` 组件
-- AI集成：硅基流动API（SiliconFlow）+ 通义千问大模型
+- AI集成：硅基流动API（SiliconFlow）+ GLM-4-9B-Chat大模型
 
 ---
 
@@ -85,7 +89,7 @@ warm-white-notebook/
   ec-canvas/  # ECharts 封装
   custom-tab-bar/
   cloudfunctions/
-    getOpenId/ initDatabase/ ocrFunction/
+    getOpenId/ initDatabase/ ocrFunction/ callSiliconFlowAI/
   miniprogram_npm/tdesign-miniprogram/
 ```
 
@@ -107,6 +111,7 @@ warm-white-notebook/
   - `todayTasks`：openid、profileId、title、completed、date、createTime
   - `feedbacks`：openid、content、contact、createTime、status（pending/processing/resolved）
   - `functionCustomConfig`：openid、profileId、functionList[]（功能项配置）、createTime、updateTime
+  - `aiChatHistory`：**【新增】** openid、role（user/assistant/system）、content、time、mode（consultation/recording）、createTime（AI对话历史记录）
 
 - 检验与记录类
 
@@ -138,8 +143,11 @@ warm-white-notebook/
 - `getOpenId`：返回当前用户 `openid`（登录流程用）
 - `initDatabase`：初始化（或检查）集合存在性。当前函数仅覆盖部分集合，可按上述「数据库模型」自行补全（建议扩展为创建所有集合与通用索引）。
 - `ocrFunction`：调用微信 OCR（`openapi.ocr.printedText`）识别图片中的文字，已做格式与错误处理。
+- `callSiliconFlowAI`：**【新增】** 调用硅基流动AI API的云函数，支持双模式（健康咨询/智能记录），基于THUDM/glm-4-9b-chat模型。需要配置环境变量 `SILICONFLOW_API_KEY`。
 
-注意：`ocrFunction` 中的 `cloud.init` 目前固定为某环境 ID，如需迁移到你自己的环境，建议改为 `cloud.DYNAMIC_CURRENT_ENV` 或替换为你的 `envId`。
+注意：
+- `ocrFunction` 中的 `cloud.init` 目前固定为某环境 ID，如需迁移到你自己的环境，建议改为 `cloud.DYNAMIC_CURRENT_ENV` 或替换为你的 `envId`。
+- `callSiliconFlowAI` 需要在云函数环境变量中设置 `SILICONFLOW_API_KEY`，可从 https://cloud.siliconflow.cn/account/ak 获取。
 
 ---
 
