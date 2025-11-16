@@ -88,7 +88,7 @@
 
     <!-- 输入框 -->
     <view class="input-wrapper">
-      <input
+      <textarea
         class="message-input"
         value="{{inputValue}}"
         bindinput="onInput"
@@ -96,6 +96,9 @@
         placeholder="有什么可以帮您..."
         adjust-position="{{false}}"
         confirm-type="send"
+        auto-height
+        maxlength="-1"
+        show-confirm-bar="{{false}}"
       />
       <view class="send-button {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
         <t-icon name="send" size="44rpx" color="{{inputValue ? '#FFFFFF' : '#999999'}}" />
