@@ -114,10 +114,25 @@ function callSiliconFlowAPI(messages, mode = 'consultation', stream = false) {
               });
             }
           } else {
+            // 处理HTTP错误状态码
+            let errorMessage = `API请求失败: ${res.statusCode}`;
+            let errorDetails = data;
+
+            if (res.statusCode === 401) {
+              errorMessage = 'API密钥无效或已过期(401)';
+              errorDetails = '请访问 https://cloud.siliconflow.cn/account/ak 获取新密钥';
+            } else if (res.statusCode === 429) {
+              errorMessage = 'API请求频率超限(429)';
+              errorDetails = '请稍后再试';
+            } else if (res.statusCode === 500) {
+              errorMessage = 'API服务器错误(500)';
+              errorDetails = '服务器内部错误,请稍后再试';
+            }
+
             reject({
               success: false,
-              error: `API请求失败: ${res.statusCode}`,
-              details: data
+              error: errorMessage,
+              details: errorDetails
             });
           }
         } catch (error) {

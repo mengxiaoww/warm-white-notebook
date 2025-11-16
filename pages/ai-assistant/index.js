@@ -180,10 +180,21 @@ Page({
     } catch (error) {
       console.error('AI调用失败:', error);
 
+      // 判断是否是API密钥问题
+      let errorContent = '抱歉,我遇到了一些问题,请稍后再试。';
+
+      if (error.message && error.message.includes('401')) {
+        errorContent = '⚠️ AI服务认证失败\n\n这是因为API密钥已过期或无效。\n\n解决方法：\n1. 访问 https://cloud.siliconflow.cn/account/ak\n2. 获取新的API密钥\n3. 在云函数 callSiliconFlowAI/config.js 中更新密钥\n4. 重新上传云函数';
+      } else if (error.message && error.message.includes('timeout')) {
+        errorContent = '⚠️ 请求超时\n\n网络连接较慢或服务器响应超时,请稍后重试。';
+      } else {
+        errorContent = '抱歉,我遇到了一些问题,请稍后再试。\n\n错误信息: ' + (error.message || '未知错误');
+      }
+
       const errorMessage = {
         id: Date.now() + 1,
-        role: 'assistant',
-        content: '抱歉,我遇到了一些问题,请稍后再试。\n错误信息: ' + (error.message || '未知错误'),
+        role: 'system',
+        content: errorContent,
         time: this.formatTime(new Date()),
         isError: true
       };
@@ -194,8 +205,9 @@ Page({
       });
 
       wx.showToast({
-        title: '请求失败',
-        icon: 'none'
+        title: error.message && error.message.includes('401') ? 'API密钥失效' : '请求失败',
+        icon: 'none',
+        duration: 2000
       });
     }
   },

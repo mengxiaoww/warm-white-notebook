@@ -2,8 +2,15 @@
 // 硅基流动API配置 - 直接使用本地配置，不依赖环境变量
 
 module.exports = {
-  // 硅基流动API密钥（需要更新为有效密钥）
-  // 如果出现401错误，请访问 https://cloud.siliconflow.cn/account/ak 获取新密钥
+  // ⚠️ 硅基流动API密钥（当前密钥已失效，需要更新）
+  //
+  // 如何获取新密钥：
+  // 1. 访问 https://cloud.siliconflow.cn/account/ak
+  // 2. 登录后复制新的API密钥
+  // 3. 替换下面的 SILICONFLOW_API_KEY 值
+  // 4. 在微信开发者工具中右键该云函数，选择"上传并部署"
+  //
+  // 如果出现401错误，说明密钥无效或已过期，请按上述步骤更新
   SILICONFLOW_API_KEY: 'sk-cndegqdbkovskqyxtggodvbnbrkjhvvothawanetjlabmqva',
 
   // API配置
