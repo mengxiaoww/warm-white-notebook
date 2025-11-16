@@ -13,11 +13,8 @@
 .top-actions {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 20rpx 32rpx;
   z-index: 1000;
   background: transparent;
@@ -291,33 +288,43 @@
   box-sizing: border-box;
   border-top: 1rpx solid #F0F0F0;
   box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+}
+
+/* 左侧功能按钮组 */
+.input-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.action-icon-btn {
+  width: 68rpx;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FAFAFA;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.action-icon-btn:active {
+  transform: scale(0.92);
+  background: #F0F0F0;
 }
 
 .input-wrapper {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 12rpx;
   background: #FAFAFA;
   border-radius: 24rpx;
   padding: 8rpx 12rpx;
-}
-
-/* 图片上传按钮 */
-.image-upload-btn {
-  flex-shrink: 0;
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #FFFFFF;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-}
-
-.image-upload-btn:active {
-  transform: scale(0.95);
-  background: #FFF8F0;
 }
 
 .input-wrapper:focus-within {

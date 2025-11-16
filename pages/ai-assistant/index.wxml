@@ -1,10 +1,6 @@
 <view class="ai-assistant-page">
-  <!-- 顶部操作按钮 -->
+  <!-- 顶部设置按钮 -->
   <view class="top-actions">
-    <view class="action-btn" bindtap="clearAllMessages">
-      <t-icon name="delete" size="32rpx" color="#FFFFFF" />
-      <text>清除记录</text>
-    </view>
     <view class="action-btn" bindtap="showSettings">
       <t-icon name="setting" size="32rpx" color="#FFFFFF" />
       <text>设置</text>
@@ -88,12 +84,18 @@
 
   <!-- 输入区域 -->
   <view class="input-container">
-    <view class="input-wrapper">
-      <!-- 图片上传按钮 -->
-      <view class="image-upload-btn" bindtap="chooseImage">
+    <!-- 左侧功能按钮组 -->
+    <view class="input-actions">
+      <view class="action-icon-btn" bindtap="chooseImage">
         <t-icon name="image" size="48rpx" color="#FFB84D" />
       </view>
+      <view class="action-icon-btn" bindtap="clearAllMessages">
+        <t-icon name="delete" size="44rpx" color="#FF6B6B" />
+      </view>
+    </view>
 
+    <!-- 输入框 -->
+    <view class="input-wrapper">
       <input
         class="message-input"
         value="{{inputValue}}"
