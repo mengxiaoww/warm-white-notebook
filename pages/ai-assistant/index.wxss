@@ -285,12 +285,11 @@
 .input-wrapper {
   flex: 1;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 12rpx;
   background: #FAFAFA;
   border-radius: 24rpx;
-  padding: 12rpx;
-  min-height: 148rpx; /* 68rpx + 12rpx + 68rpx = 148rpx */
+  padding: 8rpx 12rpx;
 }
 
 .input-wrapper:focus-within {
@@ -308,8 +307,9 @@
   outline: none;
   min-height: 44rpx;
   max-height: 200rpx;
-  line-height: 44rpx;
-  padding: 8rpx 0;
+  line-height: 1.5;
+  padding: 0;
+  width: 100%;
 }
 
 .message-input::placeholder {
