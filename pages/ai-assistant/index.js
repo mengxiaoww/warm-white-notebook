@@ -367,6 +367,18 @@ Page({
     });
   },
 
+  // 显示历史对话抽屉
+  showHistoryDrawer() {
+    wx.showToast({
+      title: '历史对话功能开发中',
+      icon: 'none',
+      duration: 2000
+    });
+    // TODO: 未来实现历史对话列表侧边栏
+    // 可以使用 wx.navigateTo 跳转到历史对话列表页面
+    // 或者使用自定义弹出层组件显示历史对话列表
+  },
+
   // 清空对话
   clearChat() {
     wx.showModal({
