@@ -1,40 +1,25 @@
 <view class="ai-assistant-page">
-  <!-- 模式切换 -->
-  <view class="mode-switcher">
-    <view class="mode-tab {{mode === 'consultation' ? 'active' : ''}}" bindtap="switchMode" data-mode="consultation">
-      <t-icon name="chat" size="28rpx" color="{{mode === 'consultation' ? '#FFB84D' : '#999'}}" />
-      <text>健康咨询</text>
-    </view>
-    <view class="mode-tab {{mode === 'recording' ? 'active' : ''}}" bindtap="switchMode" data-mode="recording">
-      <t-icon name="edit" size="28rpx" color="{{mode === 'recording' ? '#4CAF50' : '#999'}}" />
-      <text>智能记录</text>
-    </view>
-    <view class="mode-clear-btn" bindtap="clearChat">
-      <t-icon name="delete" size="28rpx" color="#999" />
-    </view>
-  </view>
-
   <!-- 聊天消息区域 -->
   <scroll-view class="message-container" scroll-y scroll-into-view="{{scrollToId}}" enhanced show-scrollbar="false">
     <!-- 欢迎消息 -->
     <view wx:if="{{messages.length === 0}}" class="welcome-message">
       <view class="welcome-icon-wrapper">
-        <t-icon name="{{mode === 'consultation' ? 'chat' : 'edit'}}" size="60rpx" color="{{mode === 'consultation' ? '#FFB84D' : '#4CAF50'}}" />
+        <t-icon name="heart" size="64rpx" color="#FFB84D" />
       </view>
-      <text class="welcome-title">你好,我是暖白助手</text>
-      <text class="welcome-desc">{{mode === 'consultation' ? '我可以帮你解答血液肿瘤相关问题' : '我可以帮你快速记录健康数据'}}</text>
+      <text class="welcome-title">你好，我是暖白助手</text>
+      <text class="welcome-desc">我可以帮你解答健康问题，也可以帮你记录健康数据</text>
 
-      <!-- 快捷操作 (仅在记录模式显示) -->
-      <view wx:if="{{mode === 'recording'}}" class="quick-actions">
+      <!-- 快捷操作 -->
+      <view class="quick-actions">
         <view wx:for="{{quickActions}}" wx:key="id" class="quick-action-btn" bindtap="onQuickAction" data-action="{{item.id}}">
-          <t-icon name="{{item.icon}}" size="32rpx" color="#4CAF50" />
+          <t-icon name="{{item.icon}}" size="32rpx" color="#FFB84D" />
           <text>{{item.text}}</text>
         </view>
       </view>
 
-      <!-- 示例问题 (仅在咨询模式显示) -->
-      <view wx:if="{{mode === 'consultation'}}" class="example-questions">
-        <text class="example-title">常见问题</text>
+      <!-- 示例问题 -->
+      <view class="example-questions">
+        <text class="example-title">你可以这样问我</text>
         <view class="example-list">
           <view wx:for="{{exampleQuestions}}" wx:key="index" class="example-item" bindtap="onExampleClick" data-question="{{item}}">
             {{item}}
@@ -86,12 +71,12 @@
         value="{{inputValue}}"
         bindinput="onInput"
         bindconfirm="sendMessage"
-        placeholder="{{mode === 'consultation' ? '输入您的健康问题...' : '输入健康数据（如：今天白细胞3.2）...'}}"
+        placeholder="输入健康问题或数据（如：白细胞3.2）..."
         placeholder-style="color: #999"
         confirm-type="send"
       />
       <view class="send-button {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
-        <t-icon name="send" size="40rpx" color="{{inputValue ? (mode === 'consultation' ? '#FFB84D' : '#4CAF50') : '#ccc'}}" />
+        <t-icon name="send" size="40rpx" color="{{inputValue ? '#FFB84D' : '#ccc'}}" />
       </view>
     </view>
   </view>

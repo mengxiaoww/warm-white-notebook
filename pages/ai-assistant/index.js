@@ -2,16 +2,13 @@ const db = wx.cloud.database();
 
 Page({
   data: {
-    // 模式切换
-    mode: 'consultation', // 'consultation'(健康咨询) 或 'recording'(智能记录)
-
     // 消息相关
     messages: [],
     inputValue: '',
     isLoading: false,
     scrollToId: '',
 
-    // 快捷操作
+    // 快捷操作（整合后的版本）
     quickActions: [
       { id: 'blood', text: '记录血常规', icon: 'heart' },
       { id: 'liver', text: '记录肝功能', icon: 'file-copy' },
@@ -19,18 +16,24 @@ Page({
       { id: 'virus', text: '记录病毒学', icon: 'file-copy' }
     ],
 
-    // 示例问题
+    // 示例问题（整合后的版本）
     exampleQuestions: [
       '白细胞低怎么办？',
       '化疗后如何护理？',
-      '如何提高免疫力？',
+      '今天血常规：白细胞3.2，血小板80',
       'GVHD是什么？'
     ]
   },
 
   onLoad() {
     wx.setNavigationBarTitle({
-      title: '暖白助手'
+      title: '暖白记事本'
+    });
+
+    // 设置右上角清空按钮
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: '#FFB84D'
     });
 
     // 加载历史消息
@@ -42,20 +45,20 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 });
     }
+
+    // 添加右上角菜单
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage']
+    });
   },
 
-  // 切换模式
-  switchMode(e) {
-    const mode = e.currentTarget.dataset.mode;
-    this.setData({
-      mode: mode
-    });
-
-    wx.showToast({
-      title: mode === 'consultation' ? '切换到健康咨询' : '切换到智能记录',
-      icon: 'success',
-      duration: 1500
-    });
+  // 右上角菜单
+  onShareAppMessage() {
+    return {
+      title: '暖白记事本 - AI智能健康助手',
+      path: '/pages/ai-assistant/index'
+    };
   },
 
   // 快捷操作
@@ -79,8 +82,7 @@ Page({
     }
 
     this.setData({
-      inputValue: prompt,
-      mode: 'recording' // 自动切换到记录模式
+      inputValue: prompt
     });
   },
 
@@ -88,8 +90,7 @@ Page({
   onExampleClick(e) {
     const question = e.currentTarget.dataset.question;
     this.setData({
-      inputValue: question,
-      mode: 'consultation' // 自动切换到咨询模式
+      inputValue: question
     });
     this.sendMessage();
   },
@@ -121,8 +122,7 @@ Page({
       id: Date.now(),
       role: 'user',
       content: content,
-      time: this.formatTime(new Date()),
-      mode: this.data.mode
+      time: this.formatTime(new Date())
     };
 
     this.setData({
@@ -138,8 +138,8 @@ Page({
     this.saveMessage(userMessage, openid);
 
     try {
-      // 调用云函数
-      const result = await this.callAI(content, this.data.mode);
+      // 调用云函数（统一模式）
+      const result = await this.callAI(content);
 
       if (result.success) {
         // 添加AI回复
@@ -147,8 +147,7 @@ Page({
           id: Date.now() + 1,
           role: 'assistant',
           content: result.content,
-          time: this.formatTime(new Date()),
-          mode: this.data.mode
+          time: this.formatTime(new Date())
         };
 
         this.setData({
@@ -159,10 +158,8 @@ Page({
         // 保存AI消息到数据库
         this.saveMessage(assistantMessage, openid);
 
-        // 如果是智能记录模式，尝试解析并保存数据
-        if (this.data.mode === 'recording') {
-          this.parseAndSaveHealthData(result.content, openid);
-        }
+        // 智能判断：尝试解析并保存数据
+        this.parseAndSaveHealthData(result.content, openid);
 
         setTimeout(() => this.scrollToBottom(), 100);
       } else {
@@ -191,8 +188,8 @@ Page({
     }
   },
 
-  // 调用云函数请求AI
-  async callAI(userMessage, mode) {
+  // 调用云函数请求AI（统一模式）
+  async callAI(userMessage) {
     try {
       // 构建消息历史（保留最近10条）
       const recentMessages = this.data.messages
@@ -208,12 +205,12 @@ Page({
         content: userMessage
       });
 
-      // 调用云函数
+      // 调用云函数（使用unified模式）
       const res = await wx.cloud.callFunction({
         name: 'callSiliconFlowAI',
         data: {
           messages: recentMessages,
-          mode: mode,
+          mode: 'unified',  // 统一模式
           stream: false
         }
       });
@@ -345,6 +342,18 @@ Page({
       content: '确定要清空当前对话吗？',
       success: (res) => {
         if (res.confirm) {
+          // 清空数据库中的历史记录
+          const app = getApp();
+          const openid = app.getOpenIdIfLoggedIn();
+          if (openid) {
+            db.collection('aiChatHistory')
+              .where({ openid: openid })
+              .remove()
+              .then(() => {
+                console.log('历史记录已清空');
+              });
+          }
+
           this.setData({
             messages: [],
             inputValue: ''
