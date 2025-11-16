@@ -262,7 +262,7 @@
 /* ==================== 输入框区域 ==================== */
 .input-container {
   position: fixed;
-  bottom: 0;
+  bottom: 100rpx;
   left: 0;
   right: 0;
   background: #FFFFFF;
