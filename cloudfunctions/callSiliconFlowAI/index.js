@@ -1,13 +1,14 @@
 // 云函数：调用硅基流动AI API
 const https = require('https');
+const config = require('./config');
 
-// API配置 - 请在云函数环境变量中设置 SILICONFLOW_API_KEY
-const API_KEY = process.env.SILICONFLOW_API_KEY || 'YOUR_API_KEY_HERE';
-const API_URL = 'api.siliconflow.cn';
-const API_PATH = '/v1/chat/completions';
+// API配置 - 优先使用云函数环境变量，否则使用config.js配置
+const API_KEY = process.env.SILICONFLOW_API_KEY || config.SILICONFLOW_API_KEY;
+const API_URL = config.API_URL;
+const API_PATH = config.API_PATH;
 
 // GLM-4模型配置
-const MODEL = 'THUDM/glm-4-9b-chat';
+const MODEL = config.MODEL;
 
 // 系统提示词配置
 const SYSTEM_PROMPTS = {

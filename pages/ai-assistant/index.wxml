@@ -1,18 +1,17 @@
 <view class="ai-assistant-page">
-  <!-- 头部区域 -->
+  <!-- 头部区域 - 精简版 -->
   <view class="ai-header">
     <view class="ai-avatar-container">
       <view class="ai-avatar-glow"></view>
       <view class="ai-avatar">
-        <t-icon name="{{mode === 'consultation' ? 'chat' : 'edit'}}" size="60rpx" color="#FFFFFF" />
+        <t-icon name="{{mode === 'consultation' ? 'chat' : 'edit'}}" size="40rpx" color="#FFFFFF" />
       </view>
     </view>
     <view class="ai-title-group">
-      <text class="ai-title">暖白助手</text>
-      <text class="ai-subtitle">{{mode === 'consultation' ? '专业健康咨询' : '智能数据记录'}}</text>
+      <text class="ai-title">{{mode === 'consultation' ? '健康咨询' : '智能记录'}}</text>
     </view>
     <view class="clear-btn" bindtap="clearChat">
-      <t-icon name="delete" size="36rpx" color="#FFFFFF" />
+      <t-icon name="delete" size="32rpx" color="#FFFFFF" />
     </view>
   </view>
 
