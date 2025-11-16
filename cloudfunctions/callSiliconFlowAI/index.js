@@ -2,8 +2,8 @@
 const https = require('https');
 const config = require('./config');
 
-// API配置 - 优先使用云函数环境变量，否则使用config.js配置
-const API_KEY = process.env.SILICONFLOW_API_KEY || config.SILICONFLOW_API_KEY;
+// API配置 - 直接使用config.js配置
+const API_KEY = config.SILICONFLOW_API_KEY;
 const API_URL = config.API_URL;
 const API_PATH = config.API_PATH;
 

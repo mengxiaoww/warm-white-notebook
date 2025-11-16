@@ -1,29 +1,16 @@
 <view class="ai-assistant-page">
-  <!-- 头部区域 - 精简版 -->
-  <view class="ai-header">
-    <view class="ai-avatar-container">
-      <view class="ai-avatar-glow"></view>
-      <view class="ai-avatar">
-        <t-icon name="{{mode === 'consultation' ? 'chat' : 'edit'}}" size="40rpx" color="#FFFFFF" />
-      </view>
-    </view>
-    <view class="ai-title-group">
-      <text class="ai-title">{{mode === 'consultation' ? '健康咨询' : '智能记录'}}</text>
-    </view>
-    <view class="clear-btn" bindtap="clearChat">
-      <t-icon name="delete" size="32rpx" color="#FFFFFF" />
-    </view>
-  </view>
-
   <!-- 模式切换 -->
   <view class="mode-switcher">
     <view class="mode-tab {{mode === 'consultation' ? 'active' : ''}}" bindtap="switchMode" data-mode="consultation">
-      <t-icon name="chat" size="32rpx" color="{{mode === 'consultation' ? '#FFB84D' : '#999'}}" />
+      <t-icon name="chat" size="28rpx" color="{{mode === 'consultation' ? '#FFB84D' : '#999'}}" />
       <text>健康咨询</text>
     </view>
     <view class="mode-tab {{mode === 'recording' ? 'active' : ''}}" bindtap="switchMode" data-mode="recording">
-      <t-icon name="edit" size="32rpx" color="{{mode === 'recording' ? '#4CAF50' : '#999'}}" />
+      <t-icon name="edit" size="28rpx" color="{{mode === 'recording' ? '#4CAF50' : '#999'}}" />
       <text>智能记录</text>
+    </view>
+    <view class="mode-clear-btn" bindtap="clearChat">
+      <t-icon name="delete" size="28rpx" color="#999" />
     </view>
   </view>
 
