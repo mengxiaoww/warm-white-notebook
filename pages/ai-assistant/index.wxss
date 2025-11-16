@@ -19,31 +19,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: 32rpx;
-  padding-right: 32rpx;
+  padding-left: 24rpx;
+  padding-right: 24rpx;
   z-index: 1000;
   background: #FFFFFF;
-  border-bottom: 1rpx solid #F0F0F0;
+  border-bottom: 1rpx solid #E5E5EA;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
   pointer-events: none;
 }
 
 .menu-btn,
 .new-chat-btn {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  background: transparent;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 16rpx;
+  background: #F7F7F8;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
   pointer-events: auto;
+  border: 1rpx solid #E5E5EA;
 }
 
 .menu-btn:active,
 .new-chat-btn:active {
-  background: rgba(0, 0, 0, 0.05);
-  transform: scale(0.95);
+  background: #ECECF1;
+  transform: scale(0.94);
+  border-color: #D1D1D6;
 }
 
 /* ==================== 消息容器 ==================== */
@@ -52,7 +55,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: 88rpx;
-  padding-bottom: 180rpx;
+  padding-bottom: 160rpx;
   background: #FFFFFF;
 }
 
@@ -250,30 +253,32 @@
   left: 0;
   right: 0;
   background: #FFFFFF;
-  padding: 12rpx 32rpx;
-  padding-bottom: calc(12rpx + env(safe-area-inset-bottom) + 100rpx);
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom) + 100rpx);
   z-index: 9999;
   box-sizing: border-box;
-  border-top: 1rpx solid #D9D9E3;
+  border-top: 1rpx solid #E5E5EA;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .input-wrapper {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 12rpx;
   background: #F7F7F8;
-  border-radius: 24rpx;
-  padding: 16rpx 20rpx;
+  border-radius: 28rpx;
+  padding: 14rpx 18rpx;
   max-width: 100%;
   margin: 0 auto;
-  border: 2rpx solid transparent;
+  border: 2rpx solid #E5E5EA;
   transition: all 0.2s ease;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.02);
 }
 
 .input-wrapper:focus-within {
   border-color: #10A37F;
   background: #FFFFFF;
-  box-shadow: 0 0 0 4rpx rgba(16, 163, 127, 0.1);
+  box-shadow: 0 2rpx 16rpx rgba(16, 163, 127, 0.15);
 }
 
 .message-input {
@@ -336,12 +341,14 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 560rpx;
+  width: 620rpx;
+  max-width: 85%;
   background: #FFFFFF;
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  box-shadow: 4rpx 0 24rpx rgba(0, 0, 0, 0.12);
 }
 
 .history-drawer.show .history-content {
@@ -421,6 +428,10 @@
   line-height: 1.5;
   display: block;
   margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .history-count {
