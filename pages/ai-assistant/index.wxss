@@ -52,7 +52,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: calc(env(safe-area-inset-top) + 96rpx);
-  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+  padding-bottom: 240rpx;
   background: #FFFFFF;
 }
 
@@ -250,8 +250,8 @@
   left: 0;
   right: 0;
   background: #FFFFFF;
-  padding: 20rpx 32rpx;
-  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom) + 100rpx);
   z-index: 9999;
   box-sizing: border-box;
   border-top: 1rpx solid #D9D9E3;
