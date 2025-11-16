@@ -286,3 +286,145 @@
 .send-button.active:active {
   transform: scale(0.9);
 }
+
+/* ==================== 新增样式 ==================== */
+
+/* 清空按钮 */
+.clear-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  margin-left: auto;
+  transition: all 0.3s ease;
+}
+
+.clear-btn:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 模式切换器 */
+.mode-switcher {
+  display: flex;
+  background: #FFFFFF;
+  padding: 8rpx;
+  margin: 16rpx 32rpx;
+  border-radius: 48rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.mode-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #999;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.mode-tab.active {
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.1) 0%, rgba(255, 152, 0, 0.15) 100%);
+  color: #FFB84D;
+  box-shadow: 0 2rpx 8rpx rgba(255, 184, 77, 0.2);
+}
+
+.mode-tab:nth-child(2).active {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.15) 100%);
+  color: #4CAF50;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.2);
+}
+
+/* 快捷操作 */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 48rpx;
+  width: 100%;
+  padding: 0 32rpx;
+}
+
+.quick-action-btn {
+  flex: 0 0 calc(50% - 8rpx);
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  border: 2rpx solid #E0E0E0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.quick-action-btn:active {
+  transform: scale(0.96);
+  border-color: #4CAF50;
+  box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.2);
+}
+
+/* 示例问题 */
+.example-questions {
+  margin-top: 48rpx;
+  width: 100%;
+  padding: 0 32rpx;
+}
+
+.example-title {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 24rpx;
+  font-weight: 500;
+  display: block;
+}
+
+.example-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.example-item {
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  border: 2rpx solid #F0F0F0;
+  font-size: 26rpx;
+  color: #333;
+  transition: all 0.3s ease;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+}
+
+.example-item:active {
+  transform: translateX(8rpx);
+  border-color: #FFB84D;
+  box-shadow: 0 4rpx 12rpx rgba(255, 184, 77, 0.2);
+  color: #FFB84D;
+}
+
+/* 系统消息头像 */
+.system-avatar {
+  background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+}
+
+/* 错误消息样式 */
+.message-bubble.error {
+  background: #FFEBEE !important;
+  border: 2rpx solid #FFCDD2;
+}
+
+.message-bubble.error .message-text {
+  color: #D32F2F;
+}
