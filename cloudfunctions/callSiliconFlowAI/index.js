@@ -62,15 +62,6 @@ const SYSTEM_PROMPTS = {
  * @param {Boolean} stream - 是否使用流式响应
  */
 function callSiliconFlowAPI(messages, mode = 'consultation', stream = false) {
-  // Mock模式：用于API密钥失效时的测试
-  if (config.USE_MOCK_MODE) {
-    return Promise.resolve({
-      success: true,
-      content: '您好!我是暖白记事本AI助手。\n\n当前处于测试模式,真实的AI功能需要有效的API密钥才能使用。\n\n请访问 https://cloud.siliconflow.cn/account/ak 获取新的API密钥,然后在云函数配置中更新密钥并将 USE_MOCK_MODE 设置为 false。',
-      usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 }
-    });
-  }
-
   return new Promise((resolve, reject) => {
     // 添加系统提示词
     const systemMessage = {

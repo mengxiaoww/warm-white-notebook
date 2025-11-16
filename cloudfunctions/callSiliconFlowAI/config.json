@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "openapi": []
-  },
-  "timeout": 60,
-  "envVariables": {},
-  "runtime": "Nodejs16.13"
-}
