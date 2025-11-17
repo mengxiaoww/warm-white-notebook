@@ -13,8 +13,8 @@
       <view class="welcome-icon-wrapper">
         <t-icon name="chat" size="64rpx" color="#FFFFFF" />
       </view>
-      <text class="welcome-title">暖白记事本</text>
-      <text class="welcome-desc">您的智能健康助手，可以解答健康问题，也可以帮您记录健康数据</text>
+      <text class="welcome-title">您的智能健康助手</text>
+      <text class="welcome-desc">可以解答健康问题，也可以帮您记录健康数据</text>
 
       <!-- 示例问题 -->
       <view class="example-questions">

@@ -14,8 +14,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: 32rpx;
-  padding-bottom: 350rpx;
+  padding-bottom: 380rpx;
   background: #FFFFFF;
 }
 
@@ -267,8 +266,8 @@
 }
 
 .action-icon-btn {
-  width: 68rpx;
-  height: 68rpx;
+  width: 65rpx;
+  height: 65rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -309,7 +308,6 @@
   outline: none;
   height: 120rpx;
   line-height: 40rpx;
-  padding: 0;
   width: 100%;
 }
 
