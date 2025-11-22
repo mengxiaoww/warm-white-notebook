@@ -36,8 +36,12 @@
       <!-- 用户消息：无头像，无时间，文字靠右 -->
       <block wx:if="{{item.role === 'user'}}">
         <view class="message-bubble">
-          <!-- 如果有图片，显示图片 -->
-          <image wx:if="{{item.image}}" class="message-image" src="{{item.image}}" mode="widthFix" />
+          <!-- 如果有多张图片，显示所有图片 -->
+          <view wx:if="{{item.images && item.images.length > 0}}" class="message-images-grid">
+            <image wx:for="{{item.images}}" wx:key="index" wx:for-item="imgUrl" class="message-image" src="{{imgUrl}}" mode="widthFix" />
+          </view>
+          <!-- 兼容旧数据：单张图片 -->
+          <image wx:elif="{{item.image}}" class="message-image" src="{{item.image}}" mode="widthFix" />
           <!-- 只有当有文字内容时才显示 -->
           <text wx:if="{{item.content}}" class="message-text">{{item.content}}</text>
         </view>
@@ -101,11 +105,13 @@
 
     <!-- 输入框区域 -->
     <view class="input-area">
-      <!-- 图片预览 -->
-      <view wx:if="{{selectedImage}}" class="image-preview-inline">
-        <image class="preview-image-inline" src="{{selectedImage}}" mode="aspectFill" />
-        <view class="remove-image-inline" bindtap="removeImage">
-          <t-icon name="close-circle-filled" size="32rpx" color="#FF4444" />
+      <!-- 多图片预览 -->
+      <view wx:if="{{selectedImages.length > 0}}" class="images-preview-container">
+        <view wx:for="{{selectedImages}}" wx:key="index" class="image-preview-inline">
+          <image class="preview-image-inline" src="{{item}}" mode="aspectFill" />
+          <view class="remove-image-inline" bindtap="removeImage" data-index="{{index}}">
+            <t-icon name="close-circle-filled" size="32rpx" color="#FF4444" />
+          </view>
         </view>
       </view>
 
@@ -126,8 +132,8 @@
           maxlength="-1"
           show-confirm-bar="{{false}}"
         />
-        <view class="send-button {{inputValue || isLoading || selectedImage ? 'active' : ''}}" bindtap="{{isLoading ? 'stopAI' : 'sendMessage'}}">
-          <t-icon name="{{isLoading ? 'stop-circle' : 'send'}}" size="44rpx" color="{{inputValue || isLoading || selectedImage ? '#FFFFFF' : '#999999'}}" />
+        <view class="send-button {{inputValue || isLoading || selectedImages.length > 0 ? 'active' : ''}}" bindtap="{{isLoading ? 'stopAI' : 'sendMessage'}}">
+          <t-icon name="{{isLoading ? 'stop-circle' : 'send'}}" size="44rpx" color="{{inputValue || isLoading || selectedImages.length > 0 ? '#FFFFFF' : '#999999'}}" />
         </view>
       </view>
     </view>

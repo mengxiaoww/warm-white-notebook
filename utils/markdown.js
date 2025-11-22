@@ -20,10 +20,10 @@ function parseMarkdown(markdown) {
     '<code style="background:#FFF5E6;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#FF9F4D;border:1px solid #FFE0B2;">$1</code>');
 
   // 3. 处理标题（从小到大，避免匹配冲突）
-  html = html.replace(/^####\s+(.+)$/gm, '<div style="font-size:15px;font-weight:bold;margin:6px 0 2px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
-  html = html.replace(/^###\s+(.+)$/gm, '<div style="font-size:16px;font-weight:bold;margin:6px 0 3px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
-  html = html.replace(/^##\s+(.+)$/gm, '<div style="font-size:17px;font-weight:bold;margin:8px 0 3px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
-  html = html.replace(/^#\s+(.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:8px 0 4px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
+  html = html.replace(/^####\s+(.+)$/gm, '<div style="font-size:15px;font-weight:bold;margin:4px 0 2px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
+  html = html.replace(/^###\s+(.+)$/gm, '<div style="font-size:16px;font-weight:bold;margin:4px 0 2px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
+  html = html.replace(/^##\s+(.+)$/gm, '<div style="font-size:17px;font-weight:bold;margin:5px 0 2px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
+  html = html.replace(/^#\s+(.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:5px 0 3px 0;line-height:1.3;color:#1A1A1A;">$1</div>');
 
   // 4. 处理加粗（在标题之后）
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="font-weight:600;color:#1A1A1A;">$1</strong>');

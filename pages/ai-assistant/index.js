@@ -8,7 +8,7 @@ Page({
     inputValue: '',
     isLoading: false,
     scrollToId: '',
-    selectedImage: '', // 选中的图片
+    selectedImages: [], // 选中的图片数组（支持多张）
     showScrollToBottom: false, // 是否显示回到底部按钮
     keyboardHeight: 0, // 键盘高度
 
@@ -126,8 +126,8 @@ Page({
     // 计算距离底部的距离
     const distanceToBottom = scrollHeight - scrollTop - scrollViewHeight;
 
-    // 如果距离底部超过200px，显示回到底部按钮
-    const showButton = distanceToBottom > 200;
+    // 如果距离底部超过200px，或者在顶部附近（scrollTop < 100），显示回到底部按钮
+    const showButton = distanceToBottom > 200 || scrollTop < 100;
 
     if (this.data.showScrollToBottom !== showButton) {
       this.setData({
@@ -158,10 +158,10 @@ Page({
   // 发送消息
   async sendMessage() {
     const content = this.data.inputValue.trim();
-    const hasImage = !!this.data.selectedImage;
+    const hasImages = this.data.selectedImages.length > 0;
 
     // 至少要有文字或图片
-    if ((!content && !hasImage) || this.data.isLoading) return;
+    if ((!content && !hasImages) || this.data.isLoading) return;
 
     const app = getApp();
     const openid = app.getOpenIdIfLoggedIn();
@@ -173,16 +173,26 @@ Page({
       return;
     }
 
-    // 如果有图片，直接上传到云存储获取URL和fileID
-    let imageUrl = null;
-    let imageFileId = null;
-    if (hasImage) {
+    // 如果有图片，上传所有图片到云存储获取URL和fileID
+    let imageUrls = [];
+    let imageFileIds = [];
+    if (hasImages) {
       try {
-        const uploadResult = await this.uploadImageToCloud(this.data.selectedImage);
-        imageUrl = uploadResult.url;
-        imageFileId = uploadResult.fileId;
-        console.log('图片上传成功，URL:', imageUrl, 'FileID:', imageFileId);
+        wx.showLoading({ title: '上传图片中...' });
+
+        // 批量上传所有图片
+        const uploadPromises = this.data.selectedImages.map(imagePath =>
+          this.uploadImageToCloud(imagePath)
+        );
+        const uploadResults = await Promise.all(uploadPromises);
+
+        imageUrls = uploadResults.map(result => result.url);
+        imageFileIds = uploadResults.map(result => result.fileId);
+
+        wx.hideLoading();
+        console.log('所有图片上传成功，数量:', imageUrls.length);
       } catch (error) {
+        wx.hideLoading();
         console.error('图片上传失败:', error);
         wx.showToast({
           title: '图片上传失败',
@@ -196,16 +206,16 @@ Page({
     const userMessage = {
       id: Date.now(),
       role: 'user',
-      content: content,  // 只保留用户输入的文字，不添加占位符
-      image: imageUrl || this.data.selectedImage,  // 优先使用云存储URL
-      imageFileId: imageFileId,  // 保存fileID以便后续获取
+      content: content,
+      images: imageUrls.length > 0 ? imageUrls : undefined,  // 保存所有图片URL
+      imageFileIds: imageFileIds.length > 0 ? imageFileIds : undefined,  // 保存所有fileID
       time: this.formatTime(new Date())
     };
 
     this.setData({
       messages: [...this.data.messages, userMessage],
       inputValue: '',
-      selectedImage: '',
+      selectedImages: [],  // 清空已选图片
       isLoading: true
     });
 
@@ -216,8 +226,8 @@ Page({
     this.saveMessage(userMessage, openid);
 
     try {
-      // 调用云函数（支持文本和图片URL）
-      const result = await this.callAI(content, imageUrl);
+      // 调用云函数（支持文本和多张图片URL）
+      const result = await this.callAI(content, imageUrls.length > 0 ? imageUrls[0] : null);
 
       if (result.success) {
         // 添加AI回复
@@ -512,14 +522,25 @@ Page({
           htmlContent: item.role === 'assistant' ? parseMarkdown(item.content) : null,
           time: item.time,
           mode: item.mode,
-          image: item.image,  // 临时保留，稍后会被替换
-          imageFileId: item.imageFileId
+          // 兼容新旧格式
+          images: item.images,  // 新格式：多张图片数组
+          imageFileIds: item.imageFileIds,  // 新格式：多个fileID数组
+          image: item.image,  // 旧格式：单张图片，稍后会被替换
+          imageFileId: item.imageFileId  // 旧格式：单个fileID
         }));
 
-        // 如果有图片的 fileID，重新获取临时URL
-        const fileIds = messages
-          .filter(msg => msg.imageFileId)
-          .map(msg => msg.imageFileId);
+        // 收集所有需要获取临时URL的fileID
+        const fileIds = [];
+        messages.forEach(msg => {
+          // 新格式：多个fileID
+          if (msg.imageFileIds && msg.imageFileIds.length > 0) {
+            fileIds.push(...msg.imageFileIds);
+          }
+          // 旧格式：单个fileID
+          else if (msg.imageFileId) {
+            fileIds.push(msg.imageFileId);
+          }
+        });
 
         if (fileIds.length > 0) {
           try {
@@ -527,11 +548,23 @@ Page({
               fileList: fileIds
             });
 
-            // 更新消息中的图片URL
+            // 创建fileID到URL的映射
+            const fileIdToUrl = {};
             tempUrlRes.fileList.forEach(file => {
-              const msg = messages.find(m => m.imageFileId === file.fileID);
-              if (msg && file.tempFileURL) {
-                msg.image = file.tempFileURL;
+              if (file.tempFileURL) {
+                fileIdToUrl[file.fileID] = file.tempFileURL;
+              }
+            });
+
+            // 更新消息中的图片URL
+            messages.forEach(msg => {
+              // 新格式：多张图片
+              if (msg.imageFileIds && msg.imageFileIds.length > 0) {
+                msg.images = msg.imageFileIds.map(fileId => fileIdToUrl[fileId]).filter(url => url);
+              }
+              // 旧格式：单张图片
+              else if (msg.imageFileId && fileIdToUrl[msg.imageFileId]) {
+                msg.image = fileIdToUrl[msg.imageFileId];
               }
             });
           } catch (error) {
@@ -661,37 +694,56 @@ Page({
   // 选择图片
   chooseImage() {
     const that = this;
+    const currentCount = this.data.selectedImages.length;
+    const remainingCount = 9 - currentCount; // 最多9张
+
+    if (remainingCount <= 0) {
+      wx.showToast({
+        title: '最多选择9张图片',
+        icon: 'none'
+      });
+      return;
+    }
+
     wx.chooseImage({
-      count: 1,
+      count: remainingCount,
       sizeType: ['compressed'],  // 使用压缩图
       sourceType: ['album', 'camera'],
       success(res) {
-        const tempFilePath = res.tempFilePaths[0];
+        const tempFilePaths = res.tempFilePaths;
 
-        // 进一步压缩图片 - 降低质量到40%
-        wx.compressImage({
-          src: tempFilePath,
-          quality: 40,  // 压缩质量40%（更激进）
-          success(compressRes) {
-            that.setData({
-              selectedImage: compressRes.tempFilePath
+        // 逐个压缩图片
+        const compressPromises = tempFilePaths.map(tempFilePath => {
+          return new Promise((resolve) => {
+            wx.compressImage({
+              src: tempFilePath,
+              quality: 40,  // 压缩质量40%
+              success(compressRes) {
+                resolve(compressRes.tempFilePath);
+              },
+              fail() {
+                // 压缩失败，使用原图
+                resolve(tempFilePath);
+              }
             });
-          },
-          fail() {
-            // 压缩失败，使用原图
-            that.setData({
-              selectedImage: tempFilePath
-            });
-          }
+          });
+        });
+
+        Promise.all(compressPromises).then(compressedPaths => {
+          that.setData({
+            selectedImages: [...that.data.selectedImages, ...compressedPaths]
+          });
         });
       }
     });
   },
 
   // 移除图片
-  removeImage() {
+  removeImage(e) {
+    const index = e.currentTarget.dataset.index;
+    const newImages = this.data.selectedImages.filter((_, i) => i !== index);
     this.setData({
-      selectedImage: ''
+      selectedImages: newImages
     });
   },
 
@@ -707,7 +759,7 @@ Page({
         if (res.confirm) {
           that.setData({
             messages: [],
-            selectedImage: ''
+            selectedImages: []
           });
           wx.showToast({
             title: '已清除',
