@@ -10,6 +10,7 @@ Page({
     scrollToId: '',
     selectedImage: '', // 选中的图片
     showScrollToBottom: false, // 是否显示回到底部按钮
+    keyboardHeight: 0, // 键盘高度
 
     // 示例问题
     exampleQuestions: [
@@ -29,6 +30,13 @@ Page({
     wx.setNavigationBarColor({
       frontColor: '#ffffff',
       backgroundColor: '#FFB84D'
+    });
+
+    // 监听键盘高度变化
+    wx.onKeyboardHeightChange((res) => {
+      this.setData({
+        keyboardHeight: res.height
+      });
     });
 
     // 加载历史消息

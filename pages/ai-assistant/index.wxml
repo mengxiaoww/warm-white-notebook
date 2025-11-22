@@ -2,6 +2,7 @@
   <!-- 聊天消息区域 -->
   <scroll-view
     class="message-container"
+    style="height: calc(100vh - {{keyboardHeight > 0 ? (keyboardHeight + 32) + 'px' : '370rpx'}});"
     scroll-y
     scroll-into-view="{{scrollToId}}"
     bindscroll="onScroll"
@@ -87,7 +88,7 @@
   </view>
 
   <!-- 输入区域 -->
-  <view class="input-container">
+  <view class="input-container" style="bottom: {{keyboardHeight > 0 ? keyboardHeight + 'px' : '140rpx'}};">
     <!-- 左侧功能按钮组 -->
     <view class="input-actions">
       <view class="action-icon-btn" bindtap="chooseImage">

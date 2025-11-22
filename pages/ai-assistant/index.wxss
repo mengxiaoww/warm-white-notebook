@@ -11,7 +11,6 @@
 
 /* ==================== 消息容器 ==================== */
 .message-container {
-  height: calc(100vh - 370rpx);
   overflow-y: auto;
   overflow-x: hidden;
   background: #FFFFFF;
@@ -280,7 +279,6 @@
 /* ==================== 输入框区域 ==================== */
 .input-container {
   position: fixed;
-  bottom: 140rpx;
   left: 0;
   right: 0;
   background: #FFFFFF;
@@ -293,6 +291,7 @@
   display: flex;
   align-items: flex-start;
   gap: 12rpx;
+  transition: bottom 0.3s ease;
 }
 
 /* 左侧功能按钮组 */
