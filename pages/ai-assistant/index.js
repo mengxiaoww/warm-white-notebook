@@ -103,10 +103,13 @@ Page({
 
   // 监听滚动事件
   onScroll(e) {
-    const { scrollTop, scrollHeight } = e.detail;
+    const { scrollTop, scrollHeight, scrollViewHeight } = e.detail;
 
-    // 简单判断：如果 scrollTop 小于 scrollHeight 的一半，说明在上半部分，显示按钮
-    const showButton = scrollTop < scrollHeight * 0.5 && scrollHeight > 800;
+    // 计算距离底部的距离
+    const distanceToBottom = scrollHeight - scrollTop - scrollViewHeight;
+
+    // 如果距离底部超过200px，显示回到底部按钮
+    const showButton = distanceToBottom > 200;
 
     if (this.data.showScrollToBottom !== showButton) {
       this.setData({
@@ -118,9 +121,7 @@ Page({
   // 点击回到底部按钮
   scrollToBottomClick() {
     this.scrollToBottom();
-    this.setData({
-      showScrollToBottom: false
-    });
+    // scrollToBottom 内部会自动隐藏按钮
   },
 
   // 停止AI回复
@@ -775,12 +776,25 @@ Page({
 
   // 滚动到底部
   scrollToBottom() {
-    if (this.data.messages.length > 0) {
+    // 如果正在加载，滚动到加载指示器
+    if (this.data.isLoading) {
+      this.setData({
+        scrollToId: 'loading-indicator'
+      });
+    } else if (this.data.messages.length > 0) {
+      // 否则滚动到最后一条消息
       const lastMessageId = `msg-${this.data.messages[this.data.messages.length - 1].id}`;
       this.setData({
         scrollToId: lastMessageId
       });
     }
+
+    // 延迟一下，确保滚动到位后隐藏按钮
+    setTimeout(() => {
+      this.setData({
+        showScrollToBottom: false
+      });
+    }, 300);
   },
 
   // 格式化时间

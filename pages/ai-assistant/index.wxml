@@ -64,7 +64,7 @@
     </view>
 
     <!-- 加载中提示 -->
-    <view wx:if="{{isLoading}}" class="message-item assistant">
+    <view wx:if="{{isLoading}}" id="loading-indicator" class="message-item assistant">
       <view class="message-avatar assistant">
         <t-icon name="chat" size="40rpx" color="#FFFFFF" />
       </view>
@@ -80,7 +80,7 @@
 
   <!-- 回到底部按钮 -->
   <view wx:if="{{showScrollToBottom}}" class="scroll-to-bottom-btn" bindtap="scrollToBottomClick">
-    <t-icon name="chevron-down" size="40rpx" color="#FFFFFF" />
+    <t-icon name="chevron-down" size="48rpx" color="#FFFFFF" />
   </view>
 
   <!-- 输入区域 -->
