@@ -139,7 +139,9 @@ Page({
   // 发送消息
   async sendMessage() {
     const content = this.data.inputValue.trim();
-    if (!content || this.data.isLoading) return;
+    const hasImage = !!this.data.selectedImage;
+
+    if ((!content && !hasImage) || this.data.isLoading) return;
 
     const app = getApp();
     const openid = app.getOpenIdIfLoggedIn();
@@ -151,17 +153,33 @@ Page({
       return;
     }
 
+    // 如果有图片，先转换为base64
+    let imageBase64 = null;
+    if (hasImage) {
+      try {
+        imageBase64 = await this.convertImageToBase64(this.data.selectedImage);
+      } catch (error) {
+        wx.showToast({
+          title: '图片处理失败',
+          icon: 'none'
+        });
+        return;
+      }
+    }
+
     // 添加用户消息
     const userMessage = {
       id: Date.now(),
       role: 'user',
-      content: content,
+      content: content || '[发送了一张图片]',
+      image: hasImage ? this.data.selectedImage : null,
       time: this.formatTime(new Date())
     };
 
     this.setData({
       messages: [...this.data.messages, userMessage],
       inputValue: '',
+      selectedImage: '',
       isLoading: true
     });
 
@@ -173,7 +191,7 @@ Page({
 
     try {
       // 调用云函数（统一模式）
-      const result = await this.callAI(content);
+      const result = await this.callAI(content, imageBase64);
 
       if (result.success) {
         // 添加AI回复
@@ -240,21 +258,45 @@ Page({
   },
 
   // 调用云函数请求AI（统一模式）
-  async callAI(userMessage) {
+  async callAI(userMessage, imageBase64 = null) {
     try {
       // 构建消息历史（保留最近10条）
       const recentMessages = this.data.messages
         .slice(-10)
-        .map(msg => ({
-          role: msg.role,
-          content: msg.content
-        }));
+        .map(msg => {
+          const message = {
+            role: msg.role,
+            content: msg.content
+          };
+
+          // 如果消息包含图片，添加图片信息
+          if (msg.image && msg.imageBase64) {
+            message.content = [
+              { type: 'text', text: msg.content },
+              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${msg.imageBase64}` } }
+            ];
+          }
+
+          return message;
+        });
 
       // 添加当前消息
-      recentMessages.push({
-        role: 'user',
-        content: userMessage
-      });
+      if (imageBase64) {
+        // 多模态消息
+        recentMessages.push({
+          role: 'user',
+          content: [
+            { type: 'text', text: userMessage || '请帮我分析这张图片' },
+            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } }
+          ]
+        });
+      } else {
+        // 纯文本消息
+        recentMessages.push({
+          role: 'user',
+          content: userMessage
+        });
+      }
 
       // 调用云函数（使用unified模式）
       const res = await wx.cloud.callFunction({
@@ -271,6 +313,22 @@ Page({
       console.error('云函数调用失败:', error);
       throw error;
     }
+  },
+
+  // 图片转base64
+  convertImageToBase64(imagePath) {
+    return new Promise((resolve, reject) => {
+      wx.getFileSystemManager().readFile({
+        filePath: imagePath,
+        encoding: 'base64',
+        success: (res) => {
+          resolve(res.data);
+        },
+        fail: (error) => {
+          reject(error);
+        }
+      });
+    });
   },
 
   // 解析并保存健康数据

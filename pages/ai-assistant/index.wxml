@@ -33,6 +33,8 @@
       <!-- 用户消息：无头像，无时间，文字靠右 -->
       <block wx:if="{{item.role === 'user'}}">
         <view class="message-bubble">
+          <!-- 如果有图片，显示图片 -->
+          <image wx:if="{{item.image}}" class="message-image" src="{{item.image}}" mode="widthFix" />
           <text class="message-text">{{item.content}}</text>
         </view>
       </block>
