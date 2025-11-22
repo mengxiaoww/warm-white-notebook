@@ -384,3 +384,27 @@
   border-radius: 50%;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
 }
+
+/* ==================== 回到底部按钮 ==================== */
+.scroll-to-bottom-btn {
+  position: fixed;
+  right: 32rpx;
+  bottom: 260rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9F4D 100%);
+  box-shadow: 0 4rpx 16rpx rgba(255, 184, 77, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  animation: fadeIn 0.3s ease-out;
+  transition: all 0.2s ease;
+}
+
+.scroll-to-bottom-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 2rpx 12rpx rgba(255, 184, 77, 0.3);
+}
+

@@ -9,6 +9,7 @@ Page({
     isLoading: false,
     scrollToId: '',
     selectedImage: '', // 选中的图片
+    showScrollToBottom: false, // 是否显示回到底部按钮
 
     // 示例问题
     exampleQuestions: [
@@ -97,6 +98,29 @@ Page({
   onInput(e) {
     this.setData({
       inputValue: e.detail.value
+    });
+  },
+
+  // 监听滚动事件
+  onScroll(e) {
+    const { scrollTop, scrollHeight, clientHeight } = e.detail;
+    // 计算距离底部的距离
+    const distanceToBottom = scrollHeight - scrollTop - clientHeight;
+    // 如果距离底部超过 500rpx，显示回到底部按钮
+    const showButton = distanceToBottom > 300;
+
+    if (this.data.showScrollToBottom !== showButton) {
+      this.setData({
+        showScrollToBottom: showButton
+      });
+    }
+  },
+
+  // 点击回到底部按钮
+  scrollToBottomClick() {
+    this.scrollToBottom();
+    this.setData({
+      showScrollToBottom: false
     });
   },
 
