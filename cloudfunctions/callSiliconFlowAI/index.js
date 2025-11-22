@@ -80,6 +80,9 @@ function callSiliconFlowAPI(messages, mode = 'unified') {
       stream: false
     });
 
+    // 打印完整的请求体，方便调试（仅打印前1000字符）
+    console.log('请求体预览:', requestData.substring(0, 1000));
+
     console.log('发送请求到API:', {
       model: MODEL,
       messageCount: fullMessages.length,
