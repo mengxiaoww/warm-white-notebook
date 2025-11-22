@@ -35,7 +35,8 @@
         <view class="message-bubble">
           <!-- 如果有图片，显示图片 -->
           <image wx:if="{{item.image}}" class="message-image" src="{{item.image}}" mode="widthFix" />
-          <text class="message-text">{{item.content}}</text>
+          <!-- 只有当不是纯图片消息时才显示文字 -->
+          <text wx:if="{{item.content && item.content !== '[发送了一张图片]'}}" class="message-text">{{item.content}}</text>
         </view>
       </block>
 
