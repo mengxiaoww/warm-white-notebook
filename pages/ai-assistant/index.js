@@ -266,13 +266,27 @@ Page({
   // 调用云函数请求AI（统一模式）
   async callAI(userMessage, imageUrl = null) {
     try {
-      // 构建消息历史（保留最近10条）
+      // 构建消息历史（保留最近10条，但排除刚刚添加的用户消息，避免重复）
       const recentMessages = this.data.messages
-        .slice(-10)
-        .map(msg => ({
-          role: msg.role,
-          content: msg.content
-        }));
+        .slice(-11)  // 多取一条
+        .filter(msg => msg.role !== 'user' || msg.id !== this.data.messages[this.data.messages.length - 1].id)  // 排除最后一条用户消息
+        .slice(-10)  // 只保留10条
+        .map(msg => {
+          // 只保留assistant和system消息，清理用户消息
+          if (msg.role === 'assistant') {
+            return {
+              role: 'assistant',
+              content: msg.content
+            };
+          } else if (msg.role === 'user') {
+            return {
+              role: 'user',
+              content: msg.content.replace('[发送了一张图片]', '').trim() || '(图片消息)'
+            };
+          }
+          return null;
+        })
+        .filter(msg => msg !== null);
 
       // 添加当前消息
       if (imageUrl) {
