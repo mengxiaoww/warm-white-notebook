@@ -286,7 +286,8 @@ Page({
             {
               type: 'image_url',
               image_url: {
-                url: `data:image/jpeg;base64,${imageBase64}`
+                url: `data:image/jpeg;base64,${imageBase64}`,
+                detail: 'auto'  // 添加detail字段
               }
             }
           ]
@@ -570,10 +571,10 @@ Page({
       success(res) {
         const tempFilePath = res.tempFilePaths[0];
 
-        // 进一步压缩图片
+        // 进一步压缩图片 - 降低质量到40%
         wx.compressImage({
           src: tempFilePath,
-          quality: 60,  // 压缩质量60%
+          quality: 40,  // 压缩质量40%（更激进）
           success(compressRes) {
             that.setData({
               selectedImage: compressRes.tempFilePath
