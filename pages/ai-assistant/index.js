@@ -126,8 +126,8 @@ Page({
     // 计算距离底部的距离
     const distanceToBottom = scrollHeight - scrollTop - scrollViewHeight;
 
-    // 如果距离底部超过200px，或者在顶部附近（scrollTop < 100），显示回到底部按钮
-    const showButton = distanceToBottom > 200 || scrollTop < 100;
+    // 只要不在底部（距离底部超过200px），就显示回到底部按钮
+    const showButton = distanceToBottom > 200;
 
     if (this.data.showScrollToBottom !== showButton) {
       this.setData({
