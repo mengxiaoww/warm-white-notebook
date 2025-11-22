@@ -14,7 +14,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 240rpx;  /* 减少底部内边距，让滚动更紧凑 */
+  padding-bottom: 240rpx;  /* 恢复底部内边距，确保最后一条消息可见 */
   background: #FFFFFF;
 }
 
