@@ -12,6 +12,16 @@
 
     <!-- 内容包装器，提供底部内边距 -->
     <view class="message-content-wrapper">
+      <!-- 加载更多提示 -->
+      <view wx:if="{{loadingMore}}" class="loading-more-indicator">
+        <view class="loading-dots">
+          <view class="dot"></view>
+          <view class="dot"></view>
+          <view class="dot"></view>
+        </view>
+        <text class="loading-text">加载更多...</text>
+      </view>
+
       <!-- 欢迎消息 -->
       <view wx:if="{{messages.length === 0}}" class="welcome-message">
         <view class="welcome-icon-wrapper">
@@ -83,6 +93,9 @@
         </view>
       </view>
     </view>
+
+    <!-- 底部锚点 - 用于滚动到真正的底部 -->
+    <view id="bottom-anchor"></view>
     </view>  <!-- message-content-wrapper 结束 -->
   </scroll-view>
 

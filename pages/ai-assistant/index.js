@@ -12,6 +12,11 @@ Page({
     showScrollToBottom: false, // 是否显示回到底部按钮
     keyboardHeight: 0, // 键盘高度
 
+    // 分页相关
+    loadingMore: false, // 是否正在加载更多
+    hasMore: true, // 是否还有更多历史消息
+    oldestMessageTime: null, // 最早的消息时间
+
     // 示例问题
     exampleQuestions: [
       '白细胞低怎么办？',
@@ -135,12 +140,27 @@ Page({
         if (res[0]) {
           scrollViewHeight = res[0].height;
           this.updateScrollButton(scrollTop, scrollHeight, scrollViewHeight);
+
+          // 检测是否需要加载更多
+          this.checkLoadMore(scrollTop);
         }
       });
       return; // 等待查询完成后再计算
     }
 
     this.updateScrollButton(scrollTop, scrollHeight, scrollViewHeight);
+
+    // 检测是否需要加载更多
+    this.checkLoadMore(scrollTop);
+  },
+
+  // 检测是否需要加载更多历史消息
+  checkLoadMore(scrollTop) {
+    // 如果滚动到顶部（距离顶部小于100px），且还有更多数据，且当前没有在加载
+    if (scrollTop < 100 && this.data.hasMore && !this.data.loadingMore) {
+      console.log('触发加载更多历史消息');
+      this.loadMoreMessages();
+    }
   },
 
   // 更新滚动按钮显示状态
@@ -532,7 +552,7 @@ Page({
     }
   },
 
-  // 加载历史消息
+  // 加载历史消息（初次加载，只加载最近20条）
   async loadHistoryMessages() {
     try {
       const app = getApp();
@@ -545,15 +565,19 @@ Page({
         return;
       }
 
-      // 不设置limit，加载所有历史消息
+      // 只加载最近20条
       const res = await db.collection('aiChatHistory')
         .where({ openid: openid })
         .orderBy('createTime', 'desc')
+        .limit(20)
         .get();
 
       console.log('查询到的历史消息数量:', res.data ? res.data.length : 0);
 
       if (res.data && res.data.length > 0) {
+        // 判断是否还有更多数据
+        const hasMore = res.data.length === 20;
+
         // 反转顺序，最早的消息在前
         const messages = res.data.reverse().map(item => ({
           id: item._id,
@@ -568,6 +592,9 @@ Page({
           image: item.image,  // 旧格式：单张图片，稍后会被替换
           imageFileId: item.imageFileId  // 旧格式：单个fileID
         }));
+
+        // 记录最早的消息时间
+        const oldestMessageTime = res.data[res.data.length - 1].createTime;
 
         // 收集所有需要获取临时URL的fileID
         const fileIds = [];
@@ -615,13 +642,125 @@ Page({
         }
 
         console.log('最终加载的消息数量:', messages.length);
-        this.setData({ messages });
+        this.setData({
+          messages,
+          hasMore,
+          oldestMessageTime
+        });
         setTimeout(() => this.scrollToBottom(), 200);
       } else {
         console.log('没有历史消息');
+        this.setData({ hasMore: false });
       }
     } catch (error) {
       console.error('加载历史消息失败:', error);
+    }
+  },
+
+  // 加载更多历史消息
+  async loadMoreMessages() {
+    if (!this.data.hasMore || this.data.loadingMore) {
+      return;
+    }
+
+    try {
+      this.setData({ loadingMore: true });
+
+      const app = getApp();
+      const openid = app.getOpenIdIfLoggedIn();
+
+      if (!openid) {
+        this.setData({ loadingMore: false });
+        return;
+      }
+
+      // 查询比最早消息更早的20条
+      const res = await db.collection('aiChatHistory')
+        .where({
+          openid: openid,
+          createTime: db.command.lt(this.data.oldestMessageTime)
+        })
+        .orderBy('createTime', 'desc')
+        .limit(20)
+        .get();
+
+      console.log('加载更多历史消息:', res.data ? res.data.length : 0);
+
+      if (res.data && res.data.length > 0) {
+        // 判断是否还有更多数据
+        const hasMore = res.data.length === 20;
+
+        // 反转顺序
+        const newMessages = res.data.reverse().map(item => ({
+          id: item._id,
+          role: item.role,
+          content: item.content,
+          htmlContent: item.role === 'assistant' ? parseMarkdown(item.content) : null,
+          time: item.time,
+          mode: item.mode,
+          images: item.images,
+          imageFileIds: item.imageFileIds,
+          image: item.image,
+          imageFileId: item.imageFileId
+        }));
+
+        // 更新最早消息时间
+        const oldestMessageTime = res.data[res.data.length - 1].createTime;
+
+        // 获取图片临时URL
+        const fileIds = [];
+        newMessages.forEach(msg => {
+          if (msg.imageFileIds && msg.imageFileIds.length > 0) {
+            fileIds.push(...msg.imageFileIds);
+          } else if (msg.imageFileId) {
+            fileIds.push(msg.imageFileId);
+          }
+        });
+
+        if (fileIds.length > 0) {
+          try {
+            const tempUrlRes = await wx.cloud.getTempFileURL({
+              fileList: fileIds
+            });
+
+            const fileIdToUrl = {};
+            tempUrlRes.fileList.forEach(file => {
+              if (file.tempFileURL) {
+                fileIdToUrl[file.fileID] = file.tempFileURL;
+              }
+            });
+
+            newMessages.forEach(msg => {
+              if (msg.imageFileIds && msg.imageFileIds.length > 0) {
+                msg.images = msg.imageFileIds.map(fileId => fileIdToUrl[fileId]).filter(url => url);
+              } else if (msg.imageFileId && fileIdToUrl[msg.imageFileId]) {
+                msg.image = fileIdToUrl[msg.imageFileId];
+              }
+            });
+          } catch (error) {
+            console.error('获取历史图片URL失败:', error);
+          }
+        }
+
+        // 将新消息添加到现有消息前面
+        this.setData({
+          messages: [...newMessages, ...this.data.messages],
+          hasMore,
+          oldestMessageTime,
+          loadingMore: false
+        });
+
+        console.log('加载更多后的总消息数:', this.data.messages.length);
+      } else {
+        // 没有更多数据了
+        this.setData({
+          hasMore: false,
+          loadingMore: false
+        });
+      }
+    } catch (error) {
+      console.error('加载更多历史消息失败:', error);
+      this.setData({ loadingMore: false });
     }
   },
 
@@ -896,18 +1035,10 @@ Page({
 
   // 滚动到底部
   scrollToBottom() {
-    // 如果正在加载，滚动到加载指示器
-    if (this.data.isLoading) {
-      this.setData({
-        scrollToId: 'loading-indicator'
-      });
-    } else if (this.data.messages.length > 0) {
-      // 否则滚动到最后一条消息
-      const lastMessageId = `msg-${this.data.messages[this.data.messages.length - 1].id}`;
-      this.setData({
-        scrollToId: lastMessageId
-      });
-    }
+    // 滚动到底部锚点
+    this.setData({
+      scrollToId: 'bottom-anchor'
+    });
 
     // 延迟一下，确保滚动到位后隐藏按钮
     setTimeout(() => {

@@ -22,6 +22,26 @@
   padding-bottom: 42rpx;  /* 底部内边距，确保最后一条消息可见 */
 }
 
+/* 加载更多提示 */
+.loading-more-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 0;
+  gap: 12rpx;
+}
+
+.loading-text {
+  font-size: 24rpx;
+  color: #AAAAAA;
+}
+
+/* 底部锚点（不可见，仅用于滚动定位） */
+#bottom-anchor {
+  height: 1rpx;
+  width: 100%;
+}
+
 /* 隐藏滚动条 */
 .message-container::-webkit-scrollbar {
   display: none;
