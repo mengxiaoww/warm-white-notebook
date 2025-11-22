@@ -103,17 +103,25 @@ Page({
 
   // 监听滚动事件
   onScroll(e) {
-    const { scrollTop, scrollHeight, clientHeight } = e.detail;
-    // 计算距离底部的距离
-    const distanceToBottom = scrollHeight - scrollTop - clientHeight;
-    // 如果距离底部超过 500rpx，显示回到底部按钮
-    const showButton = distanceToBottom > 300;
+    const { scrollTop, scrollHeight, scrollHeight: sh } = e.detail;
+    // 获取窗口高度
+    const query = wx.createSelectorQuery();
+    query.select('.message-container').boundingClientRect();
+    query.exec((res) => {
+      if (res && res[0]) {
+        const containerHeight = res[0].height;
+        // 计算距离底部的距离
+        const distanceToBottom = scrollHeight - scrollTop - containerHeight;
+        // 如果距离底部超过 300，显示回到底部按钮
+        const showButton = distanceToBottom > 300;
 
-    if (this.data.showScrollToBottom !== showButton) {
-      this.setData({
-        showScrollToBottom: showButton
-      });
-    }
+        if (this.data.showScrollToBottom !== showButton) {
+          this.setData({
+            showScrollToBottom: showButton
+          });
+        }
+      }
+    });
   },
 
   // 点击回到底部按钮

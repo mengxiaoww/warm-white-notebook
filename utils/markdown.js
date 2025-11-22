@@ -33,16 +33,19 @@ function parseMarkdown(markdown) {
   html = html.replace(/^# (.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:12px 0 6px 0;line-height:1.4;">$1</div>');
 
   // 处理无序列表和有序列表
-  html = html.replace(/^\- (.+)$/gm, '<li style="margin:3px 0;line-height:1.6;">• $1</li>');
-  html = html.replace(/^(\d+)\. (.+)$/gm, '<li style="margin:3px 0;line-height:1.6;">$1. $2</li>');
+  html = html.replace(/^[\*\-]\s+(.+)$/gm, '<li style="margin:6px 0;line-height:1.5;list-style-type:disc;">$1</li>');
+  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<li style="margin:6px 0;line-height:1.5;list-style-type:decimal;">$1. $2</li>');
 
-  // 将连续的 <li> 包裹在 div 中
-  html = html.replace(/(<li[^>]*>.*<\/li>\n?)+/g, (match) => {
-    return '<div style="margin:6px 0;padding-left:20px;">' + match + '</div>';
+  // 将连续的 <li> 包裹在 ul/ol 中
+  html = html.replace(/(<li[^>]*list-style-type:disc[^>]*>.*<\/li>\n?)+/g, (match) => {
+    return '<ul style="margin:10px 0;padding-left:24px;">' + match + '</ul>';
+  });
+  html = html.replace(/(<li[^>]*list-style-type:decimal[^>]*>.*<\/li>\n?)+/g, (match) => {
+    return '<ol style="margin:10px 0;padding-left:24px;">' + match + '</ol>';
   });
 
-  // 处理换行
-  html = html.replace(/\n\n/g, '<br/><br/>');
+  // 处理换行 - 减少空行间距
+  html = html.replace(/\n\n/g, '<div style="height:8px;"></div>');
   html = html.replace(/\n/g, '<br/>');
 
   return html;
