@@ -154,15 +154,16 @@ Page({
       return;
     }
 
-    // 如果有图片，先转换为base64
-    let imageBase64 = null;
+    // 如果有图片，先上传到云存储获取URL
+    let imageUrl = null;
     if (hasImage) {
       try {
-        imageBase64 = await this.convertImageToBase64(this.data.selectedImage);
+        imageUrl = await this.uploadImageToCloud(this.data.selectedImage);
+        console.log('图片上传成功，URL:', imageUrl);
       } catch (error) {
-        console.error('图片转换失败:', error);
+        console.error('图片上传失败:', error);
         wx.showToast({
-          title: '图片处理失败',
+          title: '图片上传失败',
           icon: 'none'
         });
         return;
@@ -192,8 +193,8 @@ Page({
     this.saveMessage(userMessage, openid);
 
     try {
-      // 调用云函数（支持文本和图片）
-      const result = await this.callAI(content, imageBase64);
+      // 调用云函数（支持文本和图片URL）
+      const result = await this.callAI(content, imageUrl);
 
       if (result.success) {
         // 添加AI回复
@@ -263,7 +264,7 @@ Page({
   },
 
   // 调用云函数请求AI（统一模式）
-  async callAI(userMessage, imageBase64 = null) {
+  async callAI(userMessage, imageUrl = null) {
     try {
       // 构建消息历史（保留最近10条）
       const recentMessages = this.data.messages
@@ -274,8 +275,8 @@ Page({
         }));
 
       // 添加当前消息
-      if (imageBase64) {
-        // 多模态消息 - GLM-4格式
+      if (imageUrl) {
+        // 多模态消息 - 使用HTTPS URL
         recentMessages.push({
           role: 'user',
           content: [
@@ -286,8 +287,7 @@ Page({
             {
               type: 'image_url',
               image_url: {
-                url: `data:image/jpeg;base64,${imageBase64}`,
-                detail: 'auto'  // 添加detail字段
+                url: imageUrl  // 直接使用HTTPS URL
               }
             }
           ]
@@ -320,7 +320,7 @@ Page({
     }
   },
 
-  // 图片转base64
+  // 图片转base64（保留此函数以备后用）
   convertImageToBase64(imagePath) {
     return new Promise((resolve, reject) => {
       wx.getFileSystemManager().readFile({
@@ -330,6 +330,45 @@ Page({
           resolve(res.data);
         },
         fail: (error) => {
+          reject(error);
+        }
+      });
+    });
+  },
+
+  // 上传图片到云存储并获取URL
+  uploadImageToCloud(imagePath) {
+    return new Promise((resolve, reject) => {
+      const cloudPath = `ai-chat-images/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+
+      console.log('开始上传图片到云存储:', cloudPath);
+
+      wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: imagePath,
+        success: async (uploadRes) => {
+          console.log('图片上传成功，fileID:', uploadRes.fileID);
+
+          // 获取临时链接（HTTPS URL）
+          try {
+            const tempUrlRes = await wx.cloud.getTempFileURL({
+              fileList: [uploadRes.fileID]
+            });
+
+            if (tempUrlRes.fileList && tempUrlRes.fileList.length > 0) {
+              const tempUrl = tempUrlRes.fileList[0].tempFileURL;
+              console.log('获取临时URL成功:', tempUrl);
+              resolve(tempUrl);
+            } else {
+              reject(new Error('获取临时URL失败'));
+            }
+          } catch (error) {
+            console.error('获取临时URL失败:', error);
+            reject(error);
+          }
+        },
+        fail: (error) => {
+          console.error('上传图片失败:', error);
           reject(error);
         }
       });
