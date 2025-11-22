@@ -216,6 +216,11 @@ Page({
           isLoading: false
         });
 
+        // AI回复完成，震动反馈
+        wx.vibrateShort({
+          type: 'medium'
+        });
+
         // 保存AI消息到数据库
         this.saveMessage(assistantMessage, openid);
 
