@@ -100,6 +100,53 @@ Page({
     });
   },
 
+  // 打字机效果 - 逐字显示内容
+  typeWriter(content, messageId) {
+    let index = 0;
+    const speed = 30; // 每个字符显示间隔(ms)
+
+    const type = () => {
+      if (index < content.length) {
+        const currentContent = content.substring(0, index + 1);
+        const currentHtml = parseMarkdown(currentContent);
+
+        // 更新消息内容
+        const messages = this.data.messages.map(msg => {
+          if (msg.id === messageId) {
+            return {
+              ...msg,
+              content: currentContent,
+              htmlContent: currentHtml
+            };
+          }
+          return msg;
+        });
+
+        this.setData({ messages });
+        this.scrollToBottom();
+
+        index++;
+        setTimeout(type, speed);
+      } else {
+        // 打字完成，取消loading状态
+        this.setData({ isLoading: false });
+
+        // 保存完整消息到数据库
+        const message = this.data.messages.find(msg => msg.id === messageId);
+        if (message) {
+          const app = getApp();
+          const openid = app.getOpenIdIfLoggedIn();
+          this.saveMessage(message, openid);
+
+          // 智能判断：尝试解析并保存数据
+          this.parseAndSaveHealthData(message.content, openid);
+        }
+      }
+    };
+
+    type();
+  },
+
   // 发送消息
   async sendMessage() {
     const content = this.data.inputValue.trim();
@@ -140,25 +187,22 @@ Page({
       const result = await this.callAI(content);
 
       if (result.success) {
-        // 添加AI回复
+        // 创建空的AI消息占位
         const assistantMessage = {
           id: Date.now() + 1,
           role: 'assistant',
-          content: result.content,
-          htmlContent: parseMarkdown(result.content), // 转换 Markdown 为 HTML
+          content: '',
+          htmlContent: '',
           time: this.formatTime(new Date())
         };
 
+        // 先添加空消息到列表
         this.setData({
-          messages: [...this.data.messages, assistantMessage],
-          isLoading: false
+          messages: [...this.data.messages, assistantMessage]
         });
 
-        // 保存AI消息到数据库
-        this.saveMessage(assistantMessage, openid);
-
-        // 智能判断：尝试解析并保存数据
-        this.parseAndSaveHealthData(result.content, openid);
+        // 使用打字机效果逐字显示
+        this.typeWriter(result.content, assistantMessage.id);
 
         setTimeout(() => this.scrollToBottom(), 100);
       } else {

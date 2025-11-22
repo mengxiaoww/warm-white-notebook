@@ -56,12 +56,12 @@ const SYSTEM_PROMPTS = {
 };
 
 /**
- * 调用硅基流动AI API
+ * 调用硅基流动AI API（流式响应）
  * @param {Array} messages - 消息历史
  * @param {String} mode - 模式：'consultation'(咨询) 或 'recording'(记录)
- * @param {Boolean} stream - 是否使用流式响应
+ * @param {Function} onChunk - 接收到数据块的回调函数
  */
-function callSiliconFlowAPI(messages, mode = 'consultation', stream = false) {
+function callSiliconFlowAPIStream(messages, mode = 'consultation', onChunk) {
   return new Promise((resolve, reject) => {
     // 添加系统提示词
     const systemMessage = {
@@ -75,7 +75,7 @@ function callSiliconFlowAPI(messages, mode = 'consultation', stream = false) {
       temperature: 0.7,
       top_p: 0.7,
       max_tokens: 2000,
-      stream: stream
+      stream: true
     });
 
     const options = {
@@ -87,80 +87,66 @@ function callSiliconFlowAPI(messages, mode = 'consultation', stream = false) {
         'Authorization': `Bearer ${API_KEY}`,
         'Content-Length': Buffer.byteLength(requestData)
       },
-      timeout: 50000 // 50秒超时
+      timeout: 50000
     };
 
     const req = https.request(options, (res) => {
-      let data = '';
+      let buffer = '';
+      let fullContent = '';
 
       res.on('data', (chunk) => {
-        data += chunk;
+        buffer += chunk.toString();
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // 保留最后一行不完整的数据
+
+        for (const line of lines) {
+          if (line.trim() === '') continue;
+          if (line.trim() === 'data: [DONE]') {
+            resolve({ success: true, content: fullContent });
+            return;
+          }
+
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonStr = line.slice(6); // 移除 "data: " 前缀
+              const data = JSON.parse(jsonStr);
+
+              if (data.choices && data.choices[0].delta && data.choices[0].delta.content) {
+                const content = data.choices[0].delta.content;
+                fullContent += content;
+
+                // 调用回调函数，传递增量内容
+                if (onChunk) {
+                  onChunk(content);
+                }
+              }
+            } catch (e) {
+              console.error('解析SSE数据失败:', e, line);
+            }
+          }
+        }
       });
 
       res.on('end', () => {
-        try {
-          if (res.statusCode === 200) {
-            const result = JSON.parse(data);
-            if (result.choices && result.choices.length > 0) {
-              resolve({
-                success: true,
-                content: result.choices[0].message.content,
-                usage: result.usage
-              });
-            } else {
-              reject({
-                success: false,
-                error: 'API返回格式错误',
-                details: result
-              });
-            }
-          } else {
-            // 处理HTTP错误状态码
-            let errorMessage = `API请求失败: ${res.statusCode}`;
-            let errorDetails = data;
-
-            if (res.statusCode === 401) {
-              errorMessage = 'API密钥无效或已过期(401)';
-              errorDetails = '请访问 https://cloud.siliconflow.cn/account/ak 获取新密钥';
-            } else if (res.statusCode === 429) {
-              errorMessage = 'API请求频率超限(429)';
-              errorDetails = '请稍后再试';
-            } else if (res.statusCode === 500) {
-              errorMessage = 'API服务器错误(500)';
-              errorDetails = '服务器内部错误,请稍后再试';
-            }
-
-            reject({
-              success: false,
-              error: errorMessage,
-              details: errorDetails
-            });
-          }
-        } catch (error) {
-          reject({
-            success: false,
-            error: '解析响应失败',
-            details: error.message
-          });
+        if (fullContent) {
+          resolve({ success: true, content: fullContent });
+        } else {
+          reject({ success: false, error: 'API响应为空' });
         }
+      });
+
+      res.on('error', (error) => {
+        reject({ success: false, error: '响应错误', details: error.message });
       });
     });
 
     req.on('error', (error) => {
-      reject({
-        success: false,
-        error: '网络请求失败',
-        details: error.message
-      });
+      reject({ success: false, error: '网络请求失败', details: error.message });
     });
 
     req.on('timeout', () => {
       req.destroy();
-      reject({
-        success: false,
-        error: 'API请求超时',
-        details: '请求超过50秒未响应'
-      });
+      reject({ success: false, error: 'API请求超时' });
     });
 
     req.write(requestData);
