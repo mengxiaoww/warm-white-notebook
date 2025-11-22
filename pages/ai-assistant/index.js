@@ -101,6 +101,19 @@ Page({
     });
   },
 
+  // 输入框聚焦
+  onInputFocus() {
+    // 输入框聚焦时，延迟滚动到底部，确保输入框可见
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 300);
+  },
+
+  // 输入框失焦
+  onInputBlur() {
+    // 可以在这里添加失焦时的处理逻辑
+  },
+
   // 监听滚动事件
   onScroll(e) {
     const { scrollTop, scrollHeight, scrollViewHeight } = e.detail;

@@ -6,7 +6,7 @@
     scroll-into-view="{{scrollToId}}"
     bindscroll="onScroll"
     enhanced
-    show-scrollbar="{{false}}"
+    show-scrollbar="{{true}}"
     scroll-with-animation="{{true}}">
 
     <!-- 内容包装器，提供底部内边距 -->
@@ -114,10 +114,12 @@
           class="message-input"
           value="{{inputValue}}"
           bindinput="onInput"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
           bindconfirm="sendMessage"
           placeholder="{{isLoading ? 'AI正在回复中...' : '有什么可以帮您...'}}"
           disabled="{{isLoading}}"
-          adjust-position="{{false}}"
+          adjust-position="{{true}}"
           confirm-type="send"
           fixed="{{true}}"
           maxlength="-1"

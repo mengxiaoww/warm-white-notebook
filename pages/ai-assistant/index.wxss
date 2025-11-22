@@ -11,7 +11,7 @@
 
 /* ==================== 消息容器 ==================== */
 .message-container {
-  height: calc(100vh - 400rpx);
+  height: calc(100vh - 370rpx);
   overflow-y: auto;
   overflow-x: hidden;
   background: #FFFFFF;
@@ -20,7 +20,7 @@
 /* 消息内容包装器 - 提供底部内边距 */
 .message-content-wrapper {
   min-height: 100%;
-  padding-bottom: 240rpx;  /* 底部内边距，确保最后一条消息可见 */
+  padding-bottom: 42rpx;  /* 底部内边距，确保最后一条消息可见 */
 }
 
 /* 隐藏滚动条 */
