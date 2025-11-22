@@ -10,7 +10,7 @@ module.exports = {
   API_PATH: '/v1/chat/completions',
 
   // 模型配置 - 使用Qwen3-VL多模态模型
-  MODEL: 'Qwen/Qwen3-VL-8B-Instruct',
+  MODEL: 'Qwen/Qwen3-VL-30B-A3B-Instruct',
 
   // 默认参数
   DEFAULT_TEMPERATURE: 0.7,
