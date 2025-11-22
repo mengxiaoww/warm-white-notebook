@@ -9,10 +9,12 @@
     show-scrollbar="{{false}}"
     scroll-with-animation="{{true}}">
 
-    <!-- 欢迎消息 -->
-    <view wx:if="{{messages.length === 0}}" class="welcome-message">
-      <view class="welcome-icon-wrapper">
-        <t-icon name="chat" size="64rpx" color="#FFFFFF" />
+    <!-- 内容包装器，提供底部内边距 -->
+    <view class="message-content-wrapper">
+      <!-- 欢迎消息 -->
+      <view wx:if="{{messages.length === 0}}" class="welcome-message">
+        <view class="welcome-icon-wrapper">
+          <t-icon name="chat" size="64rpx" color="#FFFFFF" />
       </view>
       <text class="welcome-title">您的智能健康助手</text>
       <text class="welcome-desc">可以解答健康问题，也可以帮您记录健康数据</text>
@@ -76,6 +78,7 @@
         </view>
       </view>
     </view>
+    </view>  <!-- message-content-wrapper 结束 -->
   </scroll-view>
 
   <!-- 回到底部按钮 -->

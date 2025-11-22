@@ -11,11 +11,16 @@
 
 /* ==================== 消息容器 ==================== */
 .message-container {
-  flex: 1;
+  height: calc(100vh - 400rpx);
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 240rpx;  /* 恢复底部内边距，确保最后一条消息可见 */
   background: #FFFFFF;
+}
+
+/* 消息内容包装器 - 提供底部内边距 */
+.message-content-wrapper {
+  min-height: 100%;
+  padding-bottom: 240rpx;  /* 底部内边距，确保最后一条消息可见 */
 }
 
 /* 隐藏滚动条 */
