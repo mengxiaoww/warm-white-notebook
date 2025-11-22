@@ -154,18 +154,16 @@ Page({
       return;
     }
 
-    // 如果有图片，转换为base64（使用更小的尺寸）
-    let imageBase64 = null;
+    // 如果有图片，直接上传到云存储获取URL
+    let imageUrl = null;
     if (hasImage) {
       try {
-        // 先压缩图片到非常小的尺寸
-        const compressedImage = await this.compressImageToSmallSize(this.data.selectedImage);
-        imageBase64 = await this.convertImageToBase64(compressedImage);
-        console.log('图片Base64长度:', imageBase64.length);
+        imageUrl = await this.uploadImageToCloud(this.data.selectedImage);
+        console.log('图片上传成功，URL:', imageUrl);
       } catch (error) {
-        console.error('图片处理失败:', error);
+        console.error('图片上传失败:', error);
         wx.showToast({
-          title: '图片处理失败',
+          title: '图片上传失败',
           icon: 'none'
         });
         return;
@@ -195,8 +193,8 @@ Page({
     this.saveMessage(userMessage, openid);
 
     try {
-      // 调用云函数（支持文本和图片base64）
-      const result = await this.callAI(content, imageBase64);
+      // 调用云函数（支持文本和图片URL）
+      const result = await this.callAI(content, imageUrl);
 
       if (result.success) {
         // 添加AI回复
@@ -266,7 +264,7 @@ Page({
   },
 
   // 调用云函数请求AI（统一模式）
-  async callAI(userMessage, imageBase64 = null) {
+  async callAI(userMessage, imageUrl = null) {
     try {
       // 构建消息历史（保留最近10条，但排除刚刚添加的用户消息，避免重复）
       const recentMessages = this.data.messages
@@ -291,15 +289,15 @@ Page({
         .filter(msg => msg !== null);
 
       // 添加当前消息
-      if (imageBase64) {
-        // 多模态消息 - 按照官方示例，图片在前，文字在后
+      if (imageUrl) {
+        // 多模态消息 - 使用HTTPS URL，按照官方示例，图片在前，文字在后
         recentMessages.push({
           role: 'user',
           content: [
             {
               type: 'image_url',
               image_url: {
-                url: `data:image/jpeg;base64,${imageBase64}`,
+                url: imageUrl,  // 直接使用云存储HTTPS URL
                 detail: 'auto'
               }
             },
@@ -337,42 +335,6 @@ Page({
       console.error('云函数调用失败:', error);
       throw error;
     }
-  },
-
-  // 压缩图片到非常小的尺寸
-  compressImageToSmallSize(imagePath) {
-    return new Promise((resolve, reject) => {
-      // 使用极端压缩 - 质量20%
-      wx.compressImage({
-        src: imagePath,
-        quality: 20,  // 极端压缩到20%
-        success(res) {
-          console.log('图片压缩完成');
-          resolve(res.tempFilePath);
-        },
-        fail(error) {
-          console.error('图片压缩失败:', error);
-          // 压缩失败，使用原图
-          resolve(imagePath);
-        }
-      });
-    });
-  },
-
-  // 图片转base64
-  convertImageToBase64(imagePath) {
-    return new Promise((resolve, reject) => {
-      wx.getFileSystemManager().readFile({
-        filePath: imagePath,
-        encoding: 'base64',
-        success: (res) => {
-          resolve(res.data);
-        },
-        fail: (error) => {
-          reject(error);
-        }
-      });
-    });
   },
 
   // 上传图片到云存储并获取URL
