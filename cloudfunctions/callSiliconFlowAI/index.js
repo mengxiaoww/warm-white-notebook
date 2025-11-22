@@ -68,13 +68,22 @@ function callSiliconFlowAPI(messages, mode = 'unified') {
       content: SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.unified
     };
 
+    // 构建完整的消息数组：系统提示词 + 用户消息
+    const fullMessages = [systemMessage, ...messages];
+
     const requestData = JSON.stringify({
       model: MODEL,
-      messages: [systemMessage, ...messages],
+      messages: fullMessages,
       temperature: config.DEFAULT_TEMPERATURE,
       top_p: config.DEFAULT_TOP_P,
       max_tokens: config.DEFAULT_MAX_TOKENS,
       stream: false
+    });
+
+    console.log('发送请求到API:', {
+      model: MODEL,
+      messageCount: fullMessages.length,
+      requestSize: Buffer.byteLength(requestData)
     });
 
     const options = {
@@ -92,16 +101,20 @@ function callSiliconFlowAPI(messages, mode = 'unified') {
     const req = https.request(options, (res) => {
       let responseData = '';
 
+      console.log('收到API响应，状态码:', res.statusCode);
+
       res.on('data', (chunk) => {
         responseData += chunk.toString();
       });
 
       res.on('end', () => {
         try {
+          console.log('API响应完成，数据长度:', responseData.length);
           const jsonResponse = JSON.parse(responseData);
 
           // 检查是否有错误
           if (jsonResponse.error) {
+            console.error('API返回错误:', jsonResponse.error);
             reject({
               success: false,
               error: jsonResponse.error.message || 'API返回错误',
@@ -113,25 +126,31 @@ function callSiliconFlowAPI(messages, mode = 'unified') {
           // 提取AI回复内容
           if (jsonResponse.choices && jsonResponse.choices[0] && jsonResponse.choices[0].message) {
             const content = jsonResponse.choices[0].message.content;
+            console.log('AI回复成功，内容长度:', content.length);
             resolve({ success: true, content: content });
           } else {
+            console.error('API响应格式错误:', responseData);
             reject({ success: false, error: 'API响应格式错误', details: responseData });
           }
         } catch (error) {
+          console.error('解析API响应失败:', error.message);
           reject({ success: false, error: '解析API响应失败', details: error.message });
         }
       });
 
       res.on('error', (error) => {
+        console.error('响应错误:', error.message);
         reject({ success: false, error: '响应错误', details: error.message });
       });
     });
 
     req.on('error', (error) => {
+      console.error('网络请求失败:', error.message);
       reject({ success: false, error: '网络请求失败', details: error.message });
     });
 
     req.on('timeout', () => {
+      console.error('API请求超时');
       req.destroy();
       reject({ success: false, error: 'API请求超时' });
     });
@@ -243,7 +262,12 @@ function callSiliconFlowAPIStream(messages, mode = 'consultation', onChunk) {
 // 云函数入口
 exports.main = async (event, context) => {
   try {
-    const { messages, mode = 'consultation', stream = false } = event;
+    const { messages, mode = 'unified' } = event;
+
+    console.log('云函数被调用:', {
+      messageCount: messages ? messages.length : 0,
+      mode: mode
+    });
 
     // 验证参数
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -254,7 +278,7 @@ exports.main = async (event, context) => {
     }
 
     // 调用API
-    const result = await callSiliconFlowAPI(messages, mode, stream);
+    const result = await callSiliconFlowAPI(messages, mode);
 
     return result;
 
