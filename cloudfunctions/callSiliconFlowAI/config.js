@@ -9,8 +9,8 @@ module.exports = {
   API_URL: 'api.siliconflow.cn',
   API_PATH: '/v1/chat/completions',
 
-  // 模型配置 - 使用GLM-4V（更稳定，响应更快）
-  MODEL: 'Pro/THUDM/glm-4v-flash',
+  // 模型配置 - 使用Qwen3-VL多模态模型
+  MODEL: 'Qwen/Qwen3-VL-8B-Instruct',
 
   // 默认参数
   DEFAULT_TEMPERATURE: 0.7,
