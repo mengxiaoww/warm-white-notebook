@@ -1,4 +1,5 @@
 const db = wx.cloud.database();
+const { parseMarkdown } = require('../../utils/markdown.js');
 
 Page({
   data: {
@@ -144,6 +145,7 @@ Page({
           id: Date.now() + 1,
           role: 'assistant',
           content: result.content,
+          htmlContent: parseMarkdown(result.content), // 转换 Markdown 为 HTML
           time: this.formatTime(new Date())
         };
 
@@ -336,6 +338,7 @@ Page({
           id: item._id,
           role: item.role,
           content: item.content,
+          htmlContent: item.role === 'assistant' ? parseMarkdown(item.content) : null, // 转换 AI 消息的 Markdown
           time: item.time,
           mode: item.mode
         }));

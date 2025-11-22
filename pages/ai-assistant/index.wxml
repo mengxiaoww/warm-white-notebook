@@ -42,7 +42,7 @@
           <t-icon name="chat" size="40rpx" color="#FFFFFF" />
         </view>
         <view class="message-bubble">
-          <text class="message-text">{{item.content}}</text>
+          <rich-text nodes="{{item.htmlContent || item.content}}" class="rich-text-content"></rich-text>
           <text class="message-time">{{item.time}}</text>
         </view>
       </block>
