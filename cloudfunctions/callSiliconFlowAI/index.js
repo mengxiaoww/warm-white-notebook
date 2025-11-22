@@ -56,6 +56,92 @@ const SYSTEM_PROMPTS = {
 };
 
 /**
+ * 调用硅基流动AI API（非流式响应）
+ * @param {Array} messages - 消息历史
+ * @param {String} mode - 模式：'consultation'(咨询) 或 'recording'(记录) 或 'unified'(统一)
+ */
+function callSiliconFlowAPI(messages, mode = 'unified') {
+  return new Promise((resolve, reject) => {
+    // 添加系统提示词
+    const systemMessage = {
+      role: 'system',
+      content: SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.unified
+    };
+
+    const requestData = JSON.stringify({
+      model: MODEL,
+      messages: [systemMessage, ...messages],
+      temperature: config.DEFAULT_TEMPERATURE,
+      top_p: config.DEFAULT_TOP_P,
+      max_tokens: config.DEFAULT_MAX_TOKENS,
+      stream: false
+    });
+
+    const options = {
+      hostname: API_URL,
+      path: API_PATH,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`,
+        'Content-Length': Buffer.byteLength(requestData)
+      },
+      timeout: 50000
+    };
+
+    const req = https.request(options, (res) => {
+      let responseData = '';
+
+      res.on('data', (chunk) => {
+        responseData += chunk.toString();
+      });
+
+      res.on('end', () => {
+        try {
+          const jsonResponse = JSON.parse(responseData);
+
+          // 检查是否有错误
+          if (jsonResponse.error) {
+            reject({
+              success: false,
+              error: jsonResponse.error.message || 'API返回错误',
+              details: JSON.stringify(jsonResponse.error)
+            });
+            return;
+          }
+
+          // 提取AI回复内容
+          if (jsonResponse.choices && jsonResponse.choices[0] && jsonResponse.choices[0].message) {
+            const content = jsonResponse.choices[0].message.content;
+            resolve({ success: true, content: content });
+          } else {
+            reject({ success: false, error: 'API响应格式错误', details: responseData });
+          }
+        } catch (error) {
+          reject({ success: false, error: '解析API响应失败', details: error.message });
+        }
+      });
+
+      res.on('error', (error) => {
+        reject({ success: false, error: '响应错误', details: error.message });
+      });
+    });
+
+    req.on('error', (error) => {
+      reject({ success: false, error: '网络请求失败', details: error.message });
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      reject({ success: false, error: 'API请求超时' });
+    });
+
+    req.write(requestData);
+    req.end();
+  });
+}
+
+/**
  * 调用硅基流动AI API（流式响应）
  * @param {Array} messages - 消息历史
  * @param {String} mode - 模式：'consultation'(咨询) 或 'recording'(记录)
