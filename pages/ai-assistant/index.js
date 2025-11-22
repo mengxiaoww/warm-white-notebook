@@ -126,10 +126,21 @@ Page({
     // 计算距离底部的距离
     const distanceToBottom = scrollHeight - scrollTop - scrollViewHeight;
 
-    // 只要不在底部（距离底部超过200px），就显示回到底部按钮
-    const showButton = distanceToBottom > 200;
+    // 调试日志
+    console.log('滚动事件:', {
+      scrollTop,
+      scrollHeight,
+      scrollViewHeight,
+      distanceToBottom,
+      当前按钮状态: this.data.showScrollToBottom
+    });
+
+    // 只要不在底部（距离底部超过50px），就显示回到底部按钮
+    // 注意：这里的单位是px，不是rpx，所以阈值要小一些
+    const showButton = distanceToBottom > 50;
 
     if (this.data.showScrollToBottom !== showButton) {
+      console.log('更新按钮显示状态:', showButton);
       this.setData({
         showScrollToBottom: showButton
       });
@@ -505,13 +516,21 @@ Page({
     try {
       const app = getApp();
       const openid = app.getOpenIdIfLoggedIn();
-      if (!openid) return;
+
+      console.log('开始加载历史消息, openid:', openid);
+
+      if (!openid) {
+        console.log('未登录，跳过加载历史消息');
+        return;
+      }
 
       const res = await db.collection('aiChatHistory')
         .where({ openid: openid })
         .orderBy('createTime', 'desc')
         .limit(50)
         .get();
+
+      console.log('查询到的历史消息数量:', res.data ? res.data.length : 0);
 
       if (res.data && res.data.length > 0) {
         // 反转顺序，最早的消息在前
@@ -541,6 +560,8 @@ Page({
             fileIds.push(msg.imageFileId);
           }
         });
+
+        console.log('需要获取临时URL的图片数量:', fileIds.length);
 
         if (fileIds.length > 0) {
           try {
@@ -572,8 +593,11 @@ Page({
           }
         }
 
+        console.log('最终加载的消息数量:', messages.length);
         this.setData({ messages });
         setTimeout(() => this.scrollToBottom(), 200);
+      } else {
+        console.log('没有历史消息');
       }
     } catch (error) {
       console.error('加载历史消息失败:', error);
