@@ -154,12 +154,15 @@ Page({
       return;
     }
 
-    // 如果有图片，直接上传到云存储获取URL
+    // 如果有图片，直接上传到云存储获取URL和fileID
     let imageUrl = null;
+    let imageFileId = null;
     if (hasImage) {
       try {
-        imageUrl = await this.uploadImageToCloud(this.data.selectedImage);
-        console.log('图片上传成功，URL:', imageUrl);
+        const uploadResult = await this.uploadImageToCloud(this.data.selectedImage);
+        imageUrl = uploadResult.url;
+        imageFileId = uploadResult.fileId;
+        console.log('图片上传成功，URL:', imageUrl, 'FileID:', imageFileId);
       } catch (error) {
         console.error('图片上传失败:', error);
         wx.showToast({
@@ -174,8 +177,9 @@ Page({
     const userMessage = {
       id: Date.now(),
       role: 'user',
-      content: content || (hasImage ? '[发送了一张图片]' : ''),
-      image: this.data.selectedImage,
+      content: content,  // 只保留用户输入的文字，不添加占位符
+      image: imageUrl || this.data.selectedImage,  // 优先使用云存储URL
+      imageFileId: imageFileId,  // 保存fileID以便后续获取
       time: this.formatTime(new Date())
     };
 
@@ -272,16 +276,17 @@ Page({
         .filter(msg => msg.role !== 'user' || msg.id !== this.data.messages[this.data.messages.length - 1].id)  // 排除最后一条用户消息
         .slice(-10)  // 只保留10条
         .map(msg => {
-          // 只保留assistant和system消息，清理用户消息
+          // 只保留assistant消息，清理用户消息（去除图片信息）
           if (msg.role === 'assistant') {
             return {
               role: 'assistant',
               content: msg.content
             };
           } else if (msg.role === 'user') {
+            // 只保留文字内容，忽略图片
             return {
               role: 'user',
-              content: msg.content.replace('[发送了一张图片]', '').trim() || '(图片消息)'
+              content: msg.content || '(图片消息)'
             };
           }
           return null;
@@ -337,7 +342,7 @@ Page({
     }
   },
 
-  // 上传图片到云存储并获取URL
+  // 上传图片到云存储并获取URL和fileID
   uploadImageToCloud(imagePath) {
     return new Promise((resolve, reject) => {
       const cloudPath = `ai-chat-images/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
@@ -359,7 +364,10 @@ Page({
             if (tempUrlRes.fileList && tempUrlRes.fileList.length > 0) {
               const tempUrl = tempUrlRes.fileList[0].tempFileURL;
               console.log('获取临时URL成功:', tempUrl);
-              resolve(tempUrl);
+              resolve({
+                url: tempUrl,
+                fileId: uploadRes.fileID
+              });
             } else {
               reject(new Error('获取临时URL失败'));
             }
@@ -477,10 +485,35 @@ Page({
           id: item._id,
           role: item.role,
           content: item.content,
-          htmlContent: item.role === 'assistant' ? parseMarkdown(item.content) : null, // 转换 AI 消息的 Markdown
+          htmlContent: item.role === 'assistant' ? parseMarkdown(item.content) : null,
           time: item.time,
-          mode: item.mode
+          mode: item.mode,
+          image: item.image,  // 临时保留，稍后会被替换
+          imageFileId: item.imageFileId
         }));
+
+        // 如果有图片的 fileID，重新获取临时URL
+        const fileIds = messages
+          .filter(msg => msg.imageFileId)
+          .map(msg => msg.imageFileId);
+
+        if (fileIds.length > 0) {
+          try {
+            const tempUrlRes = await wx.cloud.getTempFileURL({
+              fileList: fileIds
+            });
+
+            // 更新消息中的图片URL
+            tempUrlRes.fileList.forEach(file => {
+              const msg = messages.find(m => m.imageFileId === file.fileID);
+              if (msg && file.tempFileURL) {
+                msg.image = file.tempFileURL;
+              }
+            });
+          } catch (error) {
+            console.error('获取历史图片URL失败:', error);
+          }
+        }
 
         this.setData({ messages });
         setTimeout(() => this.scrollToBottom(), 200);
