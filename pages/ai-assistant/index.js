@@ -263,31 +263,27 @@ Page({
       // 构建消息历史（保留最近10条）
       const recentMessages = this.data.messages
         .slice(-10)
-        .map(msg => {
-          const message = {
-            role: msg.role,
-            content: msg.content
-          };
-
-          // 如果消息包含图片，添加图片信息
-          if (msg.image && msg.imageBase64) {
-            message.content = [
-              { type: 'text', text: msg.content },
-              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${msg.imageBase64}` } }
-            ];
-          }
-
-          return message;
-        });
+        .map(msg => ({
+          role: msg.role,
+          content: msg.content
+        }));
 
       // 添加当前消息
       if (imageBase64) {
-        // 多模态消息
+        // 多模态消息 - GLM-4格式
         recentMessages.push({
           role: 'user',
           content: [
-            { type: 'text', text: userMessage || '请帮我分析这张图片' },
-            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } }
+            {
+              type: 'text',
+              text: userMessage || '请帮我分析这张图片'
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:image/jpeg;base64,${imageBase64}`
+              }
+            }
           ]
         });
       } else {

@@ -310,6 +310,43 @@
   background: #F0F0F0;
 }
 
+/* 输入框区域 */
+.input-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+/* 行内图片预览 */
+.image-preview-inline {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: #F5F5F5;
+  margin-left: 12rpx;
+}
+
+.preview-image-inline {
+  width: 100%;
+  height: 100%;
+}
+
+.remove-image-inline {
+  position: absolute;
+  top: 4rpx;
+  right: 4rpx;
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
 .input-wrapper {
   flex: 1;
   display: flex;
@@ -367,35 +404,6 @@
 
 .send-button:active {
   transform: scale(0.92);
-}
-
-/* 图片预览 */
-.image-preview {
-  margin-top: 16rpx;
-  position: relative;
-  width: 200rpx;
-  height: 200rpx;
-  border-radius: 12rpx;
-  overflow: hidden;
-}
-
-.preview-image {
-  width: 100%;
-  height: 100%;
-}
-
-.remove-image {
-  position: absolute;
-  top: -8rpx;
-  right: -8rpx;
-  width: 48rpx;
-  height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #FFFFFF;
-  border-radius: 50%;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
 }
 
 /* ==================== 回到底部按钮 ==================== */

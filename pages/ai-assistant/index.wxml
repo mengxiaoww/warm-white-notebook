@@ -94,31 +94,34 @@
       </view>
     </view>
 
-    <!-- 输入框 -->
-    <view class="input-wrapper">
-      <textarea
-        class="message-input"
-        value="{{inputValue}}"
-        bindinput="onInput"
-        bindconfirm="sendMessage"
-        placeholder="{{isLoading ? 'AI正在回复中...' : '有什么可以帮您...'}}"
-        disabled="{{isLoading}}"
-        adjust-position="{{false}}"
-        confirm-type="send"
-        fixed="{{true}}"
-        maxlength="-1"
-        show-confirm-bar="{{false}}"
-      />
-      <view class="send-button {{inputValue || isLoading ? 'active' : ''}}" bindtap="{{isLoading ? 'stopAI' : 'sendMessage'}}">
-        <t-icon name="{{isLoading ? 'stop-circle' : 'send'}}" size="44rpx" color="{{inputValue || isLoading ? '#FFFFFF' : '#999999'}}" />
+    <!-- 输入框区域 -->
+    <view class="input-area">
+      <!-- 图片预览 -->
+      <view wx:if="{{selectedImage}}" class="image-preview-inline">
+        <image class="preview-image-inline" src="{{selectedImage}}" mode="aspectFill" />
+        <view class="remove-image-inline" bindtap="removeImage">
+          <t-icon name="close-circle-filled" size="32rpx" color="#FF4444" />
+        </view>
       </view>
-    </view>
 
-    <!-- 已选择的图片预览 -->
-    <view wx:if="{{selectedImage}}" class="image-preview">
-      <image class="preview-image" src="{{selectedImage}}" mode="aspectFill" />
-      <view class="remove-image" bindtap="removeImage">
-        <t-icon name="close-circle-filled" size="48rpx" color="#FF4444" />
+      <!-- 输入框 -->
+      <view class="input-wrapper">
+        <textarea
+          class="message-input"
+          value="{{inputValue}}"
+          bindinput="onInput"
+          bindconfirm="sendMessage"
+          placeholder="{{isLoading ? 'AI正在回复中...' : '有什么可以帮您...'}}"
+          disabled="{{isLoading}}"
+          adjust-position="{{false}}"
+          confirm-type="send"
+          fixed="{{true}}"
+          maxlength="-1"
+          show-confirm-bar="{{false}}"
+        />
+        <view class="send-button {{inputValue || isLoading || selectedImage ? 'active' : ''}}" bindtap="{{isLoading ? 'stopAI' : 'sendMessage'}}">
+          <t-icon name="{{isLoading ? 'stop-circle' : 'send'}}" size="44rpx" color="{{inputValue || isLoading || selectedImage ? '#FFFFFF' : '#999999'}}" />
+        </view>
       </view>
     </view>
   </view>

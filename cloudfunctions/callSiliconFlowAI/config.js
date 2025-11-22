@@ -10,7 +10,7 @@ module.exports = {
   API_PATH: '/v1/chat/completions',
 
   // 模型配置
-  MODEL: 'Pro/Qwen/Qwen2-VL-7B-Instruct',  // 支持多模态的视觉模型
+  MODEL: 'THUDM/glm-4-9b-chat',  // 支持多模态的GLM-4模型
 
   // 默认参数
   DEFAULT_TEMPERATURE: 0.7,
