@@ -99,15 +99,16 @@
         value="{{inputValue}}"
         bindinput="onInput"
         bindconfirm="sendMessage"
-        placeholder="有什么可以帮您..."
+        placeholder="{{isLoading ? 'AI正在回复中...' : '有什么可以帮您...'}}"
+        disabled="{{isLoading}}"
         adjust-position="{{false}}"
         confirm-type="send"
         fixed="{{true}}"
         maxlength="-1"
         show-confirm-bar="{{false}}"
       />
-      <view class="send-button {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
-        <t-icon name="send" size="44rpx" color="{{inputValue ? '#FFFFFF' : '#999999'}}" />
+      <view class="send-button {{inputValue || isLoading ? 'active' : ''}}" bindtap="{{isLoading ? 'stopAI' : 'sendMessage'}}">
+        <t-icon name="{{isLoading ? 'close-circle' : 'send'}}" size="44rpx" color="{{inputValue || isLoading ? '#FFFFFF' : '#999999'}}" />
       </view>
     </view>
 

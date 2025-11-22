@@ -333,6 +333,10 @@
   width: 100%;
 }
 
+.message-input[disabled] {
+  color: #CCCCCC;
+}
+
 .message-input::placeholder {
   color: #CCCCCC;
 }
@@ -391,9 +395,9 @@
 .scroll-to-bottom-btn {
   position: fixed;
   right: 32rpx;
-  bottom: 280rpx;
-  width: 80rpx;
-  height: 80rpx;
+  bottom: 400rpx;
+  width: 45rpx;
+  height: 45rpx;
   border-radius: 50%;
   background: rgba(255, 184, 77, 0.9);
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);

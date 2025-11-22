@@ -123,6 +123,19 @@ Page({
     });
   },
 
+  // 停止AI回复
+  stopAI() {
+    this.setData({
+      isLoading: false
+    });
+
+    wx.showToast({
+      title: '已停止',
+      icon: 'none',
+      duration: 1500
+    });
+  },
+
   // 发送消息
   async sendMessage() {
     const content = this.data.inputValue.trim();
