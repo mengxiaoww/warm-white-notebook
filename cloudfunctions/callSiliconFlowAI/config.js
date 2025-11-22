@@ -9,8 +9,8 @@ module.exports = {
   API_URL: 'api.siliconflow.cn',
   API_PATH: '/v1/chat/completions',
 
-  // 模型配置
-  MODEL: 'THUDM/glm-4-9b-chat',  // 支持多模态的GLM-4模型
+  // 模型配置 - 使用支持视觉的GLM-4.1V模型
+  MODEL: 'THUDM/GLM-4.1V-9B-Thinking',
 
   // 默认参数
   DEFAULT_TEMPERATURE: 0.7,

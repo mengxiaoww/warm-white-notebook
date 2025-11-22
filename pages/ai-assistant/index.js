@@ -141,8 +141,8 @@ Page({
     const content = this.data.inputValue.trim();
     const hasImage = !!this.data.selectedImage;
 
-    // 暂时禁用图片功能，只允许发送文字
-    if (!content || this.data.isLoading) return;
+    // 至少要有文字或图片
+    if ((!content && !hasImage) || this.data.isLoading) return;
 
     const app = getApp();
     const openid = app.getOpenIdIfLoggedIn();
@@ -154,17 +154,34 @@ Page({
       return;
     }
 
+    // 如果有图片，先转换为base64
+    let imageBase64 = null;
+    if (hasImage) {
+      try {
+        imageBase64 = await this.convertImageToBase64(this.data.selectedImage);
+      } catch (error) {
+        console.error('图片转换失败:', error);
+        wx.showToast({
+          title: '图片处理失败',
+          icon: 'none'
+        });
+        return;
+      }
+    }
+
     // 添加用户消息
     const userMessage = {
       id: Date.now(),
       role: 'user',
-      content: content,
+      content: content || (hasImage ? '[发送了一张图片]' : ''),
+      image: this.data.selectedImage,
       time: this.formatTime(new Date())
     };
 
     this.setData({
       messages: [...this.data.messages, userMessage],
       inputValue: '',
+      selectedImage: '',
       isLoading: true
     });
 
@@ -175,8 +192,8 @@ Page({
     this.saveMessage(userMessage, openid);
 
     try {
-      // 调用云函数（统一模式，暂时只支持纯文本）
-      const result = await this.callAI(content, null);
+      // 调用云函数（支持文本和图片）
+      const result = await this.callAI(content, imageBase64);
 
       if (result.success) {
         // 添加AI回复
@@ -542,17 +559,6 @@ Page({
 
   // 选择图片
   chooseImage() {
-    // 暂时禁用图片功能
-    wx.showModal({
-      title: '图片功能暂不可用',
-      content: '由于当前AI模型的多模态功能存在兼容性问题，图片上传功能暂时禁用。\n\n您可以：\n1. 用文字描述图片内容\n2. 等待功能修复后使用',
-      showCancel: false,
-      confirmText: '知道了'
-    });
-    return;
-
-    // 原有代码（暂时注释）
-    /*
     const that = this;
     wx.chooseImage({
       count: 1,
@@ -565,7 +571,6 @@ Page({
         });
       }
     });
-    */
   },
 
   // 移除图片
