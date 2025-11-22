@@ -105,16 +105,10 @@ Page({
   onScroll(e) {
     const { scrollTop, scrollHeight } = e.detail;
 
-    // 使用系统信息获取窗口高度
-    const systemInfo = wx.getSystemInfoSync();
-    const windowHeight = systemInfo.windowHeight;
+    // 简单判断：如果 scrollTop 小于 scrollHeight 的一半，说明在上半部分，显示按钮
+    const showButton = scrollTop < scrollHeight * 0.5 && scrollHeight > 800;
 
-    // 计算距离底部的距离（单位：px）
-    // scrollHeight 和 scrollTop 是 rpx，需要转换
-    const distanceToBottom = scrollHeight - scrollTop - windowHeight;
-
-    // 如果距离底部超过 200px，显示回到底部按钮
-    const showButton = distanceToBottom > 200;
+    console.log('滚动信息:', { scrollTop, scrollHeight, showButton });
 
     if (this.data.showScrollToBottom !== showButton) {
       this.setData({
