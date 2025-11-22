@@ -14,7 +14,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 380rpx;
+  padding-bottom: 40rpx;
   background: #FFFFFF;
 }
 
@@ -133,6 +133,7 @@
   padding-left: 80rpx;
   padding-top: 16rpx;
   padding-bottom: 16rpx;
+  margin-bottom: 12rpx;
 }
 
 .message-item.assistant {
@@ -140,6 +141,7 @@
   padding-right: 80rpx;
   padding-top: 16rpx;
   padding-bottom: 16rpx;
+  margin-bottom: 20rpx;
 }
 
 .message-item.system {

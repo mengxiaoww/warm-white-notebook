@@ -13,7 +13,7 @@ function parseMarkdown(markdown) {
 
   // 处理代码块 ```
   html = html.replace(/```(\w+)?\n([\s\S]*?)```/g,
-    '<div style="background:#F5F5F5;padding:12px;border-radius:6px;margin:8px 0;overflow-x:auto;"><code style="font-family:monospace;font-size:13px;line-height:1.5;">$2</code></div>');
+    '<div style="background:#F5F5F5;padding:10px 12px;border-radius:6px;margin:6px 0;overflow-x:auto;"><code style="font-family:monospace;font-size:13px;line-height:1.5;">$2</code></div>');
 
   // 处理行内代码 `code`
   html = html.replace(/`([^`]+)`/g,
@@ -23,29 +23,35 @@ function parseMarkdown(markdown) {
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="font-weight:bold;">$1</strong>');
   html = html.replace(/__([^_]+)__/g, '<strong style="font-weight:bold;">$1</strong>');
 
-  // 处理斜体 *text* 或 _text_
-  html = html.replace(/\*([^*]+)\*/g, '<em style="font-style:italic;">$1</em>');
-  html = html.replace(/_([^_]+)_/g, '<em style="font-style:italic;">$1</em>');
-
   // 处理标题
-  html = html.replace(/^### (.+)$/gm, '<div style="font-size:16px;font-weight:bold;margin:12px 0 6px 0;line-height:1.4;">$1</div>');
-  html = html.replace(/^## (.+)$/gm, '<div style="font-size:17px;font-weight:bold;margin:12px 0 6px 0;line-height:1.4;">$1</div>');
-  html = html.replace(/^# (.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:12px 0 6px 0;line-height:1.4;">$1</div>');
+  html = html.replace(/^####\s+(.+)$/gm, '<div style="font-size:15px;font-weight:bold;margin:10px 0 4px 0;line-height:1.4;">$1</div>');
+  html = html.replace(/^###\s+(.+)$/gm, '<div style="font-size:16px;font-weight:bold;margin:10px 0 5px 0;line-height:1.4;">$1</div>');
+  html = html.replace(/^##\s+(.+)$/gm, '<div style="font-size:17px;font-weight:bold;margin:12px 0 6px 0;line-height:1.4;">$1</div>');
+  html = html.replace(/^#\s+(.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:12px 0 6px 0;line-height:1.4;">$1</div>');
 
-  // 处理无序列表和有序列表
-  html = html.replace(/^[\*\-]\s+(.+)$/gm, '<li style="margin:6px 0;line-height:1.5;list-style-type:disc;">$1</li>');
-  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<li style="margin:6px 0;line-height:1.5;list-style-type:decimal;">$1. $2</li>');
+  // 处理斜体 *text* 或 _text_ (必须在列表之后处理，避免冲突)
+  html = html.replace(/([^*])\*([^*\n]+)\*([^*])/g, '$1<em style="font-style:italic;">$2</em>$3');
+  html = html.replace(/([^_])_([^_\n]+)_([^_])/g, '$1<em style="font-style:italic;">$2</em>$3');
 
-  // 将连续的 <li> 包裹在 ul/ol 中
-  html = html.replace(/(<li[^>]*list-style-type:disc[^>]*>.*<\/li>\n?)+/g, (match) => {
-    return '<ul style="margin:10px 0;padding-left:24px;">' + match + '</ul>';
+  // 处理有序列表 (数字开头)
+  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<li style="margin:3px 0;line-height:1.5;">$2</li>');
+
+  // 处理无序列表 (- 或 * 开头，但不包括已经有 • 的)
+  html = html.replace(/^[\-\*]\s+(.+)$/gm, function(match, content) {
+    // 如果内容已经以 • 开头，就不处理
+    if (content.trim().startsWith('•')) {
+      return '<div style="margin:3px 0;line-height:1.5;padding-left:0;">' + content + '</div>';
+    }
+    return '<li style="margin:3px 0;line-height:1.5;">• ' + content + '</li>';
   });
-  html = html.replace(/(<li[^>]*list-style-type:decimal[^>]*>.*<\/li>\n?)+/g, (match) => {
-    return '<ol style="margin:10px 0;padding-left:24px;">' + match + '</ol>';
+
+  // 将连续的 <li> 包裹在 ul 中
+  html = html.replace(/(<li[^>]*>.*<\/li>\n?)+/g, (match) => {
+    return '<ul style="margin:6px 0;padding-left:20px;list-style:none;">' + match + '</ul>';
   });
 
-  // 处理换行 - 减少空行间距
-  html = html.replace(/\n\n/g, '<div style="height:8px;"></div>');
+  // 处理换行 - 紧凑间距
+  html = html.replace(/\n\n+/g, '<div style="height:6px;"></div>');
   html = html.replace(/\n/g, '<br/>');
 
   return html;
