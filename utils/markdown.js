@@ -30,8 +30,8 @@ function parseMarkdown(markdown) {
   html = html.replace(/__([^_]+)__/g, '<strong style="font-weight:600;color:#1A1A1A;">$1</strong>');
 
   // 5. 处理列表（有序和无序都转为统一样式）
-  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:3px 0;line-height:1.6;padding-left:1.2em;text-indent:-1.2em;">• $2</div>');
-  html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin:3px 0;line-height:1.6;padding-left:1.2em;text-indent:-1.2em;">• $1</div>');
+  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:2px 0;line-height:1.5;padding-left:1.2em;text-indent:-1.2em;">• $2</div>');
+  html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin:2px 0;line-height:1.5;padding-left:1.2em;text-indent:-1.2em;">• $1</div>');
 
   // 6. 处理斜体（最后处理，避免与列表冲突）
   html = html.replace(/\*([^*\n]+)\*/g, '<em style="font-style:italic;">$1</em>');

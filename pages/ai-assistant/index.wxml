@@ -120,7 +120,7 @@
           bindconfirm="sendMessage"
           placeholder="{{isLoading ? 'AI正在回复中...' : '有什么可以帮您...'}}"
           disabled="{{isLoading}}"
-          adjust-position="{{true}}"
+          adjust-position="{{false}}"
           confirm-type="send"
           fixed="{{true}}"
           maxlength="-1"
