@@ -29,10 +29,10 @@ function parseMarkdown(markdown) {
   html = html.replace(/^##\s+(.+)$/gm, '<div style="font-size:17px;font-weight:bold;margin:10px 0 5px 0;line-height:1.4;">$1</div>');
   html = html.replace(/^#\s+(.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:10px 0 5px 0;line-height:1.4;">$1</div>');
 
-  // 处理有序列表 (数字开头)
-  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:4px 0;line-height:1.6;padding-left:20px;">$1. $2</div>');
+  // 处理有序列表 (数字开头) - 移除数字和点号
+  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:4px 0;line-height:1.6;padding-left:20px;">• $2</div>');
 
-  // 处理无序列表 (- 或 * 开头)
+  // 处理无序列表 (- 或 * 开头) - 替换为 •
   html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin:4px 0;line-height:1.6;padding-left:20px;">• $1</div>');
 
   // 处理斜体 *text* 或 _text_ (必须在列表之后处理，避免冲突)
