@@ -121,8 +121,30 @@ Page({
 
   // 监听滚动事件
   onScroll(e) {
-    const { scrollTop, scrollHeight, scrollViewHeight } = e.detail;
+    const { scrollTop, scrollHeight } = e.detail;
 
+    // 获取scroll-view的高度
+    // 注意：scrollViewHeight在某些情况下可能为undefined，需要手动计算
+    let scrollViewHeight = e.detail.scrollViewHeight;
+
+    // 如果scrollViewHeight为undefined，使用另一种方式获取
+    if (!scrollViewHeight) {
+      const query = wx.createSelectorQuery();
+      query.select('.message-container').boundingClientRect();
+      query.exec((res) => {
+        if (res[0]) {
+          scrollViewHeight = res[0].height;
+          this.updateScrollButton(scrollTop, scrollHeight, scrollViewHeight);
+        }
+      });
+      return; // 等待查询完成后再计算
+    }
+
+    this.updateScrollButton(scrollTop, scrollHeight, scrollViewHeight);
+  },
+
+  // 更新滚动按钮显示状态
+  updateScrollButton(scrollTop, scrollHeight, scrollViewHeight) {
     // 计算距离底部的距离
     const distanceToBottom = scrollHeight - scrollTop - scrollViewHeight;
 
@@ -136,7 +158,6 @@ Page({
     });
 
     // 只要不在底部（距离底部超过50px），就显示回到底部按钮
-    // 注意：这里的单位是px，不是rpx，所以阈值要小一些
     const showButton = distanceToBottom > 50;
 
     if (this.data.showScrollToBottom !== showButton) {
@@ -524,10 +545,10 @@ Page({
         return;
       }
 
+      // 不设置limit，加载所有历史消息
       const res = await db.collection('aiChatHistory')
         .where({ openid: openid })
         .orderBy('createTime', 'desc')
-        .limit(50)
         .get();
 
       console.log('查询到的历史消息数量:', res.data ? res.data.length : 0);
