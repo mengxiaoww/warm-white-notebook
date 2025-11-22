@@ -108,8 +108,6 @@ Page({
     // 简单判断：如果 scrollTop 小于 scrollHeight 的一半，说明在上半部分，显示按钮
     const showButton = scrollTop < scrollHeight * 0.5 && scrollHeight > 800;
 
-    console.log('滚动信息:', { scrollTop, scrollHeight, showButton });
-
     if (this.data.showScrollToBottom !== showButton) {
       this.setData({
         showScrollToBottom: showButton

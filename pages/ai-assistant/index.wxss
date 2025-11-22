@@ -390,33 +390,24 @@
 /* ==================== 回到底部按钮 ==================== */
 .scroll-to-bottom-btn {
   position: fixed;
-  right: 50%;
-  bottom: 340rpx;
-  width: 100rpx;
-  height: 100rpx;
-  margin-right: -50rpx;
+  right: 32rpx;
+  bottom: 280rpx;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FFB84D 0%, #FF9F4D 100%);
-  box-shadow: 0 8rpx 24rpx rgba(255, 184, 77, 0.6);
+  background: rgba(255, 184, 77, 0.9);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 99999;
-  animation: fadeIn 0.3s ease-out, pulse 2s ease-in-out infinite;
+  opacity: 0.8;
   transition: all 0.2s ease;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
 }
 
 .scroll-to-bottom-btn:active {
   transform: scale(0.92);
-  box-shadow: 0 4rpx 16rpx rgba(255, 184, 77, 0.4);
+  opacity: 1;
+  background: rgba(255, 184, 77, 1);
 }
 
