@@ -52,8 +52,8 @@
 
       <!-- 系统消息：头像在左边 -->
       <block wx:elif="{{item.role === 'system'}}">
-        <view class="message-avatar system">
-          <t-icon name="check-circle" size="40rpx" color="#FFFFFF" />
+        <view class="message-avatar {{item.isError ? 'error' : 'system'}}">
+          <t-icon name="{{item.isError ? 'error-circle' : 'check-circle'}}" size="40rpx" color="#FFFFFF" />
         </view>
         <view class="message-bubble">
           <text class="message-text">{{item.content}}</text>
