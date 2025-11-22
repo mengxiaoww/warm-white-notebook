@@ -306,6 +306,9 @@ Page({
           messages: recentMessages,
           mode: 'unified',  // 统一模式
           stream: false
+        },
+        config: {
+          timeout: 60000  // 设置60秒超时
         }
       });
 
@@ -562,12 +565,26 @@ Page({
     const that = this;
     wx.chooseImage({
       count: 1,
-      sizeType: ['compressed'],
+      sizeType: ['compressed'],  // 使用压缩图
       sourceType: ['album', 'camera'],
       success(res) {
         const tempFilePath = res.tempFilePaths[0];
-        that.setData({
-          selectedImage: tempFilePath
+
+        // 进一步压缩图片
+        wx.compressImage({
+          src: tempFilePath,
+          quality: 60,  // 压缩质量60%
+          success(compressRes) {
+            that.setData({
+              selectedImage: compressRes.tempFilePath
+            });
+          },
+          fail() {
+            // 压缩失败，使用原图
+            that.setData({
+              selectedImage: tempFilePath
+            });
+          }
         });
       }
     });
