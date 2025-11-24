@@ -8,8 +8,8 @@
 - 多档案管理（`userProfiles`），一键切换查看不同患者记录
 - ECharts 健康图谱，支持 7/30/90/180 天与"全部时间"智能聚合
 - **AI智能助手"暖白记事本"**：集成硅基流动国产大模型API，提供健康咨询和智能记录辅助
-- 指标自定义与参考范围配置（如血常规/肝肾功能/病毒学等）
-- OCR 云函数（微信开放平台 OCR）可用于化验单识别（已接好示例），目前代码内已包含对**血常规（WBC/PLT/HGB/NEUT）、肝功能、LDH** 等关键指标的解析逻辑。
+- 指标自定义与参考范围配置（如血常规/肝肾功能/血糖/病毒学等）
+- OCR 云函数（微信开放平台 OCR）可用于化验单识别（已接好示例），目前代码内已包含对**血常规（WBC/PLT/HGB/NEUT）、肝功能、血糖（FBG/PBG/HbA1c/RBG）、LDH** 等关键指标的解析逻辑。
 
 ---
 
@@ -63,7 +63,8 @@
   - 门诊（`packageB/pages/clinic-record`）：医院/科室/医生/诊断/费用/复诊
   - 尿量（`packageB/pages/urine-record`）：次数/总量/颜色/清澈度/备注
   - 排便（`packageB/pages/stool-record`）：性状/颜色/硬度/血丝/粘液/备注
-  - 血常规、肝/肾功能、病毒学（`packageA/packageC`）：记录与自定义指标配置页
+  - 血常规、肝/肾功能、血糖、病毒学（`packageA/packageC`）：记录与自定义指标配置页
+    - 血糖（`packageA/pages/blood-sugar`）：默认记录「血糖」指标，可选配置「空腹血糖」「餐后2小时血糖」「糖化血红蛋白」「随机血糖」
 
 ---
 
@@ -125,6 +126,7 @@ warm-white-notebook/
 - 检验与记录类
 
   - `bloodTests`：date、openid、profileId、wbc/plt/hgb/neut…、customValues（自定义指标）
+  - `bloodSugars`：date、openid、profileId、bloodSugar/fbg/pbg/hba1c/rbg…、customValues（自定义指标）
   - `liverFunctionTests`：alt、ast、tbil、dbil、alb、ggt、alp…
   - `kidneyFunctionTests`：cr/creatinine、bun/urea、ua、egfr/gfr、cysc、b2mg…
   - `ebvRecords`：ebvDna、result、customValues …
@@ -137,6 +139,7 @@ warm-white-notebook/
 
 - 指标设置（用于自定义指标名、单位与参考范围映射）
   - `userIndicatorSettings`（血常规）
+  - `bloodSugarIndicatorSettings`（血糖）、`bloodSugarIndicatorConfig`（血糖指标配置）
   - `ebvIndicatorSettings`、`cmvIndicatorSettings`、`ldhIndicatorSettings`、`liverFunctionSettings`、`kidneyFunctionSettings`
 
 索引建议（强烈推荐）：
