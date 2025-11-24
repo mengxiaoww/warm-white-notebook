@@ -140,6 +140,9 @@
             </view>
           </view>
           <text class="task-text">{{item.title}}</text>
+          <view class="task-delete-hint">
+            <t-icon name="delete" size="20rpx" color="#CCC" />
+          </view>
         </view>
       </view>
 
@@ -621,19 +624,37 @@
         </view>
       </view>
     </t-popup>
-    <!-- 添加事项弹窗 -->
+    <!-- 添加事项弹窗 - 优化版 -->
     <t-popup visible="{{showAddTask}}" bind:visible-change="onPopupClose" placement="bottom">
       <view class="add-task-popup">
         <view class="popup-header">
-          <text class="popup-title">添加事项</text>
+          <text class="popup-title">添加今日事项</text>
           <view class="milestone-close-btn" bindtap="onPopupClose">
             <t-icon name="close" size="28rpx" />
           </view>
         </view>
         <view class="popup-content">
-          <t-input value="{{newTaskText}}" placeholder="请输入事项内容" bind:change="onTaskInput" maxlength="30" />
-          <view style="display: flex; justify-content: center; align-items: center;margin-top: 50rpx;">
-            <t-button theme="primary" bindtap="confirmAddTask">确定</t-button>
+          <view class="task-input-wrapper">
+            <t-input
+              value="{{newTaskText}}"
+              placeholder="例如：骨穿检查、PICC维护、复查血常规..."
+              bind:change="onTaskInput"
+              maxlength="30"
+              class="task-input"
+              clearable
+            />
+            <view class="input-tip">
+              <t-icon name="info-circle" size="24rpx" color="#999" />
+              <text>长按事项可删除</text>
+            </view>
+          </view>
+          <view class="popup-footer">
+            <view class="popup-btn popup-btn-cancel" bindtap="onPopupClose">
+              取消
+            </view>
+            <view class="popup-btn popup-btn-confirm" bindtap="confirmAddTask">
+              确定
+            </view>
           </view>
         </view>
       </view>
