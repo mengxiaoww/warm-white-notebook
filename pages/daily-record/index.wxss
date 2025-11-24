@@ -99,9 +99,22 @@
   width: 60%;
 }
 
+.skeleton-text-long {
+  flex: 1;
+  height: 28rpx;
+  background: linear-gradient(90deg, #E8E4DD 0%, #F0EDE8 50%, #E8E4DD 100%);
+  border-radius: 8rpx;
+}
+
 .skeleton-text-title {
   width: 180rpx;
   height: 32rpx;
+}
+
+.skeleton-text-subtitle {
+  width: 240rpx;
+  height: 24rpx;
+  margin-top: 8rpx;
 }
 
 .skeleton-circle {
@@ -118,44 +131,68 @@
   background: linear-gradient(135deg, #E8E4DD 0%, #F0EDE8 100%);
 }
 
-/* 轮播图骨架 */
-.skeleton-banner {
-  width: calc(100% - 40rpx);
-  height: 240rpx;
-  margin: 20rpx;
-  background: linear-gradient(135deg, #E8E4DD 0%, #F0EDE8 50%, #E8E4DD 100%);
-  border-radius: 28rpx;
+/* 页面头部骨架 */
+.skeleton-page-header {
+  margin: 24rpx 24rpx 16rpx;
+  padding: 24rpx 28rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.6) 0%, rgba(255, 224, 178, 0.5) 100%);
+  border-radius: 24rpx;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4rpx 20rpx rgba(212, 165, 116, 0.15);
 }
 
-/* 里程碑骨架 */
-.skeleton-milestone {
-  margin: 24rpx;
-  padding: 32rpx;
-  background: #FFFFFF;
-  border-radius: 24rpx;
-  box-shadow: 0 2rpx 8rpx rgba(212, 165, 116, 0.08);
-}
-
-.skeleton-milestone-header {
+.skeleton-header-content {
   display: flex;
   align-items: center;
   gap: 16rpx;
-  margin-bottom: 24rpx;
 }
 
-.skeleton-milestone-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16rpx;
+.skeleton-header-texts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.skeleton-milestone-card {
-  padding: 24rpx;
-  background: linear-gradient(135deg, #FAF8F4 0%, #F7F4EF 100%);
-  border-radius: 16rpx;
+/* 今日事项骨架 */
+.skeleton-tasks-card {
+  margin: 16rpx 24rpx;
+  padding: 24rpx 28rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.6) 0%, rgba(255, 232, 204, 0.5) 100%);
+  border-radius: 24rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.skeleton-task-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx 24rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.skeleton-task-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 日期横幅骨架 */
+.skeleton-date-banner {
+  margin: 24rpx;
+  padding: 28rpx 32rpx;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.12) 0%, rgba(255, 183, 77, 0.08) 100%);
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
   position: relative;
   overflow: hidden;
 }
@@ -10281,37 +10318,42 @@
 
 /* 记录页头部 */
 .record-page-header {
-  margin: 32rpx 24rpx 0;
-  padding: 32rpx;
-  border-radius: 32rpx;
-  background: linear-gradient(135deg, #fff8f0, #ffe0b2);
-  box-shadow: 0 12rpx 32rpx rgba(255, 152, 0, 0.15);
+  margin: 24rpx 24rpx 16rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.95) 0%, rgba(255, 224, 178, 0.85) 100%);
+  box-shadow: 0 8rpx 24rpx rgba(255, 152, 0, 0.12),
+              0 2rpx 8rpx rgba(255, 152, 0, 0.06);
+  border: 1rpx solid rgba(255, 184, 77, 0.15);
+  backdrop-filter: blur(10rpx);
   display: flex;
   flex-direction: column;
-  gap: 28rpx;
+  gap: 0;
 }
 
 .record-title-group {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .record-title-texts {
   display: flex;
   flex-direction: column;
+  gap: 4rpx;
 }
 
 .record-title {
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: 600;
   color: #333;
+  line-height: 1.4;
 }
 
 .record-subtitle {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #8c6d46;
-  margin-top: 6rpx;
+  opacity: 0.85;
 }
 
 .record-header-actions {
@@ -10337,47 +10379,24 @@
 
 /* 今日事项卡片容器 - 优化版 */
 .today-tasks-card {
-  margin: 20rpx 24rpx 28rpx;
-  padding: 32rpx 28rpx;
-  border-radius: 28rpx;
-  background: linear-gradient(135deg, #FFF8F0 0%, #FFE8CC 100%);
-  box-shadow: 0 12rpx 32rpx rgba(255, 152, 0, 0.15),
-              0 4rpx 12rpx rgba(255, 152, 0, 0.08),
-              inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
-  border: 2rpx solid rgba(255, 184, 77, 0.2);
+  margin: 16rpx 24rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.95) 0%, rgba(255, 232, 204, 0.85) 100%);
+  box-shadow: 0 8rpx 24rpx rgba(255, 152, 0, 0.12),
+              0 2rpx 8rpx rgba(255, 152, 0, 0.06);
+  border: 1rpx solid rgba(255, 184, 77, 0.15);
+  backdrop-filter: blur(10rpx);
   position: relative;
   overflow: hidden;
 }
 
-/* 添加装饰性光效 */
-.today-tasks-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 300rpx;
-  height: 300rpx;
-  background: radial-gradient(circle, rgba(255, 184, 77, 0.12) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* 确保内容在光效之上 */
-.tasks-header,
-.tasks-list,
-.tasks-empty {
-  position: relative;
-  z-index: 1;
-}
-
-/* 事项头部 - 优化版 */
+/* 事项头部 - 简洁版 */
 .tasks-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28rpx;
-  padding-bottom: 24rpx;
-  border-bottom: 2rpx solid rgba(255, 152, 0, 0.15);
+  margin-bottom: 20rpx;
 }
 
 .tasks-title-group {
@@ -10438,7 +10457,6 @@
 .tasks-list {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
 }
 
 .task-item {
@@ -10519,8 +10537,8 @@
 /* 删除按钮 */
 .task-delete-btn {
   flex-shrink: 0;
-  width: 56rpx;
-  height: 56rpx;
+  width: 42rpx;
+  height: 42rpx;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,23 +1,28 @@
 <view class="container">
   <!-- 骨架屏加载 -->
   <view class="skeleton-wrapper" wx:if="{{isPageLoading}}">
-    <!-- 轮播图骨架 -->
-    <view class="skeleton-banner">
-      <view class="skeleton-shimmer"></view>
-    </view>
-    <!-- 里程碑骨架 -->
-    <view class="skeleton-milestone">
-      <view class="skeleton-milestone-header">
+    <!-- 页面头部骨架 -->
+    <view class="skeleton-page-header">
+      <view class="skeleton-header-content">
         <view class="skeleton-circle"></view>
-        <view class="skeleton-text skeleton-text-title"></view>
-      </view>
-      <view class="skeleton-milestone-cards">
-        <view class="skeleton-milestone-card" wx:for="{{[1,2]}}" wx:key="*this">
-          <view class="skeleton-text skeleton-text-short"></view>
-          <view class="skeleton-text skeleton-text-medium"></view>
-          <view class="skeleton-shimmer"></view>
+        <view class="skeleton-header-texts">
+          <view class="skeleton-text skeleton-text-title"></view>
+          <view class="skeleton-text skeleton-text-subtitle"></view>
         </view>
       </view>
+      <view class="skeleton-shimmer"></view>
+    </view>
+    <!-- 今日事项骨架 -->
+    <view class="skeleton-tasks-card">
+      <view class="skeleton-tasks-header">
+        <view class="skeleton-text skeleton-text-medium"></view>
+        <view class="skeleton-circle-small"></view>
+      </view>
+      <view class="skeleton-task-item" wx:for="{{[1,2]}}" wx:key="*this">
+        <view class="skeleton-circle-small"></view>
+        <view class="skeleton-text skeleton-text-long"></view>
+      </view>
+      <view class="skeleton-shimmer"></view>
     </view>
     <!-- 日历骨架 -->
     <view class="skeleton-calendar">
@@ -26,6 +31,12 @@
           <view class="skeleton-circle-small"></view>
         </view>
       </view>
+      <view class="skeleton-shimmer"></view>
+    </view>
+    <!-- 日期横幅骨架 -->
+    <view class="skeleton-date-banner">
+      <view class="skeleton-circle"></view>
+      <view class="skeleton-text skeleton-text-medium"></view>
       <view class="skeleton-shimmer"></view>
     </view>
     <!-- 功能项骨架 -->
@@ -48,15 +59,42 @@
           <text class="record-subtitle">集中管理每日监测与就医数据</text>
         </view>
       </view>
-      <view class="record-header-actions">
-        <view class="record-action" bindtap="navigateToHealthChart">
-          <t-icon name="chart-bubble" size="32rpx" color="#FF9800" />
-          <text>健康图谱</text>
+    </view>
+
+
+    <!-- ✅ 今日事项卡片 -->
+    <view class="today-tasks-card">
+      <view class="tasks-header">
+        <view class="tasks-title-group">
+          <t-icon name="bulletpoint" size="32rpx" color="#FF9800" />
+          <text class="tasks-title">今日事项</text>
+          <text class="tasks-count" wx:if="{{todayTasks.length > 0}}">{{todayTasks.length}}</text>
         </view>
-        <view class="record-action" bindtap="showKeyDatePopup">
-          <t-icon name="sunny" size="32rpx" color="#FF9800" />
-          <text>关键日</text>
+        <view class="tasks-add-btn" bindtap="showAddTaskDialog">
+          <t-icon name="add" size="32rpx" color="#FFFFFF" />
         </view>
+      </view>
+
+      <!-- 事项列表 -->
+      <view class="tasks-list" wx:if="{{todayTasks.length > 0}}">
+        <view class="task-item {{item.completed ? 'task-completed' : ''}}"
+          wx:for="{{todayTasks}}" wx:key="_id">
+          <view class="task-checkbox" bindtap="toggleTaskComplete" data-id="{{item._id}}">
+            <view class="checkbox-inner {{item.completed ? 'checked' : ''}}">
+              <t-icon name="check" size="20rpx" color="#FFFFFF" wx:if="{{item.completed}}" />
+            </view>
+          </view>
+          <text class="task-text">{{item.title}}</text>
+          <view class="task-delete-btn" bindtap="confirmDeleteTask" data-id="{{item._id}}">
+            <t-icon name="delete" size="24rpx" color="#FF6B6B" />
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="tasks-empty" wx:else>
+        <t-icon name="task" size="40rpx" color="#DDD" />
+        <text class="tasks-empty-text">点击右上角 + 添加今日待办</text>
       </view>
     </view>
 
@@ -116,41 +154,6 @@
       </view>
     </view>
 
-    <!-- ✅ 今日事项卡片 -->
-    <view class="today-tasks-card">
-      <view class="tasks-header">
-        <view class="tasks-title-group">
-          <t-icon name="bulletpoint" size="32rpx" color="#FF9800" />
-          <text class="tasks-title">今日事项</text>
-          <text class="tasks-count" wx:if="{{todayTasks.length > 0}}">{{todayTasks.length}}</text>
-        </view>
-        <view class="tasks-add-btn" bindtap="showAddTaskDialog">
-          <t-icon name="add" size="32rpx" color="#FFFFFF" />
-        </view>
-      </view>
-
-      <!-- 事项列表 -->
-      <view class="tasks-list" wx:if="{{todayTasks.length > 0}}">
-        <view class="task-item {{item.completed ? 'task-completed' : ''}}"
-          wx:for="{{todayTasks}}" wx:key="_id">
-          <view class="task-checkbox" bindtap="toggleTaskComplete" data-id="{{item._id}}">
-            <view class="checkbox-inner {{item.completed ? 'checked' : ''}}">
-              <t-icon name="check" size="20rpx" color="#FFFFFF" wx:if="{{item.completed}}" />
-            </view>
-          </view>
-          <text class="task-text">{{item.title}}</text>
-          <view class="task-delete-btn" bindtap="confirmDeleteTask" data-id="{{item._id}}">
-            <t-icon name="delete" size="32rpx" color="#FF6B6B" />
-          </view>
-        </view>
-      </view>
-
-      <!-- 空状态 -->
-      <view class="tasks-empty" wx:else>
-        <t-icon name="task" size="40rpx" color="#DDD" />
-        <text class="tasks-empty-text">点击右上角 + 添加今日待办</text>
-      </view>
-    </view>
 
     <!-- 功能项网格 - 动态渲染 -->
     <view class="functions-grid {{dateChanged ? 'records-highlight-animation' : ''}}">
