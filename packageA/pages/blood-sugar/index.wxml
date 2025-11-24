@@ -54,7 +54,7 @@
         />
       </view>
       <view class="indicator-range">
-        <text>参考范围：< 7.8 mmol/L</text>
+        <text>参考范围：&lt; 7.8 mmol/L</text>
       </view>
     </view>
 
