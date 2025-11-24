@@ -297,21 +297,16 @@ Page({
       datePickerVisible: false,
       recordId: '',
       formData: {
-        wbc: '',
-        neut: '',
-        hgb: '',
-        plt: '',
-        rbc: '',
-        crp: '',
-        hct: '',
-        lymph: '',
-        mono: ''
+        fbg: '',
+        pbg: '',
+        hba1c: '',
+        rbg: ''
       },
       displayedBasicIndicators: [
-        { id: 'wbc', name: '白细胞', unit: '×10⁹/L' },
-        { id: 'neut', name: '中性粒细胞数', unit: '×10⁹/L' },
-        { id: 'hgb', name: '血红蛋白', unit: 'g/L' },
-        { id: 'plt', name: '血小板', unit: '×10⁹/L' }
+        { id: 'fbg', name: '空腹血糖', unit: 'mmol/L' },
+        { id: 'pbg', name: '餐后2小时血糖', unit: 'mmol/L' },
+        { id: 'hba1c', name: '糖化血红蛋白', unit: '%' },
+        { id: 'rbg', name: '随机血糖', unit: 'mmol/L' }
       ],
       customIndicators: []
     });
@@ -350,36 +345,27 @@ Page({
       console.log(`🗓️ OCR识别到日期: ${detectedDate}`);
     }
 
-    // 2. 精确匹配规则 - 只进行精确匹配，避免错误匹配
+    // 2. 精确匹配规则 - 血糖指标匹配
     const indicatorRules = {
-      'wbc': {
-        // 只保留精确匹配的关键词
-        keywords: ['WBC', '白细胞计数', '白细胞（WBC）', '白细胞数', '白细胞(WBC)', '★白细胞'],
-        englishKeywords: ['WBC'] // 英文关键词优先
+      'fbg': {
+        // 空腹血糖关键词
+        keywords: ['FBG', 'FPG', '空腹血糖', '空腹葡萄糖', '空腹血糖（FBG）', '空腹血糖(FBG)', '★空腹血糖'],
+        englishKeywords: ['FBG', 'FPG']
       },
-      'hgb': {
-        keywords: ['HGB', '红蛋白', '血红蛋白', 'Hb', 'HB', '血红蛋白（HGB）', '★血红蛋白', '血红蛋白浓度', '血红蛋白(HGB)', '血红素'],
-        englishKeywords: ['HGB', 'Hb', 'HB']
+      'pbg': {
+        // 餐后2小时血糖关键词
+        keywords: ['PBG', '2hPG', '餐后血糖', '餐后2小时血糖', '2h血糖', '餐后2h血糖', '★餐后血糖'],
+        englishKeywords: ['PBG', '2hPG']
       },
-      'plt': {
-        keywords: ['PLT', 'Plt', '血小板', '血小板计数', '血小板（PLT）', '血小板数', '血小板(PLT)', '★血小板', '血小板数目'],
-        englishKeywords: ['PLT', 'Plt']
+      'hba1c': {
+        // 糖化血红蛋白关键词
+        keywords: ['HbA1c', 'HbA1C', 'A1C', '糖化血红蛋白', '糖化血红蛋白（HbA1c）', '糖化血红蛋白(HbA1c)', '★糖化血红蛋白'],
+        englishKeywords: ['HbA1c', 'HbA1C', 'A1C']
       },
-      'neut': {
-        keywords: ['NEUT#', 'Neu#', '中性粒细胞数', '中性粒细胞绝对值', '中性粒细胞#', '中性粒细胞计数'],
-        englishKeywords: ['NEUT#', 'Neu#']
-      },
-      'lymph': {
-        keywords: ['LYMPH#', 'Lym#', '淋巴细胞数', '淋巴细胞绝对值', '淋巴细胞#', '淋巴细胞计数'],
-        englishKeywords: ['LYMPH#', 'Lym#']
-      },
-      'mono': {
-        keywords: ['MONO#', 'Mon#', '单核细胞数', '单核细胞绝对值', '单核细胞#', '单核细胞计数'],
-        englishKeywords: ['MONO#', 'Mon#']
-      },
-      'crp': {
-        keywords: ['CRP', 'C反应蛋白', 'C-反应蛋白', 'C反应蛋白(CRP)'],
-        englishKeywords: ['CRP']
+      'rbg': {
+        // 随机血糖关键词
+        keywords: ['RBG', '随机血糖', '随机葡萄糖', '任意血糖', '★随机血糖'],
+        englishKeywords: ['RBG']
       }
     };
 
@@ -458,56 +444,9 @@ Page({
     items.forEach((item, index) => {
       const text = item.text.trim();
       console.log(`  ${index + 1}. "${text}"`);
-      // 特别标记包含血小板相关内容的行
-      if (text.includes('血小板') || text.includes('PLT') || text.includes('Plt') || text.includes('plt')) {
-        console.log(`    ⚠️ 此行包含血小板相关关键词`);
-      }
-      // 特别标记包含中性粒细胞的行
-      if (text.includes('中性粒细胞') || text.includes('中性细胞') || text.includes('NEUT')) {
-        console.log(`    ⚠️ 此行包含中性粒细胞相关关键词`);
-        if (text.includes('%') || text.includes('％')) {
-          console.log(`    🚫 此行是百分比值，应该跳过`);
-        }
-      }
-    });
-
-    // 专门检查血小板计数匹配
-    console.log('🔍 血小板计数专项检查:');
-    const plateletTexts = items.filter(item =>
-      item.text.includes('血小板') || item.text.includes('PLT') || item.text.includes('plt') || item.text.includes('Plt') || item.text.includes('小板')
-    );
-    plateletTexts.forEach((item, index) => {
-      console.log(`  血小板文本 ${index + 1}: "${item.text}"`);
-      if (item.text.includes('血小板计数')) {
-        console.log(`    ✅ 找到血小板计数文本`);
-      }
-    });
-
-    console.log('🔍 血红蛋白专项检查:');
-    const hemoglobinTexts = items.filter(item =>
-      item.text.includes('血红蛋白') || item.text.includes('HGB') || item.text.includes('Hb') ||
-      item.text.includes('HB') || item.text.includes('红蛋白') || item.text.includes('血红') ||
-      item.text.includes('红细胞') || item.text.includes('RBC')
-    );
-    hemoglobinTexts.forEach((item, index) => {
-      console.log(`  血红蛋白文本 ${index + 1}: "${item.text}"`);
-      if (item.text.includes('血红蛋白') || item.text.includes('HGB')) {
-        console.log(`    ✅ 找到血红蛋白文本`);
-      }
-    });
-
-    // 专门检查中性粒细胞匹配
-    console.log('🔍 中性粒细胞专项检查:');
-    const neutrophilTexts = items.filter(item =>
-      item.text.includes('中性粒细胞') || item.text.includes('中性细胞') || item.text.includes('NEUT')
-    );
-    neutrophilTexts.forEach((item, index) => {
-      const text = item.text.trim();
-      console.log(`  中性粒细胞文本 ${index + 1}: "${text}"`);
-      if (text.includes('%') || text.includes('％')) {
-        console.log(`    🚫 这是百分比值，应该被跳过`);
-      } else {
-        console.log(`    ✅ 这是绝对值，应该被匹配`);
+      // 特别标记包含血糖相关内容的行
+      if (text.includes('血糖') || text.includes('FBG') || text.includes('PBG') || text.includes('HbA1c')) {
+        console.log(`    ⚠️ 此行包含血糖相关关键词`);
       }
     });
 
@@ -735,19 +674,9 @@ Page({
 
   // 检查是否应该跳过百分比行
   shouldSkipPercentage(keyword, text) {
-    const isAbsoluteValueIndicator = keyword.includes('中性粒细胞') ||
-      keyword.includes('淋巴细胞') ||
-      keyword.includes('单核细胞') ||
-      keyword.includes('嗜酸') ||
-      keyword.includes('嗜碱');
-
-    const hasPercentage = text.includes('%') ||
-      text.includes('％') ||
-      text.includes('比率') ||
-      text.includes('比例') ||
-      text.includes('百分比');
-
-    return isAbsoluteValueIndicator && hasPercentage;
+    // 血糖指标不需要跳过百分比,因为HbA1c本身就是百分比
+    // 只需要确保不误匹配其他无关的百分比数据
+    return false;
   },
 
   // 重新设计的数值提取逻辑 - 针对5张血糖图片优化
