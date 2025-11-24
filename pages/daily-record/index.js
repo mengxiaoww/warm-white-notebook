@@ -9841,7 +9841,9 @@ Page({
 
         expenseData,
 
-        checkReportData
+        checkReportData,
+
+        bloodSugarData
 
       ] = await Promise.all([
 
@@ -9867,7 +9869,9 @@ Page({
 
         this.getExpenseDataForDate(dateStr),
 
-        this.getCheckReportDataForDate(dateStr)
+        this.getCheckReportDataForDate(dateStr),
+
+        this.getBloodSugarDataForDate(dateStr)
 
       ])
 
@@ -9891,6 +9895,8 @@ Page({
       console.log('🚽 排便记录数据:', stoolData)
 
       console.log('💧 尿量记录数据:', urineData)
+
+      console.log('🩸 血糖数据:', bloodSugarData)
 
 
 
@@ -9918,7 +9924,9 @@ Page({
 
         expenseData,
 
-        checkReportData
+        checkReportData,
+
+        bloodSugarData
 
       }
 
@@ -10093,7 +10101,49 @@ Page({
 
   },
 
+  // 获取指定日期的血糖数据
+  async getBloodSugarDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
 
+      console.log('🩸 查询血糖数据 - 日期:', dateStr)
+      console.log('🩸 openid:', app.globalData?.openid)
+      console.log('🩸 profileId:', app.globalData?.currentProfile?.profileId)
+
+      if (!app.globalData.currentProfile?.profileId) {
+        console.log('🩸 profileId不存在，返回null')
+        return null
+      }
+
+      const queryCondition = {
+        openid: app.globalData.openid,
+        profileId: app.globalData.currentProfile.profileId,
+        date: dateStr
+      }
+      console.log('🩸 查询条件:', queryCondition)
+
+      const res = await db.collection('bloodSugars')
+        .where(queryCondition)
+        .limit(1)
+        .get()
+
+      console.log('🩸 血糖查询结果:', res)
+      console.log('🩸 数据数量:', res.data.length)
+
+      if (res.data.length > 0) {
+        const bloodSugarData = res.data[0]
+        console.log('🩸 血糖数据内容:', bloodSugarData)
+        return bloodSugarData
+      } else {
+        console.log('🩸 未找到血糖数据')
+        return null
+      }
+    } catch (error) {
+      console.error('❌ 获取血糖数据失败:', error)
+      return null
+    }
+  },
 
   // 获取指定日期的EB病毒数据
 
