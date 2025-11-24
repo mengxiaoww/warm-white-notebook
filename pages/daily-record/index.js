@@ -10989,7 +10989,7 @@ Page({
   /**
    * 打开功能项编辑弹窗
    */
-  toggleFunctionEditMode() {
+  async toggleFunctionEditMode() {
 
     if (this.data.functionEditMode) {
 
@@ -11003,15 +11003,16 @@ Page({
 
       this.setData({
 
-        functionEditMode: true,
-
-        showFunctionCustomPopup: true
+        functionEditMode: true
 
       })
 
-      // 加载当前配置到编辑弹窗
+      // 先加载配置，加载完成后再显示弹窗
+      await this.loadFunctionCustomConfig()
 
-      this.loadFunctionCustomConfig()
+      this.setData({
+        showFunctionCustomPopup: true
+      })
 
     }
 
