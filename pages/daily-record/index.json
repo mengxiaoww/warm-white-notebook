@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "medical-icon": "/components/medical-icon/index",
     "t-button": "tdesign-miniprogram/button/button",
     "t-input": "tdesign-miniprogram/input/input",
     "t-cell": "tdesign-miniprogram/cell/cell",
