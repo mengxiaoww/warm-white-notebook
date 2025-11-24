@@ -2617,7 +2617,7 @@ Page({
 
       // 获取血糖数据
 
-      const bloodSugarData = bloodSugarMap[day.date] || null
+      const bloodSugarData = bloodSugarMap[day.date] ? bloodSugarMap[day.date][0] : null
 
 
 
