@@ -1324,21 +1324,15 @@ Page({
 
 
 
-  // 加载今日任务
+  // 加载今日任务（修改为加载选中日期的任务）
 
   loadTodayTasks(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!currentProfileId) {
-
-
 
       this.setData({
 
@@ -1350,9 +1344,8 @@ Page({
 
     }
 
-    // 加载今日任务
-
-    const today = this.formatDate(new Date())
+    // 加载选中日期的任务（而不仅仅是今天）
+    const selectedDate = this.data.selectedDate || this.formatDate(new Date())
 
     wx.cloud.database().collection('todayTasks')
 
@@ -1362,19 +1355,19 @@ Page({
 
         profileId: currentProfileId,
 
-        date: today
+        date: selectedDate
 
       })
+
+      .orderBy('createTime', 'desc')
 
       .get()
 
       .then(res => {
 
-
-
         const todayTasks = res.data.map(item => ({
 
-          id: item._id,
+          _id: item._id,
 
           title: item.title,
 
@@ -1383,8 +1376,6 @@ Page({
           date: item.date
 
         }))
-
-
 
         this.setData({
 
@@ -1402,11 +1393,11 @@ Page({
 
       .catch(err => {
 
-
+        console.error('加载任务失败:', err)
 
         wx.showToast({
 
-          title: '加载今日任务失败',
+          title: '加载任务失败',
 
           icon: 'none'
 
@@ -11986,6 +11977,204 @@ Page({
       url: '/pages/health-chart/index'
     })
   },
+
+  // ==================== 今日事项管理 ====================
+
+  // 显示添加事项对话框
+  showAddTaskDialog() {
+    const app = getApp()
+    const openid = app.getOpenIdIfLoggedIn()
+
+    if (!openid) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    this.setData({
+      showAddTask: true,
+      newTaskText: ''
+    })
+  },
+
+  // 事项输入变化
+  onTaskInput(e) {
+    this.setData({
+      newTaskText: e.detail.value
+    })
+  },
+
+  // 确认添加事项
+  async confirmAddTask() {
+    const app = getApp()
+    const openid = app.getOpenIdIfLoggedIn()
+    const profileId = app.getCurrentProfileId()
+
+    if (!openid || !profileId) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    const taskText = this.data.newTaskText.trim()
+    if (!taskText) {
+      wx.showToast({
+        title: '请输入事项内容',
+        icon: 'none'
+      })
+      return
+    }
+
+    try {
+      wx.showLoading({ title: '添加中...' })
+
+      const db = wx.cloud.database()
+      await db.collection('todayTasks').add({
+        data: {
+          openid: openid,
+          profileId: profileId,
+          title: taskText,
+          completed: false,
+          date: this.data.selectedDate,
+          createTime: db.serverDate(),
+          updateTime: db.serverDate()
+        }
+      })
+
+      wx.hideLoading()
+      wx.showToast({
+        title: '添加成功',
+        icon: 'success'
+      })
+
+      this.setData({
+        showAddTask: false,
+        newTaskText: ''
+      })
+
+      // 重新加载事项列表
+      this.loadTodayTasks(openid)
+
+    } catch (err) {
+      console.error('添加事项失败:', err)
+      wx.hideLoading()
+      wx.showToast({
+        title: '添加失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 切换事项完成状态
+  async toggleTaskComplete(e) {
+    const taskId = e.currentTarget.dataset.id
+    const app = getApp()
+    const openid = app.getOpenIdIfLoggedIn()
+
+    if (!openid) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 找到对应的任务
+    const task = this.data.todayTasks.find(t => t._id === taskId)
+    if (!task) return
+
+    try {
+      const db = wx.cloud.database()
+      await db.collection('todayTasks').doc(taskId).update({
+        data: {
+          completed: !task.completed,
+          updateTime: db.serverDate()
+        }
+      })
+
+      // 更新本地数据
+      const todayTasks = this.data.todayTasks.map(t => {
+        if (t._id === taskId) {
+          return { ...t, completed: !t.completed }
+        }
+        return t
+      })
+
+      this.setData({ todayTasks })
+
+      wx.showToast({
+        title: task.completed ? '已标记未完成' : '已完成',
+        icon: 'success',
+        duration: 1000
+      })
+
+    } catch (err) {
+      console.error('更新事项失败:', err)
+      wx.showToast({
+        title: '操作失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  // 确认删除事项
+  confirmDeleteTask(e) {
+    const taskId = e.currentTarget.dataset.id
+
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这个事项吗？',
+      confirmColor: '#FF9800',
+      success: (res) => {
+        if (res.confirm) {
+          this.deleteTask(taskId)
+        }
+      }
+    })
+  },
+
+  // 删除事项
+  async deleteTask(taskId) {
+    const app = getApp()
+    const openid = app.getOpenIdIfLoggedIn()
+
+    if (!openid) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    try {
+      wx.showLoading({ title: '删除中...' })
+
+      await wx.cloud.database().collection('todayTasks').doc(taskId).remove()
+
+      wx.hideLoading()
+      wx.showToast({
+        title: '删除成功',
+        icon: 'success'
+      })
+
+      // 重新加载事项列表
+      this.loadTodayTasks(openid)
+
+    } catch (err) {
+      console.error('删除事项失败:', err)
+      wx.hideLoading()
+      wx.showToast({
+        title: '删除失败',
+        icon: 'none'
+      })
+    }
+  },
+
+  // ==================== 今日事项管理结束 ====================
 
   // 分享功能
   async onShareAppMessage() {

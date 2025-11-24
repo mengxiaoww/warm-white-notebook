@@ -115,6 +115,41 @@
         <text class="banner-hint">为这一天添加健康记录</text>
       </view>
     </view>
+
+    <!-- ✅ 今日事项卡片 -->
+    <view class="today-tasks-card">
+      <view class="tasks-header">
+        <view class="tasks-title-group">
+          <t-icon name="bulletpoint" size="32rpx" color="#FF9800" />
+          <text class="tasks-title">今日事项</text>
+          <text class="tasks-count" wx:if="{{todayTasks.length > 0}}">{{todayTasks.length}}</text>
+        </view>
+        <view class="tasks-add-btn" bindtap="showAddTaskDialog">
+          <t-icon name="add" size="28rpx" color="#FF9800" />
+        </view>
+      </view>
+
+      <!-- 事项列表 -->
+      <view class="tasks-list" wx:if="{{todayTasks.length > 0}}">
+        <view class="task-item {{item.completed ? 'task-completed' : ''}}"
+          wx:for="{{todayTasks}}" wx:key="_id"
+          bindlongpress="confirmDeleteTask" data-id="{{item._id}}">
+          <view class="task-checkbox" bindtap="toggleTaskComplete" data-id="{{item._id}}">
+            <view class="checkbox-inner {{item.completed ? 'checked' : ''}}">
+              <t-icon name="check" size="20rpx" color="#FFFFFF" wx:if="{{item.completed}}" />
+            </view>
+          </view>
+          <text class="task-text">{{item.title}}</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="tasks-empty" wx:else>
+        <t-icon name="task" size="40rpx" color="#DDD" />
+        <text class="tasks-empty-text">点击右上角 + 添加今日待办</text>
+      </view>
+    </view>
+
     <!-- 功能项网格 - 动态渲染 -->
     <view class="functions-grid {{dateChanged ? 'records-highlight-animation' : ''}}">
       <!-- 动态功能项 -->

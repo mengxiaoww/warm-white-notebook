@@ -10335,3 +10335,163 @@
   color: #bf7b11;
   border: 1rpx solid rgba(255, 152, 0, 0.2);
 }
+
+/* ==================== 今日事项卡片样式 ==================== */
+
+/* 今日事项卡片容器 */
+.today-tasks-card {
+  margin: 32rpx 24rpx 24rpx;
+  padding: 28rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF8F0 100%);
+  box-shadow: 0 8rpx 24rpx rgba(255, 152, 0, 0.08),
+              0 2rpx 8rpx rgba(255, 152, 0, 0.04);
+  border: 1rpx solid rgba(255, 184, 77, 0.12);
+}
+
+/* 事项头部 */
+.tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid rgba(255, 184, 77, 0.1);
+}
+
+.tasks-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.tasks-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 1rpx;
+}
+
+.tasks-count {
+  min-width: 40rpx;
+  height: 40rpx;
+  padding: 0 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF9800 0%, #FFB84D 100%);
+  color: #FFFFFF;
+  font-size: 22rpx;
+  font-weight: 600;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.25);
+}
+
+.tasks-add-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFE0B2 100%);
+  border-radius: 50%;
+  border: 2rpx solid rgba(255, 152, 0, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.1);
+}
+
+.tasks-add-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.15);
+}
+
+/* 事项列表 */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx 20rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  transition: all 0.3s ease;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(255, 184, 77, 0.08);
+}
+
+.task-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.12);
+}
+
+.task-completed {
+  opacity: 0.6;
+  background: #F5F5F5;
+}
+
+.task-checkbox {
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.task-checkbox:active {
+  transform: scale(0.9);
+}
+
+.checkbox-inner {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3rpx solid #E0E0E0;
+  background: #FFFFFF;
+  transition: all 0.3s ease;
+}
+
+.checkbox-inner.checked {
+  background: linear-gradient(135deg, #FF9800 0%, #FFB84D 100%);
+  border-color: #FF9800;
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
+}
+
+.task-text {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.task-completed .task-text {
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* 空状态 */
+.tasks-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 32rpx;
+  gap: 16rpx;
+}
+
+.tasks-empty-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* ==================== 今日事项样式结束 ==================== */
