@@ -10338,160 +10338,207 @@
 
 /* ==================== 今日事项卡片样式 ==================== */
 
-/* 今日事项卡片容器 */
+/* 今日事项卡片容器 - 优化版 */
 .today-tasks-card {
-  margin: 32rpx 24rpx 24rpx;
-  padding: 28rpx;
-  border-radius: 32rpx;
-  background: linear-gradient(135deg, #FFFFFF 0%, #FFF8F0 100%);
-  box-shadow: 0 8rpx 24rpx rgba(255, 152, 0, 0.08),
-              0 2rpx 8rpx rgba(255, 152, 0, 0.04);
-  border: 1rpx solid rgba(255, 184, 77, 0.12);
+  margin: 20rpx 24rpx 28rpx;
+  padding: 32rpx 28rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFE8CC 100%);
+  box-shadow: 0 12rpx 32rpx rgba(255, 152, 0, 0.15),
+              0 4rpx 12rpx rgba(255, 152, 0, 0.08),
+              inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+  border: 2rpx solid rgba(255, 184, 77, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
-/* 事项头部 */
+/* 添加装饰性光效 */
+.today-tasks-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300rpx;
+  height: 300rpx;
+  background: radial-gradient(circle, rgba(255, 184, 77, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 确保内容在光效之上 */
+.tasks-header,
+.tasks-list,
+.tasks-empty {
+  position: relative;
+  z-index: 1;
+}
+
+/* 事项头部 - 优化版 */
 .tasks-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24rpx;
-  padding-bottom: 20rpx;
-  border-bottom: 2rpx solid rgba(255, 184, 77, 0.1);
+  margin-bottom: 28rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid rgba(255, 152, 0, 0.15);
 }
 
 .tasks-title-group {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 14rpx;
 }
 
 .tasks-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
-  letter-spacing: 1rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #8B5A00;
+  letter-spacing: 2rpx;
+  text-shadow: 0 1rpx 2rpx rgba(255, 152, 0, 0.1);
 }
 
 .tasks-count {
-  min-width: 40rpx;
-  height: 40rpx;
-  padding: 0 12rpx;
+  min-width: 44rpx;
+  height: 44rpx;
+  padding: 0 14rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #FF9800 0%, #FFB84D 100%);
   color: #FFFFFF;
-  font-size: 22rpx;
-  font-weight: 600;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.25);
+  font-size: 24rpx;
+  font-weight: 700;
+  border-radius: 22rpx;
+  box-shadow: 0 6rpx 16rpx rgba(255, 152, 0, 0.35),
+              0 2rpx 4rpx rgba(255, 152, 0, 0.2);
 }
 
 .tasks-add-btn {
-  width: 56rpx;
-  height: 56rpx;
+  width: 64rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FFF8F0 0%, #FFE0B2 100%);
+  background: linear-gradient(135deg, #FF9800 0%, #FFB84D 100%);
   border-radius: 50%;
-  border: 2rpx solid rgba(255, 152, 0, 0.2);
-  transition: all 0.3s ease;
-  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.1);
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8rpx 20rpx rgba(255, 152, 0, 0.3),
+              0 2rpx 6rpx rgba(255, 152, 0, 0.2);
+}
+
+.tasks-add-btn t-icon {
+  filter: drop-shadow(0 1rpx 2rpx rgba(0, 0, 0, 0.15));
 }
 
 .tasks-add-btn:active {
-  transform: scale(0.92);
-  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.15);
+  transform: scale(0.9);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3),
+              0 1rpx 4rpx rgba(255, 152, 0, 0.2);
 }
 
 /* 事项列表 */
 .tasks-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 18rpx;
 }
 
 .task-item {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 24rpx 20rpx;
-  background: #FFFFFF;
+  padding: 28rpx 24rpx;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 20rpx;
-  transition: all 0.3s ease;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  border: 1rpx solid rgba(255, 184, 77, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.08),
+              0 1rpx 4rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(255, 184, 77, 0.15);
+  backdrop-filter: blur(10rpx);
 }
 
 .task-item:active {
-  transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.12);
+  transform: scale(0.97) translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.15),
+              0 1rpx 3rpx rgba(0, 0, 0, 0.06);
 }
 
 .task-completed {
-  opacity: 0.6;
-  background: #F5F5F5;
+  opacity: 0.5;
+  background: rgba(245, 245, 245, 0.9);
 }
 
 .task-checkbox {
   flex-shrink: 0;
+  width: 52rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.task-checkbox:active {
+  transform: scale(0.88);
+}
+
+.checkbox-inner {
   width: 48rpx;
   height: 48rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
-}
-
-.task-checkbox:active {
-  transform: scale(0.9);
-}
-
-.checkbox-inner {
-  width: 44rpx;
-  height: 44rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 50%;
-  border: 3rpx solid #E0E0E0;
+  border: 4rpx solid #E0E0E0;
   background: #FFFFFF;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .checkbox-inner.checked {
   background: linear-gradient(135deg, #FF9800 0%, #FFB84D 100%);
   border-color: #FF9800;
-  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
+  box-shadow: 0 6rpx 16rpx rgba(255, 152, 0, 0.4),
+              0 2rpx 6rpx rgba(255, 152, 0, 0.2),
+              inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
 }
 
 .task-text {
   flex: 1;
   font-size: 30rpx;
   color: #333;
-  line-height: 1.5;
+  line-height: 1.6;
   word-break: break-all;
+  font-weight: 500;
 }
 
 .task-completed .task-text {
   color: #999;
   text-decoration: line-through;
+  font-weight: 400;
 }
 
-/* 空状态 */
+/* 空状态 - 优化版 */
 .tasks-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60rpx 32rpx;
-  gap: 16rpx;
+  padding: 80rpx 32rpx;
+  gap: 20rpx;
+}
+
+.tasks-empty t-icon {
+  opacity: 0.3;
+  filter: drop-shadow(0 2rpx 8rpx rgba(255, 152, 0, 0.15));
 }
 
 .tasks-empty-text {
-  font-size: 26rpx;
-  color: #999;
+  font-size: 28rpx;
+  color: #B8860B;
+  font-weight: 500;
+  letter-spacing: 1rpx;
 }
 
 /* ==================== 今日事项样式结束 ==================== */

@@ -125,7 +125,7 @@
           <text class="tasks-count" wx:if="{{todayTasks.length > 0}}">{{todayTasks.length}}</text>
         </view>
         <view class="tasks-add-btn" bindtap="showAddTaskDialog">
-          <t-icon name="add" size="28rpx" color="#FF9800" />
+          <t-icon name="add" size="32rpx" color="#FFFFFF" />
         </view>
       </view>
 
