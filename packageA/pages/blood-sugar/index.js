@@ -2035,15 +2035,11 @@ Page({
 
       // 4. 构建配置的优先级逻辑（新增继承逻辑）
       let config = {
-        wbc: true,
-        neut: true,
-        hgb: true,
-        plt: true,
-        rbc: false,
-        crp: false,
-        hct: false,
-        lymph: false,
-        mono: false
+        bloodSugar: true,
+        fbg: false,
+        pbg: false,
+        hba1c: false,
+        rbg: false
       };
 
       if (currentDateConfigRes.data.length > 0) {
@@ -2143,15 +2139,11 @@ Page({
 
       // 预设指标定义
       const defaultIndicators = {
-        wbc: { name: '白细胞', unit: '×10⁹/L' },
-        neut: { name: '中性粒细胞数', unit: '×10⁹/L' },
-        hgb: { name: '血红蛋白', unit: 'g/L' },
-        plt: { name: '血小板', unit: '×10⁹/L' },
-        rbc: { name: '红细胞', unit: '×10¹²/L' },
-        crp: { name: 'C反应蛋白', unit: 'mg/L' },
-        hct: { name: '红细胞压积', unit: '%' },
-        lymph: { name: '淋巴细胞绝对值', unit: '×10⁹/L' },
-        mono: { name: '单核细胞绝对值', unit: '×10⁹/L' }
+        bloodSugar: { name: '血糖', unit: 'mmol/L' },
+        fbg: { name: '空腹血糖', unit: 'mmol/L' },
+        pbg: { name: '餐后2小时血糖', unit: 'mmol/L' },
+        hba1c: { name: '糖化血红蛋白', unit: '%' },
+        rbg: { name: '随机血糖', unit: 'mmol/L' }
       };
 
       // 🔧 移除强制显示逻辑，完全依赖用户配置或数据推断
@@ -2226,10 +2218,7 @@ Page({
 
         // 强制使用默认配置
         const fallbackIndicators = [
-          { id: 'wbc', name: '白细胞', min: '4.0', max: '10.0', unit: '×10⁹/L' },
-          { id: 'neut', name: '中性粒细胞数', min: '2.0', max: '7.0', unit: '×10⁹/L' },
-          { id: 'hgb', name: '血红蛋白', min: '120', max: '160', unit: 'g/L' },
-          { id: 'plt', name: '血小板', min: '100', max: '300', unit: '×10⁹/L' }
+          { id: 'bloodSugar', name: '血糖', min: '3.9', max: '7.8', unit: 'mmol/L' }
         ];
 
         const fallbackFormData = {};
@@ -2248,7 +2237,7 @@ Page({
         });
 
         this.setData({
-          bloodSugarIndicatorConfig: { wbc: true, neut: true, hgb: true, plt: true },
+          bloodSugarIndicatorConfig: { bloodSugar: true, fbg: false, pbg: false, hba1c: false, rbg: false },
           displayedBasicIndicators: fallbackIndicators,
           customIndicators: [],
           formData: mergedFallbackData
@@ -2313,10 +2302,7 @@ Page({
       // 失败时使用默认配置
       console.log('🔧 使用默认配置作为兜底');
       const defaultIndicators = [
-        { id: 'wbc', name: '白细胞', min: '4.0', max: '10.0', unit: '×10⁹/L' },
-        { id: 'neut', name: '中性粒细胞数', min: '2.0', max: '7.0', unit: '×10⁹/L' },
-        { id: 'hgb', name: '血红蛋白', min: '120', max: '160', unit: 'g/L' },
-        { id: 'plt', name: '血小板', min: '100', max: '300', unit: '×10⁹/L' }
+        { id: 'bloodSugar', name: '血糖', min: '3.9', max: '7.8', unit: 'mmol/L' }
       ];
 
       const initialFormData = {};
@@ -2335,7 +2321,7 @@ Page({
       });
 
       this.setData({
-        bloodSugarIndicatorConfig: { wbc: true, neut: true, hgb: true, plt: true },
+        bloodSugarIndicatorConfig: { bloodSugar: true, fbg: false, pbg: false, hba1c: false, rbg: false },
         displayedBasicIndicators: defaultIndicators || [],
         customIndicators: [],
         formData: mergedInitialData
