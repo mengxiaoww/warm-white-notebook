@@ -11346,7 +11346,25 @@ Page({
           };
         })
 
-        // 🔧 如果发现旧数据，自动更新到数据库
+        // 🔧 配置合并：检查是否有新增的功能项（如血糖）
+        const currentProfile = app.globalData.currentProfile
+        const isLymphomaPatient = currentProfile?.primaryDiseaseCategory === 'lymphoma'
+        const latestConfig = generateFunctionConfig(isLymphomaPatient, false)
+
+        // 获取用户配置中的所有ID
+        const existingIds = new Set(functionList.map(item => item.id))
+
+        // 查找新增的功能项
+        const newItems = latestConfig.filter(item => !existingIds.has(item.id))
+
+        if (newItems.length > 0) {
+          console.log('🆕 发现新增功能项:', newItems.map(item => item.name))
+          // 将新增项添加到列表末尾
+          functionList = [...functionList, ...newItems]
+          needsUpdate = true
+        }
+
+        // 🔧 如果发现旧数据或新增项，自动更新到数据库
         if (needsUpdate) {
           db.collection('functionCustomConfig')
             .doc(res.data[0]._id)
@@ -11357,10 +11375,10 @@ Page({
               }
             })
             .then(() => {
-              console.log('✅ LDH配置已自动更新为乳酸脱氢酶');
+              console.log('✅ 配置已自动更新');
             })
             .catch(err => {
-              console.error('⚠️ 自动更新LDH配置失败:', err);
+              console.error('⚠️ 自动更新配置失败:', err);
             });
         }
 
