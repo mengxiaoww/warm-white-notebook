@@ -20,7 +20,7 @@ exports.main = async (event, context) => {
       'functionCustomConfig',  // 功能项自定义配置
       'banners',               // 轮播图
       'feedbacks',             // 用户反馈
-      'bloodSugarRecords',     // 血糖记录
+      'bloodSugars',           // 血糖记录
       'bloodSugarIndicatorSettings',  // 血糖指标设置
       'bloodSugarIndicatorConfig'     // 血糖指标配置
     ];
