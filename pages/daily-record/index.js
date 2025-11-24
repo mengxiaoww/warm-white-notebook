@@ -45,7 +45,7 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'cmv', name: '巨细胞病毒', icon: 'search', visible: isLymphomaPatient, order: 9, navigate: 'navigateToCmv' },
 
-    { id: 'bloodSugar', name: '血糖', icon: 'precise-monitor', visible: isLymphomaPatient, order: 10, navigate: 'navigateToBloodSugar' },
+    { id: 'bloodSugar', name: '血糖', icon: 'chart-bubble', visible: isLymphomaPatient, order: 10, navigate: 'navigateToBloodSugar' },
 
     { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 11, navigate: 'navigateToUrine' },
 
