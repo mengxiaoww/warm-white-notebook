@@ -10,6 +10,7 @@ Page({
 
     // 基础表单数据
     formData: {
+      bloodSugar: '',
       fbg: '',
       pbg: '',
       hba1c: '',
@@ -18,6 +19,7 @@ Page({
 
     // 正常范围参考值
     normalRanges: {
+      bloodSugar: { min: '3.9', max: '7.8' },
       fbg: { min: '3.9', max: '6.1' },
       pbg: { min: '0', max: '7.8' },
       hba1c: { min: '4.0', max: '6.0' },
@@ -29,18 +31,16 @@ Page({
 
     // 用户选中的指标配置
     bloodSugarIndicatorConfig: {
-      fbg: true,
-      pbg: true,
-      hba1c: true,
+      bloodSugar: true,
+      fbg: false,
+      pbg: false,
+      hba1c: false,
       rbg: false
     },
 
     // 显示的基础指标
     displayedBasicIndicators: [
-      { id: 'fbg', name: '空腹血糖', unit: 'mmol/L' },
-      { id: 'pbg', name: '餐后2小时血糖', unit: 'mmol/L' },
-      { id: 'hba1c', name: '糖化血红蛋白', unit: '%' },
-      { id: 'rbg', name: '随机血糖', unit: 'mmol/L' }
+      { id: 'bloodSugar', name: '血糖', unit: 'mmol/L' },
     ],
 
     // 用户信息
@@ -143,6 +143,7 @@ Page({
 
     // 构建基础指标列表
     const basicIndicators = [
+      { id: 'bloodSugar', name: '血糖', unit: 'mmol/L' },
       { id: 'fbg', name: '空腹血糖', unit: 'mmol/L' },
       { id: 'pbg', name: '餐后2小时血糖', unit: 'mmol/L' },
       { id: 'hba1c', name: '糖化血红蛋白', unit: '%' },
@@ -297,16 +298,14 @@ Page({
       datePickerVisible: false,
       recordId: '',
       formData: {
+        bloodSugar: '',
         fbg: '',
         pbg: '',
         hba1c: '',
         rbg: ''
       },
       displayedBasicIndicators: [
-        { id: 'fbg', name: '空腹血糖', unit: 'mmol/L' },
-        { id: 'pbg', name: '餐后2小时血糖', unit: 'mmol/L' },
-        { id: 'hba1c', name: '糖化血红蛋白', unit: '%' },
-        { id: 'rbg', name: '随机血糖', unit: 'mmol/L' }
+        { id: 'bloodSugar', name: '血糖', unit: 'mmol/L' },
       ],
       customIndicators: []
     });

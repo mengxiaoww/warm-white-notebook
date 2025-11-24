@@ -5,10 +5,11 @@ Page({
   data: {
     // 选中的指标
     selectedIndicators: {
-      fbg: true,     // 默认选中 - 空腹血糖
-      pbg: true,     // 默认选中 - 餐后2小时血糖
-      hba1c: true,   // 默认选中 - 糖化血红蛋白
-      rbg: false     // 可选指标 - 随机血糖
+      bloodSugar: true,  // 默认选中 - 血糖
+      fbg: false,        // 可选 - 空腹血糖
+      pbg: false,        // 可选 - 餐后2小时血糖
+      hba1c: false,      // 可选 - 糖化血红蛋白
+      rbg: false         // 可选 - 随机血糖
     },
 
     // 当前日期数据状态
@@ -20,10 +21,11 @@ Page({
     },
 
     // 必选指标（不能取消勾选）
-    requiredIndicators: ['fbg', 'pbg', 'hba1c'],
+    requiredIndicators: ['bloodSugar'],
 
     // 所有指标的配置信息
     indicatorConfigs: {
+      bloodSugar: { name: '血糖', unit: 'mmol/L' },
       fbg: { name: '空腹血糖', unit: 'mmol/L' },
       pbg: { name: '餐后2小时血糖', unit: 'mmol/L' },
       hba1c: { name: '糖化血红蛋白', unit: '%' },

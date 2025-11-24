@@ -9,7 +9,7 @@
   <view class="content">
     <!-- 提示文字 -->
     <view class="tips">
-      <text>提示：前3项为必选核心指标，其他项目可自由配置</text>
+      <text>提示：血糖为必选核心指标，其他项目可自由配置</text>
     </view>
     <!-- 当前编辑日期提示 -->
     <view class="date-status-tips">
@@ -50,40 +50,54 @@
       <view class="indicators-container">
         <!-- 预设指标组 -->
         <view class="indicator-group">
-          <!-- 空腹血糖 (必选) -->
+          <!-- 血糖 (必选) -->
           <view class="indicator-item required-item">
-            <t-checkbox checked="{{selectedIndicators.fbg}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
-            <view class="indicator-info">
-              <view class="indicator-name">空</view>
-              <view class="indicator-text">
-                <text class="indicator-fullname">{{indicatorConfigs.fbg.name}}</text>
-                <text class="required-tag">必选</text>
-              </view>
-            </view>
-          </view>
-          <!-- 餐后2小时血糖 (必选) -->
-          <view class="indicator-item required-item">
-            <t-checkbox checked="{{selectedIndicators.pbg}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
-            <view class="indicator-info">
-              <view class="indicator-name">餐</view>
-              <view class="indicator-text">
-                <text class="indicator-fullname">{{indicatorConfigs.pbg.name}}</text>
-                <text class="required-tag">必选</text>
-              </view>
-            </view>
-          </view>
-          <!-- 糖化血红蛋白 (必选) -->
-          <view class="indicator-item required-item">
-            <t-checkbox checked="{{selectedIndicators.hba1c}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <t-checkbox checked="{{selectedIndicators.bloodSugar}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
             <view class="indicator-info">
               <view class="indicator-name">糖</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">{{indicatorConfigs.hba1c.name}}</text>
+                <text class="indicator-fullname">{{indicatorConfigs.bloodSugar.name}}</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>
           </view>
-          <!-- 更多预设指标 -->
+          <!-- 可选指标 -->
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="fbg" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.fbg}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="fbg">
+              <view class="indicator-info">
+                <view class="indicator-name">空</view>
+                <text class="indicator-fullname">{{indicatorConfigs.fbg.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="pbg" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.pbg}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="pbg">
+              <view class="indicator-info">
+                <view class="indicator-name">餐</view>
+                <text class="indicator-fullname">{{indicatorConfigs.pbg.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
+          <view class="indicator-item">
+            <view class="checkbox-area" bindtap="toggleIndicator" data-id="hba1c" data-type="preset">
+              <t-checkbox checked="{{selectedIndicators.hba1c}}" class="custom-checkbox" />
+            </view>
+            <view class="indicator-content" bindtap="editIndicator" data-id="hba1c">
+              <view class="indicator-info">
+                <view class="indicator-name">化</view>
+                <text class="indicator-fullname">{{indicatorConfigs.hba1c.name}}</text>
+              </view>
+              <t-icon name="chevron-right" size="32rpx" color="#999" />
+            </view>
+          </view>
           <view class="indicator-item">
             <view class="checkbox-area" bindtap="toggleIndicator" data-id="rbg" data-type="preset">
               <t-checkbox checked="{{selectedIndicators.rbg}}" class="custom-checkbox" />
