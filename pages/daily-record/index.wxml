@@ -141,7 +141,7 @@
           </view>
           <text class="task-text">{{item.title}}</text>
           <view class="task-delete-hint">
-            <t-icon name="delete" size="20rpx" color="#CCC" />
+            <t-icon name="delete" size="24rpx" color="#FF6B6B" />
           </view>
         </view>
       </view>
@@ -624,38 +624,30 @@
         </view>
       </view>
     </t-popup>
-    <!-- 添加事项弹窗 - 优化版 -->
-    <t-popup visible="{{showAddTask}}" bind:visible-change="onPopupClose" placement="bottom">
-      <view class="add-task-popup">
+    <!-- 添加事项弹窗 -->
+    <t-popup visible="{{showAddTask}}" bind:visible-change="onPopupClose" placement="bottom"
+      show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+      <view class="popup-content">
         <view class="popup-header">
-          <text class="popup-title">添加今日事项</text>
+          <text class="popup-title">添加事项</text>
           <view class="milestone-close-btn" bindtap="onPopupClose">
             <t-icon name="close" size="28rpx" />
           </view>
         </view>
-        <view class="popup-content">
-          <view class="task-input-wrapper">
+        <view class="task-form">
+          <view class="task-form-item">
             <t-input
               value="{{newTaskText}}"
-              placeholder="例如：骨穿检查、PICC维护、复查血常规..."
+              placeholder="例如：骨穿检查、PICC维护..."
               bind:change="onTaskInput"
               maxlength="30"
-              class="task-input"
               clearable
             />
-            <view class="input-tip">
-              <t-icon name="info-circle" size="24rpx" color="#999" />
-              <text>长按事项可删除</text>
-            </view>
           </view>
-          <view class="popup-footer">
-            <view class="popup-btn popup-btn-cancel" bindtap="onPopupClose">
-              取消
-            </view>
-            <view class="popup-btn popup-btn-confirm" bindtap="confirmAddTask">
-              确定
-            </view>
-          </view>
+        </view>
+        <view class="milestone-popup-footer">
+          <view class="milestone-cancel-btn" bindtap="onPopupClose">取消</view>
+          <view class="milestone-save-btn" bindtap="confirmAddTask">确定</view>
         </view>
       </view>
     </t-popup>
