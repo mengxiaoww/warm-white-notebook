@@ -158,7 +158,7 @@
             <block wx:elif="{{item.id === 'bloodSugar' && selectedDateData.bloodSugarData}}">
               <view class="ldh-single-data">
                 <view class="ldh-header">
-                  <view class="ldh-label">血糖数值</view>
+                  <view class="ldh-label">数值</view>
                 </view>
                 <view class="ldh-value-container">
                   <text class="ldh-big-value">{{selectedDateData.bloodSugarData.bloodSugar || selectedDateData.bloodSugarData.fbg || selectedDateData.bloodSugarData.pbg || '0'}}</text>

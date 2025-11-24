@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "medical-icon": "/components/medical-icon/index",
     "t-navbar": "tdesign-miniprogram/navbar/navbar",
     "t-icon": "tdesign-miniprogram/icon/icon",
     "t-button": "tdesign-miniprogram/button/button",
