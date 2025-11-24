@@ -154,6 +154,41 @@
                 </view>
               </view>
             </block>
+            <!-- 血糖数据展示 - 紧凑指标网格布局 -->
+            <block wx:elif="{{item.id === 'bloodSugar' && selectedDateData.bloodSugarData}}">
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodSugarData.bloodSugar || selectedDateData.bloodSugarData.bloodSugar === 0}}">
+                <text class="bs-label">血糖</text>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.bloodSugarData.bloodSugar}}</view>
+                  <view class="bs-unit">mmol/L</view>
+                </view>
+              </view>
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodSugarData.fbg || selectedDateData.bloodSugarData.fbg === 0}}">
+                <view class="bs-label">空腹血糖</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.bloodSugarData.fbg}}</view>
+                  <view class="bs-unit">mmol/L</view>
+                </view>
+              </view>
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodSugarData.pbg || selectedDateData.bloodSugarData.pbg === 0}}">
+                <view class="bs-label">餐后2小时</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.bloodSugarData.pbg}}</view>
+                  <view class="bs-unit">mmol/L</view>
+                </view>
+              </view>
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodSugarData.hba1c || selectedDateData.bloodSugarData.hba1c === 0}}">
+                <view class="bs-label">糖化血红蛋白</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.bloodSugarData.hba1c}}</view>
+                  <view class="bs-unit">%</view>
+                </view>
+              </view>
+            </block>
             <!-- EB病毒 - 使用血常规相同高度布局 -->
             <!-- EB病毒：与乳酸脱氢酶统一，显示「数值」 -->
             <block wx:elif="{{item.id === 'ebv' && selectedDateData.ebvData}}">
@@ -733,6 +768,25 @@
                 </view>
                 <view class="unified-data-grid">
                   <view class="unified-data-item" wx:for="{{currentDateDetail.ldhData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 血糖数据 -->
+          <block wx:if="{{currentDateDetail.bloodSugarData && currentDateDetail.bloodSugarData.length > 0}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <medical-icon name="glucose" size="24" color="white" />
+                </view>
+                血糖数据
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.bloodSugarData}}" wx:key="id">
                     <text class="unified-data-label">{{item.name}}</text>
                     <text class="unified-data-value">{{item.value}}</text>
                   </view>

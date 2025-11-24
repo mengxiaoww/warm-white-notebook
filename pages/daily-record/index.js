@@ -1677,7 +1677,7 @@ Page({
 
         // 查询血糖记录
 
-        db.collection('bloodSugarRecords')
+        db.collection('bloodSugars')
 
           .where({
 
@@ -11245,6 +11245,8 @@ Page({
       tasks: wx.getStorageSync(`tasks_${selectedDate}`) || [],
 
       bloodData: selectedDateData.bloodData,
+
+      bloodSugarData: selectedDateData.bloodSugarData,
 
       medicationData: selectedDateData.medicationData,
 
