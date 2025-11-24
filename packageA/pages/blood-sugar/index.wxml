@@ -1,0 +1,133 @@
+<view class="container">
+  <!-- 日期选择区域 -->
+  <view class="date-section">
+    <view class="date-label">
+      <t-icon name="calendar" size="36rpx" color="#D4A574" />
+      <text>检测日期</text>
+    </view>
+    <view class="date-value" bindtap="showDatePicker">
+      <text>{{selectedDate}}</text>
+      <t-icon name="chevron-down" size="32rpx" color="#999" />
+    </view>
+  </view>
+
+  <!-- 血糖指标输入 -->
+  <view class="indicators-section">
+    <view class="section-title">
+      <t-icon name="chart-bubble" size="36rpx" color="#D4A574" />
+      <text>血糖指标</text>
+    </view>
+
+    <!-- 空腹血糖 -->
+    <view class="indicator-item">
+      <view class="indicator-header">
+        <text class="indicator-name">空腹血糖</text>
+        <text class="indicator-unit">mmol/L</text>
+      </view>
+      <view class="indicator-input">
+        <t-input
+          placeholder="请输入空腹血糖值"
+          value="{{formData.fbg}}"
+          type="digit"
+          bind:change="onFbgChange"
+          clearable
+        />
+      </view>
+      <view class="indicator-range">
+        <text>参考范围：3.9 - 6.1 mmol/L</text>
+      </view>
+    </view>
+
+    <!-- 餐后2小时血糖 -->
+    <view class="indicator-item">
+      <view class="indicator-header">
+        <text class="indicator-name">餐后2小时血糖</text>
+        <text class="indicator-unit">mmol/L</text>
+      </view>
+      <view class="indicator-input">
+        <t-input
+          placeholder="请输入餐后血糖值"
+          value="{{formData.pbg}}"
+          type="digit"
+          bind:change="onPbgChange"
+          clearable
+        />
+      </view>
+      <view class="indicator-range">
+        <text>参考范围：< 7.8 mmol/L</text>
+      </view>
+    </view>
+
+    <!-- 随机血糖 -->
+    <view class="indicator-item">
+      <view class="indicator-header">
+        <text class="indicator-name">随机血糖</text>
+        <text class="indicator-unit">mmol/L</text>
+      </view>
+      <view class="indicator-input">
+        <t-input
+          placeholder="请输入随机血糖值"
+          value="{{formData.rbg}}"
+          type="digit"
+          bind:change="onRbgChange"
+          clearable
+        />
+      </view>
+      <view class="indicator-range">
+        <text>参考范围：3.9 - 7.8 mmol/L</text>
+      </view>
+    </view>
+
+    <!-- 糖化血红蛋白 -->
+    <view class="indicator-item">
+      <view class="indicator-header">
+        <text class="indicator-name">糖化血红蛋白 (HbA1c)</text>
+        <text class="indicator-unit">%</text>
+      </view>
+      <view class="indicator-input">
+        <t-input
+          placeholder="请输入HbA1c值"
+          value="{{formData.hba1c}}"
+          type="digit"
+          bind:change="onHba1cChange"
+          clearable
+        />
+      </view>
+      <view class="indicator-range">
+        <text>参考范围：4.0 - 6.0 %</text>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="indicator-item">
+      <view class="indicator-header">
+        <text class="indicator-name">备注</text>
+      </view>
+      <view class="indicator-input">
+        <t-input
+          placeholder="可以记录测量时间、用药情况等"
+          value="{{formData.notes}}"
+          bind:change="onNotesChange"
+          maxlength="200"
+          clearable
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="action-section">
+    <t-button theme="primary" size="large" bindtap="saveRecord" block>
+      保存记录
+    </t-button>
+  </view>
+
+  <!-- 日期选择器弹窗 -->
+  <t-popup visible="{{datePickerVisible}}" bind:visible-change="onDatePickerClose" placement="bottom">
+    <t-calendar
+      value="{{selectedDate}}"
+      bind:confirm="onDateConfirm"
+      max-date="{{maxDate}}"
+    />
+  </t-popup>
+</view>

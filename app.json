@@ -21,7 +21,8 @@
         "pages/liver-function-config/index",
         "pages/kidney-function/index",
         "pages/kidney-function-config/index",
-        "pages/organ-function-record/index"
+        "pages/organ-function-record/index",
+        "pages/blood-sugar/index"
       ]
     },
     {

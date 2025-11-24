@@ -19,7 +19,8 @@ exports.main = async (event, context) => {
       'medications',           // 用药记录
       'functionCustomConfig',  // 功能项自定义配置
       'banners',               // 轮播图
-      'feedbacks'              // 用户反馈
+      'feedbacks',             // 用户反馈
+      'bloodSugarRecords'      // 血糖记录
     ];
 
     const results = [];

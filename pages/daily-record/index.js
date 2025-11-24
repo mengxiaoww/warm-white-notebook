@@ -45,11 +45,13 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'cmv', name: '巨细胞病毒', icon: 'search', visible: isLymphomaPatient, order: 9, navigate: 'navigateToCmv' },
 
-    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 10, navigate: 'navigateToUrine' },
+    { id: 'bloodSugar', name: '血糖', icon: 'chart-bubble', visible: isLymphomaPatient, order: 10, navigate: 'navigateToBloodSugar' },
 
-    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 11, navigate: 'navigateToStool' },
+    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 11, navigate: 'navigateToUrine' },
 
-    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 12, navigate: 'navigateToExpense' }
+    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 12, navigate: 'navigateToStool' },
+
+    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 13, navigate: 'navigateToExpense' }
 
   ]
 
@@ -1673,6 +1675,22 @@ Page({
 
           .get(),
 
+        // 查询血糖记录
+
+        db.collection('bloodSugarRecords')
+
+          .where({
+
+            openid: openid,
+
+            profileId: currentProfileId,
+
+            date: db.command.gte(startDate).and(db.command.lte(endDate))
+
+          })
+
+          .get(),
+
         // 查询检查报告记录
 
         db.collection('checkReports')
@@ -1691,7 +1709,7 @@ Page({
 
       ]).then(results => {
 
-        const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, checkReportRes] = results;
+        const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, checkReportRes] = results;
 
 
 
@@ -2345,9 +2363,33 @@ Page({
 
 
 
+        // 创建血糖数据映射
+
+        const bloodSugarMap = {}
+
+        bloodSugarRes.data.forEach(item => {
+
+          if (!bloodSugarMap[item.date]) {
+
+            bloodSugarMap[item.date] = [];
+
+          }
+
+          bloodSugarMap[item.date].push({
+
+            id: item._id,
+
+            ...item
+
+          });
+
+        });
+
+
+
         // 更新日历（包含所有记录数据）
 
-        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap)
+        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap)
 
       })
 
@@ -2507,7 +2549,7 @@ Page({
 
   // 更新日历（包含所有数据）
 
-  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}) {
+  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}, bloodSugarMap = {}) {
 
     const days = this.data.days.map(day => {
 
@@ -2573,9 +2615,13 @@ Page({
 
       const ldhData = ldhMap[day.date] || null
 
+      // 获取血糖数据
+
+      const bloodSugarData = bloodSugarMap[day.date] || null
 
 
-      const hasEvent = hasTask || hasKeyDate || bloodData || medicationData || clinicData || checkReportData || urineData || stoolData || expenseData || ebvData || cmvData || liverData || kidneyData || ldhData;
+
+      const hasEvent = hasTask || hasKeyDate || bloodData || medicationData || clinicData || checkReportData || urineData || stoolData || expenseData || ebvData || cmvData || liverData || kidneyData || ldhData || bloodSugarData;
 
 
 
@@ -2611,7 +2657,9 @@ Page({
 
         liverData: liverData,
 
-        kidneyData: kidneyData
+        kidneyData: kidneyData,
+
+        bloodSugarData: bloodSugarData
 
       };
 
@@ -3994,6 +4042,20 @@ Page({
     wx.navigateTo({
 
       url: `/packageC/pages/ldh-record/index?date=${selectedDate}`
+
+    })
+
+  },
+
+
+
+  navigateToBloodSugar() {
+
+    const selectedDate = this.data.selectedDate
+
+    wx.navigateTo({
+
+      url: `/packageA/pages/blood-sugar/index?date=${selectedDate}`
 
     })
 

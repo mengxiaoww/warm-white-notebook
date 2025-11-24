@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-calendar": "tdesign-miniprogram/calendar/calendar",
+    "t-popup": "tdesign-miniprogram/popup/popup"
+  },
+  "navigationBarTitleText": "血糖记录"
+}
