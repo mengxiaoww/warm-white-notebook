@@ -38,6 +38,7 @@ Component({
   lifetimes: {
     attached() {
       const iconUrl = getMedicalIcon(this.properties.name)
+      console.log('🎨 [medical-icon] 图标名称:', this.properties.name, '图标URL前50字符:', iconUrl ? iconUrl.substring(0, 50) : 'null')
       this.setData({
         iconUrl: iconUrl || '',
         isMedicalIcon: !!iconUrl
