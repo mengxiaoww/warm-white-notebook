@@ -132,16 +132,15 @@
       <!-- 事项列表 -->
       <view class="tasks-list" wx:if="{{todayTasks.length > 0}}">
         <view class="task-item {{item.completed ? 'task-completed' : ''}}"
-          wx:for="{{todayTasks}}" wx:key="_id"
-          bindlongpress="confirmDeleteTask" data-id="{{item._id}}">
+          wx:for="{{todayTasks}}" wx:key="_id">
           <view class="task-checkbox" bindtap="toggleTaskComplete" data-id="{{item._id}}">
             <view class="checkbox-inner {{item.completed ? 'checked' : ''}}">
               <t-icon name="check" size="20rpx" color="#FFFFFF" wx:if="{{item.completed}}" />
             </view>
           </view>
           <text class="task-text">{{item.title}}</text>
-          <view class="task-delete-hint">
-            <t-icon name="delete" size="24rpx" color="#FF6B6B" />
+          <view class="task-delete-btn" bindtap="confirmDeleteTask" data-id="{{item._id}}">
+            <t-icon name="delete" size="32rpx" color="#FF6B6B" />
           </view>
         </view>
       </view>
