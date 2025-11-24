@@ -10379,7 +10379,7 @@
 
 /* 今日事项卡片容器 - 优化版 */
 .today-tasks-card {
-  margin: 16rpx 24rpx;
+  margin: 42rpx 0 16rpx 0;
   padding: 24rpx 28rpx;
   border-radius: 24rpx;
   background: linear-gradient(135deg, rgba(255, 248, 240, 0.95) 0%, rgba(255, 232, 204, 0.85) 100%);
@@ -10554,26 +10554,27 @@
   box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
 }
 
-/* 空状态 - 优化版 */
+/* 空状态 - 简洁版 */
 .tasks-empty {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80rpx 32rpx;
-  gap: 20rpx;
+  padding: 16rpx 24rpx;
+  background: rgba(255, 152, 0, 0.05);
+  border-radius: 16rpx;
+  border: 2rpx dashed rgba(255, 152, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
-.tasks-empty t-icon {
-  opacity: 0.3;
-  filter: drop-shadow(0 2rpx 8rpx rgba(255, 152, 0, 0.15));
+.tasks-empty:active {
+  background: rgba(255, 152, 0, 0.08);
+  border-color: rgba(255, 152, 0, 0.3);
 }
 
 .tasks-empty-text {
-  font-size: 28rpx;
-  color: #B8860B;
-  font-weight: 500;
-  letter-spacing: 1rpx;
+  font-size: 26rpx;
+  color: #8c6d46;
+  opacity: 0.7;
 }
 
 /* ==================== 今日事项样式结束 ==================== */

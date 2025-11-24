@@ -1,65 +1,6 @@
 <view class="container">
-  <!-- 骨架屏加载 -->
-  <view class="skeleton-wrapper" wx:if="{{isPageLoading}}">
-    <!-- 页面头部骨架 -->
-    <view class="skeleton-page-header">
-      <view class="skeleton-header-content">
-        <view class="skeleton-circle"></view>
-        <view class="skeleton-header-texts">
-          <view class="skeleton-text skeleton-text-title"></view>
-          <view class="skeleton-text skeleton-text-subtitle"></view>
-        </view>
-      </view>
-      <view class="skeleton-shimmer"></view>
-    </view>
-    <!-- 今日事项骨架 -->
-    <view class="skeleton-tasks-card">
-      <view class="skeleton-tasks-header">
-        <view class="skeleton-text skeleton-text-medium"></view>
-        <view class="skeleton-circle-small"></view>
-      </view>
-      <view class="skeleton-task-item" wx:for="{{[1,2]}}" wx:key="*this">
-        <view class="skeleton-circle-small"></view>
-        <view class="skeleton-text skeleton-text-long"></view>
-      </view>
-      <view class="skeleton-shimmer"></view>
-    </view>
-    <!-- 日历骨架 -->
-    <view class="skeleton-calendar">
-      <view class="skeleton-calendar-days">
-        <view class="skeleton-calendar-day" wx:for="{{[1,2,3,4,5,6,7]}}" wx:key="*this">
-          <view class="skeleton-circle-small"></view>
-        </view>
-      </view>
-      <view class="skeleton-shimmer"></view>
-    </view>
-    <!-- 日期横幅骨架 -->
-    <view class="skeleton-date-banner">
-      <view class="skeleton-circle"></view>
-      <view class="skeleton-text skeleton-text-medium"></view>
-      <view class="skeleton-shimmer"></view>
-    </view>
-    <!-- 功能项骨架 -->
-    <view class="skeleton-functions">
-      <view class="skeleton-function-card" wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this">
-        <view class="skeleton-circle"></view>
-        <view class="skeleton-text skeleton-text-short"></view>
-        <view class="skeleton-shimmer"></view>
-      </view>
-    </view>
-  </view>
   <!-- 实际内容 -->
-  <view class="content-wrapper {{isPageLoading ? 'content-hidden' : 'content-visible'}}">
-    <!-- 页面标题 -->
-    <view class="record-page-header">
-      <view class="record-title-group">
-        <t-icon name="edit-1" size="48rpx" color="#FF9800" />
-        <view class="record-title-texts">
-          <text class="record-title">健康记录中心</text>
-          <text class="record-subtitle">集中管理每日监测与就医数据</text>
-        </view>
-      </view>
-    </view>
+  <view class="content-wrapper">
 
 
     <!-- ✅ 今日事项卡片 -->
@@ -92,9 +33,8 @@
       </view>
 
       <!-- 空状态 -->
-      <view class="tasks-empty" wx:else>
-        <t-icon name="task" size="40rpx" color="#DDD" />
-        <text class="tasks-empty-text">点击右上角 + 添加今日待办</text>
+      <view class="tasks-empty" wx:else bindtap="showAddTaskDialog">
+        <text class="tasks-empty-text">暂无事项，点击 + 添加</text>
       </view>
     </view>
 
