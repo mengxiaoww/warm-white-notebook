@@ -11153,6 +11153,23 @@ Page({
         const config = res.data[0]
         let needsUpdate = false; // 标记是否需要更新数据库
 
+        // 🎨 图标映射表：根据功能 id 获取对应图标（图标只存在代码中，不存储到数据库）
+        const ICON_MAP = {
+          'medication': 'candy',
+          'blood': 'blood-drop',
+          'clinic': 'hospital',
+          'checkReport': 'assignment',
+          'liver': 'liver',
+          'kidney': 'filter',
+          'ldh': 'enzyme',
+          'ebv': 'zoom-in',
+          'cmv': 'search',
+          'bloodSugar': 'glucose',
+          'urine': 'fill-color-1',
+          'stool': 'layers',
+          'expense': 'wallet'
+        };
+
         functionList = (config.functionList || []).map(item => {
           // 🔧 数据迁移：将旧的 LDH 名称更新为乳酸脱氢酶
           let displayName = item.name;
@@ -11161,23 +11178,13 @@ Page({
             needsUpdate = true;
           }
 
-          // 🔧 图标迁移：将旧图标名称更新为新名称
-          const ICON_MIGRATION_MAP = {
-            'chart-bubble': 'blood-drop',
-            'heart-filled': 'liver',
-            'chart-line-data': 'enzyme'
-          };
-          let iconName = item.icon;
-          if (ICON_MIGRATION_MAP[item.icon]) {
-            iconName = ICON_MIGRATION_MAP[item.icon];
-            needsUpdate = true;
-            console.log(`🔄 [图标迁移] ${item.id}: ${item.icon} -> ${iconName}`);
-          }
+          // 🎨 从代码中根据 id 获取图标，不再使用数据库中的图标
+          const iconName = ICON_MAP[item.id] || 'help-circle';
 
           return {
             id: item.id,
             name: displayName,
-            icon: iconName,
+            icon: iconName, // 图标来自代码映射，不是数据库
             visible: item.visible !== undefined ? item.visible : true,
             order: item.order || 1,
             navigate: item.navigate,
@@ -11185,7 +11192,7 @@ Page({
           };
         })
 
-        // 🔧 如果发现旧数据，自动更新到数据库
+        // 🔧 如果发现旧数据（名称需要更新），更新到数据库（不包含 icon 字段）
         if (needsUpdate) {
           db.collection('functionCustomConfig')
             .doc(config._id)
@@ -11194,7 +11201,7 @@ Page({
                 functionList: functionList.map(item => ({
                   id: item.id,
                   name: item.name,
-                  icon: item.icon,
+                  // 不再保存 icon 字段到数据库
                   visible: item.visible,
                   order: item.order,
                   navigate: item.navigate
@@ -11203,10 +11210,10 @@ Page({
               }
             })
             .then(() => {
-              console.log('✅ 主页面LDH配置已自动更新为乳酸脱氢酶');
+              console.log('✅ 主页面配置已自动更新');
             })
             .catch(err => {
-              console.error('⚠️ 自动更新主页面LDH配置失败:', err);
+              console.error('⚠️ 自动更新主页面配置失败:', err);
             });
         }
 
@@ -11707,11 +11714,11 @@ Page({
 
       const db = wx.cloud.database()
 
-      // 标准化配置数据
+      // 标准化配置数据（不再保存 icon 字段，icon 由代码根据 id 决定）
       const functionListToSave = this.data.customFunctionList.map(item => ({
         id: item.id,
         name: item.name,
-        icon: item.icon,
+        // 不再保存 icon 到数据库
         visible: item.visible !== undefined ? item.visible : true,
         order: item.order || 1,
         navigate: item.navigate
