@@ -18,9 +18,10 @@ const functionCustomModule = {
       { id: 'ebv', name: 'EB病毒', icon: 'zoom-in', visible: true, order: 8 },
       { id: 'cmv', name: '巨细胞病毒', icon: 'search', visible: true, order: 9 },
       { id: 'bloodSugar', name: '血糖', icon: 'glucose', visible: true, order: 10 },
-      { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: true, order: 11 },
-      { id: 'stool', name: '排便记录', icon: 'layers', visible: true, order: 12 },
-      { id: 'expense', name: '费用记录', icon: 'wallet', visible: true, order: 13 }
+      { id: 'bloodOxygen', name: '血氧', icon: 'oxygen', visible: true, order: 11 },
+      { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: true, order: 12 },
+      { id: 'stool', name: '排便记录', icon: 'layers', visible: true, order: 13 },
+      { id: 'expense', name: '费用记录', icon: 'wallet', visible: true, order: 14 }
     ]
   },
 

@@ -47,11 +47,13 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bloodSugar', name: '血糖', icon: 'glucose', visible: isLymphomaPatient, order: 10, navigate: 'navigateToBloodSugar' },
 
-    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 11, navigate: 'navigateToUrine' },
+    { id: 'bloodOxygen', name: '血氧', icon: 'oxygen', visible: isLymphomaPatient, order: 11, navigate: 'navigateToBloodOxygen' },
 
-    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 12, navigate: 'navigateToStool' },
+    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 12, navigate: 'navigateToUrine' },
 
-    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 13, navigate: 'navigateToExpense' }
+    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 13, navigate: 'navigateToStool' },
+
+    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 14, navigate: 'navigateToExpense' }
 
   ]
 
@@ -510,6 +512,22 @@ Page({
 
       {
 
+        id: 'bloodOxygen',
+
+        name: '血氧',
+
+        icon: 'oxygen',
+
+        visible: false,
+
+        order: 11,
+
+        navigate: 'navigateToBloodOxygen'
+
+      },
+
+      {
+
         id: 'urine',
 
         name: '尿量记录',
@@ -518,7 +536,7 @@ Page({
 
         visible: false,
 
-        order: 11,
+        order: 12,
 
         navigate: 'navigateToUrine'
 
@@ -534,7 +552,7 @@ Page({
 
         visible: false,
 
-        order: 12,
+        order: 13,
 
         navigate: 'navigateToStool'
 
@@ -550,7 +568,7 @@ Page({
 
         visible: false,
 
-        order: 13,
+        order: 14,
 
         navigate: 'navigateToExpense'
 
@@ -1707,6 +1725,22 @@ Page({
 
           .get(),
 
+        // 查询血氧记录
+
+        db.collection('bloodOxygens')
+
+          .where({
+
+            openid: openid,
+
+            profileId: currentProfileId,
+
+            date: db.command.gte(startDate).and(db.command.lte(endDate))
+
+          })
+
+          .get(),
+
         // 查询检查报告记录
 
         db.collection('checkReports')
@@ -1725,7 +1759,7 @@ Page({
 
       ]).then(results => {
 
-        const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, checkReportRes] = results;
+        const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, bloodOxygenRes, checkReportRes] = results;
 
 
 
@@ -2403,9 +2437,33 @@ Page({
 
 
 
+        // 创建血氧数据映射
+
+        const bloodOxygenMap = {}
+
+        bloodOxygenRes.data.forEach(item => {
+
+          if (!bloodOxygenMap[item.date]) {
+
+            bloodOxygenMap[item.date] = [];
+
+          }
+
+          bloodOxygenMap[item.date].push({
+
+            id: item._id,
+
+            ...item
+
+          });
+
+        });
+
+
+
         // 更新日历（包含所有记录数据）
 
-        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap)
+        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap, bloodOxygenMap)
 
       })
 
@@ -2565,7 +2623,7 @@ Page({
 
   // 更新日历（包含所有数据）
 
-  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}, bloodSugarMap = {}) {
+  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}, bloodSugarMap = {}, bloodOxygenMap = {}) {
 
     const days = this.data.days.map(day => {
 
@@ -2635,9 +2693,13 @@ Page({
 
       const bloodSugarData = bloodSugarMap[day.date] ? bloodSugarMap[day.date][0] : null
 
+      // 获取血氧数据
+
+      const bloodOxygenData = bloodOxygenMap[day.date] ? bloodOxygenMap[day.date][0] : null
 
 
-      const hasEvent = hasTask || hasKeyDate || bloodData || medicationData || clinicData || checkReportData || urineData || stoolData || expenseData || ebvData || cmvData || liverData || kidneyData || ldhData || bloodSugarData;
+
+      const hasEvent = hasTask || hasKeyDate || bloodData || medicationData || clinicData || checkReportData || urineData || stoolData || expenseData || ebvData || cmvData || liverData || kidneyData || ldhData || bloodSugarData || bloodOxygenData;
 
 
 
@@ -2675,7 +2737,9 @@ Page({
 
         kidneyData: kidneyData,
 
-        bloodSugarData: bloodSugarData
+        bloodSugarData: bloodSugarData,
+
+        bloodOxygenData: bloodOxygenData
 
       };
 
@@ -4072,6 +4136,20 @@ Page({
     wx.navigateTo({
 
       url: `/packageA/pages/blood-sugar/index?date=${selectedDate}`
+
+    })
+
+  },
+
+
+
+  navigateToBloodOxygen() {
+
+    const selectedDate = this.data.selectedDate
+
+    wx.navigateTo({
+
+      url: `/packageA/pages/blood-oxygen/index?date=${selectedDate}`
 
     })
 
@@ -11165,6 +11243,7 @@ Page({
           'ebv': 'zoom-in',
           'cmv': 'search',
           'bloodSugar': 'glucose',
+          'bloodOxygen': 'oxygen',
           'urine': 'fill-color-1',
           'stool': 'layers',
           'expense': 'wallet'
