@@ -209,6 +209,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. **登录检查**：
    - 优先使用 `utils/auth.js` 中的 `getOpenIdIfLoggedIn()` 和 `handleNeedLogin()`
    - 页面可以混入 `authMixin`
+   - **重要**：登录完成后必须调用 `app.initCurrentProfile(openid)` 初始化档案信息
 
 3. **数据库操作规范**：
    - 务必加上权限校验条件（where 条件必须包含 `openid`）
@@ -219,7 +220,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - 使用全局锁 `app.globalData.isCreatingProfile`
    - 创建档案前检查锁状态，创建后释放锁
 
-5. **wxss 样式编写**：
+5. **图标系统架构**：
+   - **图标只在代码中定义**：所有医疗图标在 `utils/medical-icons.js` 中定义，功能项图标通过 ICON_MAP 映射
+   - **数据库不存储图标**：`functionCustomConfig` 集合只存储 id、name、visible、order、navigate
+   - **图标获取方式**：前端代码根据功能项的 id 从 ICON_MAP 中查找对应图标名称
+   - 图标映射位置：`pages/daily-record/index.js` 的 `loadMainPageFunctionConfig` 函数
+
+6. **wxss 样式编写**：
    - 所有页面的样式都定义在各自的 wxss 文件中
    - 复用样式可以在 app.wxss 中定义
    - 避免使用过深的 CSS 选择器嵌套（不超过 4 层）
