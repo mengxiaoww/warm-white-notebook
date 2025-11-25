@@ -22,7 +22,8 @@ exports.main = async (event, context) => {
       'feedbacks',             // 用户反馈
       'bloodSugars',           // 血糖记录
       'bloodSugarIndicatorSettings',  // 血糖指标设置
-      'bloodSugarIndicatorConfig'     // 血糖指标配置
+      'bloodSugarIndicatorConfig',    // 血糖指标配置
+      'bloodSugarIndicators'          // 血糖自定义指标
     ];
 
     const results = [];
