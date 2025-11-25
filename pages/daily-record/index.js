@@ -627,9 +627,8 @@ Page({
     const dragAreaHeight = itemCount * itemHeight
 
 
-    // 🔧 立即设置默认功能项，确保页面有内容显示
-    const defaultFunctions = generateFunctionConfig(false, true)
-    const visibleDefaults = defaultFunctions.filter(f => f.visible).sort((a, b) => a.order - b.order)
+    // 🔧 不在 onLoad 时设置默认配置，避免与 loadMainPageFunctionConfig 冲突导致闪烁
+    // 配置将在 checkLoginAndLoadData -> loadMainPageFunctionConfig 中统一加载
 
     this.setData({
 
@@ -637,9 +636,7 @@ Page({
 
       animatedProgress: 0, // 🌟 初始化动画进度
 
-      dragAreaHeight: dragAreaHeight,
-
-      mainPageFunctions: visibleDefaults // 立即显示默认功能项
+      dragAreaHeight: dragAreaHeight
 
     })
 
