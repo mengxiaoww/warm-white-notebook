@@ -370,7 +370,7 @@ Page({
 
         name: '血常规',
 
-        icon: 'chart-bubble',
+        icon: 'blood-drop',
 
         visible: true,
 
@@ -418,7 +418,7 @@ Page({
 
         name: '肝功能',
 
-        icon: 'heart-filled',
+        icon: 'liver',
 
         visible: false,
 
@@ -450,7 +450,7 @@ Page({
 
         name: '乳酸脱氢酶',
 
-        icon: 'chart-line-data',
+        icon: 'enzyme',
 
         visible: false,
 
@@ -494,6 +494,22 @@ Page({
 
       {
 
+        id: 'bloodSugar',
+
+        name: '血糖',
+
+        icon: 'glucose',
+
+        visible: false,
+
+        order: 10,
+
+        navigate: 'navigateToBloodSugar'
+
+      },
+
+      {
+
         id: 'urine',
 
         name: '尿量记录',
@@ -502,7 +518,7 @@ Page({
 
         visible: false,
 
-        order: 10,
+        order: 11,
 
         navigate: 'navigateToUrine'
 
@@ -518,7 +534,7 @@ Page({
 
         visible: false,
 
-        order: 11,
+        order: 12,
 
         navigate: 'navigateToStool'
 
@@ -534,7 +550,7 @@ Page({
 
         visible: false,
 
-        order: 12,
+        order: 13,
 
         navigate: 'navigateToExpense'
 
