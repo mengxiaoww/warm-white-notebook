@@ -1,0 +1,9 @@
+{
+  "name": "fixFunctionConfig",
+  "version": "1.0.0",
+  "description": "修复功能项配置中的旧图标名称",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.1"
+  }
+}
