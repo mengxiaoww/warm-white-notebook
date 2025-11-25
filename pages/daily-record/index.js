@@ -9952,7 +9952,9 @@ Page({
 
         checkReportData,
 
-        bloodSugarData
+        bloodSugarData,
+
+        bloodOxygenData
 
       ] = await Promise.all([
 
@@ -9980,7 +9982,9 @@ Page({
 
         this.getCheckReportDataForDate(dateStr),
 
-        this.getBloodSugarDataForDate(dateStr)
+        this.getBloodSugarDataForDate(dateStr),
+
+        this.getBloodOxygenDataForDate(dateStr)
 
       ])
 
@@ -10006,6 +10010,8 @@ Page({
       console.log('💧 尿量记录数据:', urineData)
 
       console.log('🩸 血糖数据:', bloodSugarData)
+
+      console.log('💙 血氧数据:', bloodOxygenData)
 
 
 
@@ -10035,7 +10041,9 @@ Page({
 
         checkReportData,
 
-        bloodSugarData
+        bloodSugarData,
+
+        bloodOxygenData
 
       }
 
@@ -10250,6 +10258,50 @@ Page({
       }
     } catch (error) {
       console.error('❌ 获取血糖数据失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的血氧数据
+  async getBloodOxygenDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+
+      console.log('💙 查询血氧数据 - 日期:', dateStr)
+      console.log('💙 openid:', app.globalData?.openid)
+      console.log('💙 profileId:', app.globalData?.currentProfile?.profileId)
+
+      if (!app.globalData.currentProfile?.profileId) {
+        console.log('💙 profileId不存在，返回null')
+        return null
+      }
+
+      const queryCondition = {
+        openid: app.globalData.openid,
+        profileId: app.globalData.currentProfile.profileId,
+        date: dateStr
+      }
+      console.log('💙 查询条件:', queryCondition)
+
+      const res = await db.collection('bloodOxygens')
+        .where(queryCondition)
+        .limit(1)
+        .get()
+
+      console.log('💙 血氧查询结果:', res)
+      console.log('💙 数据数量:', res.data.length)
+
+      if (res.data.length > 0) {
+        const bloodOxygenData = res.data[0]
+        console.log('💙 血氧数据内容:', bloodOxygenData)
+        return bloodOxygenData
+      } else {
+        console.log('💙 未找到血氧数据')
+        return null
+      }
+    } catch (error) {
+      console.error('❌ 获取血氧数据失败:', error)
       return null
     }
   },
