@@ -49,7 +49,8 @@ App({
     hasUserInfo: false,
     needRefreshData: false, // 用于通知其他页面数据变更
     currentProfile: null, // 当前档案信息
-    isCreatingProfile: false // 🔥 防止重复创建档案的全局锁
+    isCreatingProfile: false, // 🔥 防止重复创建档案的全局锁
+    profileInitialized: false // 🔥 新增：标记档案是否已初始化完成
   },
 
   // 防止频繁调用的变量
@@ -783,6 +784,7 @@ App({
             name: this.globalData.currentProfile.name,
             disease: this.globalData.currentProfile.primaryDiseaseCategory
           });
+          this.globalData.profileInitialized = true; // 🔥 标记档案已初始化
         } else {
           console.error('❌ [app.js] 档案数据为空！');
         }
@@ -792,6 +794,7 @@ App({
 
     } catch (err) {
       console.error('❌ [app.js] 初始化档案信息失败:', err);
+      this.globalData.profileInitialized = false; // 标记初始化失败
       throw err; // 抛出错误以便上层捕获
     }
   }

@@ -9766,13 +9766,19 @@ Page({
 
 
 
-        while (retryCount < maxRetries && !app.globalData.currentProfile?.profileId) {
+        while (retryCount < maxRetries && !app.globalData.profileInitialized) {
 
           await new Promise(resolve => setTimeout(resolve, 500))
 
           retryCount++
 
-          console.log(`档案初始化重试 ${retryCount}/${maxRetries}`)
+          console.log(`⏳ [loadDataForDate] 等待档案初始化... (${retryCount}/${maxRetries})`)
+          
+          // 如果初始化完成，再检查一次 profileId
+          if (app.globalData.profileInitialized && app.globalData.currentProfile?.profileId) {
+            console.log('✅ [loadDataForDate] 档案初始化完成，profileId:', app.globalData.currentProfile.profileId);
+            break;
+          }
 
         }
 
