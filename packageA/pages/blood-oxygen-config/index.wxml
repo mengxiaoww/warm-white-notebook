@@ -56,7 +56,7 @@
             <view class="indicator-info">
               <view class="indicator-name">氧</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">血氧饱和度</text>
+                <text class="indicator-fullname">数值</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>

@@ -31,7 +31,7 @@ Page({
 
     // 显示的基础指标
     displayedBasicIndicators: [
-      { id: 'spo2', name: '血氧饱和度', unit: '%' },
+      { id: 'spo2', name: '数值', unit: '%' },
     ],
 
     // 用户信息
@@ -134,11 +134,8 @@ Page({
 
     // 构建基础指标列表
     const basicIndicators = [
-      { id: 'bloodOxygen', name: '血氧', unit: 'mmol/L' },
-      { id: 'fbg', name: '空腹血氧', unit: 'mmol/L' },
-      { id: 'pbg', name: '餐后2小时血氧', unit: 'mmol/L' },
-      { id: 'hba1c', name: '糖化血红蛋白', unit: '%' },
-      { id: 'rbg', name: '随机血氧', unit: 'mmol/L' }
+      { id: 'spo2', name: '数值', unit: '%' },
+      { id: 'heartRate', name: '心率', unit: '次/分' }
     ];
 
     // 过滤出被选中的基础指标
@@ -2026,11 +2023,8 @@ Page({
 
       // 4. 构建配置的优先级逻辑（新增继承逻辑）
       let config = {
-        bloodOxygen: true,
-        fbg: false,
-        pbg: false,
-        hba1c: false,
-        rbg: false
+        spo2: true,
+        heartRate: false
       };
 
       if (currentDateConfigRes.data.length > 0) {
@@ -2130,11 +2124,8 @@ Page({
 
       // 预设指标定义
       const defaultIndicators = {
-        bloodOxygen: { name: '血氧', unit: 'mmol/L' },
-        fbg: { name: '空腹血氧', unit: 'mmol/L' },
-        pbg: { name: '餐后2小时血氧', unit: 'mmol/L' },
-        hba1c: { name: '糖化血红蛋白', unit: '%' },
-        rbg: { name: '随机血氧', unit: 'mmol/L' }
+        spo2: { name: '数值', unit: '%' },
+        heartRate: { name: '心率', unit: '次/分' }
       };
 
       // 🔧 移除强制显示逻辑，完全依赖用户配置或数据推断
@@ -2209,7 +2200,7 @@ Page({
 
         // 强制使用默认配置
         const fallbackIndicators = [
-          { id: 'bloodOxygen', name: '血氧', min: '3.9', max: '7.8', unit: 'mmol/L' }
+          { id: 'spo2', name: '数值', min: '95', max: '100', unit: '%' }
         ];
 
         const fallbackFormData = {};
@@ -2228,7 +2219,7 @@ Page({
         });
 
         this.setData({
-          bloodOxygenIndicatorConfig: { bloodOxygen: true, fbg: false, pbg: false, hba1c: false, rbg: false },
+          bloodOxygenIndicatorConfig: { spo2: true, heartRate: false },
           displayedBasicIndicators: fallbackIndicators,
           customIndicators: [],
           formData: mergedFallbackData
@@ -2312,7 +2303,7 @@ Page({
       });
 
       this.setData({
-        bloodOxygenIndicatorConfig: { bloodOxygen: true, fbg: false, pbg: false, hba1c: false, rbg: false },
+        bloodOxygenIndicatorConfig: { spo2: true, heartRate: false },
         displayedBasicIndicators: defaultIndicators || [],
         customIndicators: [],
         formData: mergedInitialData

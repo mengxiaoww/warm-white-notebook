@@ -171,7 +171,7 @@
             <block wx:elif="{{item.id === 'bloodOxygen' && selectedDateData.bloodOxygenData}}">
               <view class="ldh-single-data">
                 <view class="ldh-header">
-                  <view class="ldh-label">血氧饱和度</view>
+                  <view class="ldh-label">数值</view>
                 </view>
                 <view class="ldh-value-container">
                   <text class="ldh-big-value">{{selectedDateData.bloodOxygenData.spo2 || '0'}}</text>

@@ -22,7 +22,7 @@ Page({
 
     // 所有指标的配置信息
     indicatorConfigs: {
-      spo2: { name: '血氧饱和度', unit: '%' },
+      spo2: { name: '数值', unit: '%' },
       heartRate: { name: '心率', unit: '次/分' }
     },
 
