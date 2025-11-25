@@ -165,7 +165,11 @@ Page({
 
       stoolData: null,
 
-      checkReportData: null
+      checkReportData: null,
+
+      bloodSugarData: null,
+
+      bloodOxygenData: null
 
     },
 
@@ -317,7 +321,11 @@ Page({
 
       stoolData: null,
 
-      checkReportData: null
+      checkReportData: null,
+
+      bloodSugarData: null,
+
+      bloodOxygenData: null
 
     },
 
@@ -885,7 +893,9 @@ Page({
             urineData: null,
             stoolData: null,
             expenseData: null,
-            checkReportData: null
+            checkReportData: null,
+            bloodSugarData: null,
+            bloodOxygenData: null
           },
           hasLoadedBefore: true,
           isPageLoading: false
@@ -9769,7 +9779,9 @@ Page({
           urineData: null,
           stoolData: null,
           expenseData: null,
-          checkReportData: null
+          checkReportData: null,
+          bloodSugarData: null,
+          bloodOxygenData: null
         }
       })
 
