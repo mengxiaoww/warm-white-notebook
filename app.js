@@ -530,6 +530,10 @@ App({
         await this.initCollections()
         console.log('数据库初始化完成')
 
+        // 🔥 关键：初始化档案信息
+        await this.initCurrentProfile(this.globalData.openid)
+        console.log('✅ 登录时档案初始化完成')
+
         // 尝试数据迁移（如果需要）
         await this.migrateUserData()
       } catch (err) {
