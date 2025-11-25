@@ -23,7 +23,9 @@
         "pages/kidney-function-config/index",
         "pages/organ-function-record/index",
         "pages/blood-sugar/index",
-        "pages/blood-sugar-config/index"
+        "pages/blood-sugar-config/index",
+        "pages/blood-oxygen/index",
+        "pages/blood-oxygen-config/index"
       ]
     },
     {

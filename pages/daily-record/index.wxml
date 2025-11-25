@@ -167,6 +167,19 @@
                 <view class="ldh-range-hint">参考范围: 3.9-6.1 (空腹)</view>
               </view>
             </block>
+            <!-- 血氧数据展示 - 统一单值显示样式 -->
+            <block wx:elif="{{item.id === 'bloodOxygen' && selectedDateData.bloodOxygenData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">血氧饱和度</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.bloodOxygenData.spo2 || '0'}}</text>
+                  <text class="ldh-unit">%</text>
+                </view>
+                <view class="ldh-range-hint">参考范围: 95-100%</view>
+              </view>
+            </block>
             <!-- EB病毒 - 使用血常规相同高度布局 -->
             <!-- EB病毒：与乳酸脱氢酶统一，显示「数值」 -->
             <block wx:elif="{{item.id === 'ebv' && selectedDateData.ebvData}}">

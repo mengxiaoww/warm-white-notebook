@@ -23,7 +23,11 @@ exports.main = async (event, context) => {
       'bloodSugars',           // 血糖记录
       'bloodSugarIndicatorSettings',  // 血糖指标设置
       'bloodSugarIndicatorConfig',    // 血糖指标配置
-      'bloodSugarIndicators'          // 血糖自定义指标
+      'bloodSugarIndicators',          // 血糖自定义指标
+      'bloodOxygens',                  // 血氧记录
+      'bloodOxygenIndicatorSettings',  // 血氧指标设置
+      'bloodOxygenIndicatorConfig',    // 血氧指标配置
+      'bloodOxygenIndicators'          // 血氧自定义指标
     ];
 
     const results = [];
