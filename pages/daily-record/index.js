@@ -11155,10 +11155,23 @@ Page({
             needsUpdate = true;
           }
 
+          // 🔧 图标迁移：将旧图标名称更新为新名称
+          const ICON_MIGRATION_MAP = {
+            'chart-bubble': 'blood-drop',
+            'heart-filled': 'liver',
+            'chart-line-data': 'enzyme'
+          };
+          let iconName = item.icon;
+          if (ICON_MIGRATION_MAP[item.icon]) {
+            iconName = ICON_MIGRATION_MAP[item.icon];
+            needsUpdate = true;
+            console.log(`🔄 [图标迁移] ${item.id}: ${item.icon} -> ${iconName}`);
+          }
+
           return {
             id: item.id,
             name: displayName,
-            icon: item.icon,
+            icon: iconName,
             visible: item.visible !== undefined ? item.visible : true,
             order: item.order || 1,
             navigate: item.navigate,

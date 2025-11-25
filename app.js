@@ -17,14 +17,18 @@ App({
           this.globalData.openid = openid
           this.globalData.hasUserInfo = true
 
-          // 初始化档案信息
-          this.initCurrentProfile(openid);
+          // 初始化档案信息 - 等待完成后再继续
+          this.initCurrentProfile(openid).then(() => {
+            console.log('✅ [app.js] 档案信息初始化完成');
 
-          // 登录成功后初始化数据库集合
-          this.initCollections().then(() => {
-            console.log('数据库集合初始化完成');
+            // 登录成功后初始化数据库集合
+            this.initCollections().then(() => {
+              console.log('数据库集合初始化完成');
+            }).catch(err => {
+              console.error('数据库集合初始化失败：', err);
+            });
           }).catch(err => {
-            console.error('数据库集合初始化失败：', err);
+            console.error('❌ [app.js] 档案信息初始化失败:', err);
           });
         } else {
           console.log('未登录')
@@ -723,14 +727,15 @@ App({
   // 初始化当前档案信息
   async initCurrentProfile(openid) {
     try {
+      console.log('🔄 [app.js] 开始初始化档案信息, openid:', openid);
       const db = wx.cloud.database();
       let currentProfileId = wx.getStorageSync('currentProfileId');
 
-      console.log('初始化档案信息 - 当前档案ID:', currentProfileId);
+      console.log('📂 [app.js] Storage中的档案ID:', currentProfileId);
 
       // 如果没有设置档案ID，尝试获取默认档案
       if (!currentProfileId) {
-        console.log('未找到档案ID，查找默认档案');
+        console.log('⚠️ [app.js] 未找到档案ID，查找默认档案');
         const defaultProfileRes = await db.collection('userProfiles')
           .where({
             openid: openid,
@@ -741,9 +746,10 @@ App({
         if (defaultProfileRes.data.length > 0) {
           currentProfileId = defaultProfileRes.data[0]._id;
           wx.setStorageSync('currentProfileId', currentProfileId);
-          console.log('找到默认档案，设置档案ID:', currentProfileId);
+          console.log('✅ [app.js] 找到默认档案，设置档案ID:', currentProfileId);
         } else {
           // 如果没有默认档案，获取第一个档案
+          console.log('⚠️ [app.js] 未找到默认档案，查找第一个档案');
           const profileRes = await db.collection('userProfiles')
             .where({ openid: openid })
             .limit(1)
@@ -752,13 +758,16 @@ App({
           if (profileRes.data.length > 0) {
             currentProfileId = profileRes.data[0]._id;
             wx.setStorageSync('currentProfileId', currentProfileId);
-            console.log('找到第一个档案，设置档案ID:', currentProfileId);
+            console.log('✅ [app.js] 找到第一个档案，设置档案ID:', currentProfileId);
+          } else {
+            console.error('❌ [app.js] 未找到任何档案！');
           }
         }
       }
 
       // 如果有档案ID，加载档案详细信息
       if (currentProfileId) {
+        console.log('🔍 [app.js] 加载档案详细信息, ID:', currentProfileId);
         const profileRes = await db.collection('userProfiles')
           .doc(currentProfileId)
           .get();
@@ -769,14 +778,21 @@ App({
             id: currentProfileId, // 🔥 添加 id 字段映射，与 pages/profile/index.js 中的结构保持一致
             ...profileRes.data
           };
-          console.log('档案信息初始化成功:', this.globalData.currentProfile.name);
+          console.log('✅ [app.js] 档案信息加载成功:', {
+            profileId: this.globalData.currentProfile.profileId,
+            name: this.globalData.currentProfile.name,
+            disease: this.globalData.currentProfile.primaryDiseaseCategory
+          });
+        } else {
+          console.error('❌ [app.js] 档案数据为空！');
         }
       } else {
-        console.log('未找到任何档案，用户可能需要创建档案');
+        console.warn('⚠️ [app.js] 未找到任何档案，用户可能需要创建档案');
       }
 
     } catch (err) {
-      console.error('初始化档案信息失败:', err);
+      console.error('❌ [app.js] 初始化档案信息失败:', err);
+      throw err; // 抛出错误以便上层捕获
     }
   }
 })
