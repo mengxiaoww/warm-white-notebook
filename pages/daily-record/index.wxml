@@ -97,8 +97,21 @@
 
     <!-- 功能项网格 - 动态渲染 -->
     <view class="functions-grid {{dateChanged ? 'records-highlight-animation' : ''}}">
+      <!-- 骨架屏加载 -->
+      <view class="skeleton-grid" wx:if="{{isPageLoading}}">
+        <view class="skeleton-card" wx:for="{{[1, 2, 3, 4, 5, 6]}}" wx:key="*this">
+          <view class="skeleton-card-header">
+            <view class="skeleton-icon skeleton-shimmer"></view>
+            <view class="skeleton-title skeleton-shimmer"></view>
+          </view>
+          <view class="skeleton-card-content">
+            <view class="skeleton-line skeleton-shimmer"></view>
+            <view class="skeleton-line skeleton-shimmer"></view>
+          </view>
+        </view>
+      </view>
       <!-- 动态功能项 -->
-      <view wx:for="{{mainPageFunctions}}" wx:key="id"
+      <view wx:if="{{!isPageLoading}}" wx:for="{{mainPageFunctions}}" wx:key="id"
         class="function-card function-card--{{item.id}} {{selectedDateData[item.dataKey] ? 'has-data' : 'no-data'}}"
         bindtap="handleFunctionTap" data-navigate="{{item.navigate}}" data-function-id="{{item.id}}">
         <view class="function-card-status" wx:if="{{selectedDateData[item.dataKey]}}"></view>
