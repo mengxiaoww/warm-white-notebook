@@ -53,7 +53,7 @@
         </view>
         <!-- 空状态提示 -->
         <view class="empty-indicators" wx:if="{{(!displayedBasicIndicators || displayedBasicIndicators.length === 0) && (!customIndicators || customIndicators.length === 0)}}">
-          <medical-icon name="oxygen" size="120" color="#ccc" />
+          <medical-icon name="blood-pressure" size="120" color="#ccc" />
           <text class="empty-text">暂无录入项</text>
           <text class="empty-hint">点击下方按钮添加录入项</text>
         </view>

@@ -1183,7 +1183,7 @@ Page({
 
     // 🔧 重要：传递当前日期给配置页面
     wx.navigateTo({
-      url: `/packageA/pages/blood-oxygen-config/index?date=${selectedDate}`,
+      url: `/packageA/pages/blood-pressure-config/index?date=${selectedDate}`,
       fail: (err) => {
         console.error('跳转到配置页面失败:', err);
         wx.showToast({

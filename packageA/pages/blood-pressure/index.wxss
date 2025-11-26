@@ -177,7 +177,7 @@
   font-size: 32rpx;
   color: #333;
   font-weight: 500;
-  min-width: 210rpx;
+  width: 150rpx;
   flex-shrink: 0;
 }
 
@@ -186,7 +186,7 @@
 .indicator-input {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 20rpx;
   flex: 1;
 }
 
@@ -198,13 +198,15 @@
   border-radius: 16rpx;
   font-size: 32rpx;
   color: #333;
+  min-width: 0;
 }
 
 .unit {
   font-size: 28rpx;
   color: #666;
-  min-width: 100rpx;
-  text-align: right;
+  width: 120rpx;
+  text-align: left;
+  flex-shrink: 0;
 }
 
 /* 浮动的下一项按钮 - 固定在键盘上方右侧 */
