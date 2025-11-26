@@ -49,7 +49,7 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bloodOxygen', name: '血氧', icon: 'oxygen', visible: isLymphomaPatient, order: 11, navigate: 'navigateToBloodOxygen' },
 
-    { id: 'bloodPressure', name: '血压', icon: 'heart', visible: false, order: 12, navigate: 'navigateToBloodPressure' },
+    { id: 'bloodPressure', name: '血压', icon: 'blood-pressure', visible: false, order: 12, navigate: 'navigateToBloodPressure' },
 
     { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 13, navigate: 'navigateToUrine' },
 

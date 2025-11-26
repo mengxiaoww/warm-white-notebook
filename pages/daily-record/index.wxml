@@ -180,20 +180,28 @@
                 <view class="ldh-range-hint">参考范围: 95-100%</view>
               </view>
             </block>
-            <!-- 血压数据展示 - 显示两个值（高压和低压） -->
+            <!-- 血压数据展示 - 紧凑两栏布局 -->
             <block wx:elif="{{item.id === 'bloodPressure' && selectedDateData.bloodPressureData}}">
-              <view class="blood-simple-item" wx:if="{{selectedDateData.bloodPressureData.systolic || selectedDateData.bloodPressureData.systolic === 0}}">
-                <text class="bs-label">高压</text>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.bloodPressureData.systolic}}</view>
-                  <view class="bs-unit">mmHg</view>
+              <view class="blood-pressure-grid">
+                <view class="bp-item" wx:if="{{selectedDateData.bloodPressureData.systolic || selectedDateData.bloodPressureData.systolic === 0}}">
+                  <view class="bp-label-row">
+                    <text class="bs-label">高压</text>
+                    <text class="bp-status-dot systolic"></text>
+                  </view>
+                  <view class="bs-value-group">
+                    <view class="bs-value">{{selectedDateData.bloodPressureData.systolic}}</view>
+                    <view class="bs-unit">mmHg</view>
+                  </view>
                 </view>
-              </view>
-              <view class="blood-simple-item" wx:if="{{selectedDateData.bloodPressureData.diastolic || selectedDateData.bloodPressureData.diastolic === 0}}">
-                <view class="bs-label">低压</view>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.bloodPressureData.diastolic}}</view>
-                  <view class="bs-unit">mmHg</view>
+                <view class="bp-item" wx:if="{{selectedDateData.bloodPressureData.diastolic || selectedDateData.bloodPressureData.diastolic === 0}}">
+                  <view class="bp-label-row">
+                    <text class="bs-label">低压</text>
+                    <text class="bp-status-dot diastolic"></text>
+                  </view>
+                  <view class="bs-value-group">
+                    <view class="bs-value">{{selectedDateData.bloodPressureData.diastolic}}</view>
+                    <view class="bs-unit">mmHg</view>
+                  </view>
                 </view>
               </view>
             </block>

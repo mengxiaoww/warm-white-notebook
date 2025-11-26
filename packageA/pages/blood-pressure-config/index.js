@@ -5,8 +5,8 @@ Page({
   data: {
     // 选中的指标
     selectedIndicators: {
-      systolic: true, diastolic: true,  // 默认选中 - 血压饱和度
-      heartRate: false  // 可选 - 心率
+      systolic: true,
+      diastolic: true
     },
 
     // 当前日期数据状态
@@ -18,12 +18,12 @@ Page({
     },
 
     // 必选指标（不能取消勾选）
-    requiredIndicators: ['spo2'],
+    requiredIndicators: ['systolic', 'diastolic'],
 
     // 所有指标的配置信息
     indicatorConfigs: {
-      spo2: { name: '数值', unit: '%' },
-      heartRate: { name: '心率', unit: '次/分' }
+      systolic: { name: '收缩压', unit: 'mmHg' },
+      diastolic: { name: '舒张压', unit: 'mmHg' }
     },
 
     // 自定义指标列表
