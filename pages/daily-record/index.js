@@ -11365,6 +11365,7 @@ Page({
           'cmv': 'search',
           'bloodSugar': 'glucose',
           'bloodOxygen': 'oxygen',
+          'bloodPressure': 'blood-pressure',
           'urine': 'fill-color-1',
           'stool': 'layers',
           'expense': 'wallet'

@@ -1732,7 +1732,6 @@
 .function-card--blood .function-card-data,
 .function-card--liver .function-card-data,
 .function-card--kidney .function-card-data,
-.function-card--bloodPressure .function-card-data,
 .function-card--bloodSugar .function-card-data,
 .function-card--bloodOxygen .function-card-data {
   display: grid;
@@ -2201,6 +2200,128 @@
   color: #8E24AA;
   letter-spacing: 0.8rpx;
   opacity: 0.9;
+}
+
+/* ============================
+   🩺 血压专业显示设计 - 全新样式
+   ============================ */
+.bp-display-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 0;
+}
+
+.bp-reading-card {
+  display: flex;
+  align-items: stretch;
+  background: linear-gradient(135deg,
+    rgba(255, 248, 240, 0.95) 0%,
+    rgba(255, 243, 230, 0.85) 100%);
+  border-radius: 16rpx;
+  border: 1.5rpx solid rgba(255, 184, 77, 0.2);
+  overflow: hidden;
+  box-shadow:
+    0 2rpx 8rpx rgba(255, 152, 0, 0.08),
+    0 0 0 1rpx rgba(255, 255, 255, 0.5) inset;
+}
+
+.bp-systolic-section,
+.bp-diastolic-section {
+  flex: 1;
+  padding: 16rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  position: relative;
+}
+
+.bp-systolic-section {
+  background: linear-gradient(135deg,
+    rgba(255, 87, 34, 0.05) 0%,
+    rgba(255, 152, 0, 0.03) 100%);
+}
+
+.bp-diastolic-section {
+  background: linear-gradient(135deg,
+    rgba(33, 150, 243, 0.05) 0%,
+    rgba(100, 181, 246, 0.03) 100%);
+}
+
+.bp-divider {
+  width: 1.5rpx;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(255, 184, 77, 0.2) 20%,
+    rgba(255, 184, 77, 0.3) 50%,
+    rgba(255, 184, 77, 0.2) 80%,
+    transparent 100%);
+}
+
+.bp-label-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.bp-label-primary {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #666;
+  letter-spacing: 0.5rpx;
+}
+
+.bp-label-secondary {
+  font-size: 20rpx;
+  font-weight: 500;
+  color: #999;
+  letter-spacing: 1rpx;
+}
+
+.bp-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+}
+
+.bp-value-large {
+  font-size: 42rpx;
+  font-weight: 700;
+  color: #FF9800;
+  letter-spacing: -0.5rpx;
+  line-height: 1;
+  font-family: -apple-system, "SF Pro Display", "PingFang SC", sans-serif;
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bp-unit {
+  font-size: 20rpx;
+  font-weight: 500;
+  color: #999;
+  letter-spacing: 0.5rpx;
+  margin-top: 4rpx;
+}
+
+.bp-reference-hint {
+  font-size: 20rpx;
+  color: #999;
+  text-align: center;
+  padding: 6rpx 12rpx;
+  background: rgba(255, 248, 240, 0.5);
+  border-radius: 8rpx;
+  border: 1rpx solid rgba(255, 184, 77, 0.1);
+  letter-spacing: 0.3rpx;
+}
+
+/* 血压卡片特殊布局 */
+.function-card--bloodPressure .function-card-data {
+  padding: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 /* ============================

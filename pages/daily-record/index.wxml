@@ -180,21 +180,33 @@
                 <view class="ldh-range-hint">参考范围: 95-100%</view>
               </view>
             </block>
-            <!-- 血压数据展示 - 使用血常规相同的布局样式 -->
+            <!-- 血压数据展示 - 全新专业设计 -->
             <block wx:elif="{{item.id === 'bloodPressure' && selectedDateData.bloodPressureData}}">
-              <view class="blood-simple-item">
-                <text class="bs-label">高压</text>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.bloodPressureData.systolic || '--'}}</view>
-                  <view class="bs-unit">mmHg</view>
+              <view class="bp-display-container">
+                <view class="bp-reading-card">
+                  <view class="bp-systolic-section">
+                    <view class="bp-label-row">
+                      <text class="bp-label-primary">高压</text>
+                      <text class="bp-label-secondary">SYS</text>
+                    </view>
+                    <view class="bp-value-row">
+                      <text class="bp-value-large">{{selectedDateData.bloodPressureData.systolic || '--'}}</text>
+                      <text class="bp-unit">mmHg</text>
+                    </view>
+                  </view>
+                  <view class="bp-divider"></view>
+                  <view class="bp-diastolic-section">
+                    <view class="bp-label-row">
+                      <text class="bp-label-primary">低压</text>
+                      <text class="bp-label-secondary">DIA</text>
+                    </view>
+                    <view class="bp-value-row">
+                      <text class="bp-value-large">{{selectedDateData.bloodPressureData.diastolic || '--'}}</text>
+                      <text class="bp-unit">mmHg</text>
+                    </view>
+                  </view>
                 </view>
-              </view>
-              <view class="blood-simple-item">
-                <text class="bs-label">低压</text>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.bloodPressureData.diastolic || '--'}}</view>
-                  <view class="bs-unit">mmHg</view>
-                </view>
+                <view class="bp-reference-hint">参考范围: 高压 90-140 / 低压 60-90</view>
               </view>
             </block>
             <!-- EB病毒 - 使用血常规相同高度布局 -->
