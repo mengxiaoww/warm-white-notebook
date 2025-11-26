@@ -50,24 +50,24 @@
       <view class="indicators-container">
         <!-- 预设指标组 -->
         <view class="indicator-group">
-          <!-- 收缩压 (必选) -->
+          <!-- 高压 (必选) -->
           <view class="indicator-item required-item">
             <t-checkbox checked="{{selectedIndicators.systolic}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
             <view class="indicator-info">
-              <view class="indicator-name">收缩压</view>
+              <view class="indicator-name">高压</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">Systolic</text>
+                <text class="indicator-fullname">高</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>
           </view>
-          <!-- 舒张压 (必选) -->
+          <!-- 低压 (必选) -->
           <view class="indicator-item required-item">
             <t-checkbox checked="{{selectedIndicators.diastolic}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
             <view class="indicator-info">
-              <view class="indicator-name">舒张压</view>
+              <view class="indicator-name">低压</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">Diastolic</text>
+                <text class="indicator-fullname">低</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>

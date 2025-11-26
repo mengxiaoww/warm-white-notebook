@@ -22,8 +22,8 @@ Page({
 
     // 所有指标的配置信息
     indicatorConfigs: {
-      systolic: { name: '收缩压', unit: 'mmHg' },
-      diastolic: { name: '舒张压', unit: 'mmHg' }
+      systolic: { name: '高压', unit: 'mmHg' },
+      diastolic: { name: '低压', unit: 'mmHg' }
     },
 
     // 自定义指标列表

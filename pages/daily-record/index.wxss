@@ -1731,7 +1731,10 @@
 /* 血常规类型：网格布局 */
 .function-card--blood .function-card-data,
 .function-card--liver .function-card-data,
-.function-card--kidney .function-card-data {
+.function-card--kidney .function-card-data,
+.function-card--bloodPressure .function-card-data,
+.function-card--bloodSugar .function-card-data,
+.function-card--bloodOxygen .function-card-data {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14rpx;

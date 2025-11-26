@@ -31,8 +31,8 @@ Page({
 
     // 显示的基础指标
     displayedBasicIndicators: [
-      { id: 'systolic', name: '收缩压', unit: 'mmHg' },
-      { id: 'diastolic', name: '舒张压', unit: 'mmHg' },
+      { id: 'systolic', name: '高压', unit: 'mmHg' },
+      { id: 'diastolic', name: '低压', unit: 'mmHg' },
     ],
 
     // 用户信息
