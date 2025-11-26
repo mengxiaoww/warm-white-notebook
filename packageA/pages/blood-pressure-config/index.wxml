@@ -54,9 +54,9 @@
           <view class="indicator-item required-item">
             <t-checkbox checked="{{selectedIndicators.systolic}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
             <view class="indicator-info">
-              <view class="indicator-name">高压</view>
+              <view class="indicator-name">高</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">高</text>
+                <text class="indicator-fullname">高压</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>
@@ -65,9 +65,9 @@
           <view class="indicator-item required-item">
             <t-checkbox checked="{{selectedIndicators.diastolic}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
             <view class="indicator-info">
-              <view class="indicator-name">低压</view>
+              <view class="indicator-name">低</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">低</text>
+                <text class="indicator-fullname">低压</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>
