@@ -2203,12 +2203,12 @@
 }
 
 /* ============================
-   🩺 血压专业显示设计 - 全新样式
+   🩺 血压专业显示设计 - 简洁版
    ============================ */
 .bp-display-container {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 10rpx;
   padding: 0;
 }
 
@@ -2229,10 +2229,12 @@
 .bp-systolic-section,
 .bp-diastolic-section {
   flex: 1;
-  padding: 16rpx 20rpx;
+  padding: 18rpx 20rpx;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
   position: relative;
 }
 
@@ -2258,34 +2260,15 @@
     transparent 100%);
 }
 
-.bp-label-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8rpx;
-}
-
-.bp-label-primary {
-  font-size: 24rpx;
+.bp-label {
+  font-size: 22rpx;
   font-weight: 600;
-  color: #666;
+  color: #999;
   letter-spacing: 0.5rpx;
 }
 
-.bp-label-secondary {
-  font-size: 20rpx;
-  font-weight: 500;
-  color: #999;
-  letter-spacing: 1rpx;
-}
-
-.bp-value-row {
-  display: flex;
-  align-items: baseline;
-  gap: 6rpx;
-}
-
 .bp-value-large {
-  font-size: 42rpx;
+  font-size: 46rpx;
   font-weight: 700;
   color: #FF9800;
   letter-spacing: -0.5rpx;
@@ -2297,19 +2280,11 @@
   background-clip: text;
 }
 
-.bp-unit {
-  font-size: 20rpx;
-  font-weight: 500;
-  color: #999;
-  letter-spacing: 0.5rpx;
-  margin-top: 4rpx;
-}
-
 .bp-reference-hint {
   font-size: 20rpx;
   color: #999;
   text-align: center;
-  padding: 6rpx 12rpx;
+  padding: 4rpx 10rpx;
   background: rgba(255, 248, 240, 0.5);
   border-radius: 8rpx;
   border: 1rpx solid rgba(255, 184, 77, 0.1);
