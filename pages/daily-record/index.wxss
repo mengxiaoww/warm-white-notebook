@@ -9604,17 +9604,18 @@
 .bs-value-group {
   display: flex;
   align-items: baseline;
-  gap: 4rpx;
+  gap: 6rpx;
 }
 
 .bs-value {
-  font-size: 28rpx;
+  font-size: 32rpx;
   font-weight: 600;
   color: #1F1F1F;
+  line-height: 1;
 }
 
 .bs-unit {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: #BFBFBF;
 }
 

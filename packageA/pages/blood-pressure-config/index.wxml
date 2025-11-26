@@ -56,7 +56,7 @@
             <view class="indicator-info">
               <view class="indicator-name">高压</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">高</text>
+                <text class="indicator-fullname">收缩压</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>
@@ -67,7 +67,7 @@
             <view class="indicator-info">
               <view class="indicator-name">低压</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">低</text>
+                <text class="indicator-fullname">舒张压</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>
