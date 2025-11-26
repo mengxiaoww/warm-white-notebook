@@ -49,11 +49,13 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bloodOxygen', name: '血氧', icon: 'oxygen', visible: isLymphomaPatient, order: 11, navigate: 'navigateToBloodOxygen' },
 
-    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 12, navigate: 'navigateToUrine' },
+    { id: 'bloodPressure', name: '血压', icon: 'heart', visible: false, order: 12, navigate: 'navigateToBloodPressure' },
 
-    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 13, navigate: 'navigateToStool' },
+    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 13, navigate: 'navigateToUrine' },
 
-    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 14, navigate: 'navigateToExpense' }
+    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 14, navigate: 'navigateToStool' },
+
+    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 15, navigate: 'navigateToExpense' }
 
   ]
 
@@ -169,7 +171,8 @@ Page({
 
       bloodSugarData: null,
 
-      bloodOxygenData: null
+      bloodOxygenData: null,
+      bloodPressureData: null
 
     },
 
@@ -325,7 +328,8 @@ Page({
 
       bloodSugarData: null,
 
-      bloodOxygenData: null
+      bloodOxygenData: null,
+      bloodPressureData: null
 
     },
 
@@ -895,7 +899,8 @@ Page({
             expenseData: null,
             checkReportData: null,
             bloodSugarData: null,
-            bloodOxygenData: null
+            bloodOxygenData: null,
+      bloodPressureData: null
           },
           hasLoadedBefore: true,
           isPageLoading: false
@@ -4157,6 +4162,18 @@ Page({
     wx.navigateTo({
 
       url: `/packageA/pages/blood-oxygen/index?date=${selectedDate}`
+
+    })
+
+  },
+
+  navigateToBloodPressure() {
+
+    const selectedDate = this.data.selectedDate
+
+    wx.navigateTo({
+
+      url: `/packageA/pages/blood-pressure/index?date=${selectedDate}`
 
     })
 
@@ -9781,7 +9798,8 @@ Page({
           expenseData: null,
           checkReportData: null,
           bloodSugarData: null,
-          bloodOxygenData: null
+          bloodOxygenData: null,
+      bloodPressureData: null
         }
       })
 
@@ -9954,7 +9972,9 @@ Page({
 
         bloodSugarData,
 
-        bloodOxygenData
+        bloodOxygenData,
+
+        bloodPressureData
 
       ] = await Promise.all([
 
@@ -9984,7 +10004,9 @@ Page({
 
         this.getBloodSugarDataForDate(dateStr),
 
-        this.getBloodOxygenDataForDate(dateStr)
+        this.getBloodOxygenDataForDate(dateStr),
+
+        this.getBloodPressureDataForDate(dateStr)
 
       ])
 
@@ -10012,6 +10034,8 @@ Page({
       console.log('🩸 血糖数据:', bloodSugarData)
 
       console.log('💙 血氧数据:', bloodOxygenData)
+
+      console.log('💓 血压数据:', bloodPressureData)
 
 
 
@@ -10043,7 +10067,9 @@ Page({
 
         bloodSugarData,
 
-        bloodOxygenData
+        bloodOxygenData,
+
+        bloodPressureData
 
       }
 
@@ -10302,6 +10328,40 @@ Page({
       }
     } catch (error) {
       console.error('❌ 获取血氧数据失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的血压数据
+  async getBloodPressureDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+
+      console.log('💓 查询血压数据 - 日期:', dateStr)
+
+      if (!app.globalData.currentProfile?.profileId) {
+        return null
+      }
+
+      const queryCondition = {
+        openid: app.globalData.openid,
+        profileId: app.globalData.currentProfile.profileId,
+        date: dateStr
+      }
+
+      const res = await db.collection('bloodPressures')
+        .where(queryCondition)
+        .limit(1)
+        .get()
+
+      if (res.data.length > 0) {
+        return res.data[0]
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.error('❌ 获取血压数据失败:', error)
       return null
     }
   },

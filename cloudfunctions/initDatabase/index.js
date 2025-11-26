@@ -27,7 +27,11 @@ exports.main = async (event, context) => {
       'bloodOxygens',                  // 血氧记录
       'bloodOxygenIndicatorSettings',  // 血氧指标设置
       'bloodOxygenIndicatorConfig',    // 血氧指标配置
-      'bloodOxygenIndicators'          // 血氧自定义指标
+      'bloodOxygenIndicators',         // 血氧自定义指标
+      'bloodPressures',                // 血压记录
+      'bloodPressureIndicatorSettings', // 血压指标设置
+      'bloodPressureIndicatorConfig',   // 血压指标配置
+      'bloodPressureIndicators'         // 血压自定义指标
     ];
 
     const results = [];
