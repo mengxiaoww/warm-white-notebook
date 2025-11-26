@@ -91,6 +91,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `ebvRecords`：EB病毒（ebvDna、result、customValues）
 - `cmvRecords`：巨细胞病毒（hcmvDna、pp65 等抗体类）
 - `ldhRecords`：乳酸脱氢酶（ldh、aHbdh、ldhRatio）
+- `bloodSugars`：血糖（bloodSugar、fbg、pbg、customValues）
+- `bloodOxygens`：血氧（spo2、heartRate、customValues）
+- `bloodPressures`：血压（systolic、diastolic、customValues）
 - `urineRecords`：尿量（datetime、volume、color、clarity、frequency、notes）
 - `stoolRecords`：排便（datetime、type、color、consistency、hasBlood、hasMucus、frequency、notes）
 - `clinicRecords`：门诊（date、hospital、department、doctor、diagnosis、prescription、advice、cost、followUpDate、notes）
@@ -108,6 +111,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `userIndicatorSettings`（血常规）
 - `ebvIndicatorSettings`、`cmvIndicatorSettings`、`ldhIndicatorSettings`
 - `liverFunctionSettings`、`kidneyFunctionSettings`
+- `bloodSugarIndicatorSettings`、`bloodOxygenIndicatorSettings`、`bloodPressureIndicatorSettings`（血糖、血氧、血压）
 
 **数据查询原则**：
 - 所有集合查询必须包含 `openid` 条件
@@ -118,7 +122,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **基础云函数**：
 1. `getOpenId`：获取当前用户 `openid`（登录流程使用）
-2. `initDatabase`：初始化数据库集合（包括 bloodTests、virusRecords、organFunctionRecords、urineRecords、stoolRecords、medications、functionCustomConfig、banners、feedbacks）
+2. `initDatabase`：初始化数据库集合（包括 bloodTests、virusRecords、organFunctionRecords、urineRecords、stoolRecords、medications、functionCustomConfig、banners、feedbacks、bloodSugars、bloodOxygens、bloodPressures 及其相关的指标配置集合）
 3. `ocrFunction`：调用微信 OCR API 识别图片（`openapi.ocr.printedText`）
 4. `callSiliconFlowAI`：调用硅基流动 AI API，支持统一模式（健康咨询+智能记录），基于 GLM-4-9B-Chat 模型
 
