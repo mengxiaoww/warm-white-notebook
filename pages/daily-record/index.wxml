@@ -112,7 +112,8 @@
         </view>
       </block>
       <!-- 动态功能项 -->
-      <view wx:else wx:for="{{mainPageFunctions}}" wx:key="id"
+      <block wx:else>
+        <view wx:for="{{mainPageFunctions}}" wx:key="id"
         class="function-card function-card--{{item.id}} {{selectedDateData[item.dataKey] ? 'has-data' : 'no-data'}}"
         bindtap="handleFunctionTap" data-navigate="{{item.navigate}}" data-function-id="{{item.id}}">
         <view class="function-card-status" wx:if="{{selectedDateData[item.dataKey]}}"></view>
@@ -481,6 +482,7 @@
           </view>
         </view>
       </view>
+      </block>
     </view>
     <!-- 编辑按钮 - 独立在功能项下方 -->
     <view class="edit-btn-bottom" bindtap="toggleFunctionEditMode">
