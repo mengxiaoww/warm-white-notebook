@@ -190,18 +190,11 @@ Page({
 
         if (configAlsoDeleted) {
 
-          // 重置选中状态到默认
+          // 重置选中状态到默认（身高体重的必选指标）
           this.setData({
             selectedIndicators: {
-              wbc: true,   // 必选指标
-              neut: true,  // 必选指标
-              hgb: true,   // 必选指标
-              plt: true,   // 必选指标
-              rbc: false,  // 可选指标
-              crp: false,  // 可选指标 - C反应蛋白
-              hct: false,  // 可选指标
-              lymph: false, // 可选指标
-              mono: false  // 可选指标
+              height: true,   // 必选指标
+              weight: true    // 必选指标
             }
           });
 
@@ -506,15 +499,21 @@ Page({
       Object.keys(customSettings).forEach(indicatorId => {
         if (indicatorId.startsWith('custom_')) {
           // 这是自定义指标，添加到 customIndicators 数组
-
+          const setting = customSettings[indicatorId];
 
           const customIndicator = {
             id: indicatorId,
-            fullName: customSettings[indicatorId].name,
-            min: customSettings[indicatorId].min,
-            max: customSettings[indicatorId].max,
-            unit: customSettings[indicatorId].unit
+            fullName: setting.name,
+            unit: setting.unit
           };
+
+          // 🔧 只在有值时才添加 min/max 字段
+          if (setting.min !== undefined) {
+            customIndicator.min = setting.min;
+          }
+          if (setting.max !== undefined) {
+            customIndicator.max = setting.max;
+          }
 
           customIndicators.push(customIndicator);
 
@@ -584,6 +583,10 @@ Page({
 
 
       this.setData(updateData);
+
+      // 🐛 调试日志：检查自定义指标数据
+      console.log('✅ customIndicators 数组内容:', JSON.stringify(customIndicators, null, 2));
+      console.log('✅ selectedIndicators 状态:', JSON.stringify(updateData.selectedIndicators, null, 2));
 
       // 🔧 保存原始配置状态（用于检测更改和回滚）
       this.setData({
