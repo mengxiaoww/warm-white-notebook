@@ -29,7 +29,13 @@
         "pages/blood-pressure/index",
         "pages/blood-pressure-config/index",
         "pages/body-measurement/index",
-        "pages/body-measurement-config/index"
+        "pages/body-measurement-config/index",
+        "pages/water-intake/index",
+        "pages/water-intake-config/index",
+        "pages/diet/index",
+        "pages/diet-config/index",
+        "pages/temperature/index",
+        "pages/temperature-config/index"
       ]
     },
     {

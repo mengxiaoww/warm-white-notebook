@@ -35,7 +35,19 @@ exports.main = async (event, context) => {
       'bodyMeasurements',              // 身高体重记录
       'bodyMeasurementIndicatorSettings', // 身高体重指标设置
       'bodyMeasurementIndicatorConfig',   // 身高体重指标配置
-      'bodyMeasurementIndicators'         // 身高体重自定义指标
+      'bodyMeasurementIndicators',        // 身高体重自定义指标
+      'waterIntakes',                  // 饮水记录
+      'waterIntakeIndicatorSettings',  // 饮水指标设置
+      'waterIntakeIndicatorConfig',    // 饮水指标配置
+      'waterIntakeIndicators',         // 饮水自定义指标
+      'diets',                         // 饮食记录
+      'dietIndicatorSettings',         // 饮食指标设置
+      'dietIndicatorConfig',           // 饮食指标配置
+      'dietIndicators',                // 饮食自定义指标
+      'temperatures',                  // 体温记录
+      'temperatureIndicatorSettings',  // 体温指标设置
+      'temperatureIndicatorConfig',    // 体温指标配置
+      'temperatureIndicators'          // 体温自定义指标
     ];
 
     const results = [];

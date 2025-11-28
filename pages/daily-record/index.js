@@ -53,11 +53,17 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: true, order: 13, navigate: 'navigateToBodyMeasurement' },
 
-    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 14, navigate: 'navigateToUrine' },
+    { id: 'waterIntake', name: '饮水', icon: 'water', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
 
-    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 15, navigate: 'navigateToStool' },
+    { id: 'diet', name: '饮食', icon: 'food', visible: false, order: 15, navigate: 'navigateToDiet' },
 
-    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 16, navigate: 'navigateToExpense' }
+    { id: 'temperature', name: '体温', icon: 'precise-monitor', visible: false, order: 16, navigate: 'navigateToTemperature' },
+
+    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 17, navigate: 'navigateToUrine' },
+
+    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 18, navigate: 'navigateToStool' },
+
+    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 19, navigate: 'navigateToExpense' }
 
   ]
 
@@ -4188,6 +4194,42 @@ Page({
     wx.navigateTo({
 
       url: `/packageA/pages/body-measurement/index?date=${selectedDate}`
+
+    })
+
+  },
+
+  navigateToWaterIntake() {
+
+    const selectedDate = this.data.selectedDate
+
+    wx.navigateTo({
+
+      url: `/packageA/pages/water-intake/index?date=${selectedDate}`
+
+    })
+
+  },
+
+  navigateToDiet() {
+
+    const selectedDate = this.data.selectedDate
+
+    wx.navigateTo({
+
+      url: `/packageA/pages/diet/index?date=${selectedDate}`
+
+    })
+
+  },
+
+  navigateToTemperature() {
+
+    const selectedDate = this.data.selectedDate
+
+    wx.navigateTo({
+
+      url: `/packageA/pages/temperature/index?date=${selectedDate}`
 
     })
 
@@ -11418,6 +11460,9 @@ Page({
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
+          'waterIntake': 'cup',
+          'diet': 'food',
+          'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
           'expense': 'wallet'
@@ -11677,6 +11722,9 @@ Page({
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
+          'waterIntake': 'cup',
+          'diet': 'food',
+          'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
           'expense': 'wallet'

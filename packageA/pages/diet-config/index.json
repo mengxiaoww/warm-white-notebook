@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar",
+    "t-checkbox": "/miniprogram_npm/tdesign-miniprogram/checkbox/checkbox"
+  },
+  "navigationStyle": "custom"
+}
