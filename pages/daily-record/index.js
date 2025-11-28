@@ -11387,18 +11387,12 @@ Page({
       // 从数据库查询用户配置
       // 🔧 功能项配置是全局配置（所有档案共享），只根据 openid 查询
       // 🔧 Android兼容性：对数据库查询添加超时保护
-      console.log('🔍 [主页面配置] 查询数据库配置...')
       const db = wx.cloud.database()
 
       const res = await Promise.race([
         db.collection('functionCustomConfig').where({ openid }).get(),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('数据库查询超时')), 2500))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('数据库查询超时')), 10000))
       ])
-
-      console.log('📦 [主页面配置] 数据库查询结果:', {
-        找到配置: res.data.length > 0 ? '是' : '否',
-        配置数量: res.data.length
-      })
 
       let functionList = []
 
@@ -11491,12 +11485,6 @@ Page({
 
       }
 
-      console.log('📋 [主页面配置] 完整功能列表:', functionList.map(item => ({
-        id: item.id,
-        name: item.name,
-        visible: item.visible
-      })))
-
       // 筛选可见的功能项并按顺序显示
 
       const visibleFunctions = functionList
@@ -11505,27 +11493,11 @@ Page({
 
         .sort((a, b) => a.order - b.order)
 
-      console.log('✅ [主页面配置] 可见功能项:', visibleFunctions.map(item => ({
-        id: item.id,
-        name: item.name,
-        icon: item.icon  // 🐛 添加图标调试
-      })))
-
       this.setData({
 
         mainPageFunctions: visibleFunctions
 
       })
-
-      // 🐛 调试：打印身高体重的图标
-      const bodyMeasurementFunc = visibleFunctions.find(f => f.id === 'bodyMeasurement')
-      if (bodyMeasurementFunc) {
-        console.log('🎨 [主页面配置] 身高体重图标:', bodyMeasurementFunc.icon)
-      } else {
-        console.log('⚠️ [主页面配置] 身高体重功能项不在可见列表中')
-      }
-
-      console.log('✅ [主页面配置] 配置加载完成')
 
     } catch (error) {
 

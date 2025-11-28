@@ -584,12 +584,6 @@ Page({
 
       this.setData(updateData);
 
-      // 🐛 调试日志：检查自定义指标数据
-      console.log('✅ customIndicators 数组内容:', JSON.stringify(customIndicators, null, 2));
-      console.log('✅ selectedIndicators 状态:', JSON.stringify(updateData.selectedIndicators, null, 2));
-      console.log('✅ 页面data.customIndicators:', JSON.stringify(this.data.customIndicators, null, 2));
-      console.log('✅ 页面data.customIndicators.length:', this.data.customIndicators.length);
-
       // 🔧 保存原始配置状态（用于检测更改和回滚）
       this.setData({
         originalConfig: {
