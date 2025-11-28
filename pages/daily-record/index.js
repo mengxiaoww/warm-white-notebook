@@ -11417,7 +11417,7 @@ Page({
           'bloodSugar': 'glucose',
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
-          'bodyMeasurement': 'body-measurement',
+          'bodyMeasurement': 'dashboard',
           'urine': 'fill-color-1',
           'stool': 'layers',
           'expense': 'wallet'
@@ -11676,7 +11676,7 @@ Page({
           'bloodSugar': 'glucose',
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
-          'bodyMeasurement': 'body-measurement',
+          'bodyMeasurement': 'dashboard',
           'urine': 'fill-color-1',
           'stool': 'layers',
           'expense': 'wallet'
