@@ -190,18 +190,11 @@ Page({
 
         if (configAlsoDeleted) {
 
-          // 重置选中状态到默认
+          // 重置选中状态到默认（血压的必选指标）
           this.setData({
             selectedIndicators: {
-              wbc: true,   // 必选指标
-              neut: true,  // 必选指标
-              hgb: true,   // 必选指标
-              plt: true,   // 必选指标
-              rbc: false,  // 可选指标
-              crp: false,  // 可选指标 - C反应蛋白
-              hct: false,  // 可选指标
-              lymph: false, // 可选指标
-              mono: false  // 可选指标
+              systolic: true,   // 必选指标 - 收缩压
+              diastolic: true   // 必选指标 - 舒张压
             }
           });
 
