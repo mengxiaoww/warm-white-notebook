@@ -11434,11 +11434,17 @@ Page({
           // 🎨 从代码中根据 id 获取图标，不再使用数据库中的图标
           const iconName = ICON_MAP[item.id] || 'help-circle';
 
+          // 🔧 强制保护：身高体重始终可见
+          let isVisible = item.visible !== undefined ? item.visible : true;
+          if (item.id === 'bodyMeasurement') {
+            isVisible = true;
+          }
+
           return {
             id: item.id,
             name: displayName,
             icon: iconName, // 图标来自代码映射，不是数据库
-            visible: item.visible !== undefined ? item.visible : true,
+            visible: isVisible,
             order: item.order || 1,
             navigate: item.navigate,
             dataKey: `${item.id}Data`
