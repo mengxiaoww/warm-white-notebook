@@ -11507,7 +11507,8 @@ Page({
 
       console.log('✅ [主页面配置] 可见功能项:', visibleFunctions.map(item => ({
         id: item.id,
-        name: item.name
+        name: item.name,
+        icon: item.icon  // 🐛 添加图标调试
       })))
 
       this.setData({
@@ -11515,6 +11516,14 @@ Page({
         mainPageFunctions: visibleFunctions
 
       })
+
+      // 🐛 调试：打印身高体重的图标
+      const bodyMeasurementFunc = visibleFunctions.find(f => f.id === 'bodyMeasurement')
+      if (bodyMeasurementFunc) {
+        console.log('🎨 [主页面配置] 身高体重图标:', bodyMeasurementFunc.icon)
+      } else {
+        console.log('⚠️ [主页面配置] 身高体重功能项不在可见列表中')
+      }
 
       console.log('✅ [主页面配置] 配置加载完成')
 
