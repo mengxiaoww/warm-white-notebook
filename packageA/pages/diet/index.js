@@ -28,7 +28,7 @@ Page({
 
     // 显示的基础指标
     displayedBasicIndicators: [
-      { id: 'diet', name: '饮食', unit: '份' },
+      { id: 'diet', name: '饮食', unit: '份' }
     ],
 
     // 用户信息
@@ -81,13 +81,13 @@ Page({
     }
 
     // 检查是否有临时配置预览（从配置页面返回）
-    if (app.globalData.temporaryBloodTestConfig) {
+    if (app.globalData.temporaryDietConfig) {
       this.loadTemporaryConfiguration();
 
       // 🔧 关键修复：恢复用户之前的输入
       this.restoreTemporaryUserInput();
-    } else if (app.globalData.needRefreshBloodTestConfig || app.globalData.indicatorConfigChanged) {
-      app.globalData.needRefreshBloodTestConfig = false;
+    } else if (app.globalData.needRefreshDietConfig || app.globalData.indicatorConfigChanged) {
+      app.globalData.needRefreshDietConfig = false;
       app.globalData.indicatorConfigChanged = false;
 
       wx.showLoading({
@@ -119,23 +119,18 @@ Page({
   // 加载临时配置预览
   loadTemporaryConfiguration() {
     const app = getApp();
-    const tempConfig = app.globalData.temporaryBloodTestConfig;
+    const tempConfig = app.globalData.temporaryDietConfig;
 
     if (!tempConfig || !tempConfig.isTemporary) {
       return;
     }
-
 
     // 根据临时配置构建显示的指标列表
     const { selectedIndicators, customIndicators, indicatorConfigs } = tempConfig;
 
     // 构建基础指标列表
     const basicIndicators = [
-      { id: 'diet', name: '饮食', unit: '份' },
-      { id: 'fbg', name: '空腹饮食', unit: '份' },
-      { id: 'pbg', name: '餐后2小时饮食', unit: '份' },
-      { id: 'hba1c', name: '糖化血红蛋白', unit: '%' },
-      { id: 'rbg', name: '随机饮食', unit: '份' }
+      { id: 'diet', name: '饮食', unit: '份' }
     ];
 
     // 过滤出被选中的基础指标
@@ -234,9 +229,9 @@ Page({
   // 清理临时配置（如果未保存）
   cleanupTemporaryConfigIfNotSaved() {
     const app = getApp();
-    if (app.globalData && app.globalData.temporaryBloodTestConfig && this.data.isTemporaryConfig) {
+    if (app.globalData && app.globalData.temporaryDietConfig && this.data.isTemporaryConfig) {
       console.log('🧹 清理未保存的临时配置');
-      delete app.globalData.temporaryBloodTestConfig;
+      delete app.globalData.temporaryDietConfig;
 
       // 重新加载原有配置
       this.loadCompleteConfiguration();
@@ -286,14 +281,10 @@ Page({
       datePickerVisible: false,
       recordId: '',
       formData: {
-        diet: '',
-        fbg: '',
-        pbg: '',
-        hba1c: '',
-        rbg: ''
+        diet: ''
       },
       displayedBasicIndicators: [
-        { id: 'diet', name: '饮食', unit: '份' },
+        { id: 'diet', name: '饮食', unit: '份' }
       ],
       customIndicators: []
     });
@@ -334,26 +325,6 @@ Page({
 
     // 2. 精确匹配规则 - 饮食指标匹配
     const indicatorRules = {
-      'fbg': {
-        // 空腹饮食关键词
-        keywords: ['FBG', 'FPG', '空腹饮食', '空腹葡萄糖', '空腹饮食（FBG）', '空腹饮食(FBG)', '★空腹饮食'],
-        englishKeywords: ['FBG', 'FPG']
-      },
-      'pbg': {
-        // 餐后2小时饮食关键词
-        keywords: ['PBG', '2hPG', '餐后饮食', '餐后2小时饮食', '2h饮食', '餐后2h饮食', '★餐后饮食'],
-        englishKeywords: ['PBG', '2hPG']
-      },
-      'hba1c': {
-        // 糖化血红蛋白关键词
-        keywords: ['HbA1c', 'HbA1C', 'A1C', '糖化血红蛋白', '糖化血红蛋白（HbA1c）', '糖化血红蛋白(HbA1c)', '★糖化血红蛋白'],
-        englishKeywords: ['HbA1c', 'HbA1C', 'A1C']
-      },
-      'rbg': {
-        // 随机饮食关键词
-        keywords: ['RBG', '随机饮食', '随机葡萄糖', '任意饮食', '★随机饮食'],
-        englishKeywords: ['RBG']
-      }
     };
 
     // 跟踪已经找到的指标，避免重复赋值
@@ -598,7 +569,7 @@ Page({
 
       // 优先选择英文关键词（大写字母组成的），否则选择最长的中文关键词
       const englishKeywords = matchedKeywords.filter(keyword =>
-        /^[A-Z]{2,}#?$/.test(keyword) || // WBC, PLT, NEUT#, 等
+        /^[A-Z]{2,#?$/.test(keyword) || // WBC, PLT, NEUT#, 等
         /^[A-Z][a-z]+#?$/.test(keyword)  // Lym#, Mon#, Neu#, 等
       );
       const matchedKeyword = englishKeywords.length > 0
@@ -995,7 +966,6 @@ Page({
     const num = parseFloat(value);
     return num.toFixed(2);
   },
-
 
   // 语音录入
   voiceInput() {
@@ -1418,8 +1388,6 @@ Page({
           }
         });
 
-
-
         // 🔧 分别处理直接字段和customValues字段
 
         // 1. 处理直接字段：只更新当前显示且有值的指标
@@ -1583,7 +1551,7 @@ Page({
   // 保存临时配置（如果存在）
   async saveTemporaryConfigIfExists() {
     const app = getApp();
-    const tempConfig = app.globalData.temporaryBloodTestConfig;
+    const tempConfig = app.globalData.temporaryDietConfig;
 
     if (!tempConfig || !tempConfig.isTemporary) {
       console.log('✅ 无临时配置需要保存');
@@ -1682,14 +1650,14 @@ Page({
       }
 
       // 4. 清理临时配置数据
-      delete app.globalData.temporaryBloodTestConfig;
+      delete app.globalData.temporaryDietConfig;
       this.setData({ isTemporaryConfig: false });
 
       console.log('✅ 临时配置已成功保存并清理');
 
       // 5. 设置刷新标志，让其他页面知道配置已更新
       if (app.globalData) {
-        app.globalData.needRefreshBloodTestConfig = true;
+        app.globalData.needRefreshDietConfig = true;
         app.globalData.indicatorConfigChanged = true;
       }
 
@@ -2023,11 +1991,7 @@ Page({
 
       // 4. 构建配置的优先级逻辑（新增继承逻辑）
       let config = {
-        diet: true,
-        fbg: false,
-        pbg: false,
-        hba1c: false,
-        rbg: false
+        diet: true
       };
 
       if (currentDateConfigRes.data.length > 0) {
@@ -2127,11 +2091,7 @@ Page({
 
       // 预设指标定义
       const defaultIndicators = {
-        diet: { name: '饮食', unit: '份' },
-        fbg: { name: '空腹饮食', unit: '份' },
-        pbg: { name: '餐后2小时饮食', unit: '份' },
-        hba1c: { name: '糖化血红蛋白', unit: '%' },
-        rbg: { name: '随机饮食', unit: '份' }
+        diet: { name: '饮食', unit: '份' }
       };
 
       // 🔧 移除强制显示逻辑，完全依赖用户配置或数据推断
@@ -2282,8 +2242,6 @@ Page({
         }
       }
 
-
-
       console.log(`🎉🎉🎉 ${selectedDate} 的配置加载完成 🎉🎉🎉`);
 
     } catch (err) {
@@ -2327,7 +2285,6 @@ Page({
       if (!hasUserInput) {
         this.loadTodayData();
       }
-
 
     } finally {
       wx.hideLoading();
@@ -2625,10 +2582,7 @@ Page({
     });
   },
 
-
-
   // 分片传输OCR功能（当图片还是太大时使用）
-
 
   // 执行OCR识别
   async performOCR(imagePath) {
