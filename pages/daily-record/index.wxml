@@ -212,6 +212,23 @@
                 <view class="bp-reference-hint">参考: 90-140 / 60-90</view>
               </view>
             </block>
+            <!-- 身高体重数据展示 - 简洁专业设计 -->
+            <block wx:elif="{{item.id === 'bodyMeasurement' && selectedDateData.bodyMeasurementData}}">
+              <view class="bp-display-container">
+                <view class="bp-reading-card">
+                  <view class="bp-systolic-section">
+                    <text class="bp-label">身高</text>
+                    <text class="bp-value-large">{{selectedDateData.bodyMeasurementData.height || '--'}}</text>
+                  </view>
+                  <view class="bp-divider"></view>
+                  <view class="bp-diastolic-section">
+                    <text class="bp-label">体重</text>
+                    <text class="bp-value-large">{{selectedDateData.bodyMeasurementData.weight || '--'}}</text>
+                  </view>
+                </view>
+                <view class="bp-reference-hint">身高(cm) / 体重(kg)</view>
+              </view>
+            </block>
             <!-- EB病毒 - 使用血常规相同高度布局 -->
             <!-- EB病毒：与乳酸脱氢酶统一，显示「数值」 -->
             <block wx:elif="{{item.id === 'ebv' && selectedDateData.ebvData}}">

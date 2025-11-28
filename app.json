@@ -27,7 +27,9 @@
         "pages/blood-oxygen/index",
         "pages/blood-oxygen-config/index",
         "pages/blood-pressure/index",
-        "pages/blood-pressure-config/index"
+        "pages/blood-pressure-config/index",
+        "pages/body-measurement/index",
+        "pages/body-measurement-config/index"
       ]
     },
     {

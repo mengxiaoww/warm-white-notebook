@@ -31,7 +31,11 @@ exports.main = async (event, context) => {
       'bloodPressures',                // 血压记录
       'bloodPressureIndicatorSettings', // 血压指标设置
       'bloodPressureIndicatorConfig',   // 血压指标配置
-      'bloodPressureIndicators'         // 血压自定义指标
+      'bloodPressureIndicators',        // 血压自定义指标
+      'bodyMeasurements',              // 身高体重记录
+      'bodyMeasurementIndicatorSettings', // 身高体重指标设置
+      'bodyMeasurementIndicatorConfig',   // 身高体重指标配置
+      'bodyMeasurementIndicators'         // 身高体重自定义指标
     ];
 
     const results = [];

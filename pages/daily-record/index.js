@@ -51,11 +51,13 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bloodPressure', name: '血压', icon: 'blood-pressure', visible: false, order: 12, navigate: 'navigateToBloodPressure' },
 
-    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 13, navigate: 'navigateToUrine' },
+    { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: false, order: 13, navigate: 'navigateToBodyMeasurement' },
 
-    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 14, navigate: 'navigateToStool' },
+    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 14, navigate: 'navigateToUrine' },
 
-    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 15, navigate: 'navigateToExpense' }
+    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 15, navigate: 'navigateToStool' },
+
+    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 16, navigate: 'navigateToExpense' }
 
   ]
 
@@ -4174,6 +4176,18 @@ Page({
     wx.navigateTo({
 
       url: `/packageA/pages/blood-pressure/index?date=${selectedDate}`
+
+    })
+
+  },
+
+  navigateToBodyMeasurement() {
+
+    const selectedDate = this.data.selectedDate
+
+    wx.navigateTo({
+
+      url: `/packageA/pages/body-measurement/index?date=${selectedDate}`
 
     })
 
@@ -10006,7 +10020,9 @@ Page({
 
         this.getBloodOxygenDataForDate(dateStr),
 
-        this.getBloodPressureDataForDate(dateStr)
+        this.getBloodPressureDataForDate(dateStr),
+
+        this.getBodyMeasurementDataForDate(dateStr)
 
       ])
 
@@ -10036,6 +10052,8 @@ Page({
       console.log('💙 血氧数据:', bloodOxygenData)
 
       console.log('💓 血压数据:', bloodPressureData)
+
+      console.log('📏 身高体重数据:', bodyMeasurementData)
 
 
 
@@ -10069,7 +10087,9 @@ Page({
 
         bloodOxygenData,
 
-        bloodPressureData
+        bloodPressureData,
+
+        bodyMeasurementData
 
       }
 
@@ -10362,6 +10382,40 @@ Page({
       }
     } catch (error) {
       console.error('❌ 获取血压数据失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的身高体重数据
+  async getBodyMeasurementDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+
+      console.log('📏 查询身高体重数据 - 日期:', dateStr)
+
+      if (!app.globalData.currentProfile?.profileId) {
+        return null
+      }
+
+      const queryCondition = {
+        openid: app.globalData.openid,
+        profileId: app.globalData.currentProfile.profileId,
+        date: dateStr
+      }
+
+      const res = await db.collection('bodyMeasurements')
+        .where(queryCondition)
+        .limit(1)
+        .get()
+
+      if (res.data.length > 0) {
+        return res.data[0]
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.error('❌ 获取身高体重数据失败:', error)
       return null
     }
   },
@@ -11366,6 +11420,7 @@ Page({
           'bloodSugar': 'glucose',
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
+          'bodyMeasurement': 'body-measurement',
           'urine': 'fill-color-1',
           'stool': 'layers',
           'expense': 'wallet'
