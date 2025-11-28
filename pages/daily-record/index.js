@@ -51,7 +51,7 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bloodPressure', name: '血压', icon: 'blood-pressure', visible: false, order: 12, navigate: 'navigateToBloodPressure' },
 
-    { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: false, order: 13, navigate: 'navigateToBodyMeasurement' },
+    { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: true, order: 13, navigate: 'navigateToBodyMeasurement' },
 
     { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 14, navigate: 'navigateToUrine' },
 
