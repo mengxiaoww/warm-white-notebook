@@ -80,8 +80,8 @@ Page({
     if (userInfoSuccess) {
       // 🔧 关键修复：检查是否有临时配置（用户之前的未保存修改）
       const app = getApp();
-      if (app.globalData && app.globalData.temporaryBloodTestConfig &&
-        app.globalData.temporaryBloodTestConfig.configDate === editingDate) {
+      if (app.globalData && app.globalData.temporaryBodyMeasurementConfig &&
+        app.globalData.temporaryBodyMeasurementConfig.configDate === editingDate) {
 
         this.loadTemporaryBloodTestConfigToPage();
       } else {
@@ -119,9 +119,9 @@ Page({
   // 🔧 清理临时配置数据
   cleanupTemporaryConfig() {
     const app = getApp();
-    if (app.globalData && app.globalData.temporaryBloodTestConfig) {
+    if (app.globalData && app.globalData.temporaryBodyMeasurementConfig) {
 
-      delete app.globalData.temporaryBloodTestConfig;
+      delete app.globalData.temporaryBodyMeasurementConfig;
     }
   },
 
@@ -130,7 +130,7 @@ Page({
     const app = getApp();
     if (app.globalData) {
       // 只要页面被访问过，就设置刷新标志，确保身高体重页面会重新加载
-      app.globalData.needRefreshBloodTestConfig = true;
+      app.globalData.needRefreshBodyMeasurementConfig = true;
 
     }
   },
@@ -146,7 +146,7 @@ Page({
 
     // 🔧 修复配置回显问题：优先从数据库加载最新配置，只有在用户正在编辑时才使用临时配置
     const app = getApp();
-    const hasTemporaryConfig = app.globalData && app.globalData.temporaryBloodTestConfig && app.globalData.temporaryBloodTestConfig.isTemporary;
+    const hasTemporaryConfig = app.globalData && app.globalData.temporaryBodyMeasurementConfig && app.globalData.temporaryBodyMeasurementConfig.isTemporary;
 
     // 首先总是尝试从数据库加载最新配置
     if (this.data.openid && this.data.currentProfileId) {
@@ -233,7 +233,7 @@ Page({
   // 🔧 判断是否应该使用临时配置
   shouldUseTemporaryConfig() {
     const app = getApp();
-    const tempConfig = app.globalData.temporaryBloodTestConfig;
+    const tempConfig = app.globalData.temporaryBodyMeasurementConfig;
 
     if (!tempConfig || !tempConfig.isTemporary) {
       return false;
@@ -253,7 +253,7 @@ Page({
     if (!isRecent) {
 
       // 清理过期的临时配置
-      delete app.globalData.temporaryBloodTestConfig;
+      delete app.globalData.temporaryBodyMeasurementConfig;
       return false;
     }
 
@@ -264,7 +264,7 @@ Page({
   // 🆕 加载临时配置到配置页面（用于回显）
   loadTemporaryConfigurationToPage() {
     const app = getApp();
-    const tempConfig = app.globalData.temporaryBloodTestConfig;
+    const tempConfig = app.globalData.temporaryBodyMeasurementConfig;
 
     if (!tempConfig || !tempConfig.isTemporary) {
 
@@ -328,7 +328,7 @@ Page({
   // 🔧 从临时配置恢复页面状态
   loadTemporaryBloodTestConfigToPage() {
     const app = getApp();
-    const tempConfig = app.globalData.temporaryBloodTestConfig;
+    const tempConfig = app.globalData.temporaryBodyMeasurementConfig;
 
     if (!tempConfig) {
 
@@ -670,7 +670,7 @@ Page({
     const app = getApp();
     if (app.globalData) {
       // 设置临时配置数据，供身高体重页面预览使用
-      app.globalData.temporaryBloodTestConfig = {
+      app.globalData.temporaryBodyMeasurementConfig = {
         selectedIndicators: JSON.parse(JSON.stringify(selectedIndicators)),
         customIndicators: JSON.parse(JSON.stringify(customIndicators)),
         indicatorConfigs: JSON.parse(JSON.stringify(indicatorConfigs)),
@@ -681,7 +681,7 @@ Page({
       };
 
       // 设置刷新标志，让身高体重页面重新加载
-      app.globalData.needRefreshBloodTestConfig = true;
+      app.globalData.needRefreshBodyMeasurementConfig = true;
 
       console.log('📋 已同步临时配置到身高体重页面:', {
         selectedCount: Object.keys(selectedIndicators).filter(key => selectedIndicators[key]).length,
@@ -835,7 +835,7 @@ Page({
       // 6. 设置刷新标志
       const app = getApp();
       if (app.globalData) {
-        app.globalData.needRefreshBloodTestConfig = true;
+        app.globalData.needRefreshBodyMeasurementConfig = true;
         delete app.globalData.currentDateContext;
       }
 
