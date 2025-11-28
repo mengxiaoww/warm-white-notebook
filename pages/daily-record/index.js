@@ -11385,12 +11385,13 @@ Page({
       }
 
       // 从数据库查询用户配置
+      // 🔧 功能项配置是全局配置（所有档案共享），只根据 openid 查询
       // 🔧 Android兼容性：对数据库查询添加超时保护
       console.log('🔍 [主页面配置] 查询数据库配置...')
       const db = wx.cloud.database()
 
       const res = await Promise.race([
-        db.collection('functionCustomConfig').where({ openid, profileId }).get(),
+        db.collection('functionCustomConfig').where({ openid }).get(),
         new Promise((_, reject) => setTimeout(() => reject(new Error('数据库查询超时')), 2500))
       ])
 
@@ -11648,7 +11649,7 @@ Page({
         profileId: profileId || '无'
       })
 
-      if (!openid || !profileId) {
+      if (!openid) {
         console.log('⚠️ [编辑弹窗] 未登录，使用默认配置')
 
         const defaultFunctions = generateFunctionConfig(false, false)
@@ -11664,7 +11665,7 @@ Page({
 
       const res = await db.collection('functionCustomConfig')
 
-        .where({ openid, profileId })
+        .where({ openid })
 
         .get()
 
@@ -12012,9 +12013,9 @@ Page({
         navigate: item.navigate
       }))
 
-      // 查询是否已存在配置
+      // 查询是否已存在配置（功能项配置是全局配置，只根据 openid 查询）
       const existRes = await db.collection('functionCustomConfig')
-        .where({ openid, profileId })
+        .where({ openid })
         .get()
 
       if (existRes.data.length > 0) {
@@ -12028,11 +12029,10 @@ Page({
             }
           })
       } else {
-        // 创建新配置
+        // 创建新配置（不再关联 profileId，所有档案共享同一配置）
         await db.collection('functionCustomConfig').add({
           data: {
             openid,
-            profileId,
             functionList: functionListToSave,
             createTime: db.serverDate(),
             updateTime: db.serverDate()
