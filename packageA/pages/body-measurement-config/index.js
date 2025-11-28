@@ -682,13 +682,6 @@ Page({
 
       // 设置刷新标志，让身高体重页面重新加载
       app.globalData.needRefreshBodyMeasurementConfig = true;
-
-      console.log('📋 已同步临时配置到身高体重页面:', {
-        selectedCount: Object.keys(selectedIndicators).filter(key => selectedIndicators[key]).length,
-        customCount: customIndicators.length,
-        dateType: dateType,
-        isTemporary: true
-      });
     }
   },
 
