@@ -57,7 +57,7 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'diet', name: '饮食', icon: 'food', visible: false, order: 15, navigate: 'navigateToDiet' },
 
-    { id: 'temperature', name: '体温', icon: 'precise-monitor', visible: false, order: 16, navigate: 'navigateToTemperature' },
+    { id: 'temperature', name: '体温', icon: 'thermometer', visible: false, order: 16, navigate: 'navigateToTemperature' },
 
     { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 17, navigate: 'navigateToUrine' },
 
