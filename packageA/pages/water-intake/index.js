@@ -130,7 +130,7 @@ Page({
 
     // 构建基础指标列表
     const basicIndicators = [
-      { id: 'waterIntake', name: '饮水', unit: 'ml' }
+      { id: 'water', name: '饮水', unit: 'ml' }
     ];
 
     // 过滤出被选中的基础指标
@@ -281,10 +281,10 @@ Page({
       datePickerVisible: false,
       recordId: '',
       formData: {
-        waterIntake: ''
+        water: ''
       },
       displayedBasicIndicators: [
-        { id: 'waterIntake', name: '饮水', unit: 'ml' }
+        { id: 'water', name: '饮水', unit: 'ml' }
       ],
       customIndicators: []
     });
@@ -1991,7 +1991,7 @@ Page({
 
       // 4. 构建配置的优先级逻辑（新增继承逻辑）
       let config = {
-        waterIntake: true
+        water: true
       };
 
       if (currentDateConfigRes.data.length > 0) {
@@ -2091,7 +2091,7 @@ Page({
 
       // 预设指标定义
       const defaultIndicators = {
-        waterIntake: { name: '饮水', unit: 'ml' }
+        water: { name: '饮水', unit: 'ml' }
       };
 
       // 🔧 移除强制显示逻辑，完全依赖用户配置或数据推断
@@ -2166,7 +2166,7 @@ Page({
 
         // 强制使用默认配置
         const fallbackIndicators = [
-          { id: 'waterIntake', name: '饮水', min: '1500', max: '2500', unit: 'ml' }
+          { id: 'water', name: '饮水', min: '1500', max: '2500', unit: 'ml' }
         ];
 
         const fallbackFormData = {};
@@ -2250,7 +2250,7 @@ Page({
       // 失败时使用默认配置
       console.log('🔧 使用默认配置作为兜底');
       const defaultIndicators = [
-        { id: 'waterIntake', name: '饮水', min: '1500', max: '2500', unit: 'ml' }
+        { id: 'water', name: '饮水', min: '1500', max: '2500', unit: 'ml' }
       ];
 
       const initialFormData = {};
