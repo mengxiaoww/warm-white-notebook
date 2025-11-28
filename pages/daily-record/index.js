@@ -9988,7 +9988,9 @@ Page({
 
         bloodOxygenData,
 
-        bloodPressureData
+        bloodPressureData,
+
+        bodyMeasurementData
 
       ] = await Promise.all([
 
