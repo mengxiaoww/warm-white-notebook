@@ -23,7 +23,7 @@ Page({
     // 所有指标的配置信息
     indicatorConfigs: {
       height: { name: '身高', unit: 'cm' },
-      weight: { name: '体重', unit: 'cm' }
+      weight: { name: '体重', unit: 'kg' }
     },
 
     // 自定义指标列表
