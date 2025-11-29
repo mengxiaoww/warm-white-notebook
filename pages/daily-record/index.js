@@ -10866,8 +10866,11 @@ Page({
       const db = wx.cloud.database()
 
       console.log('💧 查询饮水数据 - 日期:', dateStr)
+      console.log('💧 openid:', app.globalData?.openid)
+      console.log('💧 profileId:', app.globalData?.currentProfile?.profileId)
 
       if (!app.globalData.currentProfile?.profileId) {
+        console.log('💧 profileId不存在，返回null')
         return null
       }
 
@@ -10876,15 +10879,22 @@ Page({
         profileId: app.globalData.currentProfile.profileId,
         date: dateStr
       }
+      console.log('💧 查询条件:', queryCondition)
 
       const res = await db.collection('waterIntakes')
         .where(queryCondition)
         .limit(1)
         .get()
 
+      console.log('💧 饮水查询结果:', res)
+      console.log('💧 数据数量:', res.data.length)
+
       if (res.data.length > 0) {
-        return res.data[0]
+        const waterData = res.data[0]
+        console.log('💧 饮水数据内容:', waterData)
+        return waterData
       } else {
+        console.log('💧 未找到饮水数据')
         return null
       }
     } catch (error) {
