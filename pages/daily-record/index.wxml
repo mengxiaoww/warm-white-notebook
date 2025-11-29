@@ -229,6 +229,59 @@
                 <view class="bp-reference-hint">身高(cm) / 体重(kg)</view>
               </view>
             </block>
+            <!-- 饮水数据展示 - 统一单值显示样式 -->
+            <block wx:elif="{{item.id === 'water' && selectedDateData.waterData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">饮水量</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.waterData.water || '0'}}</text>
+                  <text class="ldh-unit">ml</text>
+                </view>
+                <view class="ldh-range-hint">参考: 1500-2000 ml/天</view>
+              </view>
+            </block>
+            <!-- 饮食数据展示 - 简洁设计 -->
+            <block wx:elif="{{item.id === 'diet' && selectedDateData.dietData}}">
+              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.breakfast}}">
+                <text class="bs-label">早餐</text>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.dietData.breakfast}}</view>
+                </view>
+              </view>
+              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.lunch}}">
+                <view class="bs-label">午餐</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.dietData.lunch}}</view>
+                </view>
+              </view>
+              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.dinner}}">
+                <view class="bs-label">晚餐</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.dietData.dinner}}</view>
+                </view>
+              </view>
+              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.snack}}">
+                <view class="bs-label">加餐</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.dietData.snack}}</view>
+                </view>
+              </view>
+            </block>
+            <!-- 体温数据展示 - 统一单值显示样式 -->
+            <block wx:elif="{{item.id === 'temperature' && selectedDateData.temperatureData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">体温</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.temperatureData.temperature || '0'}}</text>
+                  <text class="ldh-unit">℃</text>
+                </view>
+                <view class="ldh-range-hint">正常范围: 36.0-37.3 ℃</view>
+              </view>
+            </block>
             <!-- EB病毒 - 使用血常规相同高度布局 -->
             <!-- EB病毒：与乳酸脱氢酶统一，显示「数值」 -->
             <block wx:elif="{{item.id === 'ebv' && selectedDateData.ebvData}}">

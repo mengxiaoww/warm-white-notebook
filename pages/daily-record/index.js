@@ -180,7 +180,15 @@ Page({
       bloodSugarData: null,
 
       bloodOxygenData: null,
-      bloodPressureData: null
+      bloodPressureData: null,
+
+      bodyMeasurementData: null,
+
+      waterData: null,
+
+      dietData: null,
+
+      temperatureData: null
 
     },
 
@@ -337,7 +345,15 @@ Page({
       bloodSugarData: null,
 
       bloodOxygenData: null,
-      bloodPressureData: null
+      bloodPressureData: null,
+
+      bodyMeasurementData: null,
+
+      waterData: null,
+
+      dietData: null,
+
+      temperatureData: null
 
     },
 
@@ -908,7 +924,15 @@ Page({
             checkReportData: null,
             bloodSugarData: null,
             bloodOxygenData: null,
-      bloodPressureData: null
+      bloodPressureData: null,
+
+      bodyMeasurementData: null,
+
+      waterData: null,
+
+      dietData: null,
+
+      temperatureData: null
           },
           hasLoadedBefore: true,
           isPageLoading: false
@@ -1775,11 +1799,75 @@ Page({
 
           })
 
+          .get(),
+
+        // 查询饮水记录
+
+        db.collection('waterIntakes')
+
+          .where({
+
+            openid: openid,
+
+            profileId: currentProfileId,
+
+            date: db.command.gte(startDate).and(db.command.lte(endDate))
+
+          })
+
+          .get(),
+
+        // 查询饮食记录
+
+        db.collection('diets')
+
+          .where({
+
+            openid: openid,
+
+            profileId: currentProfileId,
+
+            date: db.command.gte(startDate).and(db.command.lte(endDate))
+
+          })
+
+          .get(),
+
+        // 查询体温记录
+
+        db.collection('temperatures')
+
+          .where({
+
+            openid: openid,
+
+            profileId: currentProfileId,
+
+            date: db.command.gte(startDate).and(db.command.lte(endDate))
+
+          })
+
+          .get(),
+
+        // 查询身高体重记录
+
+        db.collection('bodyMeasurements')
+
+          .where({
+
+            openid: openid,
+
+            profileId: currentProfileId,
+
+            date: db.command.gte(startDate).and(db.command.lte(endDate))
+
+          })
+
           .get()
 
       ]).then(results => {
 
-        const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, bloodOxygenRes, checkReportRes] = results;
+        const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, bloodOxygenRes, checkReportRes, waterRes, dietRes, temperatureRes, bodyMeasurementRes] = results;
 
 
 
@@ -2481,9 +2569,269 @@ Page({
 
 
 
+        // 创建饮水数据映射
+
+        const waterMap = {}
+
+        waterRes.data.forEach(item => {
+
+          const waterData = {}
+
+
+
+          // 从customValues加载自定义指标
+
+          if (item.customValues) {
+
+            Object.keys(item.customValues).forEach(key => {
+
+              waterData[key] = item.customValues[key]
+
+            })
+
+          }
+
+
+
+          // 加载基础指标（饮水量）
+
+          if (item.water !== undefined && item.water !== null && item.water !== '') {
+
+            waterData.water = item.water
+
+          }
+
+
+
+          // 只保留有数据的指标
+
+          const filteredWaterData = {}
+
+          Object.keys(waterData).forEach(key => {
+
+            const value = waterData[key]
+
+            if (value !== undefined && value !== null && value !== '') {
+
+              filteredWaterData[key] = value
+
+            }
+
+          })
+
+
+
+          if (Object.keys(filteredWaterData).length > 0) {
+
+            waterMap[item.date] = filteredWaterData
+
+          }
+
+        })
+
+
+
+        // 创建饮食数据映射
+
+        const dietMap = {}
+
+        dietRes.data.forEach(item => {
+
+          const dietData = {}
+
+
+
+          // 从customValues加载自定义指标
+
+          if (item.customValues) {
+
+            Object.keys(item.customValues).forEach(key => {
+
+              dietData[key] = item.customValues[key]
+
+            })
+
+          }
+
+
+
+          // 加载基础指标
+
+          const basicIndicators = ['breakfast', 'lunch', 'dinner', 'snack', 'calories', 'protein', 'carbs', 'fat']
+
+          basicIndicators.forEach(key => {
+
+            if (dietData[key] === undefined && item[key] !== undefined && item[key] !== null && item[key] !== '') {
+
+              dietData[key] = item[key]
+
+            }
+
+          })
+
+
+
+          // 只保留有数据的指标
+
+          const filteredDietData = {}
+
+          Object.keys(dietData).forEach(key => {
+
+            const value = dietData[key]
+
+            if (value !== undefined && value !== null && value !== '') {
+
+              filteredDietData[key] = value
+
+            }
+
+          })
+
+
+
+          if (Object.keys(filteredDietData).length > 0) {
+
+            dietMap[item.date] = filteredDietData
+
+          }
+
+        })
+
+
+
+        // 创建体温数据映射
+
+        const temperatureMap = {}
+
+        temperatureRes.data.forEach(item => {
+
+          const tempData = {}
+
+
+
+          // 从customValues加载自定义指标
+
+          if (item.customValues) {
+
+            Object.keys(item.customValues).forEach(key => {
+
+              tempData[key] = item.customValues[key]
+
+            })
+
+          }
+
+
+
+          // 加载基础指标（体温）
+
+          if (item.temperature !== undefined && item.temperature !== null && item.temperature !== '') {
+
+            tempData.temperature = item.temperature
+
+          }
+
+
+
+          // 只保留有数据的指标
+
+          const filteredTempData = {}
+
+          Object.keys(tempData).forEach(key => {
+
+            const value = tempData[key]
+
+            if (value !== undefined && value !== null && value !== '') {
+
+              filteredTempData[key] = value
+
+            }
+
+          })
+
+
+
+          if (Object.keys(filteredTempData).length > 0) {
+
+            temperatureMap[item.date] = filteredTempData
+
+          }
+
+        })
+
+
+
+        // 创建身高体重数据映射
+
+        const bodyMeasurementMap = {}
+
+        bodyMeasurementRes.data.forEach(item => {
+
+          const bodyData = {}
+
+
+
+          // 从customValues加载自定义指标
+
+          if (item.customValues) {
+
+            Object.keys(item.customValues).forEach(key => {
+
+              bodyData[key] = item.customValues[key]
+
+            })
+
+          }
+
+
+
+          // 加载基础指标
+
+          const basicIndicators = ['height', 'weight', 'bmi', 'waistline', 'hipline', 'bodyFat']
+
+          basicIndicators.forEach(key => {
+
+            if (bodyData[key] === undefined && item[key] !== undefined && item[key] !== null && item[key] !== '') {
+
+              bodyData[key] = item[key]
+
+            }
+
+          })
+
+
+
+          // 只保留有数据的指标
+
+          const filteredBodyData = {}
+
+          Object.keys(bodyData).forEach(key => {
+
+            const value = bodyData[key]
+
+            if (value !== undefined && value !== null && value !== '') {
+
+              filteredBodyData[key] = value
+
+            }
+
+          })
+
+
+
+          if (Object.keys(filteredBodyData).length > 0) {
+
+            bodyMeasurementMap[item.date] = filteredBodyData
+
+          }
+
+        })
+
+
+
         // 更新日历（包含所有记录数据）
 
-        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap, bloodOxygenMap)
+        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap, bloodOxygenMap, waterMap, dietMap, temperatureMap, bodyMeasurementMap)
 
       })
 
@@ -2643,7 +2991,7 @@ Page({
 
   // 更新日历（包含所有数据）
 
-  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}, bloodSugarMap = {}, bloodOxygenMap = {}) {
+  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}, bloodSugarMap = {}, bloodOxygenMap = {}, waterMap = {}, dietMap = {}, temperatureMap = {}, bodyMeasurementMap = {}) {
 
     const days = this.data.days.map(day => {
 
@@ -2717,9 +3065,25 @@ Page({
 
       const bloodOxygenData = bloodOxygenMap[day.date] ? bloodOxygenMap[day.date][0] : null
 
+      // 获取饮水数据
+
+      const waterData = waterMap[day.date] || null
+
+      // 获取饮食数据
+
+      const dietData = dietMap[day.date] || null
+
+      // 获取体温数据
+
+      const temperatureData = temperatureMap[day.date] || null
+
+      // 获取身高体重数据
+
+      const bodyMeasurementData = bodyMeasurementMap[day.date] || null
 
 
-      const hasEvent = hasTask || hasKeyDate || bloodData || medicationData || clinicData || checkReportData || urineData || stoolData || expenseData || ebvData || cmvData || liverData || kidneyData || ldhData || bloodSugarData || bloodOxygenData;
+
+      const hasEvent = hasTask || hasKeyDate || bloodData || medicationData || clinicData || checkReportData || urineData || stoolData || expenseData || ebvData || cmvData || liverData || kidneyData || ldhData || bloodSugarData || bloodOxygenData || waterData || dietData || temperatureData || bodyMeasurementData;
 
 
 
@@ -2759,7 +3123,15 @@ Page({
 
         bloodSugarData: bloodSugarData,
 
-        bloodOxygenData: bloodOxygenData
+        bloodOxygenData: bloodOxygenData,
+
+        waterData: waterData,
+
+        dietData: dietData,
+
+        temperatureData: temperatureData,
+
+        bodyMeasurementData: bodyMeasurementData
 
       };
 
@@ -10032,7 +10404,13 @@ Page({
 
         bloodPressureData,
 
-        bodyMeasurementData
+        bodyMeasurementData,
+
+        waterData,
+
+        dietData,
+
+        temperatureData
 
       ] = await Promise.all([
 
@@ -10066,7 +10444,13 @@ Page({
 
         this.getBloodPressureDataForDate(dateStr),
 
-        this.getBodyMeasurementDataForDate(dateStr)
+        this.getBodyMeasurementDataForDate(dateStr),
+
+        this.getWaterDataForDate(dateStr),
+
+        this.getDietDataForDate(dateStr),
+
+        this.getTemperatureDataForDate(dateStr)
 
       ])
 
@@ -10133,7 +10517,13 @@ Page({
 
         bloodPressureData,
 
-        bodyMeasurementData
+        bodyMeasurementData,
+
+        waterData,
+
+        dietData,
+
+        temperatureData
 
       }
 
@@ -10460,6 +10850,108 @@ Page({
       }
     } catch (error) {
       console.error('❌ 获取身高体重数据失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的饮水数据
+  async getWaterDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+
+      console.log('💧 查询饮水数据 - 日期:', dateStr)
+
+      if (!app.globalData.currentProfile?.profileId) {
+        return null
+      }
+
+      const queryCondition = {
+        openid: app.globalData.openid,
+        profileId: app.globalData.currentProfile.profileId,
+        date: dateStr
+      }
+
+      const res = await db.collection('waterIntakes')
+        .where(queryCondition)
+        .limit(1)
+        .get()
+
+      if (res.data.length > 0) {
+        return res.data[0]
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.error('❌ 获取饮水数据失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的饮食数据
+  async getDietDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+
+      console.log('🍽️ 查询饮食数据 - 日期:', dateStr)
+
+      if (!app.globalData.currentProfile?.profileId) {
+        return null
+      }
+
+      const queryCondition = {
+        openid: app.globalData.openid,
+        profileId: app.globalData.currentProfile.profileId,
+        date: dateStr
+      }
+
+      const res = await db.collection('diets')
+        .where(queryCondition)
+        .limit(1)
+        .get()
+
+      if (res.data.length > 0) {
+        return res.data[0]
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.error('❌ 获取饮食数据失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的体温数据
+  async getTemperatureDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+
+      console.log('🌡️ 查询体温数据 - 日期:', dateStr)
+
+      if (!app.globalData.currentProfile?.profileId) {
+        return null
+      }
+
+      const queryCondition = {
+        openid: app.globalData.openid,
+        profileId: app.globalData.currentProfile.profileId,
+        date: dateStr
+      }
+
+      const res = await db.collection('temperatures')
+        .where(queryCondition)
+        .limit(1)
+        .get()
+
+      if (res.data.length > 0) {
+        return res.data[0]
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.error('❌ 获取体温数据失败:', error)
       return null
     }
   },
