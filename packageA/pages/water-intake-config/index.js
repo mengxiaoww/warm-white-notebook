@@ -21,11 +21,11 @@ Page({
     },
 
     // 必选指标（不能取消勾选）
-    requiredIndicators: ['waterIntake'],
+    requiredIndicators: ['water'],
 
     // 所有指标的配置信息
     indicatorConfigs: {
-      waterIntake: { name: '饮水', unit: 'ml' },
+      water: { name: '饮水', unit: 'ml' },
       
       
       
