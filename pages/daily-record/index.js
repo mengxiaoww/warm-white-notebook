@@ -53,7 +53,7 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: true, order: 13, navigate: 'navigateToBodyMeasurement' },
 
-    { id: 'water', name: '饮水', icon: 'milk-tea', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
+    { id: 'water', name: '饮水', icon: 'tea', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
 
     { id: 'diet', name: '饮食', icon: 'bread', visible: false, order: 15, navigate: 'navigateToDiet' },
 
@@ -11460,7 +11460,7 @@ Page({
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
-          'water': 'milk-tea',
+          'water': 'tea',
           'diet': 'bread',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
@@ -11722,7 +11722,7 @@ Page({
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
-          'water': 'milk-tea',
+          'water': 'tea',
           'diet': 'bread',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
