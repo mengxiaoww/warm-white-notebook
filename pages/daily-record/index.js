@@ -11484,7 +11484,7 @@ Page({
             id: item.id,
             name: displayName,
             icon: iconName, // 图标来自代码映射，不是数据库
-            visible: item.visible !== undefined ? item.visible : true,
+            visible: item.visible === true,  // 明确只有 true 才显示
             order: item.order || 1,
             navigate: item.navigate,
             dataKey: `${item.id}Data`
