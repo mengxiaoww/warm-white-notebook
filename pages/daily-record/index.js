@@ -10563,7 +10563,9 @@ Page({
 
 
 
-      console.log('数据设置完成')
+      console.log('✅ 数据设置完成 - selectedDateData:', selectedDateData)
+      console.log('✅ waterData:', selectedDateData.waterData)
+      console.log('✅ 当前mainPageFunctions:', this.data.mainPageFunctions.map(f => ({id: f.id, name: f.name, visible: f.visible, dataKey: f.dataKey})))
 
 
 
