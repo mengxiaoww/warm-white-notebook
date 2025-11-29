@@ -2375,7 +2375,9 @@ Page({
         allConfiguredIds.forEach(indicatorId => {
           if (formData[indicatorId] === undefined) {
             // 🔥 修复：正确处理0值，不能用 || 运算符
-            formData[indicatorId] = (data[indicatorId] !== undefined && data[indicatorId] !== null) ? data[indicatorId] : '';
+            // 🔧 兼容旧字段名
+            const fieldValue = (data[indicatorId] || data['temp']);
+            formData[indicatorId] = (fieldValue !== undefined && fieldValue !== null) ? fieldValue : '';
           }
         });
 
@@ -2497,7 +2499,9 @@ Page({
         allConfiguredIds.forEach(indicatorId => {
           if (formData[indicatorId] === undefined) {
             // 🔥 修复：正确处理0值，不能用 || 运算符
-            formData[indicatorId] = (data[indicatorId] !== undefined && data[indicatorId] !== null) ? data[indicatorId] : '';
+            // 🔧 兼容旧字段名
+            const fieldValue = (data[indicatorId] || data['temp']);
+            formData[indicatorId] = (fieldValue !== undefined && fieldValue !== null) ? fieldValue : '';
           }
         });
 

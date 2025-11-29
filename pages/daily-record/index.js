@@ -53,7 +53,7 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: true, order: 13, navigate: 'navigateToBodyMeasurement' },
 
-    { id: 'waterIntake', name: '饮水', icon: 'water', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
+    { id: 'waterIntake', name: '饮水', icon: 'cup', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
 
     { id: 'diet', name: '饮食', icon: 'food', visible: false, order: 15, navigate: 'navigateToDiet' },
 

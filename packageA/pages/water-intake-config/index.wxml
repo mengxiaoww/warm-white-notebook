@@ -56,7 +56,7 @@
             <view class="indicator-info">
               <view class="indicator-name">水</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">饮水量</text>
+                <text class="indicator-fullname">饮水</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>
