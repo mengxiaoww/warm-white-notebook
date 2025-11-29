@@ -53,9 +53,9 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: true, order: 13, navigate: 'navigateToBodyMeasurement' },
 
-    { id: 'waterIntake', name: '饮水', icon: 'cup', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
+    { id: 'water', name: '饮水', icon: 'cup', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
 
-    { id: 'diet', name: '饮食', icon: 'food', visible: false, order: 15, navigate: 'navigateToDiet' },
+    { id: 'diet', name: '饮食', icon: 'discount', visible: false, order: 15, navigate: 'navigateToDiet' },
 
     { id: 'temperature', name: '体温', icon: 'thermometer', visible: false, order: 16, navigate: 'navigateToTemperature' },
 
@@ -11460,8 +11460,8 @@ Page({
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
-          'waterIntake': 'cup',
-          'diet': 'food',
+          'water': 'cup',
+          'diet': 'discount',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
@@ -11722,8 +11722,8 @@ Page({
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
-          'waterIntake': 'cup',
-          'diet': 'food',
+          'water': 'cup',
+          'diet': 'discount',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
