@@ -230,7 +230,7 @@
               </view>
             </block>
             <!-- 饮水数据展示 - 统一单值显示样式 -->
-            <block wx:elif="{{item.id === 'water' && selectedDateData.waterData}}">
+            <block wx:elif="{{(item.id === 'water' || item.id === 'waterIntake') && selectedDateData.waterData}}">
               <view class="ldh-single-data">
                 <view class="ldh-header">
                   <view class="ldh-label">饮水量</view>
