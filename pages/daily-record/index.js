@@ -11461,6 +11461,7 @@ Page({
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
           'water': 'tea',
+          'waterIntake': 'tea',  // 兼容旧 id
           'diet': 'bread',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
@@ -11723,6 +11724,7 @@ Page({
           'bloodPressure': 'blood-pressure',
           'bodyMeasurement': 'dashboard',
           'water': 'tea',
+          'waterIntake': 'tea',  // 兼容旧 id
           'diet': 'bread',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
