@@ -10565,7 +10565,10 @@ Page({
 
       console.log('✅ 数据设置完成 - selectedDateData:', selectedDateData)
       console.log('✅ waterData:', selectedDateData.waterData)
-      console.log('✅ 当前mainPageFunctions:', this.data.mainPageFunctions.map(f => ({id: f.id, name: f.name, visible: f.visible, dataKey: f.dataKey})))
+      console.log('✅ 当前mainPageFunctions数量:', this.data.mainPageFunctions.length)
+      this.data.mainPageFunctions.forEach((f, index) => {
+        console.log(`  [${index}] id=${f.id}, name=${f.name}, visible=${f.visible}, dataKey=${f.dataKey}`)
+      })
 
 
 
