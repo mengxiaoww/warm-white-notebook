@@ -560,6 +560,11 @@ Page({
         // 应用数据库中的选中状态
         Object.assign(finalSelectedIndicators, config.selectedIndicators || {});
 
+        // 🔧 兼容旧字段名：temp -> temperature
+        if (config.selectedIndicators && config.selectedIndicators.temp !== undefined) {
+          finalSelectedIndicators.temperature = config.selectedIndicators.temp;
+        }
+
         // 🔧 对于自定义指标，如果数据库中没有配置，默认为不选中状态
         customIndicators.forEach(indicator => {
           if (finalSelectedIndicators[indicator.id] === undefined) {
