@@ -10543,6 +10543,11 @@ Page({
         console.log('  - 无用药数据')
       }
 
+      console.log('💧 饮水数据 for', dateStr, ':', waterData)
+      console.log('🍽️ 饮食数据 for', dateStr, ':', dietData)
+      console.log('🌡️ 体温数据 for', dateStr, ':', temperatureData)
+      console.log('📏 身高体重数据 for', dateStr, ':', bodyMeasurementData)
+
 
 
 
