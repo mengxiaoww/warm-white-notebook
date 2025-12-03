@@ -57,7 +57,12 @@ Page({
     isLoggedIn: false,
 
     // 当前聚焦的输入框索引（用于键盘切换）
-    focusIndex: -1
+    focusIndex: -1,
+
+    // AI识别相关
+    aiResultVisible: false,  // AI结果弹窗显示状态
+    aiRecognizedData: [],    // AI识别的数据
+    currentImagePath: ''     // 当前识别的图片路径
   },
 
   // 页面初始化
@@ -2899,8 +2904,240 @@ Page({
         });
       }
     });
-  }
-  ,
+  },
+
+  // ==================== AI识别功能 ====================
+
+  // 显示AI识别选项
+  showAIIdentifyOptions() {
+    wx.showActionSheet({
+      itemList: ['拍照识别', '从相册选择'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.handleAIImageInput('camera');
+        } else if (res.tapIndex === 1) {
+          this.handleAIImageInput('album');
+        }
+      }
+    });
+  },
+
+  // 处理AI图片输入
+  handleAIImageInput(sourceType) {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: [sourceType],
+      success: async (res) => {
+        const imagePath = res.tempFilePaths[0];
+        this.setData({ currentImagePath: imagePath });
+
+        wx.showLoading({
+          title: 'AI识别中...',
+          mask: true
+        });
+
+        try {
+          // 1. OCR识别图片文字
+          const ocrResult = await this.performOCR(imagePath);
+
+          if (!ocrResult || ocrResult.length === 0) {
+            wx.hideLoading();
+            wx.showToast({
+              title: '未识别到文字',
+              icon: 'none'
+            });
+            return;
+          }
+
+          // 2. 使用AI解析血常规数据
+          const parsedData = await this.parseBloodTestWithAI(ocrResult);
+
+          wx.hideLoading();
+
+          if (!parsedData || parsedData.length === 0) {
+            wx.showToast({
+              title: '未识别到血常规数据',
+              icon: 'none'
+            });
+            return;
+          }
+
+          // 3. 显示识别结果
+          this.setData({
+            aiRecognizedData: parsedData,
+            aiResultVisible: true
+          });
+
+        } catch (error) {
+          wx.hideLoading();
+          console.error('AI识别失败:', error);
+          wx.showToast({
+            title: 'AI识别失败，请重试',
+            icon: 'none'
+          });
+        }
+      }
+    });
+  },
+
+  // 使用AI解析血常规数据
+  async parseBloodTestWithAI(ocrItems) {
+    try {
+      // 提取OCR文本
+      const ocrText = ocrItems.map(item => item.text).join('\n');
+
+      console.log('📋 OCR识别文本:', ocrText);
+
+      // 调用AI云函数解析
+      const res = await wx.cloud.callFunction({
+        name: 'callSiliconFlowAI',
+        data: {
+          messages: [
+            {
+              role: 'system',
+              content: `你是一个专业的医疗数据解析助手。你的任务是从血常规检验报告的OCR文本中提取关键指标数据。
+
+**识别规则**：
+1. 只提取以下血常规指标（如果存在）：
+   - WBC/白细胞（单位：×10⁹/L）
+   - NEUT#/中性粒细胞数（单位：×10⁹/L，注意不是百分比NEUT%）
+   - HGB/血红蛋白（单位：g/L）
+   - PLT/血小板（单位：×10⁹/L）
+   - RBC/红细胞（单位：×10¹²/L）
+   - LYMPH#/淋巴细胞绝对值（单位：×10⁹/L）
+   - MONO#/单核细胞绝对值（单位：×10⁹/L）
+   - CRP/C反应蛋白（单位：mg/L）
+
+2. 跳过百分比指标（如NEUT%、LYMPH%等）
+
+3. 对于每个识别的指标，评估识别置信度（0-100分）
+
+4. 返回JSON格式：
+{
+  "indicators": [
+    {
+      "id": "wbc",
+      "label": "白细胞",
+      "value": "5.2",
+      "unit": "×10⁹/L",
+      "confidence": 95
+    }
+  ]
+}
+
+**重要**：
+- 只返回JSON，不要任何其他说明文字
+- value必须是纯数字字符串
+- confidence必须是0-100的整数
+- 如果某个指标无法识别或不存在，不要包含在结果中`
+            },
+            {
+              role: 'user',
+              content: `请从以下血常规报告OCR文本中提取数据：\n\n${ocrText}`
+            }
+          ]
+        }
+      });
+
+      console.log('🤖 AI解析响应:', res.result);
+
+      if (!res.result || !res.result.reply) {
+        throw new Error('AI响应格式错误');
+      }
+
+      // 解析AI返回的JSON
+      let aiResponse = res.result.reply;
+
+      // 清理可能的markdown代码块标记
+      aiResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+      const parsed = JSON.parse(aiResponse);
+
+      if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
+        throw new Error('AI返回数据格式错误');
+      }
+
+      console.log('✅ AI解析结果:', parsed.indicators);
+
+      // 根据置信度给进度条上色
+      const result = parsed.indicators.map(item => ({
+        ...item,
+        confidenceColor: item.confidence >= 80 ? '#10b981' :
+                        item.confidence >= 60 ? '#f59e0b' : '#ef4444'
+      }));
+
+      return result;
+
+    } catch (error) {
+      console.error('AI解析失败:', error);
+      throw error;
+    }
+  },
+
+  // 确认AI识别结果并填充表单
+  confirmAIResult() {
+    const { aiRecognizedData, formData } = this.data;
+
+    if (!aiRecognizedData || aiRecognizedData.length === 0) {
+      return;
+    }
+
+    // 创建新的表单数据
+    const newFormData = { ...formData };
+    let fillCount = 0;
+
+    // 填充识别到的数据
+    aiRecognizedData.forEach(item => {
+      if (item.id && item.value) {
+        newFormData[item.id] = item.value;
+        fillCount++;
+      }
+    });
+
+    // 更新表单
+    this.setData({
+      formData: newFormData,
+      aiResultVisible: false,
+      aiRecognizedData: []
+    });
+
+    wx.showToast({
+      title: `已填充${fillCount}个指标`,
+      icon: 'success'
+    });
+  },
+
+  // 重新识别
+  retryAIIdentify() {
+    this.setData({
+      aiResultVisible: false,
+      aiRecognizedData: []
+    });
+
+    // 延迟一下再打开选择器，避免UI冲突
+    setTimeout(() => {
+      this.showAIIdentifyOptions();
+    }, 300);
+  },
+
+  // 关闭AI结果弹窗
+  onAIResultClose(e) {
+    // 处理t-popup的visible-change事件
+    if (e && e.detail && e.detail.visible === false) {
+      this.setData({
+        aiResultVisible: false,
+        aiRecognizedData: []
+      });
+    } else if (!e || !e.detail) {
+      // 直接调用关闭
+      this.setData({
+        aiResultVisible: false,
+        aiRecognizedData: []
+      });
+    }
+  },
+
   // 分享功能
   async onShareAppMessage() {
     const fileID = 'cloud://cloud1-9gzf2w8c9c9b7b73.636c-cloud1-9gzf2w8c9c9b7b73-1364697418/Logo/LOGO2.png'
