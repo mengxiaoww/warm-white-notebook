@@ -100,32 +100,23 @@
   letter-spacing: 0.5rpx;
 }
 
-/* AI识别按钮 - 精致暖金色设计 */
-.ai-identify-btn-wrapper {
+/* AI智能导入按钮 - 胶囊式高级设计 */
+.ai-smart-import-btn {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8rpx;
-}
-
-.ai-identify-btn {
-  position: relative;
-  width: 96rpx;
-  height: 96rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 16rpx;
+  padding: 16rpx 24rpx;
   background: linear-gradient(135deg, #FFB84D 0%, #FF9F40 50%, #FFA500 100%);
-  border-radius: 50%;
+  border-radius: 48rpx;
   box-shadow:
-    0 8rpx 24rpx rgba(255, 152, 0, 0.35),
-    0 4rpx 12rpx rgba(255, 184, 77, 0.25),
+    0 8rpx 24rpx rgba(255, 152, 0, 0.4),
+    0 4rpx 12rpx rgba(255, 184, 77, 0.3),
     inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
-    inset 0 2rpx 8rpx rgba(255, 255, 255, 0.3);
+    inset 0 2rpx 8rpx rgba(255, 255, 255, 0.4);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  animation: ai-pulse 2s ease-in-out infinite;
+  animation: smart-pulse 3s ease-in-out infinite;
 }
 
 /* 发光效果 */
@@ -135,84 +126,101 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
-  animation: rotate-glow 3s linear infinite;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  animation: rotate-glow 4s linear infinite;
   pointer-events: none;
 }
 
 @keyframes rotate-glow {
-  0% {
-    transform: rotate(0deg);
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes smart-pulse {
+  0%, 100% {
+    box-shadow:
+      0 8rpx 24rpx rgba(255, 152, 0, 0.4),
+      0 4rpx 12rpx rgba(255, 184, 77, 0.3),
+      inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
+      inset 0 2rpx 8rpx rgba(255, 255, 255, 0.4);
+    transform: translateY(0);
   }
-  100% {
-    transform: rotate(360deg);
+  50% {
+    box-shadow:
+      0 12rpx 32rpx rgba(255, 152, 0, 0.5),
+      0 6rpx 16rpx rgba(255, 184, 77, 0.4),
+      0 0 40rpx rgba(255, 184, 77, 0.3),
+      inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
+      inset 0 2rpx 8rpx rgba(255, 255, 255, 0.5);
+    transform: translateY(-2rpx);
   }
 }
 
-.ai-btn-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rpx;
-}
-
-.ai-identify-btn:active {
-  transform: scale(0.92);
+.ai-smart-import-btn:active {
+  transform: scale(0.96) translateY(2rpx);
   box-shadow:
-    0 4rpx 16rpx rgba(255, 152, 0, 0.4),
-    0 2rpx 8rpx rgba(255, 184, 77, 0.3),
+    0 4rpx 16rpx rgba(255, 152, 0, 0.45),
+    0 2rpx 8rpx rgba(255, 184, 77, 0.35),
     inset 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
   animation: none;
 }
 
-/* 闪烁动画 */
-@keyframes ai-pulse {
-  0%, 100% {
-    box-shadow:
-      0 8rpx 24rpx rgba(255, 152, 0, 0.35),
-      0 4rpx 12rpx rgba(255, 184, 77, 0.25),
-      inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
-      inset 0 2rpx 8rpx rgba(255, 255, 255, 0.3);
-  }
-  50% {
-    box-shadow:
-      0 12rpx 32rpx rgba(255, 152, 0, 0.45),
-      0 6rpx 16rpx rgba(255, 184, 77, 0.35),
-      0 0 32rpx rgba(255, 184, 77, 0.3),
-      inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
-      inset 0 2rpx 8rpx rgba(255, 255, 255, 0.4);
-  }
+/* 图标组 */
+.ai-btn-icon-group {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 32rpx;
+  backdrop-filter: blur(8rpx);
 }
 
-.ai-btn-text {
-  font-size: 22rpx;
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.icon-separator {
+  width: 2rpx;
+  height: 24rpx;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 1rpx;
+}
+
+/* 文字标签组 */
+.ai-btn-label-group {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.ai-label-main {
+  font-size: 28rpx;
   font-weight: 700;
   color: white;
-  letter-spacing: 0.5rpx;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+  letter-spacing: 1rpx;
+  text-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.25);
   line-height: 1;
 }
 
-/* AI按钮提示文字 */
-.ai-btn-hint {
-  font-size: 22rpx;
-  color: #FF9F40;
+.ai-label-sub {
+  font-size: 20rpx;
   font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
   letter-spacing: 0.5rpx;
-  text-shadow: 0 1rpx 2rpx rgba(255, 159, 64, 0.3);
-  white-space: nowrap;
-  animation: hint-pulse 2s ease-in-out infinite;
-}
-
-@keyframes hint-pulse {
-  0%, 100% {
-    opacity: 0.85;
-  }
-  50% {
-    opacity: 1;
-  }
+  text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.2);
+  line-height: 1;
 }
 
 /* 快捷输入按钮 */

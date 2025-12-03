@@ -25,16 +25,22 @@
         <text class="date-text">{{selectedDate}}</text>
         <t-icon name="caret-down" size="24rpx" color="#666" />
       </view>
-      <!-- AI识别按钮 -->
-      <view class="ai-identify-btn-wrapper">
-        <view class="ai-identify-btn" bindtap="showAIIdentifyOptions">
-          <view class="ai-btn-glow"></view>
-          <view class="ai-btn-content">
-            <t-icon name="camera" size="36rpx" color="white" />
-            <text class="ai-btn-text">AI</text>
+      <!-- AI智能导入按钮 -->
+      <view class="ai-smart-import-btn" bindtap="showAIIdentifyOptions">
+        <view class="ai-btn-glow"></view>
+        <view class="ai-btn-icon-group">
+          <view class="icon-wrapper">
+            <t-icon name="photo" size="32rpx" color="white" />
+          </view>
+          <view class="icon-separator"></view>
+          <view class="icon-wrapper">
+            <t-icon name="sound" size="32rpx" color="white" />
           </view>
         </view>
-        <text class="ai-btn-hint">拍照识别</text>
+        <view class="ai-btn-label-group">
+          <text class="ai-label-main">AI智能导入</text>
+          <text class="ai-label-sub">拍照 • 语音</text>
+        </view>
       </view>
     </view>
     <!-- 血常规指标列表 -->
