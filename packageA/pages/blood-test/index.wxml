@@ -128,13 +128,64 @@
     </view>
   </t-popup>
 
+  <!-- 语音录音弹窗 -->
+  <t-popup visible="{{voiceRecordingVisible}}" bind:visible-change="onVoiceRecordClose" placement="bottom" show-overlay="{{true}}">
+    <view class="voice-record-popup">
+      <!-- 录音标题 -->
+      <view class="voice-record-header">
+        <text class="voice-record-title">{{isRecording ? '正在录音...' : '准备录音'}}</text>
+        <view class="voice-close-btn" catchtap="onVoiceRecordClose">
+          <t-icon name="close" size="28rpx" color="#666" />
+        </view>
+      </view>
+
+      <!-- 录音动画区域 -->
+      <view class="voice-record-animation">
+        <view class="voice-wave-container">
+          <view class="voice-wave {{isRecording ? 'recording' : ''}}"></view>
+          <view class="voice-wave {{isRecording ? 'recording' : ''}}"></view>
+          <view class="voice-wave {{isRecording ? 'recording' : ''}}"></view>
+        </view>
+        <view class="voice-icon-wrapper">
+          <t-icon name="sound" size="80rpx" color="{{isRecording ? '#FF9800' : '#ccc'}}" />
+        </view>
+      </view>
+
+      <!-- 录音时长显示 -->
+      <view class="voice-duration">
+        <text class="duration-text">{{recordDuration}}s</text>
+      </view>
+
+      <!-- 提示文字 -->
+      <view class="voice-hint">
+        <text class="hint-text">{{isRecording ? '请描述您的血常规数据' : '点击开始录音'}}</text>
+        <text class="hint-subtext">例如：白细胞5点2，血红蛋白134，血小板259</text>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="voice-record-actions">
+        <view class="voice-action-btn cancel" bindtap="cancelRecording" wx:if="{{isRecording}}">
+          <t-icon name="close" size="32rpx" color="#666" />
+          <text>取消</text>
+        </view>
+        <view class="voice-action-btn record {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording">
+          <t-icon name="{{isRecording ? 'check' : 'sound'}}" size="48rpx" color="white" />
+          <text>{{isRecording ? '完成录音' : '开始录音'}}</text>
+        </view>
+      </view>
+
+      <!-- 底部安全距离 -->
+      <view class="voice-safe-area"></view>
+    </view>
+  </t-popup>
+
   <!-- AI识别结果预览弹窗 -->
   <t-popup visible="{{aiResultVisible}}" bind:visible-change="onAIResultClose" placement="bottom" show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
     <view class="ai-result-popup">
       <!-- 标题栏 -->
       <view class="ai-result-header">
         <view class="ai-header-left">
-          <t-icon name="check-circle" size="40rpx" color="#7c3aed" />
+          <t-icon name="check-circle" size="40rpx" color="#FF9800" />
           <text class="ai-result-title">AI识别结果</text>
         </view>
         <view class="ai-close-btn" catchtap="onAIResultClose">

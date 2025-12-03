@@ -694,6 +694,192 @@ page .t-picker__confirm:active {
   background: white;
 }
 
+/* 语音录音弹窗 */
+.voice-record-popup {
+  background: white;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 0;
+  min-height: 600rpx;
+}
+
+.voice-record-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 32rpx 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.voice-record-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.voice-close-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f5f5f5;
+  transition: all 0.2s;
+}
+
+.voice-close-btn:active {
+  background: #e0e0e0;
+  transform: scale(0.95);
+}
+
+/* 录音动画区域 */
+.voice-record-animation {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.voice-wave-container {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voice-wave {
+  position: absolute;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0) 70%);
+  opacity: 0;
+}
+
+.voice-wave.recording {
+  animation: voice-pulse 2s ease-out infinite;
+}
+
+.voice-wave:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.voice-wave:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+@keyframes voice-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.voice-icon-wrapper {
+  z-index: 10;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFF5EB 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 152, 0, 0.2);
+  transition: all 0.3s;
+}
+
+/* 录音时长显示 */
+.voice-duration {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.duration-text {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #FF9800;
+  font-family: 'DIN Alternate', 'SF Pro Display', -apple-system, sans-serif;
+}
+
+/* 提示文字 */
+.voice-hint {
+  text-align: center;
+  padding: 0 60rpx;
+  margin-bottom: 60rpx;
+}
+
+.hint-text {
+  display: block;
+  font-size: 30rpx;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+}
+
+.hint-subtext {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+}
+
+/* 操作按钮 */
+.voice-record-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 0 32rpx 24rpx;
+}
+
+.voice-action-btn {
+  flex: 1;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.voice-action-btn.cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.voice-action-btn.cancel:active {
+  background: #e0e0e0;
+  transform: scale(0.98);
+}
+
+.voice-action-btn.record {
+  background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);
+  color: white;
+  box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.35);
+  flex: 2;
+}
+
+.voice-action-btn.record.recording {
+  background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+  box-shadow: 0 4rpx 16rpx rgba(76, 175, 80, 0.35);
+}
+
+.voice-action-btn.record:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 12rpx rgba(255, 152, 0, 0.4);
+}
+
+.voice-safe-area {
+  height: env(safe-area-inset-bottom);
+  background: white;
+}
+
 /* 日期选择器容器 */
 .t-date-time-picker .t-popup__content {
   border-radius: 24rpx 24rpx 0 0 !important;
@@ -706,6 +892,9 @@ page .t-picker__confirm:active {
   max-height: 80vh;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* 弹窗标题栏 */
@@ -715,6 +904,7 @@ page .t-picker__confirm:active {
   justify-content: space-between;
   padding: 32rpx 32rpx 24rpx;
   border-bottom: 1rpx solid #f0f0f0;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.03) 0%, rgba(255, 184, 77, 0.05) 100%);
 }
 
 .ai-header-left {
@@ -750,16 +940,20 @@ page .t-picker__confirm:active {
   flex: 1;
   padding: 24rpx 32rpx;
   max-height: 50vh;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* 识别结果项 */
 .ai-result-item {
-  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+  background: linear-gradient(135deg, #FFF8F0 0%, #FFF5EB 100%);
   border-radius: 20rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
-  border: 1rpx solid rgba(124, 58, 237, 0.1);
-  box-shadow: 0 2rpx 8rpx rgba(124, 58, 237, 0.05);
+  border: 1rpx solid rgba(255, 152, 0, 0.15);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.08);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ai-item-header {
@@ -767,23 +961,28 @@ page .t-picker__confirm:active {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12rpx;
+  flex-wrap: wrap;
+  gap: 8rpx;
 }
 
 .ai-item-name {
   font-size: 28rpx;
   color: #666;
   font-weight: 500;
+  flex: 1;
+  min-width: 120rpx;
+  word-break: break-all;
 }
 
 .ai-confidence-badge {
   padding: 4rpx 12rpx;
-  background: rgba(124, 58, 237, 0.1);
+  background: rgba(255, 152, 0, 0.12);
   border-radius: 12rpx;
 }
 
 .confidence-text {
   font-size: 22rpx;
-  color: #7c3aed;
+  color: #FF9800;
   font-weight: 600;
 }
 
@@ -792,6 +991,7 @@ page .t-picker__confirm:active {
   align-items: baseline;
   gap: 8rpx;
   margin-bottom: 12rpx;
+  flex-wrap: wrap;
 }
 
 .value-number {
@@ -799,6 +999,7 @@ page .t-picker__confirm:active {
   font-weight: 700;
   color: #333;
   font-family: 'DIN Alternate', 'SF Pro Display', -apple-system, sans-serif;
+  word-break: break-all;
 }
 
 .value-unit {
@@ -879,12 +1080,12 @@ page .t-picker__confirm:active {
 }
 
 .ai-action-btn.primary {
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);
   color: white;
-  box-shadow: 0 4rpx 16rpx rgba(124, 58, 237, 0.3);
+  box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.35);
 }
 
 .ai-action-btn.primary:active {
   transform: scale(0.98);
-  box-shadow: 0 2rpx 12rpx rgba(124, 58, 237, 0.4);
+  box-shadow: 0 2rpx 12rpx rgba(255, 152, 0, 0.4);
 }

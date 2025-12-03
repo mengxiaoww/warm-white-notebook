@@ -63,7 +63,14 @@ Page({
     aiImportMenuVisible: false, // AI导入方式选择弹窗
     aiResultVisible: false,  // AI结果弹窗显示状态
     aiRecognizedData: [],    // AI识别的数据
-    currentImagePath: ''     // 当前识别的图片路径
+    currentImagePath: '',     // 当前识别的图片路径
+
+    // 语音录音相关
+    voiceRecordingVisible: false, // 语音录音弹窗显示状态
+    isRecording: false,           // 是否正在录音
+    recordDuration: 0,            // 录音时长（秒）
+    recorderManager: null,        // 录音管理器
+    durationTimer: null           // 录音计时器
   },
 
   // 页面初始化
@@ -2937,11 +2944,363 @@ Page({
 
   // 语音输入
   handleAIVoice() {
-    this.setData({ aiImportMenuVisible: false });
-    wx.showToast({
-      title: '语音输入功能开发中',
-      icon: 'none'
+    this.setData({
+      aiImportMenuVisible: false,
+      voiceRecordingVisible: true,
+      isRecording: false,
+      recordDuration: 0
     });
+
+    // 初始化录音管理器
+    if (!this.data.recorderManager) {
+      const recorderManager = wx.getRecorderManager();
+
+      // 监听录音开始
+      recorderManager.onStart(() => {
+        console.log('📢 录音开始');
+        this.setData({ isRecording: true });
+
+        // 开始计时
+        this.startDurationTimer();
+      });
+
+      // 监听录音结束
+      recorderManager.onStop((res) => {
+        console.log('📢 录音结束，文件路径:', res.tempFilePath);
+        this.stopDurationTimer();
+
+        // 处理录音文件
+        this.handleVoiceRecordComplete(res.tempFilePath);
+      });
+
+      // 监听录音错误
+      recorderManager.onError((error) => {
+        console.error('📢 录音错误:', error);
+        this.stopDurationTimer();
+        this.setData({
+          isRecording: false,
+          voiceRecordingVisible: false
+        });
+
+        wx.showToast({
+          title: '录音失败，请重试',
+          icon: 'none'
+        });
+      });
+
+      this.setData({ recorderManager });
+    }
+  },
+
+  // 开始/停止录音切换
+  toggleRecording() {
+    const { isRecording, recorderManager } = this.data;
+
+    if (!isRecording) {
+      // 开始录音
+      recorderManager.start({
+        duration: 60000, // 最长60秒
+        sampleRate: 16000,
+        numberOfChannels: 1,
+        encodeBitRate: 48000,
+        format: 'mp3'
+      });
+    } else {
+      // 停止录音
+      recorderManager.stop();
+    }
+  },
+
+  // 取消录音
+  cancelRecording() {
+    const { recorderManager } = this.data;
+
+    if (recorderManager) {
+      recorderManager.stop();
+    }
+
+    this.stopDurationTimer();
+    this.setData({
+      isRecording: false,
+      voiceRecordingVisible: false,
+      recordDuration: 0
+    });
+  },
+
+  // 关闭语音录音弹窗
+  onVoiceRecordClose() {
+    const { isRecording } = this.data;
+
+    if (isRecording) {
+      // 如果正在录音，先停止
+      this.cancelRecording();
+    } else {
+      this.setData({
+        voiceRecordingVisible: false,
+        recordDuration: 0
+      });
+    }
+  },
+
+  // 开始录音计时
+  startDurationTimer() {
+    this.stopDurationTimer(); // 先清除可能存在的计时器
+
+    const timer = setInterval(() => {
+      this.setData({
+        recordDuration: this.data.recordDuration + 1
+      });
+    }, 1000);
+
+    this.setData({ durationTimer: timer });
+  },
+
+  // 停止录音计时
+  stopDurationTimer() {
+    const { durationTimer } = this.data;
+
+    if (durationTimer) {
+      clearInterval(durationTimer);
+      this.setData({ durationTimer: null });
+    }
+  },
+
+  // 处理录音完成
+  async handleVoiceRecordComplete(tempFilePath) {
+    console.log('📢 开始处理录音文件:', tempFilePath);
+
+    // 关闭录音弹窗
+    this.setData({
+      isRecording: false,
+      voiceRecordingVisible: false
+    });
+
+    wx.showLoading({
+      title: '正在识别...',
+      mask: true
+    });
+
+    try {
+      // 调用微信语音识别API
+      const recognizeResult = await wx.cloud.callFunction({
+        name: 'callSiliconFlowAI',
+        data: {
+          mode: 'voice-to-text',
+          audioPath: tempFilePath
+        }
+      });
+
+      console.log('🎤 语音识别结果:', recognizeResult);
+
+      if (!recognizeResult || !recognizeResult.result || !recognizeResult.result.text) {
+        throw new Error('语音识别失败');
+      }
+
+      const voiceText = recognizeResult.result.text;
+      console.log('📝 识别的文字:', voiceText);
+
+      // 使用AI解析语音文字
+      const parsedData = await this.parseVoiceTextWithAI(voiceText);
+
+      wx.hideLoading();
+
+      if (!parsedData || parsedData.length === 0) {
+        wx.showToast({
+          title: '未识别到有效数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      // 显示识别结果
+      this.setData({
+        aiRecognizedData: parsedData,
+        aiResultVisible: true
+      });
+
+    } catch (error) {
+      wx.hideLoading();
+      console.error('语音识别失败:', error);
+
+      wx.showToast({
+        title: '语音识别失败，请重试',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 使用AI解析语音文字
+  async parseVoiceTextWithAI(voiceText) {
+    try {
+      // 获取当前页面配置的所有指标（基础+自定义）
+      const { displayedBasicIndicators, customIndicators } = this.data;
+
+      // 构建指标列表描述
+      const allIndicators = [
+        ...displayedBasicIndicators.map(item => ({
+          id: item.id,
+          name: item.name,
+          unit: item.unit
+        })),
+        ...(customIndicators || []).map(item => ({
+          id: item.id,
+          name: item.name,
+          unit: item.unit
+        }))
+      ];
+
+      // 构建指标描述文本
+      const indicatorDesc = allIndicators.map(item =>
+        `   - ${item.name}（id: ${item.id}，单位：${item.unit}）`
+      ).join('\n');
+
+      console.log('📋 当前页面配置的指标:', allIndicators);
+      console.log('🎤 语音文字:', voiceText);
+
+      // 调用AI云函数解析语音文字
+      const res = await wx.cloud.callFunction({
+        name: 'callSiliconFlowAI',
+        data: {
+          messages: [
+            {
+              role: 'system',
+              content: `你是一个专业的医疗数据识别助手。你的任务是从用户的语音描述中提取血常规指标数据。
+
+**当前页面需要识别的指标**：
+${indicatorDesc}
+
+**识别规则**：
+1. 从用户的语音文字中提取上述指标的数值
+2. 智能匹配指标名称，例如：
+   - "白细胞5点2" → 白细胞: 5.2
+   - "血红蛋白134" → 血红蛋白: 134
+   - "血小板两百五" → 血小板: 250
+3. 识别各种口语表达：
+   - "点"代表小数点
+   - "五点二"="5.2"
+   - "一百三十四"="134"
+   - "两百五"="250"
+4. 对于每个识别的指标，给予95的置信度
+
+**返回格式**（必须严格遵守）：
+{
+  "indicators": [
+    {
+      "id": "wbc",
+      "label": "白细胞",
+      "value": "5.2",
+      "unit": "×10⁹/L",
+      "confidence": 95
+    }
+  ]
+}
+
+**重要**：
+- 只返回JSON，不要有任何其他文字
+- 如果没有识别到任何指标，返回空数组：{"indicators": []}`
+            },
+            {
+              role: 'user',
+              content: `请从以下语音识别的文字中提取血常规数据：\n\n${voiceText}`
+            }
+          ],
+          mode: 'unified',
+          stream: false
+        },
+        config: {
+          timeout: 30000  // 30秒超时
+        }
+      });
+
+      console.log('🤖 AI解析响应:', res.result);
+
+      if (!res.result || (!res.result.reply && !res.result.content)) {
+        throw new Error('AI响应格式错误');
+      }
+
+      // 解析AI返回的JSON - 兼容reply和content两种字段
+      let aiResponse = res.result.reply || res.result.content;
+
+      console.log('📝 原始AI响应:', aiResponse);
+
+      // 清理可能的markdown代码块标记（包括换行符）
+      aiResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+
+      // 清理可能的json=前缀（有些AI模型会返回这种格式）
+      if (aiResponse.startsWith('json=')) {
+        aiResponse = aiResponse.substring(5);
+      }
+
+      console.log('🧹 清理后的响应:', aiResponse);
+
+      const parsed = JSON.parse(aiResponse);
+
+      console.log('📦 解析后的数据:', parsed);
+
+      // 兼容两种返回格式：indicators数组 或 values对象
+      let indicators = [];
+
+      if (parsed.indicators && Array.isArray(parsed.indicators)) {
+        // 格式1: {indicators: [{id, label, value, unit, confidence}]}
+        indicators = parsed.indicators;
+      } else if (parsed.values && typeof parsed.values === 'object') {
+        // 格式2: {values: {"白细胞": 5.2, ...}}
+        indicators = Object.entries(parsed.values).map(([label, value]) => ({
+          id: '',
+          label: label,
+          value: value,
+          unit: '',
+          confidence: 95
+        }));
+      } else {
+        throw new Error('AI返回数据格式不支持');
+      }
+
+      console.log('✅ AI识别结果:', indicators);
+
+      // 已经在函数开头获取了 displayedBasicIndicators 和 customIndicators
+      const allConfiguredIndicators = [
+        ...displayedBasicIndicators,
+        ...(customIndicators || [])
+      ];
+
+      console.log('📋 当前配置的指标:', allConfiguredIndicators);
+
+      // 只保留能匹配到当前配置项的指标
+      const matchedIndicators = indicators.filter(aiItem => {
+        // 尝试匹配基础指标
+        const matchedBasic = allConfiguredIndicators.some(indicator =>
+          aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
+        );
+
+        if (matchedBasic) {
+          console.log(`✅ 匹配成功: ${aiItem.label}`);
+          return true;
+        } else {
+          console.log(`❌ 未匹配: ${aiItem.label}`);
+          return false;
+        }
+      });
+
+      console.log('🎯 过滤后的匹配指标:', matchedIndicators);
+
+      if (matchedIndicators.length === 0) {
+        throw new Error('未识别到当前配置项的数据');
+      }
+
+      // 根据置信度给进度条上色（使用暖色调：橙色系）
+      const result = matchedIndicators.map(item => ({
+        ...item,
+        confidenceColor: item.confidence >= 80 ? '#FF9800' :  // 橙色
+                        item.confidence >= 60 ? '#FFB84D' : '#FFA726'  // 淡橙色
+      }));
+
+      return result;
+
+    } catch (error) {
+      console.error('语音解析失败:', error);
+      throw error;
+    }
   },
 
   // 处理AI图片输入
@@ -3094,29 +3453,86 @@ ${indicatorDesc}
 
       console.log('🤖 AI识别响应:', res.result);
 
-      if (!res.result || !res.result.reply) {
+      if (!res.result || (!res.result.reply && !res.result.content)) {
         throw new Error('AI响应格式错误');
       }
 
-      // 解析AI返回的JSON
-      let aiResponse = res.result.reply;
+      // 解析AI返回的JSON - 兼容reply和content两种字段
+      let aiResponse = res.result.reply || res.result.content;
 
-      // 清理可能的markdown代码块标记
-      aiResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      console.log('📝 原始AI响应:', aiResponse);
+
+      // 清理可能的markdown代码块标记（包括换行符）
+      aiResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+
+      // 清理可能的json=前缀（有些AI模型会返回这种格式）
+      if (aiResponse.startsWith('json=')) {
+        aiResponse = aiResponse.substring(5);
+      }
+
+      console.log('🧹 清理后的响应:', aiResponse);
 
       const parsed = JSON.parse(aiResponse);
 
-      if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
-        throw new Error('AI返回数据格式错误');
+      console.log('📦 解析后的数据:', parsed);
+
+      // 兼容两种返回格式：indicators数组 或 values对象
+      let indicators = [];
+
+      if (parsed.indicators && Array.isArray(parsed.indicators)) {
+        // 格式1: {indicators: [{id, label, value, unit, confidence}]}
+        indicators = parsed.indicators;
+      } else if (parsed.values && typeof parsed.values === 'object') {
+        // 格式2: {values: {"白细胞计数": 6.18, ...}}
+        // 需要将values对象转换为indicators数组
+        indicators = Object.entries(parsed.values).map(([label, value]) => ({
+          id: '', // 稍后通过匹配来确定
+          label: label,
+          value: value,
+          unit: '', // 稍后通过匹配来确定
+          confidence: 95 // AI直接识别的值，给予较高置信度
+        }));
+      } else {
+        throw new Error('AI返回数据格式不支持');
       }
 
-      console.log('✅ AI识别结果:', parsed.indicators);
+      console.log('✅ AI识别结果:', indicators);
 
-      // 根据置信度给进度条上色
-      const result = parsed.indicators.map(item => ({
+      // 已经在函数开头获取了 displayedBasicIndicators 和 customIndicators
+      const allConfiguredIndicators = [
+        ...displayedBasicIndicators,
+        ...(customIndicators || [])
+      ];
+
+      console.log('📋 当前配置的指标:', allConfiguredIndicators);
+
+      // 只保留能匹配到当前配置项的指标
+      const matchedIndicators = indicators.filter(aiItem => {
+        // 尝试匹配基础指标
+        const matchedBasic = allConfiguredIndicators.some(indicator =>
+          aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
+        );
+
+        if (matchedBasic) {
+          console.log(`✅ 匹配成功: ${aiItem.label}`);
+          return true;
+        } else {
+          console.log(`❌ 未匹配: ${aiItem.label}`);
+          return false;
+        }
+      });
+
+      console.log('🎯 过滤后的匹配指标:', matchedIndicators);
+
+      if (matchedIndicators.length === 0) {
+        throw new Error('未识别到当前配置项的数据');
+      }
+
+      // 根据置信度给进度条上色（使用暖色调：橙色系）
+      const result = matchedIndicators.map(item => ({
         ...item,
-        confidenceColor: item.confidence >= 80 ? '#10b981' :
-                        item.confidence >= 60 ? '#f59e0b' : '#ef4444'
+        confidenceColor: item.confidence >= 80 ? '#FF9800' :  // 橙色
+                        item.confidence >= 60 ? '#FFB84D' : '#FFA726'  // 淡橙色
       }));
 
       return result;
@@ -3362,13 +3778,33 @@ ${indicatorDesc}
     // 完全匹配
     if (s1 === s2) return true;
 
-    // 包含关系匹配
-    if (s1.includes(s2) || s2.includes(s1)) return true;
-
     // 去除常见后缀再匹配（如"白细胞计数"和"白细胞"）
-    const cleanS1 = s1.replace(/(计数|数量|值|浓度|水平)$/, '');
-    const cleanS2 = s2.replace(/(计数|数量|值|浓度|水平)$/, '');
+    const cleanS1 = s1.replace(/(计数|数量|值|浓度|水平|含量|绝对值)$/, '');
+    const cleanS2 = s2.replace(/(计数|数量|值|浓度|水平|含量|绝对值)$/, '');
+
+    // 清理后完全匹配
     if (cleanS1 === cleanS2) return true;
+
+    // 特殊医学术语映射（避免"血红蛋白"匹配到"平均血红蛋白含量"）
+    const termMap = {
+      '白细胞': ['wbc', '白细胞', '白细胞计数'],
+      '中性粒细胞': ['neut', 'neut#', '中性粒细胞', '中性粒细胞数', '中性粒细胞绝对值'],
+      '淋巴细胞': ['lymph', 'lymph#', '淋巴细胞', '淋巴细胞数', '淋巴细胞绝对值'],
+      '血红蛋白': ['hgb', 'hb', '血红蛋白'],
+      '红细胞': ['rbc', '红细胞', '红细胞计数'],
+      '血小板': ['plt', '血小板', '血小板计数'],
+      '单核细胞': ['mono', 'mono#', '单核细胞', '单核细胞数', '单核细胞绝对值']
+    };
+
+    // 检查是否在同一个术语组中
+    for (const [key, terms] of Object.entries(termMap)) {
+      const keyLower = key.toLowerCase().replace(/\s+/g, '');
+      const termsLower = terms.map(t => t.toLowerCase().replace(/\s+/g, ''));
+
+      if (termsLower.includes(cleanS1) && termsLower.includes(cleanS2)) {
+        return true;
+      }
+    }
 
     return false;
   },
