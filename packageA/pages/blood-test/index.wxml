@@ -79,6 +79,55 @@
   <!-- 日期选择器 -->
   <t-date-time-picker title="选择日期" visible="{{datePickerVisible}}" mode="date" value="{{selectedDate}}" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" confirm-btn="确定" cancel-btn="取消" class="custom-date-picker" />
 
+  <!-- AI导入方式选择弹窗 -->
+  <t-popup visible="{{aiImportMenuVisible}}" bind:visible-change="onAIImportMenuClose" placement="bottom" show-overlay="{{true}}">
+    <view class="ai-import-menu">
+      <!-- 标题 -->
+      <view class="ai-menu-header">
+        <text class="ai-menu-title">选择导入方式</text>
+        <view class="ai-menu-close" catchtap="onAIImportMenuClose">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+
+      <!-- 选项列表 -->
+      <view class="ai-menu-options">
+        <view class="ai-option-item" bindtap="handleAICamera">
+          <view class="option-icon-wrapper camera">
+            <t-icon name="camera" size="48rpx" color="#FF9800" />
+          </view>
+          <view class="option-content">
+            <text class="option-title">拍照识别</text>
+            <text class="option-desc">拍摄检验报告自动识别</text>
+          </view>
+        </view>
+
+        <view class="ai-option-item" bindtap="handleAIAlbum">
+          <view class="option-icon-wrapper album">
+            <t-icon name="image" size="48rpx" color="#4CAF50" />
+          </view>
+          <view class="option-content">
+            <text class="option-title">相册选择</text>
+            <text class="option-desc">从相册选择报告图片</text>
+          </view>
+        </view>
+
+        <view class="ai-option-item" bindtap="handleAIVoice">
+          <view class="option-icon-wrapper voice">
+            <t-icon name="sound" size="48rpx" color="#2196F3" />
+          </view>
+          <view class="option-content">
+            <text class="option-title">语音输入</text>
+            <text class="option-desc">语音描述数据智能识别</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部安全距离 -->
+      <view class="ai-menu-safe-area"></view>
+    </view>
+  </t-popup>
+
   <!-- AI识别结果预览弹窗 -->
   <t-popup visible="{{aiResultVisible}}" bind:visible-change="onAIResultClose" placement="bottom" show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
     <view class="ai-result-popup">

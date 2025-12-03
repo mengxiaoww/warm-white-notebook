@@ -60,6 +60,7 @@ Page({
     focusIndex: -1,
 
     // AI识别相关
+    aiImportMenuVisible: false, // AI导入方式选择弹窗
     aiResultVisible: false,  // AI结果弹窗显示状态
     aiRecognizedData: [],    // AI识别的数据
     currentImagePath: ''     // 当前识别的图片路径
@@ -2910,15 +2911,36 @@ Page({
 
   // 显示AI识别选项
   showAIIdentifyOptions() {
-    wx.showActionSheet({
-      itemList: ['拍照识别', '从相册选择'],
-      success: (res) => {
-        if (res.tapIndex === 0) {
-          this.handleAIImageInput('camera');
-        } else if (res.tapIndex === 1) {
-          this.handleAIImageInput('album');
-        }
-      }
+    this.setData({ aiImportMenuVisible: true });
+  },
+
+  // 关闭AI导入方式选择弹窗
+  onAIImportMenuClose() {
+    this.setData({ aiImportMenuVisible: false });
+  },
+
+  // 拍照识别
+  handleAICamera() {
+    this.setData({ aiImportMenuVisible: false });
+    setTimeout(() => {
+      this.handleAIImageInput('camera');
+    }, 300);
+  },
+
+  // 相册选择
+  handleAIAlbum() {
+    this.setData({ aiImportMenuVisible: false });
+    setTimeout(() => {
+      this.handleAIImageInput('album');
+    }, 300);
+  },
+
+  // 语音输入
+  handleAIVoice() {
+    this.setData({ aiImportMenuVisible: false });
+    wx.showToast({
+      title: '语音输入功能开发中',
+      icon: 'none'
     });
   },
 
