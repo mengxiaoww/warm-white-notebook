@@ -141,7 +141,9 @@ Page({
 
     // 构建基础指标列表
     const basicIndicators = [
-      { id: 'diet', name: '饮食', unit: '份' }
+      { id: 'calories', name: '总热量', unit: 'kcal' },
+      { id: 'protein', name: '蛋白质', unit: 'g' },
+      { id: 'carbs', name: '碳水化合物', unit: 'g' }
     ];
 
     // 过滤出被选中的基础指标
@@ -292,10 +294,14 @@ Page({
       datePickerVisible: false,
       recordId: '',
       formData: {
-        diet: ''
+        calories: '',
+        protein: '',
+        carbs: ''
       },
       displayedBasicIndicators: [
-        { id: 'diet', name: '饮食', unit: '份' }
+        { id: 'calories', name: '总热量', unit: 'kcal' },
+        { id: 'protein', name: '蛋白质', unit: 'g' },
+        { id: 'carbs', name: '碳水化合物', unit: 'g' }
       ],
       customIndicators: []
     });
@@ -2002,7 +2008,9 @@ Page({
 
       // 4. 构建配置的优先级逻辑（新增继承逻辑）
       let config = {
-        diet: true
+        calories: true,
+        protein: true,
+        carbs: true
       };
 
       if (currentDateConfigRes.data.length > 0) {
@@ -2102,7 +2110,9 @@ Page({
 
       // 预设指标定义
       const defaultIndicators = {
-        diet: { name: '饮食', unit: '份' }
+        calories: { name: '总热量', unit: 'kcal' },
+        protein: { name: '蛋白质', unit: 'g' },
+        carbs: { name: '碳水化合物', unit: 'g' }
       };
 
       // 🔧 移除强制显示逻辑，完全依赖用户配置或数据推断
