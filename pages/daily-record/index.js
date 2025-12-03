@@ -10480,17 +10480,12 @@ Page({
         waterIntakeData: waterData, // 🔧 别名兼容旧ID
         dietData,
         temperatureData
-
-
-
-      if (medicationData) {
+      }
 
       this.setData({
         selectedDateData,
         ...(showSkeleton ? { isPageLoading: false } : {}) // 🔥 只在显示过骨架图时才隐藏
-      this.data.mainPageFunctions.forEach((f, index) => {
-
-
+      })
 
     } catch (error) {
 
