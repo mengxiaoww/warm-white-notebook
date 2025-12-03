@@ -10520,6 +10520,7 @@ Page({
         bodyMeasurementData,
 
         waterData,
+        waterIntakeData: waterData, // 🔧 别名兼容旧ID
 
         dietData,
 

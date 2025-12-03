@@ -35,11 +35,36 @@
         <!-- 基础指标 -->
         <view class="indicators-list" wx:if="{{(displayedBasicIndicators && displayedBasicIndicators.length > 0) || (customIndicators && customIndicators.length > 0)}}">
           <!-- 动态显示基础指标 -->
-          <view class="indicator-item" wx:for="{{displayedBasicIndicators}}" wx:key="id">
+          <view class="indicator-item {{item.type === 'text' ? 'indicator-item-textarea' : ''}}" wx:for="{{displayedBasicIndicators}}" wx:key="id">
             <text class="indicator-name">{{item.name}}</text>
             <view class="indicator-input">
-              <input id="input-{{index}}" type="digit" value="{{formData[item.id]}}" focus="{{focusIndex === index}}" bindinput="onInputChange" bindfocus="onInputFocus" bindblur="onInputBlur" data-field="{{item.id}}" data-index="{{index}}" data-total="{{displayedBasicIndicators.length + customIndicators.length}}" placeholder="请输入" class="input-field" />
-              <text class="unit">{{item.unit || 'g/L'}}</text>
+              <!-- 备注字段使用textarea -->
+              <textarea wx:if="{{item.type === 'text'}}"
+                id="input-{{index}}"
+                value="{{formData[item.id]}}"
+                bindinput="onInputChange"
+                data-field="{{item.id}}"
+                placeholder="记录今日饮食内容..."
+                class="textarea-field"
+                maxlength="200"
+                auto-height="{{true}}"
+              />
+              <!-- 数值字段使用input -->
+              <input wx:else
+                id="input-{{index}}"
+                type="digit"
+                value="{{formData[item.id]}}"
+                focus="{{focusIndex === index}}"
+                bindinput="onInputChange"
+                bindfocus="onInputFocus"
+                bindblur="onInputBlur"
+                data-field="{{item.id}}"
+                data-index="{{index}}"
+                data-total="{{displayedBasicIndicators.length + customIndicators.length}}"
+                placeholder="请输入"
+                class="input-field"
+              />
+              <text class="unit" wx:if="{{item.unit}}">{{item.unit}}</text>
             </view>
           </view>
           <!-- 自定义指标 -->

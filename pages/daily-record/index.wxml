@@ -242,31 +242,17 @@
                 <view class="ldh-range-hint">参考: 1500-2000 ml/天</view>
               </view>
             </block>
-            <!-- 饮食数据展示 - 简洁设计 -->
+            <!-- 饮食数据展示 - 营养记录 -->
             <block wx:elif="{{item.id === 'diet' && selectedDateData.dietData}}">
-              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.breakfast}}">
-                <text class="bs-label">早餐</text>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.dietData.breakfast}}</view>
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">总热量</view>
                 </view>
-              </view>
-              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.lunch}}">
-                <view class="bs-label">午餐</view>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.dietData.lunch}}</view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.dietData.calories || '0'}}</text>
+                  <text class="ldh-unit">kcal</text>
                 </view>
-              </view>
-              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.dinner}}">
-                <view class="bs-label">晚餐</view>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.dietData.dinner}}</view>
-                </view>
-              </view>
-              <view class="blood-simple-item" wx:if="{{selectedDateData.dietData.snack}}">
-                <view class="bs-label">加餐</view>
-                <view class="bs-value-group">
-                  <view class="bs-value">{{selectedDateData.dietData.snack}}</view>
-                </view>
+                <view class="ldh-range-hint">蛋白{{selectedDateData.dietData.protein || 0}}g · 碳水{{selectedDateData.dietData.carbs || 0}}g</view>
               </view>
             </block>
             <!-- 体温数据展示 - 统一单值显示样式 -->

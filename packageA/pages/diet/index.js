@@ -10,12 +10,17 @@ Page({
 
     // 基础表单数据
     formData: {
-      diet: ''
+      calories: '',   // 总热量(千卡)
+      protein: '',    // 蛋白质(克)
+      carbs: '',      // 碳水化合物(克)
+      notes: ''       // 备注
     },
 
     // 正常范围参考值
     normalRanges: {
-      diet: { min: '1', max: '10' }
+      calories: { min: '1200', max: '2500' },
+      protein: { min: '50', max: '150' },
+      carbs: { min: '150', max: '400' }
     },
 
     // 自定义指标列表
@@ -23,12 +28,18 @@ Page({
 
     // 用户选中的指标配置
     dietIndicatorConfig: {
-      diet: true
+      calories: true,
+      protein: true,
+      carbs: true,
+      notes: true
     },
 
     // 显示的基础指标
     displayedBasicIndicators: [
-      { id: 'diet', name: '饮食', unit: '份' }
+      { id: 'calories', name: '总热量', unit: 'kcal' },
+      { id: 'protein', name: '蛋白质', unit: 'g' },
+      { id: 'carbs', name: '碳水化合物', unit: 'g' },
+      { id: 'notes', name: '备注', unit: '', type: 'text' }
     ],
 
     // 用户信息
