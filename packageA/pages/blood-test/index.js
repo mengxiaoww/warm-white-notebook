@@ -3099,7 +3099,7 @@ Page({
 
   // 确认AI识别结果并填充表单
   confirmAIResult() {
-    const { aiRecognizedData, formData } = this.data;
+    const { aiRecognizedData, formData, displayedBasicIndicators, customIndicators } = this.data;
 
     if (!aiRecognizedData || aiRecognizedData.length === 0) {
       return;
@@ -3108,12 +3108,59 @@ Page({
     // 创建新的表单数据
     const newFormData = { ...formData };
     let fillCount = 0;
+    const matchedItems = []; // 记录匹配成功的项
 
-    // 填充识别到的数据
-    aiRecognizedData.forEach(item => {
-      if (item.id && item.value) {
-        newFormData[item.id] = item.value;
-        fillCount++;
+    // 遍历AI识别的每一项数据
+    aiRecognizedData.forEach(aiItem => {
+      let matched = false;
+
+      // 1. 尝试匹配基础指标
+      for (const indicator of displayedBasicIndicators) {
+        // 方式1: 直接通过id匹配（AI返回的id与基础指标id相同）
+        if (aiItem.id === indicator.id) {
+          newFormData[indicator.id] = aiItem.value;
+          fillCount++;
+          matched = true;
+          matchedItems.push(`${indicator.name}: ${aiItem.value}${aiItem.unit || indicator.unit}`);
+          break;
+        }
+
+        // 方式2: 通过label名称匹配（AI返回的label与基础指标name相同或相似）
+        if (aiItem.label && this.fuzzyMatch(aiItem.label, indicator.name)) {
+          newFormData[indicator.id] = aiItem.value;
+          fillCount++;
+          matched = true;
+          matchedItems.push(`${indicator.name}: ${aiItem.value}${aiItem.unit || indicator.unit}`);
+          break;
+        }
+      }
+
+      // 2. 如果基础指标没匹配上，尝试匹配自定义指标
+      if (!matched && customIndicators && customIndicators.length > 0) {
+        for (const customIndicator of customIndicators) {
+          // 方式1: 通过id匹配
+          if (aiItem.id === customIndicator.id) {
+            newFormData[customIndicator.id] = aiItem.value;
+            fillCount++;
+            matched = true;
+            matchedItems.push(`${customIndicator.name}: ${aiItem.value}${aiItem.unit || customIndicator.unit}`);
+            break;
+          }
+
+          // 方式2: 通过名称模糊匹配
+          if (aiItem.label && this.fuzzyMatch(aiItem.label, customIndicator.name)) {
+            newFormData[customIndicator.id] = aiItem.value;
+            fillCount++;
+            matched = true;
+            matchedItems.push(`${customIndicator.name}: ${aiItem.value}${aiItem.unit || customIndicator.unit}`);
+            break;
+          }
+        }
+      }
+
+      // 如果都没匹配上，记录日志
+      if (!matched) {
+        console.log(`⚠️ 未找到匹配项: ${aiItem.label || aiItem.id} = ${aiItem.value}`);
       }
     });
 
@@ -3124,10 +3171,43 @@ Page({
       aiRecognizedData: []
     });
 
-    wx.showToast({
-      title: `已填充${fillCount}个指标`,
-      icon: 'success'
-    });
+    // 显示填充结果
+    if (fillCount > 0) {
+      wx.showToast({
+        title: `已填充${fillCount}个指标`,
+        icon: 'success',
+        duration: 2000
+      });
+      console.log('✅ 填充成功的项:', matchedItems);
+    } else {
+      wx.showToast({
+        title: '未找到匹配的指标',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  },
+
+  // 模糊匹配函数（用于匹配指标名称）
+  fuzzyMatch(str1, str2) {
+    if (!str1 || !str2) return false;
+
+    // 去除空格后比较
+    const s1 = str1.replace(/\s+/g, '').toLowerCase();
+    const s2 = str2.replace(/\s+/g, '').toLowerCase();
+
+    // 完全匹配
+    if (s1 === s2) return true;
+
+    // 包含关系匹配
+    if (s1.includes(s2) || s2.includes(s1)) return true;
+
+    // 去除常见后缀再匹配（如"白细胞计数"和"白细胞"）
+    const cleanS1 = s1.replace(/(计数|数量|值|浓度|水平)$/, '');
+    const cleanS2 = s2.replace(/(计数|数量|值|浓度|水平)$/, '');
+    if (cleanS1 === cleanS2) return true;
+
+    return false;
   },
 
   // 重新识别
