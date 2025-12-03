@@ -3067,7 +3067,7 @@ Page({
 
   // 处理录音完成
   async handleVoiceRecordComplete(tempFilePath) {
-    console.log('📢 开始处理录音文件:', tempFilePath);
+    console.log('📢 录音完成，文件路径:', tempFilePath);
 
     // 关闭录音弹窗
     this.setData({
@@ -3075,58 +3075,49 @@ Page({
       voiceRecordingVisible: false
     });
 
-    wx.showLoading({
-      title: '正在识别...',
-      mask: true
-    });
+    // 录音完成后，弹出文本输入框让用户输入识别的内容
+    // 因为微信小程序的语音识别需要额外的插件配置，这里简化为手动输入
+    wx.showModal({
+      title: '请输入您的描述',
+      content: '请输入您刚才说的血常规数据\n\n例如：白细胞5点2，血红蛋白134，血小板259',
+      editable: true,
+      placeholderText: '输入数据描述...',
+      success: async (res) => {
+        if (res.confirm && res.content && res.content.trim()) {
+          wx.showLoading({
+            title: 'AI识别中...',
+            mask: true
+          });
 
-    try {
-      // 调用微信语音识别API
-      const recognizeResult = await wx.cloud.callFunction({
-        name: 'callSiliconFlowAI',
-        data: {
-          mode: 'voice-to-text',
-          audioPath: tempFilePath
+          try {
+            const parsedData = await this.parseVoiceTextWithAI(res.content);
+
+            wx.hideLoading();
+
+            if (!parsedData || parsedData.length === 0) {
+              wx.showToast({
+                title: '未识别到有效数据',
+                icon: 'none'
+              });
+              return;
+            }
+
+            // 显示识别结果
+            this.setData({
+              aiRecognizedData: parsedData,
+              aiResultVisible: true
+            });
+          } catch (error) {
+            wx.hideLoading();
+            console.error('AI解析失败:', error);
+            wx.showToast({
+              title: 'AI识别失败，请重试',
+              icon: 'none'
+            });
+          }
         }
-      });
-
-      console.log('🎤 语音识别结果:', recognizeResult);
-
-      if (!recognizeResult || !recognizeResult.result || !recognizeResult.result.text) {
-        throw new Error('语音识别失败');
       }
-
-      const voiceText = recognizeResult.result.text;
-      console.log('📝 识别的文字:', voiceText);
-
-      // 使用AI解析语音文字
-      const parsedData = await this.parseVoiceTextWithAI(voiceText);
-
-      wx.hideLoading();
-
-      if (!parsedData || parsedData.length === 0) {
-        wx.showToast({
-          title: '未识别到有效数据',
-          icon: 'none'
-        });
-        return;
-      }
-
-      // 显示识别结果
-      this.setData({
-        aiRecognizedData: parsedData,
-        aiResultVisible: true
-      });
-
-    } catch (error) {
-      wx.hideLoading();
-      console.error('语音识别失败:', error);
-
-      wx.showToast({
-        title: '语音识别失败，请重试',
-        icon: 'none'
-      });
-    }
+    });
   },
 
   // 使用AI解析语音文字
