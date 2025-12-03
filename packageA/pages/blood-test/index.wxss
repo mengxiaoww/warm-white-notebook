@@ -85,7 +85,6 @@
   border-radius: 30rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex: 1;
 }
 
 .date-selector:active {
