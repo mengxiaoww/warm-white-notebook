@@ -3256,21 +3256,27 @@ ${indicatorDesc}
 
       console.log('📋 当前配置的指标:', allConfiguredIndicators);
 
-      // 只保留能匹配到当前配置项的指标
-      const matchedIndicators = indicators.filter(aiItem => {
-        // 尝试匹配基础指标
-        const matchedBasic = allConfiguredIndicators.some(indicator =>
+      // 只保留能匹配到当前配置项的指标，并补充正确的中文label
+      const matchedIndicators = indicators.map(aiItem => {
+        // 尝试匹配配置的指标
+        const matchedIndicator = allConfiguredIndicators.find(indicator =>
           aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
         );
 
-        if (matchedBasic) {
-          console.log(`✅ 匹配成功: ${aiItem.label}`);
-          return true;
+        if (matchedIndicator) {
+          console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
+          // 返回数据时，使用配置的中文名称作为label
+          return {
+            ...aiItem,
+            id: matchedIndicator.id,
+            label: matchedIndicator.name,  // 使用配置的中文名称
+            unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位，否则使用配置的单位
+          };
         } else {
           console.log(`❌ 未匹配: ${aiItem.label}`);
-          return false;
+          return null;
         }
-      });
+      }).filter(item => item !== null);  // 过滤掉未匹配的项
 
       console.log('🎯 过滤后的匹配指标:', matchedIndicators);
 
@@ -3496,21 +3502,27 @@ ${indicatorDesc}
 
       console.log('📋 当前配置的指标:', allConfiguredIndicators);
 
-      // 只保留能匹配到当前配置项的指标
-      const matchedIndicators = indicators.filter(aiItem => {
-        // 尝试匹配基础指标
-        const matchedBasic = allConfiguredIndicators.some(indicator =>
+      // 只保留能匹配到当前配置项的指标，并补充正确的中文label
+      const matchedIndicators = indicators.map(aiItem => {
+        // 尝试匹配配置的指标
+        const matchedIndicator = allConfiguredIndicators.find(indicator =>
           aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
         );
 
-        if (matchedBasic) {
-          console.log(`✅ 匹配成功: ${aiItem.label}`);
-          return true;
+        if (matchedIndicator) {
+          console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
+          // 返回数据时，使用配置的中文名称作为label
+          return {
+            ...aiItem,
+            id: matchedIndicator.id,
+            label: matchedIndicator.name,  // 使用配置的中文名称
+            unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位，否则使用配置的单位
+          };
         } else {
           console.log(`❌ 未匹配: ${aiItem.label}`);
-          return false;
+          return null;
         }
-      });
+      }).filter(item => item !== null);  // 过滤掉未匹配的项
 
       console.log('🎯 过滤后的匹配指标:', matchedIndicators);
 
