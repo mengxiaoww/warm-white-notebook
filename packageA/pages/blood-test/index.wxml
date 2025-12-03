@@ -31,7 +31,6 @@
         <text class="ai-btn-text">AI识别</text>
       </view>
     </view>
-    </view>
     <!-- 血常规指标列表 -->
     <scroll-view class="scroll-container" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
       <view class="form-container">
