@@ -27,20 +27,10 @@
       </view>
       <!-- AI智能导入按钮 -->
       <view class="ai-smart-import-btn" bindtap="showAIIdentifyOptions">
-        <view class="ai-btn-glow"></view>
-        <view class="ai-btn-icon-group">
-          <view class="icon-wrapper">
-            <t-icon name="photo" size="32rpx" color="white" />
-          </view>
-          <view class="icon-separator"></view>
-          <view class="icon-wrapper">
-            <t-icon name="sound" size="32rpx" color="white" />
-          </view>
+        <view class="ai-icon-badge">
+          <text class="ai-icon">✨</text>
         </view>
-        <view class="ai-btn-label-group">
-          <text class="ai-label-main">AI智能导入</text>
-          <text class="ai-label-sub">拍照 • 语音</text>
-        </view>
+        <text class="ai-btn-label">智能导入</text>
       </view>
     </view>
     <!-- 血常规指标列表 -->
