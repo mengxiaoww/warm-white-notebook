@@ -2960,20 +2960,8 @@ Page({
         });
 
         try {
-          // 1. OCR识别图片文字
-          const ocrResult = await this.performOCR(imagePath);
-
-          if (!ocrResult || ocrResult.length === 0) {
-            wx.hideLoading();
-            wx.showToast({
-              title: '未识别到文字',
-              icon: 'none'
-            });
-            return;
-          }
-
-          // 2. 使用AI解析血常规数据
-          const parsedData = await this.parseBloodTestWithAI(ocrResult);
+          // 直接使用AI识别图片（不用OCR）
+          const parsedData = await this.recognizeImageWithAI(imagePath);
 
           wx.hideLoading();
 
@@ -2985,7 +2973,7 @@ Page({
             return;
           }
 
-          // 3. 显示识别结果
+          // 显示识别结果
           this.setData({
             aiRecognizedData: parsedData,
             aiResultVisible: true
@@ -3001,6 +2989,133 @@ Page({
         }
       }
     });
+  },
+
+  // 使用AI直接识别图片中的血常规数据
+  async recognizeImageWithAI(imagePath) {
+    try {
+      // 将图片转为base64
+      const base64Data = await this.imageToBase64(imagePath);
+
+      // 获取当前页面配置的所有指标（基础+自定义）
+      const { displayedBasicIndicators, customIndicators } = this.data;
+
+      // 构建指标列表描述
+      const allIndicators = [
+        ...displayedBasicIndicators.map(item => ({
+          id: item.id,
+          name: item.name,
+          unit: item.unit
+        })),
+        ...(customIndicators || []).map(item => ({
+          id: item.id,
+          name: item.name,
+          unit: item.unit
+        }))
+      ];
+
+      // 构建指标描述文本
+      const indicatorDesc = allIndicators.map(item =>
+        `   - ${item.name}（id: ${item.id}，单位：${item.unit}）`
+      ).join('\n');
+
+      console.log('📋 当前页面配置的指标:', allIndicators);
+
+      // 调用AI云函数，直接识别图片
+      const res = await wx.cloud.callFunction({
+        name: 'callSiliconFlowAI',
+        data: {
+          messages: [
+            {
+              role: 'system',
+              content: `你是一个专业的医疗数据识别助手。你的任务是从血常规检验报告图片中识别并提取关键指标数据。
+
+**当前页面需要识别的指标**：
+${indicatorDesc}
+
+**识别规则**：
+1. 仔细查看图片中的所有指标数据
+2. 只提取上述列表中存在的指标（根据指标名称匹配）
+3. 如果图片中的指标名称与列表中的不完全一致，使用智能匹配：
+   - 例如："白细胞计数" 可以匹配 "白细胞"
+   - 例如："NEUT#" 或 "中性粒细胞绝对值" 可以匹配 "中性粒细胞数"
+   - 例如："HGB" 可以匹配 "血红蛋白"
+4. 跳过百分比指标（如NEUT%、LYMPH%等），只要绝对值
+5. 对于每个识别的指标，评估识别置信度（0-100分）
+
+**返回格式**（必须严格遵守）：
+{
+  "indicators": [
+    {
+      "id": "wbc",
+      "label": "白细胞",
+      "value": "5.2",
+      "unit": "×10⁹/L",
+      "confidence": 95
+    }
+  ]
+}
+
+**重要要求**：
+- 只返回JSON，不要任何其他说明文字
+- id必须使用上述列表中的id（准确匹配）
+- label是指标的中文名称
+- value必须是纯数字字符串（不要包含单位）
+- unit是单位
+- confidence必须是0-100的整数
+- 如果某个指标无法识别或图片中不存在，不要包含在结果中
+- 如果图片不是血常规报告，返回空数组：{"indicators": []}`
+            },
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'image_url',
+                  image_url: { url: `data:image/jpeg;base64,${base64Data}` }
+                },
+                {
+                  type: 'text',
+                  text: '请识别这张血常规检验报告，提取所有可识别的指标数据。'
+                }
+              ]
+            }
+          ]
+        }
+      });
+
+      console.log('🤖 AI识别响应:', res.result);
+
+      if (!res.result || !res.result.reply) {
+        throw new Error('AI响应格式错误');
+      }
+
+      // 解析AI返回的JSON
+      let aiResponse = res.result.reply;
+
+      // 清理可能的markdown代码块标记
+      aiResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+      const parsed = JSON.parse(aiResponse);
+
+      if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
+        throw new Error('AI返回数据格式错误');
+      }
+
+      console.log('✅ AI识别结果:', parsed.indicators);
+
+      // 根据置信度给进度条上色
+      const result = parsed.indicators.map(item => ({
+        ...item,
+        confidenceColor: item.confidence >= 80 ? '#10b981' :
+                        item.confidence >= 60 ? '#f59e0b' : '#ef4444'
+      }));
+
+      return result;
+
+    } catch (error) {
+      console.error('AI识别失败:', error);
+      throw error;
+    }
   },
 
   // 使用AI解析血常规数据
@@ -3238,6 +3353,23 @@ Page({
         aiRecognizedData: []
       });
     }
+  },
+
+  // 将图片转换为base64
+  imageToBase64(imagePath) {
+    return new Promise((resolve, reject) => {
+      wx.getFileSystemManager().readFile({
+        filePath: imagePath,
+        encoding: 'base64',
+        success: (res) => {
+          resolve(res.data);
+        },
+        fail: (err) => {
+          console.error('读取图片失败:', err);
+          reject(err);
+        }
+      });
+    });
   },
 
   // 分享功能
