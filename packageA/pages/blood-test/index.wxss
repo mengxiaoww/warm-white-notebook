@@ -69,7 +69,7 @@
   padding: 30rpx;
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  justify-content: space-between;
   border-bottom: 1rpx solid #f0f0f0;
   flex-shrink: 0;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
@@ -100,29 +100,98 @@
   letter-spacing: 0.5rpx;
 }
 
-/* AI识别按钮 */
-.ai-identify-btn {
+/* AI识别按钮 - 精致暖金色设计 */
+.ai-identify-btn-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  padding: 18rpx 28rpx;
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
-  border-radius: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(124, 58, 237, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
+  justify-content: center;
+}
+
+.ai-identify-btn {
+  position: relative;
+  width: 96rpx;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9F40 50%, #FFA500 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 8rpx 24rpx rgba(255, 152, 0, 0.35),
+    0 4rpx 12rpx rgba(255, 184, 77, 0.25),
+    inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
+    inset 0 2rpx 8rpx rgba(255, 255, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  animation: ai-pulse 2s ease-in-out infinite;
+}
+
+/* 发光效果 */
+.ai-btn-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  animation: rotate-glow 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate-glow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.ai-btn-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rpx;
 }
 
 .ai-identify-btn:active {
-  transform: scale(0.95);
-  box-shadow: 0 2rpx 8rpx rgba(124, 58, 237, 0.4);
+  transform: scale(0.92);
+  box-shadow:
+    0 4rpx 16rpx rgba(255, 152, 0, 0.4),
+    0 2rpx 8rpx rgba(255, 184, 77, 0.3),
+    inset 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  animation: none;
+}
+
+/* 闪烁动画 */
+@keyframes ai-pulse {
+  0%, 100% {
+    box-shadow:
+      0 8rpx 24rpx rgba(255, 152, 0, 0.35),
+      0 4rpx 12rpx rgba(255, 184, 77, 0.25),
+      inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
+      inset 0 2rpx 8rpx rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 12rpx 32rpx rgba(255, 152, 0, 0.45),
+      0 6rpx 16rpx rgba(255, 184, 77, 0.35),
+      0 0 32rpx rgba(255, 184, 77, 0.3),
+      inset 0 -2rpx 8rpx rgba(0, 0, 0, 0.1),
+      inset 0 2rpx 8rpx rgba(255, 255, 255, 0.4);
+  }
 }
 
 .ai-btn-text {
-  font-size: 28rpx;
-  font-weight: 600;
+  font-size: 22rpx;
+  font-weight: 700;
   color: white;
-  letter-spacing: 1rpx;
+  letter-spacing: 0.5rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+  line-height: 1;
 }
 
 /* 快捷输入按钮 */

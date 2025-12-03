@@ -26,9 +26,14 @@
         <t-icon name="caret-down" size="24rpx" color="#666" />
       </view>
       <!-- AI识别按钮 -->
-      <view class="ai-identify-btn" bindtap="showAIIdentifyOptions">
-        <t-icon name="sparkles" size="36rpx" color="white" />
-        <text class="ai-btn-text">AI识别</text>
+      <view class="ai-identify-btn-wrapper">
+        <view class="ai-identify-btn" bindtap="showAIIdentifyOptions">
+          <view class="ai-btn-glow"></view>
+          <view class="ai-btn-content">
+            <t-icon name="star" size="32rpx" color="white" />
+            <text class="ai-btn-text">AI</text>
+          </view>
+        </view>
       </view>
     </view>
     <!-- 血常规指标列表 -->
