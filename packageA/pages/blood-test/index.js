@@ -2994,8 +2994,8 @@ Page({
   // 使用AI直接识别图片中的血常规数据
   async recognizeImageWithAI(imagePath) {
     try {
-      // 将图片转为base64
-      const base64Data = await this.imageToBase64(imagePath);
+      // 先上传图片到云存储获取HTTPS URL
+      const imageUrl = await this.uploadImageToCloud(imagePath);
 
       // 获取当前页面配置的所有指标（基础+自定义）
       const { displayedBasicIndicators, customIndicators } = this.data;
@@ -3020,6 +3020,7 @@ Page({
       ).join('\n');
 
       console.log('📋 当前页面配置的指标:', allIndicators);
+      console.log('📸 图片URL:', imageUrl);
 
       // 调用AI云函数，直接识别图片
       const res = await wx.cloud.callFunction({
@@ -3071,7 +3072,10 @@ ${indicatorDesc}
               content: [
                 {
                   type: 'image_url',
-                  image_url: { url: `data:image/jpeg;base64,${base64Data}` }
+                  image_url: {
+                    url: imageUrl,  // 使用云存储HTTPS URL
+                    detail: 'auto'
+                  }
                 },
                 {
                   type: 'text',
@@ -3079,7 +3083,12 @@ ${indicatorDesc}
                 }
               ]
             }
-          ]
+          ],
+          mode: 'unified',
+          stream: false
+        },
+        config: {
+          timeout: 60000  // 60秒超时
         }
       });
 
@@ -3116,6 +3125,45 @@ ${indicatorDesc}
       console.error('AI识别失败:', error);
       throw error;
     }
+  },
+
+  // 上传图片到云存储并获取HTTPS URL
+  uploadImageToCloud(imagePath) {
+    return new Promise((resolve, reject) => {
+      const cloudPath = `blood-test-images/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+
+      console.log('开始上传图片到云存储:', cloudPath);
+
+      wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: imagePath,
+        success: async (uploadRes) => {
+          console.log('图片上传成功，fileID:', uploadRes.fileID);
+
+          // 获取临时链接（HTTPS URL）
+          try {
+            const tempUrlRes = await wx.cloud.getTempFileURL({
+              fileList: [uploadRes.fileID]
+            });
+
+            if (tempUrlRes.fileList && tempUrlRes.fileList.length > 0) {
+              const tempUrl = tempUrlRes.fileList[0].tempFileURL;
+              console.log('获取临时URL成功:', tempUrl);
+              resolve(tempUrl);
+            } else {
+              reject(new Error('获取临时URL失败'));
+            }
+          } catch (error) {
+            console.error('获取临时URL失败:', error);
+            reject(error);
+          }
+        },
+        fail: (error) => {
+          console.error('图片上传失败:', error);
+          reject(error);
+        }
+      });
+    });
   },
 
   // 使用AI解析血常规数据
