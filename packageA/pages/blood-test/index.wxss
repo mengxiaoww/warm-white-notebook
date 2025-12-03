@@ -104,8 +104,9 @@
 .ai-identify-btn-wrapper {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 8rpx;
 }
 
 .ai-identify-btn {
@@ -192,6 +193,26 @@
   letter-spacing: 0.5rpx;
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
   line-height: 1;
+}
+
+/* AI按钮提示文字 */
+.ai-btn-hint {
+  font-size: 22rpx;
+  color: #FF9F40;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+  text-shadow: 0 1rpx 2rpx rgba(255, 159, 64, 0.3);
+  white-space: nowrap;
+  animation: hint-pulse 2s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* 快捷输入按钮 */

@@ -30,10 +30,11 @@
         <view class="ai-identify-btn" bindtap="showAIIdentifyOptions">
           <view class="ai-btn-glow"></view>
           <view class="ai-btn-content">
-            <t-icon name="star" size="32rpx" color="white" />
+            <t-icon name="camera" size="36rpx" color="white" />
             <text class="ai-btn-text">AI</text>
           </view>
         </view>
+        <text class="ai-btn-hint">拍照识别</text>
       </view>
     </view>
     <!-- 血常规指标列表 -->
