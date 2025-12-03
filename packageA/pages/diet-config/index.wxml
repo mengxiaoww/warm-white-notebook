@@ -50,13 +50,35 @@
       <view class="indicators-container">
         <!-- 预设指标组 -->
         <view class="indicator-group">
-          <!-- 数值 (必选) -->
+          <!-- 总热量 (必选) -->
           <view class="indicator-item required-item">
-            <t-checkbox checked="{{selectedIndicators.diet}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <t-checkbox checked="{{selectedIndicators.calories}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
             <view class="indicator-info">
-              <view class="indicator-name">食</view>
+              <view class="indicator-name">热</view>
               <view class="indicator-text">
-                <text class="indicator-fullname">饮食</text>
+                <text class="indicator-fullname">总热量</text>
+                <text class="required-tag">必选</text>
+              </view>
+            </view>
+          </view>
+          <!-- 蛋白质 (必选) -->
+          <view class="indicator-item required-item">
+            <t-checkbox checked="{{selectedIndicators.protein}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <view class="indicator-info">
+              <view class="indicator-name">蛋</view>
+              <view class="indicator-text">
+                <text class="indicator-fullname">蛋白质</text>
+                <text class="required-tag">必选</text>
+              </view>
+            </view>
+          </view>
+          <!-- 碳水化合物 (必选) -->
+          <view class="indicator-item required-item">
+            <t-checkbox checked="{{selectedIndicators.carbs}}" class="custom-checkbox required-checkbox" disabled="{{true}}" />
+            <view class="indicator-info">
+              <view class="indicator-name">碳</view>
+              <view class="indicator-text">
+                <text class="indicator-fullname">碳水化合物</text>
                 <text class="required-tag">必选</text>
               </view>
             </view>

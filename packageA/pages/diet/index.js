@@ -12,8 +12,7 @@ Page({
     formData: {
       calories: '',   // 总热量(千卡)
       protein: '',    // 蛋白质(克)
-      carbs: '',      // 碳水化合物(克)
-      notes: ''       // 备注
+      carbs: ''       // 碳水化合物(克)
     },
 
     // 正常范围参考值
@@ -30,16 +29,14 @@ Page({
     dietIndicatorConfig: {
       calories: true,
       protein: true,
-      carbs: true,
-      notes: true
+      carbs: true
     },
 
     // 显示的基础指标
     displayedBasicIndicators: [
       { id: 'calories', name: '总热量', unit: 'kcal' },
       { id: 'protein', name: '蛋白质', unit: 'g' },
-      { id: 'carbs', name: '碳水化合物', unit: 'g' },
-      { id: 'notes', name: '备注', unit: '', type: 'text' }
+      { id: 'carbs', name: '碳水化合物', unit: 'g' }
     ],
 
     // 用户信息

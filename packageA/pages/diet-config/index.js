@@ -5,11 +5,9 @@ Page({
   data: {
     // 选中的指标
     selectedIndicators: {
-      diet: true,  // 默认选中 - 饮食
-      
-      
-      
-      
+      calories: true,
+      protein: true,
+      carbs: true
     },
 
     // 当前日期数据状态
@@ -21,15 +19,13 @@ Page({
     },
 
     // 必选指标（不能取消勾选）
-    requiredIndicators: ['diet'],
+    requiredIndicators: ['calories', 'protein', 'carbs'],
 
     // 所有指标的配置信息
     indicatorConfigs: {
-      diet: { name: '饮食', unit: '份' },
-      
-      
-      
-      
+      calories: { name: '总热量', unit: 'kcal' },
+      protein: { name: '蛋白质', unit: 'g' },
+      carbs: { name: '碳水化合物', unit: 'g' }
     },
 
     // 自定义指标列表

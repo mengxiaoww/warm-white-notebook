@@ -10459,117 +10459,36 @@ Page({
 
 
 
-      console.log('巨细胞病毒数据:', cmvData)
-
-      console.log('🔥 肝功能数据:', liverData)
-
-      console.log('🔥 肾功能数据:', kidneyData)
-
-      console.log('LDH数据:', ldhData)
-
-      console.log('💊 用药记录数据 for', dateStr, ':', medicationData)
-
-      console.log('🏥 门诊记录数据:', clinicData)
-
-      console.log('🚽 排便记录数据:', stoolData)
-
-      console.log('💧 尿量记录数据:', urineData)
-
-      console.log('🩸 血糖数据:', bloodSugarData)
-
-      console.log('💙 血氧数据:', bloodOxygenData)
-
-      console.log('💓 血压数据:', bloodPressureData)
-
-      console.log('📏 身高体重数据:', bodyMeasurementData)
-
-
-
       const selectedDateData = {
-
         bloodData,
-
         ebvData,
-
         cmvData,
-
         liverData,
-
         kidneyData,
-
         ldhData,
-
         medicationData,
-
         clinicData,
-
         urineData,
-
         stoolData,
-
         expenseData,
-
         checkReportData,
-
         bloodSugarData,
-
         bloodOxygenData,
-
         bloodPressureData,
-
         bodyMeasurementData,
-
         waterData,
         waterIntakeData: waterData, // 🔧 别名兼容旧ID
-
         dietData,
-
         temperatureData
 
-      }
 
 
-
-      console.log('📋 构建 selectedDateData for', dateStr, '- medicationData:', medicationData)
-
-      console.log('🔍 详细分析 medicationData for', dateStr, ':')
       if (medicationData) {
-        console.log('  - 总药品数:', medicationData.totalMedicines)
-        console.log('  - 已服用:', medicationData.takenMedicines)
-        console.log('  - 总时段数:', medicationData.totalTimeSlots)
-        console.log('  - 完成时段:', medicationData.completedTimeSlots)
-        console.log('  - 进度:', medicationData.progress, '%')
-        console.log('  - 药品列表:', medicationData.medicines?.map(m => ({ name: m.name, taken: m.taken, timeSlotStatus: m.timeSlotStatus })))
-      } else {
-        console.log('  - 无用药数据')
-      }
-
-      console.log('💧 饮水数据 for', dateStr, ':', waterData)
-      console.log('🍽️ 饮食数据 for', dateStr, ':', dietData)
-      console.log('🌡️ 体温数据 for', dateStr, ':', temperatureData)
-      console.log('📏 身高体重数据 for', dateStr, ':', bodyMeasurementData)
-
-
-
-
-
 
       this.setData({
-
         selectedDateData,
-
         ...(showSkeleton ? { isPageLoading: false } : {}) // 🔥 只在显示过骨架图时才隐藏
-
-      })
-
-
-
-      console.log('✅ 数据设置完成 - selectedDateData:', selectedDateData)
-      console.log('✅ waterData:', selectedDateData.waterData)
-      console.log('✅ 当前mainPageFunctions数量:', this.data.mainPageFunctions.length)
       this.data.mainPageFunctions.forEach((f, index) => {
-        console.log(`  [${index}] id=${f.id}, name=${f.name}, visible=${f.visible}, dataKey=${f.dataKey}`)
-      })
 
 
 
