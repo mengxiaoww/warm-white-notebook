@@ -159,7 +159,9 @@
       <!-- 提示文字 -->
       <view class="voice-hint">
         <text class="hint-text">{{isRecording ? '请描述您的血常规数据' : '点击开始录音'}}</text>
-        <text class="hint-subtext">例如：白细胞5点2，血红蛋白134，血小板259</text>
+        <!-- 显示实时识别的文字 -->
+        <text class="recognized-text" wx:if="{{isRecording && recognizedText}}">{{recognizedText}}</text>
+        <text class="hint-subtext" wx:if="{{!isRecording || !recognizedText}}">例如：白细胞5点2，血红蛋白134，血小板259</text>
       </view>
 
       <!-- 操作按钮 -->

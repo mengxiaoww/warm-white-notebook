@@ -86,6 +86,12 @@
     "navigationBarTitleText": "暖白记事本",
     "navigationBarTextStyle": "white"
   },
+  "plugins": {
+    "WechatSI": {
+      "version": "0.3.5",
+      "provider": "wx069ba97219f66d99"
+    }
+  },
   "tabBar": {
     "custom": true,
     "list": [

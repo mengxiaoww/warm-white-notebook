@@ -821,6 +821,21 @@ page .t-picker__confirm:active {
   margin-bottom: 12rpx;
 }
 
+.recognized-text {
+  display: block;
+  font-size: 32rpx;
+  color: #FF9800;
+  font-weight: 600;
+  line-height: 1.6;
+  margin: 20rpx 0;
+  padding: 20rpx;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 152, 0, 0.05) 100%);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(255, 152, 0, 0.2);
+  min-height: 100rpx;
+  word-break: break-all;
+}
+
 .hint-subtext {
   display: block;
   font-size: 24rpx;

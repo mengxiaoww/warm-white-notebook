@@ -1,5 +1,9 @@
 // 移除Toast import，使用wx.showToast替代
 
+// 引入微信同声传译插件
+const plugin = requirePlugin("WechatSI");
+const manager = plugin.getRecordRecognitionManager();
+
 Page({
   data: {
     // 选中的日期
@@ -69,8 +73,7 @@ Page({
     voiceRecordingVisible: false, // 语音录音弹窗显示状态
     isRecording: false,           // 是否正在录音
     recordDuration: 0,            // 录音时长（秒）
-    recorderManager: null,        // 录音管理器
-    durationTimer: null           // 录音计时器
+    recognizedText: ''            // 实时识别的文字
   },
 
   // 页面初始化
@@ -2948,82 +2951,79 @@ Page({
       aiImportMenuVisible: false,
       voiceRecordingVisible: true,
       isRecording: false,
-      recordDuration: 0
+      recordDuration: 0,
+      recognizedText: ''
     });
 
-    // 初始化录音管理器
-    if (!this.data.recorderManager) {
-      const recorderManager = wx.getRecorderManager();
+    // 初始化语音识别管理器的事件监听
+    this.initVoiceRecognition();
+  },
 
-      // 监听录音开始
-      recorderManager.onStart(() => {
-        console.log('📢 录音开始');
-        this.setData({ isRecording: true });
+  // 初始化语音识别
+  initVoiceRecognition() {
+    // 监听识别开始
+    manager.onStart = () => {
+      console.log('📢 语音识别开始');
+      this.setData({ isRecording: true });
+      this.startDurationTimer();
+    };
 
-        // 开始计时
-        this.startDurationTimer();
+    // 监听实时识别结果
+    manager.onRecognize = (res) => {
+      console.log('📝 实时识别:', res.result);
+      this.setData({
+        recognizedText: res.result
+      });
+    };
+
+    // 监听识别结束
+    manager.onStop = (res) => {
+      console.log('✅ 识别结束:', res.result);
+      this.stopDurationTimer();
+      this.handleVoiceRecordComplete(res.result);
+    };
+
+    // 监听错误
+    manager.onError = (error) => {
+      console.error('❌ 识别错误:', error);
+      this.stopDurationTimer();
+      this.setData({
+        isRecording: false,
+        voiceRecordingVisible: false
       });
 
-      // 监听录音结束
-      recorderManager.onStop((res) => {
-        console.log('📢 录音结束，文件路径:', res.tempFilePath);
-        this.stopDurationTimer();
-
-        // 处理录音文件
-        this.handleVoiceRecordComplete(res.tempFilePath);
+      wx.showToast({
+        title: '语音识别失败，请重试',
+        icon: 'none'
       });
-
-      // 监听录音错误
-      recorderManager.onError((error) => {
-        console.error('📢 录音错误:', error);
-        this.stopDurationTimer();
-        this.setData({
-          isRecording: false,
-          voiceRecordingVisible: false
-        });
-
-        wx.showToast({
-          title: '录音失败，请重试',
-          icon: 'none'
-        });
-      });
-
-      this.setData({ recorderManager });
-    }
+    };
   },
 
   // 开始/停止录音切换
   toggleRecording() {
-    const { isRecording, recorderManager } = this.data;
+    const { isRecording } = this.data;
 
     if (!isRecording) {
-      // 开始录音
-      recorderManager.start({
-        duration: 60000, // 最长60秒
-        sampleRate: 16000,
-        numberOfChannels: 1,
-        encodeBitRate: 48000,
-        format: 'mp3'
+      // 开始语音识别
+      manager.start({
+        lang: 'zh_CN', // 中文识别
+        duration: 60000 // 最长60秒
       });
     } else {
-      // 停止录音
-      recorderManager.stop();
+      // 停止语音识别
+      manager.stop();
     }
   },
 
   // 取消录音
   cancelRecording() {
-    const { recorderManager } = this.data;
-
-    if (recorderManager) {
-      recorderManager.stop();
-    }
-
+    manager.stop();
     this.stopDurationTimer();
     this.setData({
       isRecording: false,
       voiceRecordingVisible: false,
-      recordDuration: 0
+      recordDuration: 0,
+      recognizedText: ''
     });
   },
 
@@ -3066,8 +3066,8 @@ Page({
   },
 
   // 处理录音完成
-  async handleVoiceRecordComplete(tempFilePath) {
-    console.log('📢 录音完成，文件路径:', tempFilePath);
+  async handleVoiceRecordComplete(recognizedText) {
+    console.log('📢 语音识别完成，识别文字:', recognizedText);
 
     // 关闭录音弹窗
     this.setData({
@@ -3075,49 +3075,48 @@ Page({
       voiceRecordingVisible: false
     });
 
-    // 录音完成后，弹出文本输入框让用户输入识别的内容
-    // 因为微信小程序的语音识别需要额外的插件配置，这里简化为手动输入
-    wx.showModal({
-      title: '请输入您的描述',
-      content: '请输入您刚才说的血常规数据\n\n例如：白细胞5点2，血红蛋白134，血小板259',
-      editable: true,
-      placeholderText: '输入数据描述...',
-      success: async (res) => {
-        if (res.confirm && res.content && res.content.trim()) {
-          wx.showLoading({
-            title: 'AI识别中...',
-            mask: true
-          });
+    // 检查识别文本是否有效
+    if (!recognizedText || recognizedText.trim() === '') {
+      wx.showToast({
+        title: '未识别到有效内容，请重试',
+        icon: 'none'
+      });
+      return;
+    }
 
-          try {
-            const parsedData = await this.parseVoiceTextWithAI(res.content);
-
-            wx.hideLoading();
-
-            if (!parsedData || parsedData.length === 0) {
-              wx.showToast({
-                title: '未识别到有效数据',
-                icon: 'none'
-              });
-              return;
-            }
-
-            // 显示识别结果
-            this.setData({
-              aiRecognizedData: parsedData,
-              aiResultVisible: true
-            });
-          } catch (error) {
-            wx.hideLoading();
-            console.error('AI解析失败:', error);
-            wx.showToast({
-              title: 'AI识别失败，请重试',
-              icon: 'none'
-            });
-          }
-        }
-      }
+    // 显示加载提示
+    wx.showLoading({
+      title: 'AI解析中...',
+      mask: true
     });
+
+    try {
+      // 使用AI解析识别的文字
+      const parsedData = await this.parseVoiceTextWithAI(recognizedText);
+
+      wx.hideLoading();
+
+      if (!parsedData || parsedData.length === 0) {
+        wx.showToast({
+          title: '未识别到有效数据',
+          icon: 'none'
+        });
+        return;
+      }
+
+      // 显示识别结果
+      this.setData({
+        aiRecognizedData: parsedData,
+        aiResultVisible: true
+      });
+    } catch (error) {
+      wx.hideLoading();
+      console.error('AI解析失败:', error);
+      wx.showToast({
+        title: 'AI识别失败，请重试',
+        icon: 'none'
+      });
+    }
   },
 
   // 使用AI解析语音文字
