@@ -21,13 +21,10 @@
         <text class="date-text">{{selectedDate}}</text>
         <t-icon name="caret-down" size="24rpx" color="#666" />
       </view>
-      <!-- 快捷输入按钮 -->
-      <!-- <view class="quick-input-btns">
-        <view class="quick-btn" bindtap="scanOCR">
-          <t-icon name="scan" size="36rpx" color="#666" />
-          <text>扫描录入</text>
-        </view>
-      </view> -->
+      <!-- AI智能导入按钮 -->
+      <view class="ai-smart-import-btn" bindtap="showAIIdentifyOptions">
+        <text class="ai-btn-label">智能导入</text>
+      </view>
     </view>
     <!-- 血氧指标列表 -->
     <scroll-view class="scroll-container" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
@@ -74,6 +71,164 @@
   </view>
   <!-- 日期选择器 -->
   <t-date-time-picker title="选择日期" visible="{{datePickerVisible}}" mode="date" value="{{selectedDate}}" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" confirm-btn="确定" cancel-btn="取消" class="custom-date-picker" />
+
+  <!-- AI导入方式选择弹窗 -->
+  <t-popup visible="{{aiImportMenuVisible}}" bind:visible-change="onAIImportMenuClose" placement="bottom" show-overlay="{{true}}">
+    <view class="ai-import-menu">
+      <!-- 标题 -->
+      <view class="ai-menu-header">
+        <text class="ai-menu-title">选择导入方式</text>
+        <view class="ai-menu-close" catchtap="onAIImportMenuClose">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+
+      <!-- 选项列表 -->
+      <view class="ai-menu-options">
+        <view class="ai-option-item" bindtap="handleAICamera">
+          <view class="option-icon-wrapper camera">
+            <t-icon name="camera" size="48rpx" color="#FF9800" />
+          </view>
+          <view class="option-content">
+            <text class="option-title">拍照识别</text>
+            <text class="option-desc">拍摄检验报告自动识别</text>
+          </view>
+        </view>
+
+        <view class="ai-option-item" bindtap="handleAIAlbum">
+          <view class="option-icon-wrapper album">
+            <t-icon name="image" size="48rpx" color="#4CAF50" />
+          </view>
+          <view class="option-content">
+            <text class="option-title">相册选择</text>
+            <text class="option-desc">从相册选择报告图片</text>
+          </view>
+        </view>
+
+        <view class="ai-option-item" bindtap="handleAIVoice">
+          <view class="option-icon-wrapper voice">
+            <t-icon name="sound" size="48rpx" color="#2196F3" />
+          </view>
+          <view class="option-content">
+            <text class="option-title">语音输入</text>
+            <text class="option-desc">语音描述数据智能识别</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部安全距离 -->
+      <view class="ai-menu-safe-area"></view>
+    </view>
+  </t-popup>
+
+  <!-- 语音录音弹窗 -->
+  <t-popup visible="{{voiceRecordingVisible}}" bind:visible-change="onVoiceRecordClose" placement="bottom" show-overlay="{{true}}">
+    <view class="voice-record-popup">
+      <!-- 录音标题 -->
+      <view class="voice-record-header">
+        <text class="voice-record-title">{{isRecording ? '正在录音...' : '准备录音'}}</text>
+        <view class="voice-close-btn" catchtap="onVoiceRecordClose">
+          <t-icon name="close" size="28rpx" color="#666" />
+        </view>
+      </view>
+
+      <!-- 录音动画区域 -->
+      <view class="voice-record-animation">
+        <view class="voice-wave-container">
+          <view class="voice-wave {{isRecording ? 'recording' : ''}}"></view>
+          <view class="voice-wave {{isRecording ? 'recording' : ''}}"></view>
+          <view class="voice-wave {{isRecording ? 'recording' : ''}}"></view>
+        </view>
+        <view class="voice-icon-wrapper">
+          <t-icon name="sound" size="80rpx" color="{{isRecording ? '#FF9800' : '#ccc'}}" />
+        </view>
+      </view>
+
+      <!-- 录音时长显示 -->
+      <view class="voice-duration">
+        <text class="duration-text">{{recordDuration}}s</text>
+      </view>
+
+      <!-- 提示文字 -->
+      <view class="voice-hint">
+        <text class="hint-text">{{isRecording ? '请描述您的血氧数据' : '点击开始录音'}}</text>
+        <!-- 显示实时识别的文字 -->
+        <text class="recognized-text" wx:if="{{isRecording && recognizedText}}">{{recognizedText}}</text>
+        <text class="hint-subtext" wx:if="{{!isRecording || !recognizedText}}">例如：血氧饱和度98 心率72</text>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="voice-record-actions">
+        <view class="voice-action-btn cancel" bindtap="cancelRecording" wx:if="{{isRecording}}">
+          <t-icon name="close" size="32rpx" color="#666" />
+          <text>取消</text>
+        </view>
+        <view class="voice-action-btn record {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording">
+          <t-icon name="{{isRecording ? 'check' : 'sound'}}" size="48rpx" color="white" />
+          <text>{{isRecording ? '完成录音' : '开始录音'}}</text>
+        </view>
+      </view>
+
+      <!-- 底部安全距离 -->
+      <view class="voice-safe-area"></view>
+    </view>
+  </t-popup>
+
+  <!-- AI识别结果预览弹窗 -->
+  <t-popup visible="{{aiResultVisible}}" bind:visible-change="onAIResultClose" placement="bottom" show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+    <view class="ai-result-popup">
+      <!-- 标题栏 -->
+      <view class="ai-result-header">
+        <view class="ai-header-left">
+          <t-icon name="check-circle" size="40rpx" color="#FF9800" />
+          <text class="ai-result-title">AI识别结果</text>
+        </view>
+        <view class="ai-close-btn" catchtap="onAIResultClose">
+          <t-icon name="close" size="28rpx" color="#666" />
+        </view>
+      </view>
+
+      <!-- 识别结果列表 -->
+      <scroll-view class="ai-result-content" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+        <view class="ai-result-item" wx:for="{{aiRecognizedData}}" wx:key="field" wx:if="{{item.value}}">
+          <view class="ai-item-header">
+            <text class="ai-item-name">{{item.label}}</text>
+            <view class="ai-confidence-badge" wx:if="{{item.confidence}}">
+              <text class="confidence-text">{{item.confidence}}%</text>
+            </view>
+          </view>
+          <view class="ai-item-value">
+            <text class="value-number">{{item.value}}</text>
+            <text class="value-unit">{{item.unit}}</text>
+          </view>
+          <!-- 置信度进度条 -->
+          <view class="ai-confidence-bar" wx:if="{{item.confidence}}">
+            <view class="confidence-fill" style="width: {{item.confidence}}%; background: {{item.confidenceColor}};"></view>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="ai-empty-state" wx:if="{{aiRecognizedData.length === 0}}">
+          <t-icon name="info-circle" size="80rpx" color="#ddd" />
+          <text class="empty-text">未识别到有效数据</text>
+          <text class="empty-hint">请重新拍摄或选择更清晰的图片</text>
+        </view>
+      </scroll-view>
+
+      <!-- 底部按钮 -->
+      <view class="ai-result-actions">
+        <view class="ai-action-btn secondary" bindtap="retryAIIdentify">
+          <t-icon name="refresh" size="32rpx" color="#666" />
+          <text>重新识别</text>
+        </view>
+        <view class="ai-action-btn primary" bindtap="confirmAIResult">
+          <t-icon name="check" size="32rpx" color="white" />
+          <text>确认填充</text>
+        </view>
+      </view>
+    </view>
+  </t-popup>
+
   <!-- Toast -->
   <t-toast id="t-toast" />
   <!-- 浮动的下一项/完成按钮 -->

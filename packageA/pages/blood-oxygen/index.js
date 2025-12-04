@@ -43,7 +43,19 @@ Page({
     isLoggedIn: false,
 
     // 当前聚焦的输入框索引（用于键盘切换）
-    focusIndex: -1
+    focusIndex: -1,
+
+    // AI智能导入相关
+    aiImportMenuVisible: false,
+    voiceRecordingVisible: false,
+    isRecording: false,
+    recordDuration: 0,
+    recognizedText: '',
+    aiRecognizedData: [],
+    aiResultVisible: false,
+    voiceRecognitionManager: null,
+    recordDurationTimer: null,
+    lastImportMethod: '' // 'camera', 'album', 'voice'
   },
 
   // 页面初始化
@@ -2787,6 +2799,602 @@ Page({
     });
   }
   ,
+
+  // ==================== AI智能导入功能 ====================
+
+  // 显示AI导入选项菜单
+  showAIIdentifyOptions() {
+    this.setData({
+      aiImportMenuVisible: true
+    });
+  },
+
+  // 关闭AI导入菜单
+  onAIImportMenuClose() {
+    this.setData({
+      aiImportMenuVisible: false
+    });
+  },
+
+  // 处理拍照识别
+  handleAICamera() {
+    this.setData({
+      aiImportMenuVisible: false,
+      lastImportMethod: 'camera'
+    });
+
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['camera'],
+      camera: 'back',
+      success: (res) => {
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        this.recognizeImageWithAI(tempFilePath);
+      },
+      fail: (err) => {
+        console.error('拍照失败:', err);
+        if (err.errMsg !== 'chooseMedia:fail cancel') {
+          wx.showToast({
+            title: '拍照失败',
+            icon: 'none'
+          });
+        }
+      }
+    });
+  },
+
+  // 处理相册选择
+  handleAIAlbum() {
+    this.setData({
+      aiImportMenuVisible: false,
+      lastImportMethod: 'album'
+    });
+
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album'],
+      success: (res) => {
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        this.recognizeImageWithAI(tempFilePath);
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err);
+        if (err.errMsg !== 'chooseMedia:fail cancel') {
+          wx.showToast({
+            title: '选择图片失败',
+            icon: 'none'
+          });
+        }
+      }
+    });
+  },
+
+  // 处理语音输入
+  handleAIVoice() {
+    this.setData({
+      aiImportMenuVisible: false,
+      voiceRecordingVisible: true,
+      lastImportMethod: 'voice'
+    });
+
+    // 初始化语音识别
+    this.initVoiceRecognition();
+  },
+
+  // 初始化语音识别
+  initVoiceRecognition() {
+    // 获取插件
+    const plugin = requirePlugin('WechatSI');
+    const manager = plugin.getRecordRecognitionManager();
+
+    this.data.voiceRecognitionManager = manager;
+
+    // 监听识别开始
+    manager.onStart = () => {
+      console.log('语音识别开始');
+      this.setData({
+        isRecording: true,
+        recordDuration: 0,
+        recognizedText: ''
+      });
+
+      // 开始计时
+      this.data.recordDurationTimer = setInterval(() => {
+        this.setData({
+          recordDuration: this.data.recordDuration + 1
+        });
+      }, 1000);
+    };
+
+    // 监听识别结果
+    manager.onRecognize = (res) => {
+      console.log('识别中:', res.result);
+      this.setData({
+        recognizedText: res.result
+      });
+    };
+
+    // 监听识别结束
+    manager.onStop = (res) => {
+      console.log('识别结束:', res.result);
+
+      // 停止计时
+      if (this.data.recordDurationTimer) {
+        clearInterval(this.data.recordDurationTimer);
+        this.data.recordDurationTimer = null;
+      }
+
+      this.setData({
+        isRecording: false,
+        recognizedText: res.result
+      });
+    };
+
+    // 监听识别错误
+    manager.onError = (err) => {
+      console.error('识别错误:', err);
+
+      // 停止计时
+      if (this.data.recordDurationTimer) {
+        clearInterval(this.data.recordDurationTimer);
+        this.data.recordDurationTimer = null;
+      }
+
+      this.setData({
+        isRecording: false
+      });
+
+      wx.showToast({
+        title: '识别失败，请重试',
+        icon: 'none'
+      });
+    };
+  },
+
+  // 切换录音状态
+  toggleRecording() {
+    const { isRecording, voiceRecognitionManager, recognizedText } = this.data;
+
+    if (!isRecording) {
+      // 开始录音
+      if (voiceRecognitionManager) {
+        voiceRecognitionManager.start({
+          lang: 'zh_CN'
+        });
+      }
+    } else {
+      // 停止录音
+      if (voiceRecognitionManager) {
+        voiceRecognitionManager.stop();
+      }
+
+      // 处理识别结果
+      if (recognizedText && recognizedText.trim() !== '') {
+        this.handleVoiceRecordComplete(recognizedText);
+      } else {
+        wx.showToast({
+          title: '未识别到内容',
+          icon: 'none'
+        });
+      }
+    }
+  },
+
+  // 取消录音
+  cancelRecording() {
+    const { voiceRecognitionManager } = this.data;
+
+    if (voiceRecognitionManager) {
+      voiceRecognitionManager.stop();
+    }
+
+    // 停止计时
+    if (this.data.recordDurationTimer) {
+      clearInterval(this.data.recordDurationTimer);
+      this.data.recordDurationTimer = null;
+    }
+
+    this.setData({
+      voiceRecordingVisible: false,
+      isRecording: false,
+      recordDuration: 0,
+      recognizedText: ''
+    });
+  },
+
+  // 关闭语音录音弹窗
+  onVoiceRecordClose() {
+    this.cancelRecording();
+  },
+
+  // 处理语音录音完成
+  async handleVoiceRecordComplete(text) {
+    this.setData({
+      voiceRecordingVisible: false
+    });
+
+    wx.showLoading({
+      title: 'AI识别中...',
+      mask: true
+    });
+
+    try {
+      await this.parseVoiceTextWithAI(text);
+    } catch (err) {
+      console.error('AI解析失败:', err);
+      wx.hideLoading();
+      wx.showToast({
+        title: 'AI解析失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 使用AI解析语音文本
+  async parseVoiceTextWithAI(text) {
+    try {
+      // 调用云函数进行AI解析
+      const res = await wx.cloud.callFunction({
+        name: 'callSiliconFlowAI',
+        data: {
+          messages: [
+            {
+              role: 'user',
+              content: `请从以下语音描述中提取血氧相关的检验数据：\n\n"${text}"\n\n请返回JSON格式：{ "indicators": [{ "id": "spo2", "label": "血氧饱和度", "value": "数值", "unit": "%", "confidence": 90 }] }`
+            }
+          ],
+          mode: 'unified'
+        }
+      });
+
+      console.log('AI解析结果:', res);
+
+      if (res.result && res.result.success && res.result.content) {
+        const content = res.result.content;
+
+        // 尝试提取JSON
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const data = JSON.parse(jsonMatch[0]);
+
+          if (data.indicators && data.indicators.length > 0) {
+            // 匹配当前配置的指标
+            const { displayedBasicIndicators, customIndicators } = this.data;
+            const allConfiguredIndicators = []
+              .concat(displayedBasicIndicators)
+              .concat(customIndicators);
+
+            console.log('🔍 开始匹配AI识别的指标...');
+            console.log('AI识别到的指标:', data.indicators);
+            console.log('当前配置的指标:', allConfiguredIndicators);
+
+            // 只保留能匹配到当前配置项的指标,并补充正确的中文label
+            const matchedIndicators = data.indicators.map(aiItem => {
+              // 尝试匹配配置的指标
+              const matchedIndicator = allConfiguredIndicators.find(indicator =>
+                aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
+              );
+
+              if (matchedIndicator) {
+                console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
+                // 返回数据时,使用配置的中文名称作为label
+                return {
+                  ...aiItem,
+                  id: matchedIndicator.id,
+                  label: matchedIndicator.name,  // 使用配置的中文名称
+                  unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位,否则使用配置的单位
+                };
+              } else {
+                console.log(`❌ 未匹配: ${aiItem.label}`);
+                return null;
+              }
+            }).filter(item => item !== null);  // 过滤掉未匹配的项
+
+            console.log('🎯 最终匹配结果:', matchedIndicators);
+
+            if (matchedIndicators.length > 0) {
+              this.setData({
+                aiRecognizedData: matchedIndicators
+              });
+
+              wx.hideLoading();
+
+              // 显示识别结果
+              this.setData({
+                aiResultVisible: true
+              });
+            } else {
+              wx.hideLoading();
+              wx.showToast({
+                title: '未识别到有效数据',
+                icon: 'none'
+              });
+            }
+          } else {
+            wx.hideLoading();
+            wx.showToast({
+              title: '未识别到有效数据',
+              icon: 'none'
+            });
+          }
+        } else {
+          wx.hideLoading();
+          wx.showToast({
+            title: 'AI解析格式错误',
+            icon: 'none'
+          });
+        }
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: 'AI解析失败',
+          icon: 'none'
+        });
+      }
+    } catch (err) {
+      console.error('AI解析错误:', err);
+      wx.hideLoading();
+      wx.showToast({
+        title: 'AI解析失败',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 模糊匹配指标名称
+  fuzzyMatch(aiLabel, configName) {
+    if (!aiLabel || !configName) return false;
+
+    // 转小写比较
+    const label = aiLabel.toLowerCase().trim();
+    const name = configName.toLowerCase().trim();
+
+    // 完全匹配
+    if (label === name) return true;
+
+    // 包含关系
+    if (label.includes(name) || name.includes(label)) return true;
+
+    // 血氧相关的特殊匹配规则
+    const bloodOxygenKeywords = [
+      ['spo2', 'oxygen', 'oximetry', '血氧', '血氧饱和度', '氧饱和度', '血氧水平'],
+      ['heartrate', 'heart', 'pulse', 'rate', '心率', '脉搏', '心跳']
+    ];
+
+    for (const keywords of bloodOxygenKeywords) {
+      const labelMatches = keywords.some(keyword => label.includes(keyword));
+      const nameMatches = keywords.some(keyword => name.includes(keyword));
+      if (labelMatches && nameMatches) return true;
+    }
+
+    return false;
+  },
+
+  // 使用AI识别图片
+  async recognizeImageWithAI(tempFilePath) {
+    wx.showLoading({
+      title: 'AI识别中...',
+      mask: true
+    });
+
+    try {
+      // 读取图片文件为base64
+      const fileSystemManager = wx.getFileSystemManager();
+      const base64 = await new Promise((resolve, reject) => {
+        fileSystemManager.readFile({
+          filePath: tempFilePath,
+          encoding: 'base64',
+          success: (res) => resolve(res.data),
+          fail: reject
+        });
+      });
+
+      // 调用云函数进行OCR识别
+      const ocrRes = await wx.cloud.callFunction({
+        name: 'ocrFunction',
+        data: {
+          imgBase64: base64,
+          imgType: 'png'
+        }
+      });
+
+      console.log('OCR识别结果:', ocrRes);
+
+      if (ocrRes.result && ocrRes.result.items && ocrRes.result.items.length > 0) {
+        // 提取OCR文本
+        const ocrText = ocrRes.result.items.map(item => item.text).join('\n');
+        console.log('OCR文本:', ocrText);
+
+        // 使用AI解析OCR文本
+        const aiRes = await wx.cloud.callFunction({
+          name: 'callSiliconFlowAI',
+          data: {
+            messages: [
+              {
+                role: 'user',
+                content: `请从以下检验报告文本中提取血氧相关的数据：\n\n${ocrText}\n\n请返回JSON格式：{ "indicators": [{ "id": "spo2", "label": "血氧饱和度", "value": "数值", "unit": "%", "confidence": 90 }] }`
+              }
+            ],
+            mode: 'unified'
+          }
+        });
+
+        console.log('AI解析结果:', aiRes);
+
+        if (aiRes.result && aiRes.result.success && aiRes.result.content) {
+          const content = aiRes.result.content;
+
+          // 尝试提取JSON
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const data = JSON.parse(jsonMatch[0]);
+
+            if (data.indicators && data.indicators.length > 0) {
+              // 匹配当前配置的指标
+              const { displayedBasicIndicators, customIndicators } = this.data;
+              const allConfiguredIndicators = []
+                .concat(displayedBasicIndicators)
+                .concat(customIndicators);
+
+              console.log('🔍 开始匹配AI识别的指标...');
+              console.log('AI识别到的指标:', data.indicators);
+              console.log('当前配置的指标:', allConfiguredIndicators);
+
+              // 只保留能匹配到当前配置项的指标,并补充正确的中文label
+              const matchedIndicators = data.indicators.map(aiItem => {
+                // 尝试匹配配置的指标
+                const matchedIndicator = allConfiguredIndicators.find(indicator =>
+                  aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
+                );
+
+                if (matchedIndicator) {
+                  console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
+                  // 返回数据时,使用配置的中文名称作为label
+                  return {
+                    ...aiItem,
+                    id: matchedIndicator.id,
+                    label: matchedIndicator.name,  // 使用配置的中文名称
+                    unit: aiItem.unit || matchedIndicator.unit,  // 优先使用AI识别的单位,否则使用配置的单位
+                    confidence: aiItem.confidence || 85,
+                    confidenceColor: this.getConfidenceColor(aiItem.confidence || 85)
+                  };
+                } else {
+                  console.log(`❌ 未匹配: ${aiItem.label}`);
+                  return null;
+                }
+              }).filter(item => item !== null);  // 过滤掉未匹配的项
+
+              console.log('🎯 最终匹配结果:', matchedIndicators);
+
+              if (matchedIndicators.length > 0) {
+                this.setData({
+                  aiRecognizedData: matchedIndicators
+                });
+
+                wx.hideLoading();
+
+                // 显示识别结果
+                this.setData({
+                  aiResultVisible: true
+                });
+              } else {
+                wx.hideLoading();
+                wx.showToast({
+                  title: '未识别到有效数据',
+                  icon: 'none'
+                });
+              }
+            } else {
+              wx.hideLoading();
+              wx.showToast({
+                title: '未识别到有效数据',
+                icon: 'none'
+              });
+            }
+          } else {
+            wx.hideLoading();
+            wx.showToast({
+              title: 'AI解析格式错误',
+              icon: 'none'
+            });
+          }
+        } else {
+          wx.hideLoading();
+          wx.showToast({
+            title: 'AI解析失败',
+            icon: 'none'
+          });
+        }
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: 'OCR识别失败',
+          icon: 'none'
+        });
+      }
+    } catch (err) {
+      console.error('图片识别错误:', err);
+      wx.hideLoading();
+      wx.showToast({
+        title: '识别失败，请重试',
+        icon: 'none'
+      });
+    }
+  },
+
+  // 根据置信度获取颜色
+  getConfidenceColor(confidence) {
+    if (confidence >= 90) {
+      return '#4CAF50'; // 绿色 - 高置信度
+    } else if (confidence >= 70) {
+      return '#FF9800'; // 橙色 - 中等置信度
+    } else {
+      return '#F44336'; // 红色 - 低置信度
+    }
+  },
+
+  // 关闭AI识别结果弹窗
+  onAIResultClose() {
+    this.setData({
+      aiResultVisible: false
+    });
+  },
+
+  // 重新识别
+  retryAIIdentify() {
+    this.setData({
+      aiResultVisible: false
+    });
+
+    // 根据上次的导入方式重新识别
+    const { lastImportMethod } = this.data;
+
+    if (lastImportMethod === 'camera') {
+      this.handleAICamera();
+    } else if (lastImportMethod === 'album') {
+      this.handleAIAlbum();
+    } else if (lastImportMethod === 'voice') {
+      this.handleAIVoice();
+    } else {
+      // 默认显示选项菜单
+      this.showAIIdentifyOptions();
+    }
+  },
+
+  // 确认AI识别结果并填充
+  confirmAIResult() {
+    const { aiRecognizedData, formData } = this.data;
+
+    if (aiRecognizedData.length === 0) {
+      wx.showToast({
+        title: '没有可填充的数据',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 填充数据到表单
+    const newFormData = { ...formData };
+
+    aiRecognizedData.forEach(item => {
+      if (item.id && item.value) {
+        newFormData[item.id] = item.value.toString();
+      }
+    });
+
+    this.setData({
+      formData: newFormData,
+      aiResultVisible: false
+    });
+
+    wx.showToast({
+      title: `已填充${aiRecognizedData.length}个指标`,
+      icon: 'success'
+    });
+  },
+
   // 分享功能
   async onShareAppMessage() {
     const fileID = 'cloud://cloud1-9gzf2w8c9c9b7b73.636c-cloud1-9gzf2w8c9c9b7b73-1364697418/Logo/LOGO2.png'
