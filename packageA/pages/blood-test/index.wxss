@@ -104,8 +104,8 @@
 .ai-smart-import-btn {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  padding: 14rpx 28rpx;
+  justify-content: center;
+  padding: 14rpx 32rpx;
   background: linear-gradient(135deg, #FFB84D 0%, #FFA726 100%);
   border-radius: 40rpx;
   box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.35);
