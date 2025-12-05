@@ -11918,6 +11918,16 @@ Page({
           };
         })
 
+        // 🔧 数据清理：移除旧的 waterIntake ID（兼容性迁移）
+        const hasWater = functionList.some(item => item.id === 'water')
+        const hasWaterIntake = functionList.some(item => item.id === 'waterIntake')
+
+        if (hasWater && hasWaterIntake) {
+          console.log('🧹 [主页面配置] 检测到重复的饮水项，移除旧的 waterIntake')
+          functionList = functionList.filter(item => item.id !== 'waterIntake')
+          needsUpdate = true
+        }
+
         // 🔧 如果发现旧数据（名称需要更新），更新到数据库（不包含 icon 字段）
         if (needsUpdate) {
           db.collection('functionCustomConfig')
@@ -12179,6 +12189,16 @@ Page({
             navigate: item.navigate
           };
         })
+
+        // 🔧 数据清理：移除旧的 waterIntake ID（兼容性迁移）
+        const hasWater = functionList.some(item => item.id === 'water')
+        const hasWaterIntake = functionList.some(item => item.id === 'waterIntake')
+
+        if (hasWater && hasWaterIntake) {
+          console.log('🧹 检测到重复的饮水项，移除旧的 waterIntake')
+          functionList = functionList.filter(item => item.id !== 'waterIntake')
+          needsUpdate = true
+        }
 
         // 🔧 配置合并：检查是否有新增的功能项（如血糖）
         const currentProfile = app.globalData.currentProfile
