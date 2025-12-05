@@ -216,7 +216,8 @@ page {
 .content {
   box-sizing: border-box;
   width: 100%;
-  padding: 42rpx 24rpx 100rpx 24rpx;
+  /* 🔧 iOS修复：增加底部padding防止Canvas图表遮挡TabBar */
+  padding: 42rpx 24rpx 200rpx 24rpx;
   position: relative;
   z-index: 1;
 }
