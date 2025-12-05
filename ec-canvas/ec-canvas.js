@@ -151,11 +151,14 @@ Component({
             const windowInfo = wx.getWindowInfo();
             const dpr = windowInfo.pixelRatio;
 
-            // 设置Canvas尺寸
+            // 设置Canvas实际渲染尺寸（物理像素）
             canvasNode.width = width * dpr;
             canvasNode.height = height * dpr;
 
             const ctx = canvasNode.getContext('2d');
+
+            // 缩放上下文以匹配设备像素比
+            ctx.scale(dpr, dpr);
 
             // 创建Canvas对象，兼容ECharts
             const canvas = {
@@ -213,11 +216,14 @@ Component({
             const windowInfo = wx.getWindowInfo();
             const dpr = windowInfo.pixelRatio;
 
-            // 设置Canvas尺寸
+            // 设置Canvas实际渲染尺寸（物理像素）
             canvasNode.width = width * dpr;
             canvasNode.height = height * dpr;
 
             const ctx = canvasNode.getContext('2d');
+
+            // 缩放上下文以匹配设备像素比
+            ctx.scale(dpr, dpr);
 
             // 创建Canvas对象，兼容ECharts
             const canvas = {
