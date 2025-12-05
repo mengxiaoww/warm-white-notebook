@@ -18,14 +18,14 @@ function getOpenIdIfLoggedIn() {
 function handleNeedLogin(successCallback, failCallback) {
   const app = getApp()
   const openid = app.getOpenIdIfLoggedIn()
-  
+
   if (openid) {
     return openid
   }
 
   // 未登录，通过 app 的方法处理登录
   app.checkLogin().then(openid => {
-    
+
     wx.showToast({
       title: '登录成功',
       icon: 'success'
@@ -34,7 +34,7 @@ function handleNeedLogin(successCallback, failCallback) {
       successCallback(openid)
     }
   }).catch(err => {
-    
+
     if (err.message !== '用户取消登录') {
       wx.showToast({
         title: '登录失败',
@@ -45,7 +45,7 @@ function handleNeedLogin(successCallback, failCallback) {
       failCallback(err)
     }
   })
-  
+
   return false
 }
 
@@ -57,26 +57,26 @@ const authMixin = {
   getOpenIdIfLoggedIn() {
     return getOpenIdIfLoggedIn()
   },
-  
+
   // 处理需要登录的操作
   handleNeedLogin(successCallback, failCallback) {
     return handleNeedLogin(successCallback, failCallback)
   },
-  
+
   // 检查登录状态并加载数据的通用方法
   checkLoginAndLoadData(loadDataFunction) {
     const openid = this.getOpenIdIfLoggedIn()
-    
-    
-    
+
+
+
     if (openid) {
       this.setData({ isLoggedIn: true })
       if (loadDataFunction) {
         loadDataFunction(openid)
       }
     } else {
-      
-      this.setData({ 
+
+      this.setData({
         isLoggedIn: false
       })
     }
@@ -87,4 +87,4 @@ module.exports = {
   getOpenIdIfLoggedIn,
   handleNeedLogin,
   authMixin
-} 
+}
