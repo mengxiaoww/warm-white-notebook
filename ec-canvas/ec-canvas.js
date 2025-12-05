@@ -160,18 +160,23 @@ Component({
             // 缩放上下文以匹配设备像素比
             ctx.scale(dpr, dpr);
 
-            // 创建Canvas对象，兼容ECharts
+            // 创建Canvas对象，兼容ECharts和Canvas 2D
             const canvas = {
               width: width,
               height: height,
+              ctx: ctx, // 直接提供ctx属性，避免重复调用getContext
               getContext: () => ctx,
               setChart: (chart) => {
                 this.setData({ chart: chart });
               }
             };
 
-            // 为Canvas添加必要的属性和方法
-            Object.assign(canvas, canvasNode);
+            // 为Canvas添加必要的属性和方法（但不覆盖已定义的）
+            Object.keys(canvasNode).forEach(key => {
+              if (!(key in canvas)) {
+                canvas[key] = canvasNode[key];
+              }
+            });
 
             if (this.data.ec && typeof this.data.ec.onInit === 'function') {
               setTimeout(() => {
@@ -225,18 +230,23 @@ Component({
             // 缩放上下文以匹配设备像素比
             ctx.scale(dpr, dpr);
 
-            // 创建Canvas对象，兼容ECharts
+            // 创建Canvas对象，兼容ECharts和Canvas 2D
             const canvas = {
               width: width,
               height: height,
+              ctx: ctx, // 直接提供ctx属性，避免重复调用getContext
               getContext: () => ctx,
               setChart: (chart) => {
                 this.setData({ chart: chart });
               }
             };
 
-            // 为Canvas添加必要的属性和方法
-            Object.assign(canvas, canvasNode);
+            // 为Canvas添加必要的属性和方法（但不覆盖已定义的）
+            Object.keys(canvasNode).forEach(key => {
+              if (!(key in canvas)) {
+                canvas[key] = canvasNode[key];
+              }
+            });
 
             if (this.data.ec && typeof this.data.ec.onInit === 'function') {
               this.data.ec.onInit(canvas, width, height, dpr);
