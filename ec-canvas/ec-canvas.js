@@ -32,12 +32,22 @@ Component({
     this.isDraggingScrollbar = false;
     this.scrollbarArea = null;
 
+    // 🔧 初始化 canvasRect，确保触摸事件能用
+    this.canvasRect = null;
+
     if (!this.data.ec) {
       return;
     }
 
-    // 预先测量canvas位置（iOS坐标修正）
-    this.measureCanvasRect();
+    // 预先测量canvas位置（iOS坐标修正）- 延迟100ms确保DOM已渲染
+    setTimeout(() => {
+      this.measureCanvasRect();
+    }, 100);
+
+    // 再次测量，确保坐标准确（双重保险）
+    setTimeout(() => {
+      this.measureCanvasRect();
+    }, 500);
 
     // 移动端立即初始化，不延迟
     this.simpleInit();
@@ -261,45 +271,35 @@ Component({
 
     touchStart(e) {
       console.log('🔥🔥🔥 touchStart 被触发了！');
-      console.log('📊 this.data.chart:', this.data.chart);
-      console.log('📊 this.data:', this.data);
 
       if (!this.data.chart) {
-        console.log('❌ 图表实例不存在，尝试从组件实例获取');
-
-        // 尝试从组件其他地方获取图表实例
-        if (this.chart) {
-          console.log('✅ 从 this.chart 找到图表实例');
-          // 使用组件实例上的 chart
-          const chart = this.chart;
-        } else {
-          console.log('❌ 完全找不到图表实例，放弃处理');
-          return;
-        }
-      } else {
-        console.log('✅ 图表实例存在');
+        console.log('❌ 图表实例不存在');
+        return;
       }
-
-      // 触摸开始时重新测量，避免切换后偏移
-      this.measureCanvasRect();
 
       const touch = e.touches[0];
 
-      // 🔧 修正：touch.x/y 不是相对于 canvas 顶部的坐标
-      // 需要使用 clientX/Y 减去 canvas 的位置偏移
+      // 🔧 关键修复：直接使用 clientX/Y 计算相对坐标
+      // 问题分析：touch.x/y 值不正确，必须使用 clientX/Y - canvas位置
       let x = touch.x;
       let y = touch.y;
 
-      // 如果有 canvasRect，使用 clientY - canvasRect.top 获取真正相对于 canvas 的坐标
-      if (this.canvasRect && typeof touch.clientY === 'number') {
-        y = touch.clientY - this.canvasRect.top;
-        x = touch.clientX - this.canvasRect.left;
+      // 尝试从缓存的 canvasRect 获取位置信息
+      const canvasRect = this.canvasRect;
+
+      if (canvasRect && canvasRect.top != null && typeof touch.clientY === 'number') {
+        // 使用 clientY - canvasRect.top 计算相对于 canvas 顶部的坐标
+        y = touch.clientY - canvasRect.top;
+        x = touch.clientX - canvasRect.left;
+        console.log('✅ 使用缓存的 canvasRect 计算坐标');
+      } else {
+        console.warn('⚠️ canvasRect 不可用，坐标可能不准确');
       }
 
       console.log('📍 触摸坐标:', {
-        原始: { x: touch.x, y: touch.y },
-        修正后: { x, y },
-        canvasRect: this.canvasRect
+        原始: { x: touch.x, y: touch.y, clientX: touch.clientX, clientY: touch.clientY },
+        canvasRect: canvasRect,
+        修正后: { x, y }
       });
 
       this.setData({
