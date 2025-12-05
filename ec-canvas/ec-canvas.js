@@ -295,18 +295,38 @@ Component({
           const dataZoomTop = canvasHeight - dataZoomBottom - dataZoomHeight;
           const dataZoomBottomY = canvasHeight - dataZoomBottom;
 
+          console.log('🔍 触摸检测详情', {
+            '原始触摸坐标': { x: touch.x, y: touch.y, clientX: touch.clientX, clientY: touch.clientY },
+            '计算后触摸坐标': { x, y },
+            'Canvas逻辑尺寸': { canvasWidth, canvasHeight },
+            'Canvas位置': this.canvasRect,
+            'DataZoom配置': { height: dataZoomHeight, bottom: dataZoomBottom },
+            'DataZoom区域': { top: dataZoomTop, bottom: dataZoomBottomY },
+            '是否在区域内': y >= dataZoomTop && y <= dataZoomBottomY
+          });
+
           // 检测触摸是否在 dataZoom 区域内
           if (y >= dataZoomTop && y <= dataZoomBottomY) {
-            // 触摸在 dataZoom 区域内
+            // 触摸在 dataZoom 区域内，阻止事件冒泡
+            if (e.stopPropagation) e.stopPropagation();
+            if (e.preventDefault) e.preventDefault();
+
             this.isDraggingDataZoom = true;
             this.dataZoomStartX = x;
             this.currentDataZoom = {
               start: dataZoom.start,
               end: dataZoom.end,
               width: canvasWidth,
-              height: canvasHeight
+              height: canvasHeight,
+              initialStart: dataZoom.start,
+              initialEnd: dataZoom.end
             };
-            console.log('🎯 开始拖动 dataZoom', { x, y, dataZoomTop, dataZoomBottomY });
+            console.log('🎯 开始拖动 dataZoom', {
+              startX: x,
+              startY: y,
+              dataZoomArea: { top: dataZoomTop, bottom: dataZoomBottomY },
+              initialState: { start: dataZoom.start, end: dataZoom.end }
+            });
             return; // 不触发图表的其他事件
           }
         }
@@ -325,15 +345,19 @@ Component({
 
       // 🎯 处理 dataZoom 拖动
       if (this.isDraggingDataZoom && this.currentDataZoom) {
+        // 阻止事件冒泡
+        if (e.stopPropagation) e.stopPropagation();
+        if (e.preventDefault) e.preventDefault();
+
         const deltaX = x - this.dataZoomStartX;
         const canvasWidth = this.currentDataZoom.width;
 
-        // 计算拖动的百分比
+        // 计算拖动的百分比（基于初始状态计算）
         const deltaPercent = (deltaX / canvasWidth) * 100;
 
-        // 计算新的 start 和 end
-        let newStart = this.currentDataZoom.start + deltaPercent;
-        let newEnd = this.currentDataZoom.end + deltaPercent;
+        // 计算新的 start 和 end（基于初始值）
+        let newStart = this.currentDataZoom.initialStart + deltaPercent;
+        let newEnd = this.currentDataZoom.initialEnd + deltaPercent;
 
         // 边界检查
         const range = newEnd - newStart;
@@ -346,19 +370,40 @@ Component({
           newStart = 100 - range;
         }
 
-        // 更新图表的 dataZoom - 直接修改 option
+        // 更新图表的 dataZoom
         const chart = this.data.chart;
         if (chart && chart._model && chart._model.option) {
           const option = chart._model.option;
           if (option.dataZoom && option.dataZoom[0]) {
-            // 直接使用 setOption 更新
+            // 使用 setOption 更新，不合并配置
             chart.setOption({
               dataZoom: [{
+                type: 'slider',
+                show: true,
+                xAxisIndex: [0],
                 start: newStart,
-                end: newEnd
+                end: newEnd,
+                height: option.dataZoom[0].height,
+                bottom: option.dataZoom[0].bottom,
+                backgroundColor: option.dataZoom[0].backgroundColor,
+                dataBackground: option.dataZoom[0].dataBackground,
+                selectedDataBackground: option.dataZoom[0].selectedDataBackground,
+                handleStyle: option.dataZoom[0].handleStyle,
+                handleIcon: option.dataZoom[0].handleIcon,
+                handleSize: option.dataZoom[0].handleSize,
+                textStyle: option.dataZoom[0].textStyle,
+                borderColor: option.dataZoom[0].borderColor,
+                fillerColor: option.dataZoom[0].fillerColor,
+                realtime: true,
+                filterMode: 'filter'
               }]
+            }, false); // 第二个参数false表示不合并
+            console.log('🎯 更新 dataZoom', {
+              newStart: newStart.toFixed(2),
+              newEnd: newEnd.toFixed(2),
+              deltaX,
+              deltaPercent: deltaPercent.toFixed(2)
             });
-            console.log('🎯 更新 dataZoom', { newStart, newEnd, deltaX });
           }
         }
         return; // 不触发图表的其他事件
