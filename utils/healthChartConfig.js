@@ -28,24 +28,66 @@ const dataTypeGroups = [
     name: '酶类指标',
     color: '#FF9800',
     types: [13]
+  },
+  {
+    id: 'metabolism',
+    name: '代谢指标',
+    color: '#FF7043',
+    types: [14, 15, 16]
+  },
+  {
+    id: 'vitals',
+    name: '生命体征',
+    color: '#FF5722',
+    types: [17, 18, 19]
+  },
+  {
+    id: 'lifestyle',
+    name: '生活指标',
+    color: '#FFB84D',
+    types: [20, 21, 22]
   }
 ];
 
 const dataTypes = [
+  // 血常规 (索引 0-3)
   { key: 'wbc', name: '白细胞', unit: '×10⁹/L', icon: 'W', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [4.0, 10.0], collection: 'bloodTests', desc: '免疫细胞' },
   { key: 'plt', name: '血小板', unit: '×10⁹/L', icon: 'P', iconBg: '#FFCC80', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [100, 300], collection: 'bloodTests', desc: '凝血功能' },
   { key: 'hgb', name: '血红蛋白', unit: 'g/L', icon: 'H', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [120, 160], collection: 'bloodTests', desc: '载氧能力' },
   { key: 'neut', name: '中性粒细胞', unit: '×10⁹/L', icon: 'N', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [2.0, 7.0], collection: 'bloodTests', desc: '感染指标' },
+
+  // 肝功能 (索引 4-7)
   { key: 'alt', name: 'ALT', unit: 'U/L', icon: 'ALT', iconBg: '#FF9800', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [9, 50], collection: 'liverFunctionTests', desc: '谷丙转氨酶' },
   { key: 'ast', name: 'AST', unit: 'U/L', icon: 'AST', iconBg: '#FF9800', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [15, 40], collection: 'liverFunctionTests', desc: '谷草转氨酶' },
   { key: 'tbil', name: '总胆红素', unit: 'μmol/L', icon: 'TBIL', iconBg: '#FF9800', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [3.4, 17.1], collection: 'liverFunctionTests', desc: '肝功能指标' },
   { key: 'dbil', name: '直接胆红素', unit: 'μmol/L', icon: 'DBIL', iconBg: '#FF9800', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [1.7, 6.8], collection: 'liverFunctionTests', desc: '肝功能指标' },
+
+  // 肾功能 (索引 8-10)
   { key: 'cr', name: '肌酐', unit: 'μmol/L', icon: 'CR', iconBg: '#FFCC80', color: '#FFCC80', lightColor: '#FFF3E0', normalRange: [44, 133], collection: 'kidneyFunctionTests', desc: '肾功能指标' },
   { key: 'bun', name: '尿素氮', unit: 'mmol/L', icon: 'BUN', iconBg: '#FFCC80', color: '#FFCC80', lightColor: '#FFF3E0', normalRange: [2.9, 8.2], collection: 'kidneyFunctionTests', desc: '肾功能指标' },
   { key: 'ua', name: '尿酸', unit: 'μmol/L', icon: 'UA', iconBg: '#FFCC80', color: '#FFCC80', lightColor: '#FFF3E0', normalRange: [208, 428], collection: 'kidneyFunctionTests', desc: '肾功能指标' },
+
+  // 病毒指标 (索引 11-12)
   { key: 'ebvDna', name: 'EB病毒', unit: 'IU/mL', icon: 'E', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [0, 0], collection: 'ebvRecords', desc: 'DNA定量' },
   { key: 'hcmvDna', name: '巨细胞病毒', unit: 'IU/mL', icon: 'C', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [0, 0], collection: 'cmvRecords', desc: 'DNA定量' },
-  { key: 'ldh', name: '乳酸脱氢酶', unit: 'U/L', icon: 'L', iconBg: '#FF9800', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [100, 240], collection: 'ldhRecords', desc: 'LDH水平' }
+
+  // 酶类指标 (索引 13)
+  { key: 'ldh', name: '乳酸脱氢酶', unit: 'U/L', icon: 'L', iconBg: '#FF9800', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [100, 240], collection: 'ldhRecords', desc: 'LDH水平' },
+
+  // 代谢指标 (索引 14-16)
+  { key: 'bloodSugar', name: '血糖', unit: 'mmol/L', icon: 'BS', iconBg: '#FF7043', color: '#FF7043', lightColor: '#FFF3E0', normalRange: [3.9, 7.8], collection: 'bloodSugars', desc: '血糖水平' },
+  { key: 'fbg', name: '空腹血糖', unit: 'mmol/L', icon: 'FBG', iconBg: '#FF7043', color: '#FF7043', lightColor: '#FFF3E0', normalRange: [3.9, 6.1], collection: 'bloodSugars', desc: '空腹血糖' },
+  { key: 'hba1c', name: '糖化血红蛋白', unit: '%', icon: 'HbA1c', iconBg: '#FF7043', color: '#FF7043', lightColor: '#FFF3E0', normalRange: [4.0, 6.0], collection: 'bloodSugars', desc: '血糖控制指标' },
+
+  // 生命体征 (索引 17-19)
+  { key: 'systolic', name: '收缩压', unit: 'mmHg', icon: 'SBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [90, 140], collection: 'bloodPressures', desc: '高压' },
+  { key: 'diastolic', name: '舒张压', unit: 'mmHg', icon: 'DBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [60, 90], collection: 'bloodPressures', desc: '低压' },
+  { key: 'spo2', name: '血氧饱和度', unit: '%', icon: 'SpO2', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [95, 100], collection: 'bloodOxygens', desc: '血氧水平' },
+
+  // 生活指标 (索引 20-22)
+  { key: 'temperature', name: '体温', unit: '°C', icon: 'T', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [36.0, 37.3], collection: 'temperatures', desc: '体温监测' },
+  { key: 'weight', name: '体重', unit: 'kg', icon: 'W', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [40, 100], collection: 'bodyMeasurements', desc: '体重管理' },
+  { key: 'water', name: '饮水量', unit: 'ml', icon: 'WI', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [1500, 2500], collection: 'waterIntakes', desc: '每日饮水' }
 ];
 
 const timeRanges = [
