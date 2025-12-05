@@ -267,9 +267,16 @@ Component({
       this.measureCanvasRect();
 
       const touch = e.touches[0];
-      // iOS 兼容：优先使用 touch.x/y；若不可用，退化为 clientX/clientY - canvas偏移
-      const x = (typeof touch.x === 'number') ? touch.x : (touch.clientX - (this.canvasRect?.left || 0));
-      const y = (typeof touch.y === 'number') ? touch.y : (touch.clientY - (this.canvasRect?.top || 0));
+      // 微信小程序 Canvas 2D 中，touch.x/y 已经是相对于 canvas 的坐标
+      // 如果没有 touch.x/y，则使用 clientX/Y 减去 canvas 偏移量
+      let x, y;
+      if (typeof touch.x === 'number' && typeof touch.y === 'number') {
+        x = touch.x;
+        y = touch.y;
+      } else {
+        x = touch.clientX - (this.canvasRect?.left || 0);
+        y = touch.clientY - (this.canvasRect?.top || 0);
+      }
 
       this.setData({
         isTouch: true,
@@ -340,8 +347,15 @@ Component({
       if (!this.data.chart || !this.data.isTouch) return;
 
       const touch = e.touches[0];
-      const x = (typeof touch.x === 'number') ? touch.x : (touch.clientX - (this.canvasRect?.left || 0));
-      const y = (typeof touch.y === 'number') ? touch.y : (touch.clientY - (this.canvasRect?.top || 0));
+      // 微信小程序 Canvas 2D 中，touch.x/y 已经是相对于 canvas 的坐标
+      let x, y;
+      if (typeof touch.x === 'number' && typeof touch.y === 'number') {
+        x = touch.x;
+        y = touch.y;
+      } else {
+        x = touch.clientX - (this.canvasRect?.left || 0);
+        y = touch.clientY - (this.canvasRect?.top || 0);
+      }
 
       // 🎯 处理 dataZoom 拖动
       if (this.isDraggingDataZoom && this.currentDataZoom) {
@@ -417,8 +431,15 @@ Component({
       if (!this.data.chart || !this.data.isTouch) return;
 
       const touch = e.changedTouches[0];
-      const x = (typeof touch.x === 'number') ? touch.x : (touch.clientX - (this.canvasRect?.left || 0));
-      const y = (typeof touch.y === 'number') ? touch.y : (touch.clientY - (this.canvasRect?.top || 0));
+      // 微信小程序 Canvas 2D 中，touch.x/y 已经是相对于 canvas 的坐标
+      let x, y;
+      if (typeof touch.x === 'number' && typeof touch.y === 'number') {
+        x = touch.x;
+        y = touch.y;
+      } else {
+        x = touch.clientX - (this.canvasRect?.left || 0);
+        y = touch.clientY - (this.canvasRect?.top || 0);
+      }
 
       const endTime = Date.now();
       const timeDiff = endTime - this.data.touchData.startTime;
