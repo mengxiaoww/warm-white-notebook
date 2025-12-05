@@ -278,6 +278,40 @@ Component({
         'touchData.startTime': Date.now()
       });
 
+      // 🎯 检测是否触摸到 dataZoom 滚动条
+      const chart = this.data.chart;
+      if (chart && chart._model && chart._model.option && chart._model.option.dataZoom) {
+        const dataZoom = chart._model.option.dataZoom[0];
+        if (dataZoom && dataZoom.show) {
+          // 获取 canvas 的实际高度
+          const canvasHeight = chart.getHeight();
+          const canvasWidth = chart.getWidth();
+
+          // dataZoom 配置（从 home/index.js 的配置中获取）
+          const dataZoomHeight = dataZoom.height || 18;
+          const dataZoomBottom = dataZoom.bottom || 25;
+
+          // 计算 dataZoom 区域（从底部向上）
+          const dataZoomTop = canvasHeight - dataZoomBottom - dataZoomHeight;
+          const dataZoomBottomY = canvasHeight - dataZoomBottom;
+
+          // 检测触摸是否在 dataZoom 区域内
+          if (y >= dataZoomTop && y <= dataZoomBottomY) {
+            // 触摸在 dataZoom 区域内
+            this.isDraggingDataZoom = true;
+            this.dataZoomStartX = x;
+            this.currentDataZoom = {
+              start: dataZoom.start,
+              end: dataZoom.end,
+              width: canvasWidth,
+              height: canvasHeight
+            };
+            console.log('🎯 开始拖动 dataZoom', { x, y, dataZoomTop, dataZoomBottomY });
+            return; // 不触发图表的其他事件
+          }
+        }
+      }
+
       // 触发ECharts原生事件
       this.triggerChartEvent('mousedown', { x, y });
     },
@@ -288,6 +322,42 @@ Component({
       const touch = e.touches[0];
       const x = (typeof touch.x === 'number') ? touch.x : (touch.clientX - (this.canvasRect?.left || 0));
       const y = (typeof touch.y === 'number') ? touch.y : (touch.clientY - (this.canvasRect?.top || 0));
+
+      // 🎯 处理 dataZoom 拖动
+      if (this.isDraggingDataZoom && this.currentDataZoom) {
+        const deltaX = x - this.dataZoomStartX;
+        const canvasWidth = this.currentDataZoom.width;
+
+        // 计算拖动的百分比
+        const deltaPercent = (deltaX / canvasWidth) * 100;
+
+        // 计算新的 start 和 end
+        let newStart = this.currentDataZoom.start + deltaPercent;
+        let newEnd = this.currentDataZoom.end + deltaPercent;
+
+        // 边界检查
+        const range = newEnd - newStart;
+        if (newStart < 0) {
+          newStart = 0;
+          newEnd = range;
+        }
+        if (newEnd > 100) {
+          newEnd = 100;
+          newStart = 100 - range;
+        }
+
+        // 更新图表的 dataZoom
+        const chart = this.data.chart;
+        if (chart) {
+          chart.dispatchAction({
+            type: 'dataZoom',
+            start: newStart,
+            end: newEnd
+          });
+          console.log('🎯 更新 dataZoom', { newStart, newEnd, deltaX });
+        }
+        return; // 不触发图表的其他事件
+      }
 
       // 安全地触发ECharts滑动事件
       this.triggerChartEvent('mousemove', { x, y });
@@ -306,6 +376,15 @@ Component({
       const distanceY = Math.abs(y - this.data.touchData.startY);
 
       this.setData({ isTouch: false });
+
+      // 🎯 处理 dataZoom 拖动结束
+      if (this.isDraggingDataZoom) {
+        this.isDraggingDataZoom = false;
+        this.dataZoomStartX = null;
+        this.currentDataZoom = null;
+        console.log('🎯 结束拖动 dataZoom');
+        return; // 不触发图表的其他事件
+      }
 
       // 触发触摸结束事件
       this.triggerChartEvent('mouseup', { x, y });
