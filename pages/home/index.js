@@ -1420,6 +1420,13 @@ Page({
     return;
   },
 
+  // 阻止图表区域触发页面滚动
+  preventScroll() {
+    // 空方法，仅用于阻止事件冒泡到 scroll-view
+    // catchtouchmove/catchtouchstart/catchtouchend 会阻止事件传播
+    return false;
+  },
+
 
   onUnload() {
     // 销毁所有图表实例
