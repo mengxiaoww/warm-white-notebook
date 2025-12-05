@@ -40,7 +40,7 @@ Page({
 
     // 显示的基础指标
     displayedBasicIndicators: [
-      { id: 'bloodSugar', name: '血糖', unit: 'mmol/L' },
+      { id: 'bloodSugar', name: '数值', unit: 'mmol/L' },
     ],
 
     // 用户信息
@@ -155,7 +155,7 @@ Page({
 
     // 构建基础指标列表
     const basicIndicators = [
-      { id: 'bloodSugar', name: '血糖', unit: 'mmol/L' },
+      { id: 'bloodSugar', name: '数值', unit: 'mmol/L' },
       { id: 'fbg', name: '空腹血糖', unit: 'mmol/L' },
       { id: 'pbg', name: '餐后2小时血糖', unit: 'mmol/L' },
       { id: 'hba1c', name: '糖化血红蛋白', unit: '%' },
@@ -317,7 +317,7 @@ Page({
         rbg: ''
       },
       displayedBasicIndicators: [
-        { id: 'bloodSugar', name: '血糖', unit: 'mmol/L' },
+        { id: 'bloodSugar', name: '数值', unit: 'mmol/L' },
       ],
       customIndicators: []
     });
@@ -2151,7 +2151,7 @@ Page({
 
       // 预设指标定义
       const defaultIndicators = {
-        bloodSugar: { name: '血糖', unit: 'mmol/L' },
+        bloodSugar: { name: '数值', unit: 'mmol/L' },
         fbg: { name: '空腹血糖', unit: 'mmol/L' },
         pbg: { name: '餐后2小时血糖', unit: 'mmol/L' },
         hba1c: { name: '糖化血红蛋白', unit: '%' },
@@ -2230,7 +2230,7 @@ Page({
 
         // 强制使用默认配置
         const fallbackIndicators = [
-          { id: 'bloodSugar', name: '血糖', min: '3.9', max: '7.8', unit: 'mmol/L' }
+          { id: 'bloodSugar', name: '数值', min: '3.9', max: '7.8', unit: 'mmol/L' }
         ];
 
         const fallbackFormData = {};
@@ -2314,7 +2314,7 @@ Page({
       // 失败时使用默认配置
       console.log('🔧 使用默认配置作为兜底');
       const defaultIndicators = [
-        { id: 'bloodSugar', name: '血糖', min: '3.9', max: '7.8', unit: 'mmol/L' }
+        { id: 'bloodSugar', name: '数值', min: '3.9', max: '7.8', unit: 'mmol/L' }
       ];
 
       const initialFormData = {};
