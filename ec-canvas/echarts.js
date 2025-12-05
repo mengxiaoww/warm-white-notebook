@@ -1,11 +1,13 @@
 // 简化的图表绘制实现
 
 class SimpleChart {
-  constructor(canvas, options) {
+  constructor(canvas, options = {}) {
 
     this.canvas = canvas;
     this.ctx = canvas.ctx || canvas.getContext('2d');
-    this.width = canvas.width || 300;
+
+    // 优先使用options中的尺寸（echarts.init传入的），其次使用canvas属性
+    this.width = options.width || canvas.width || 300;
 
     // iOS系统检测和高度适配
     let defaultHeight = 400;
@@ -17,7 +19,8 @@ class SimpleChart {
       // 如果获取系统信息失败，使用默认值
     }
 
-    this.height = canvas.height || defaultHeight;
+    this.height = options.height || canvas.height || defaultHeight;
+    this.dpr = options.devicePixelRatio || 1;
     this.option = {};
 
     // 滚动相关状态
