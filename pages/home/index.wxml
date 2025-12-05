@@ -138,7 +138,7 @@
         <view class="chart-area">
           <!-- 有数据时显示图表 -->
           <view wx:if="{{chartDataByGroup[groupIndex] && chartDataByGroup[groupIndex].length > 0}}" class="chart-container">
-            <ec-canvas id="chart-group-{{groupIndex}}" canvas-id="chart-group-{{groupIndex}}" ec="{{chartConfigByGroup[groupIndex]}}" class="chart-canvas"></ec-canvas>
+            <ec-canvas id="chart-group-{{groupIndex}}" canvasId="chart-group-{{groupIndex}}" ec="{{chartConfigByGroup[groupIndex]}}" class="chart-canvas"></ec-canvas>
             <!-- 图表底部信息 -->
             <!-- <view class="chart-footer">
             <text class="record-count">{{chartDataByGroup[groupIndex].length}} 条记录</text>

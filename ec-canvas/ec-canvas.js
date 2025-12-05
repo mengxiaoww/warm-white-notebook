@@ -52,15 +52,8 @@ Component({
       try {
         this.data.chart.dispose();
       } catch (e) {
+        console.error('❌ 图表销毁失败:', e);
       }
-    }
-
-    // 清理Canvas
-    try {
-      const ctx = wx.createCanvasContext(this.data.canvasId, this);
-      ctx.clearRect(0, 0, 9999, 9999);
-      ctx.draw();
-    } catch (e) {
     }
   },
 
@@ -69,12 +62,13 @@ Component({
     measureCanvasRect() {
       try {
         const query = wx.createSelectorQuery().in(this);
-        query.select('.ec-canvas').boundingClientRect((rect) => {
+        query.select(`#${this.properties.canvasId}`).boundingClientRect((rect) => {
           if (rect) {
             this.canvasRect = rect; // {left, top, width, height}
           }
         }).exec();
       } catch (e) {
+        console.error('❌ 测量Canvas矩形失败:', e);
       }
     },
 
@@ -139,36 +133,51 @@ Component({
       }
     },
 
-    // 直接创建图表（移动端专用）
+    // 直接创建图表（移动端专用）- 使用Canvas 2D API
     createChartDirect(width, height) {
-
       try {
-        // 使用传入的唯一canvasId
         const canvasId = this.properties.canvasId;
+        const query = wx.createSelectorQuery().in(this);
 
-        // 移动端立即执行，不延迟
-        const ctx = wx.createCanvasContext(canvasId, this);
-        const windowInfo = wx.getWindowInfo();
-        const dpr = windowInfo.pixelRatio;
+        query.select(`#${canvasId}`)
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            if (!res || !res[0] || !res[0].node) {
+              console.error('❌ Canvas 2D节点获取失败');
+              return;
+            }
 
-        const canvas = {
-          width: width,
-          height: height,
-          ctx: ctx,
-          getContext: () => ctx,
-          draw: () => ctx.draw(),
-          setChart: (chart) => {
-            this.setData({ chart: chart });
-          }
-        };
+            const canvasNode = res[0].node;
+            const windowInfo = wx.getWindowInfo();
+            const dpr = windowInfo.pixelRatio;
 
-        if (this.data.ec && typeof this.data.ec.onInit === 'function') {
-          setTimeout(() => {
-            this.data.ec.onInit(canvas, width, height, dpr);
-          }, 50); // 很短的延迟确保canvas准备就绪
-        }
+            // 设置Canvas尺寸
+            canvasNode.width = width * dpr;
+            canvasNode.height = height * dpr;
 
+            const ctx = canvasNode.getContext('2d');
+
+            // 创建Canvas对象，兼容ECharts
+            const canvas = {
+              width: width,
+              height: height,
+              getContext: () => ctx,
+              setChart: (chart) => {
+                this.setData({ chart: chart });
+              }
+            };
+
+            // 为Canvas添加必要的属性和方法
+            Object.assign(canvas, canvasNode);
+
+            if (this.data.ec && typeof this.data.ec.onInit === 'function') {
+              setTimeout(() => {
+                this.data.ec.onInit(canvas, width, height, dpr);
+              }, 50);
+            }
+          });
       } catch (error) {
+        console.error('❌ createChartDirect错误:', error);
       }
     },
 
@@ -176,7 +185,7 @@ Component({
     queryCanvasSize() {
       const query = wx.createSelectorQuery().in(this);
 
-      query.select('.ec-canvas').boundingClientRect().exec((res) => {
+      query.select(`#${this.properties.canvasId}`).boundingClientRect().exec((res) => {
         if (res && res[0] && res[0].width > 0 && res[0].height > 0) {
           const rect = res[0];
           this.createChartFromDOM(rect.width, rect.height);
@@ -186,30 +195,49 @@ Component({
       });
     },
 
-    // 从DOM创建图表（PC端专用）
+    // 从DOM创建图表（PC端专用）- 使用Canvas 2D API
     createChartFromDOM(width, height) {
       try {
         const canvasId = this.properties.canvasId;
+        const query = wx.createSelectorQuery().in(this);
 
-        const ctx = wx.createCanvasContext(canvasId, this);
-        const windowInfo = wx.getWindowInfo();
-        const dpr = windowInfo.pixelRatio;
+        query.select(`#${canvasId}`)
+          .fields({ node: true, size: true })
+          .exec((res) => {
+            if (!res || !res[0] || !res[0].node) {
+              console.error('❌ Canvas 2D节点获取失败');
+              return;
+            }
 
-        const canvas = {
-          width: width,
-          height: height,
-          ctx: ctx,
-          getContext: () => ctx,
-          draw: () => ctx.draw(),
-          setChart: (chart) => {
-            this.setData({ chart: chart });
-          }
-        };
+            const canvasNode = res[0].node;
+            const windowInfo = wx.getWindowInfo();
+            const dpr = windowInfo.pixelRatio;
 
-        if (this.data.ec && typeof this.data.ec.onInit === 'function') {
-          this.data.ec.onInit(canvas, width, height, dpr);
-        }
+            // 设置Canvas尺寸
+            canvasNode.width = width * dpr;
+            canvasNode.height = height * dpr;
+
+            const ctx = canvasNode.getContext('2d');
+
+            // 创建Canvas对象，兼容ECharts
+            const canvas = {
+              width: width,
+              height: height,
+              getContext: () => ctx,
+              setChart: (chart) => {
+                this.setData({ chart: chart });
+              }
+            };
+
+            // 为Canvas添加必要的属性和方法
+            Object.assign(canvas, canvasNode);
+
+            if (this.data.ec && typeof this.data.ec.onInit === 'function') {
+              this.data.ec.onInit(canvas, width, height, dpr);
+            }
+          });
       } catch (error) {
+        console.error('❌ createChartFromDOM错误:', error);
       }
     },
 
