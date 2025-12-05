@@ -260,9 +260,15 @@ Component({
     },
 
     touchStart(e) {
+      console.log('🔥🔥🔥 touchStart 被触发了！', e);
+
       if (!this.data.chart) {
+        console.log('❌ 图表实例不存在');
         return;
       }
+
+      console.log('✅ 图表实例存在');
+
       // 触摸开始时重新测量，避免切换后偏移
       this.measureCanvasRect();
 
@@ -277,6 +283,8 @@ Component({
         x = touch.clientX - (this.canvasRect?.left || 0);
         y = touch.clientY - (this.canvasRect?.top || 0);
       }
+
+      console.log('📍 触摸坐标:', { x, y });
 
       this.setData({
         isTouch: true,
