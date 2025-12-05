@@ -346,15 +346,20 @@ Component({
           newStart = 100 - range;
         }
 
-        // 更新图表的 dataZoom
+        // 更新图表的 dataZoom - 直接修改 option
         const chart = this.data.chart;
-        if (chart) {
-          chart.dispatchAction({
-            type: 'dataZoom',
-            start: newStart,
-            end: newEnd
-          });
-          console.log('🎯 更新 dataZoom', { newStart, newEnd, deltaX });
+        if (chart && chart._model && chart._model.option) {
+          const option = chart._model.option;
+          if (option.dataZoom && option.dataZoom[0]) {
+            // 直接使用 setOption 更新
+            chart.setOption({
+              dataZoom: [{
+                start: newStart,
+                end: newEnd
+              }]
+            });
+            console.log('🎯 更新 dataZoom', { newStart, newEnd, deltaX });
+          }
         }
         return; // 不触发图表的其他事件
       }
