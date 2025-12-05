@@ -400,19 +400,34 @@ Component({
         if (chart && option && option.dataZoom && option.dataZoom[0]) {
           console.log('✅ 通过了条件检查，准备调用 setOption');
 
-          // 🎯 关键修复：使用 dispatchAction 而不是 setOption
-          // dispatchAction 是 ECharts 官方推荐的方式来更新 dataZoom
-          chart.dispatchAction({
-            type: 'dataZoom',
+          // 🎯 终极修复：获取完整的dataZoom配置，只更新start和end
+          const currentDataZoom = option.dataZoom[0];
+          const updatedDataZoom = {
+            ...currentDataZoom,
             start: newStart,
             end: newEnd
-          });
-          console.log('🎯 更新 dataZoom', {
-            newStart: newStart.toFixed(2),
-            newEnd: newEnd.toFixed(2),
-            deltaX,
-            deltaPercent: deltaPercent.toFixed(2)
-          });
+          };
+
+          try {
+            // 使用完整配置对象，确保所有属性都保留
+            chart.setOption({
+              dataZoom: [updatedDataZoom]
+            }, false); // false = 合并模式
+
+            console.log('🎯 更新 dataZoom 成功', {
+              newStart: newStart.toFixed(2),
+              newEnd: newEnd.toFixed(2),
+              deltaX,
+              deltaPercent: deltaPercent.toFixed(2)
+            });
+
+            // 强制重绘canvas
+            if (chart._zr && chart._zr.painter) {
+              chart._zr.painter.refresh();
+            }
+          } catch (error) {
+            console.error('❌ setOption 调用失败:', error);
+          }
         } else {
           console.log('❌ 无法更新dataZoom:', {
             hasChart: !!chart,
