@@ -30,22 +30,16 @@ const dataTypeGroups = [
     types: [13]
   },
   {
-    id: 'metabolism',
-    name: '代谢指标',
-    color: '#FF7043',
-    types: [14, 15, 16]
-  },
-  {
     id: 'vitals',
     name: '生命体征',
     color: '#FF5722',
-    types: [17, 18, 19]
+    types: [14, 15, 16, 17]
   },
   {
     id: 'lifestyle',
     name: '生活指标',
     color: '#FFB84D',
-    types: [20, 21, 22]
+    types: [18, 19, 20]
   }
 ];
 
@@ -74,20 +68,16 @@ const dataTypes = [
   // 酶类指标 (索引 13)
   { key: 'ldh', name: '乳酸脱氢酶', unit: 'U/L', icon: 'L', iconBg: '#FF9800', color: '#FF9800', lightColor: '#FFF3E0', normalRange: [100, 240], collection: 'ldhRecords', desc: 'LDH水平' },
 
-  // 代谢指标 (索引 14-16)
-  { key: 'bloodSugar', name: '血糖', unit: 'mmol/L', icon: 'BS', iconBg: '#FF7043', color: '#FF7043', lightColor: '#FFF3E0', normalRange: [3.9, 7.8], collection: 'bloodSugars', desc: '血糖水平' },
-  { key: 'fbg', name: '空腹血糖', unit: 'mmol/L', icon: 'FBG', iconBg: '#FF7043', color: '#FF7043', lightColor: '#FFF3E0', normalRange: [3.9, 6.1], collection: 'bloodSugars', desc: '空腹血糖' },
-  { key: 'hba1c', name: '糖化血红蛋白', unit: '%', icon: 'HbA1c', iconBg: '#FF7043', color: '#FF7043', lightColor: '#FFF3E0', normalRange: [4.0, 6.0], collection: 'bloodSugars', desc: '血糖控制指标' },
-
-  // 生命体征 (索引 17-19)
+  // 生命体征 (索引 14-17)
+  { key: 'bloodSugar', name: '血糖', unit: 'mmol/L', icon: 'BS', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [3.9, 7.8], collection: 'bloodSugars', desc: '血糖水平' },
   { key: 'systolic', name: '收缩压', unit: 'mmHg', icon: 'SBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [90, 140], collection: 'bloodPressures', desc: '高压' },
   { key: 'diastolic', name: '舒张压', unit: 'mmHg', icon: 'DBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [60, 90], collection: 'bloodPressures', desc: '低压' },
   { key: 'spo2', name: '血氧饱和度', unit: '%', icon: 'SpO2', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [95, 100], collection: 'bloodOxygens', desc: '血氧水平' },
 
-  // 生活指标 (索引 20-22)
+  // 生活指标 (索引 18-20)
+  { key: 'water', name: '饮水量', unit: 'ml', icon: 'WI', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [1500, 2500], collection: 'waterIntakes', desc: '每日饮水' },
   { key: 'temperature', name: '体温', unit: '°C', icon: 'T', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [36.0, 37.3], collection: 'temperatures', desc: '体温监测' },
-  { key: 'weight', name: '体重', unit: 'kg', icon: 'W', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [40, 100], collection: 'bodyMeasurements', desc: '体重管理' },
-  { key: 'water', name: '饮水量', unit: 'ml', icon: 'WI', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [1500, 2500], collection: 'waterIntakes', desc: '每日饮水' }
+  { key: 'weight', name: '体重', unit: 'kg', icon: 'W', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [40, 100], collection: 'bodyMeasurements', desc: '体重管理' }
 ];
 
 const timeRanges = [
