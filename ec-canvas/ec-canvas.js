@@ -278,7 +278,7 @@ Component({
         'touchData.startTime': Date.now()
       });
 
-      // 安全地触发ECharts事件
+      // 触发ECharts原生事件
       this.triggerChartEvent('mousedown', { x, y });
     },
 
@@ -330,121 +330,63 @@ Component({
       }
 
       try {
+        const chart = this.data.chart;
 
-        // 检查Chart实例的可用方法
-        const methods = [];
-        try {
-          const proto = Object.getPrototypeOf(this.data.chart);
-          if (proto) {
-            methods.push(...Object.getOwnPropertyNames(proto).filter(name => typeof this.data.chart[name] === 'function'));
+        // 🎯 使用 ECharts 原生事件分发系统
+        if (chart._zr && chart._zr.handler) {
+          const zrHandler = chart._zr.handler;
+
+          // 构造标准的 ZRender 事件对象
+          const zrEvent = {
+            type: eventType,
+            zrX: coords.x,
+            zrY: coords.y,
+            offsetX: coords.x,
+            offsetY: coords.y,
+            event: {
+              type: eventType,
+              preventDefault: () => {},
+              stopPropagation: () => {}
+            },
+            target: null,
+            topTarget: null,
+            cancelBubble: false,
+            offsetX: coords.x,
+            offsetY: coords.y,
+            gestureEvent: null,
+            pinchX: coords.x,
+            pinchY: coords.y,
+            pinchScale: 1,
+            wheelDelta: 0
+          };
+
+          // 根据事件类型触发对应的 ZRender 处理器
+          try {
+            if (eventType === 'mousedown' && zrHandler.mousedown) {
+              zrHandler.mousedown(zrEvent);
+            } else if (eventType === 'mousemove' && zrHandler.mousemove) {
+              zrHandler.mousemove(zrEvent);
+            } else if (eventType === 'mouseup' && zrHandler.mouseup) {
+              zrHandler.mouseup(zrEvent);
+            } else if (eventType === 'click' && zrHandler.click) {
+              zrHandler.click(zrEvent);
+            }
+          } catch (e) {
+            console.warn('ZRender事件处理失败:', e);
           }
-          methods.push(...Object.getOwnPropertyNames(this.data.chart).filter(name => typeof this.data.chart[name] === 'function'));
-        } catch (e) {
         }
 
-
-        // dataZoom滚动条交互
-        if (eventType === 'mousedown') {
-          this.startX = coords.x;
-          this.startY = coords.y;
-          this.lastMoveX = coords.x;
-
-          // 检查是否点击在dataZoom区域
-          const chart = this.data.chart;
-          if (chart && chart.dataZoomArea) {
-            // 优先命中滑块句柄区域，其次命中轨道区域
-            const handle = chart.dataZoomHandleRect || chart.dataZoomArea;
-            const track = chart.dataZoomTrackRect || chart.dataZoomArea;
-
-            const hitHandle = handle && coords.x >= handle.x && coords.x <= handle.x + handle.width &&
-              coords.y >= handle.y && coords.y <= handle.y + handle.height;
-            const hitTrack = !hitHandle && track && coords.x >= track.x && coords.x <= track.x + track.width &&
-              coords.y >= track.y && coords.y <= track.y + track.height;
-
-            if (hitHandle || hitTrack) {
-              this.isDraggingDataZoom = true;
-              this.dataZoomStartX = coords.x;
-              // 记录初始start/end，避免相对累积误差
-              if (chart.option && chart.option.dataZoom) {
-                const dz = chart.option.dataZoom[0] || {};
-                this.originalDataZoom = { start: dz.start || 0, end: dz.end || 100 };
-              }
-            }
-          }
-
-        } else if (eventType === 'mousemove' && this.startX !== undefined) {
-          if (this.isDraggingDataZoom) {
-            const chart = this.data.chart;
-            if (chart && chart.option && chart.option.dataZoom) {
-              const deltaX = coords.x - this.dataZoomStartX;
-              const area = chart.dataZoomTrackRect || chart.dataZoomArea;
-
-              if (area && area.width > 0) {
-                // 节流控制：防止过度渲染导致抖动
-                const now = Date.now();
-                if (this.lastRenderTime && (now - this.lastRenderTime) < 16) {
-                  return; // 限制最高60fps
-                }
-
-                // 计算移动比例
-                const moveRatio = deltaX / area.width;
-
-                const base = this.originalDataZoom || { start: 0, end: 100 };
-                const currentRange = base.end - base.start;
-                let newStart = base.start + moveRatio * 100;
-                let newEnd = base.end + moveRatio * 100;
-
-                // 严格边界处理，防止抖动
-                if (newStart <= 0) {
-                  newStart = 0;
-                  newEnd = currentRange;
-                } else if (newEnd >= 100) {
-                  newEnd = 100;
-                  newStart = 100 - currentRange;
-                }
-
-                // 确保范围合理
-                newStart = Math.max(0, Math.min(100 - currentRange, newStart));
-                newEnd = Math.min(100, Math.max(currentRange, newEnd));
-
-                // 只有值真正改变时才更新
-                const currentStart = chart.option.dataZoom[0].start || 0;
-                const currentEnd = chart.option.dataZoom[0].end || 100;
-                if (Math.abs(newStart - currentStart) > 0.1 || Math.abs(newEnd - currentEnd) > 0.1) {
-                  chart.option.dataZoom[0].start = newStart;
-                  chart.option.dataZoom[0].end = newEnd;
-
-                  // 立即渲染
-                  chart.render();
-                  this.lastRenderTime = now;
-                }
-              }
-            }
-          }
-        } else if (eventType === 'mouseup') {
-          // 重置状态
-          this.startX = undefined;
-          this.startY = undefined;
-          this.lastMoveX = undefined;
-          this.isDraggingDataZoom = false;
-          this.dataZoomStartX = undefined;
-          this.originalDataZoom = null;
-          this.lastRenderTime = undefined; // 重置渲染时间戳
-        }
-
-        // 处理点击事件 - 直接调用页面方法
+        // 处理点击事件 - 直接调用页面方法（保留原有逻辑）
         if (eventType === 'click') {
-
-          // 直接调用页面的显示方法
           const pages = getCurrentPages();
           const currentPage = pages[pages.length - 1];
           if (currentPage && typeof currentPage.handleChartClick === 'function') {
             currentPage.handleChartClick(coords.x, coords.y);
-          } else {
           }
         }
 
       } catch (error) {
+        console.warn('Chart事件触发失败:', error);
       }
     },
 

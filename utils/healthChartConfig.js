@@ -81,7 +81,6 @@ const dataTypes = [
 ];
 
 const timeRanges = [
-  { id: 7, label: '7天' },
   { id: 30, label: '30天' },
   { id: 90, label: '90天' },
   { id: 180, label: '180天' },

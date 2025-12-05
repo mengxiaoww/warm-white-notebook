@@ -50,7 +50,7 @@ Page({
 
     // 每个分组的选中状态（6个分组：血常规、肝功能、肾功能、病毒指标、酶类指标、生命体征、生活指标）
     selectedTypeByGroup: [0, 4, 8, 11, 13, 14, 18], // 每个分组默认选中第一个类型
-    selectedTimeByGroup: [1, 1, 1, 1, 1, 1, 1], // 每个分组默认选中30天
+    selectedTimeByGroup: [0, 0, 0, 0, 0, 0, 0], // 每个分组默认选中30天（索引0）
 
     // 数据类型配置 - 专业医学配色方案
     dataTypes: healthChartConfig.dataTypes,
@@ -185,7 +185,7 @@ Page({
 
       // 重置所有分组的时间选择为30天，且重置hasLoadedBefore以显示骨架屏
       this.setData({
-        selectedTimeByGroup: [1, 1, 1, 1, 1, 1, 1], // 6个分组
+        selectedTimeByGroup: [0, 0, 0, 0, 0, 0, 0], // 6个分组，默认选中30天（索引0）
         isPageLoading: true, // 数据刷新时显示骨架屏
         hasLoadedBefore: false // 重置加载状态
       });
