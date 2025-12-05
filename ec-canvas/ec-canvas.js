@@ -294,8 +294,9 @@ Component({
           const dataZoomBottom = dataZoom.bottom || 25;
 
           // 计算 dataZoom 区域（从底部向上）
-          const dataZoomTop = canvasHeight - dataZoomBottom - dataZoomHeight;
-          const dataZoomBottomY = canvasHeight - dataZoomBottom;
+          // 🔧 扩大检测区域：向上扩展10px，向下扩展到canvas底部
+          const dataZoomTop = canvasHeight - dataZoomBottom - dataZoomHeight - 10;  // 向上扩展10px
+          const dataZoomBottomY = canvasHeight;  // 扩展到canvas底部
 
           console.log('🔍 触摸检测详情', {
             '原始触摸坐标': { x: touch.x, y: touch.y, clientX: touch.clientX, clientY: touch.clientY },
@@ -303,11 +304,11 @@ Component({
             'Canvas逻辑尺寸': { canvasWidth, canvasHeight },
             'Canvas位置': this.canvasRect,
             'DataZoom配置': { height: dataZoomHeight, bottom: dataZoomBottom },
-            'DataZoom区域': { top: dataZoomTop, bottom: dataZoomBottomY },
+            'DataZoom区域（扩大后）': { top: dataZoomTop, bottom: dataZoomBottomY },
             '是否在区域内': y >= dataZoomTop && y <= dataZoomBottomY
           });
 
-          // 检测触摸是否在 dataZoom 区域内
+          // 检测触摸是否在 dataZoom 区域内（扩大后的区域）
           if (y >= dataZoomTop && y <= dataZoomBottomY) {
             // 触摸在 dataZoom 区域内，阻止事件冒泡
             if (e.stopPropagation) e.stopPropagation();
