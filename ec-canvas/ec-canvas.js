@@ -284,12 +284,23 @@ Component({
       this.measureCanvasRect();
 
       const touch = e.touches[0];
-      // 微信小程序 Canvas 2D 中，touch.x/y 已经是相对于 canvas 的坐标
-      // 优先使用 touch.x/y（相对于 canvas），如果不存在才使用 clientX/Y
+
+      // 🔧 修正：touch.x/y 不是相对于 canvas 顶部的坐标
+      // 需要使用 clientX/Y 减去 canvas 的位置偏移
       let x = touch.x;
       let y = touch.y;
 
-      console.log('📍 触摸坐标:', { x, y });
+      // 如果有 canvasRect，使用 clientY - canvasRect.top 获取真正相对于 canvas 的坐标
+      if (this.canvasRect && typeof touch.clientY === 'number') {
+        y = touch.clientY - this.canvasRect.top;
+        x = touch.clientX - this.canvasRect.left;
+      }
+
+      console.log('📍 触摸坐标:', {
+        原始: { x: touch.x, y: touch.y },
+        修正后: { x, y },
+        canvasRect: this.canvasRect
+      });
 
       this.setData({
         isTouch: true,
