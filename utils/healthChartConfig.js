@@ -70,12 +70,12 @@ const dataTypes = [
 
   // 生命体征 (索引 14-17)
   { key: 'bloodSugar', name: '血糖', unit: 'mmol/L', icon: 'BS', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [3.9, 7.8], collection: 'bloodSugars', desc: '血糖水平' },
-  { key: 'systolic', name: '收缩压', unit: 'mmHg', icon: 'SBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [90, 140], collection: 'bloodPressures', desc: '高压' },
-  { key: 'diastolic', name: '舒张压', unit: 'mmHg', icon: 'DBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [60, 90], collection: 'bloodPressures', desc: '低压' },
-  { key: 'spo2', name: '血氧饱和度', unit: '%', icon: 'SpO2', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [95, 100], collection: 'bloodOxygens', desc: '血氧水平' },
+  { key: 'spo2', name: '血氧', unit: '%', icon: 'SpO2', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [95, 100], collection: 'bloodOxygens', desc: '血氧水平' },
+  { key: 'systolic', name: '高压', unit: 'mmHg', icon: 'SBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [90, 140], collection: 'bloodPressures', desc: '高压' },
+  { key: 'diastolic', name: '低压', unit: 'mmHg', icon: 'DBP', iconBg: '#FF5722', color: '#FF5722', lightColor: '#FFF3E0', normalRange: [60, 90], collection: 'bloodPressures', desc: '低压' },
 
   // 生活指标 (索引 18-20)
-  { key: 'water', name: '饮水量', unit: 'ml', icon: 'WI', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [1500, 2500], collection: 'waterIntakes', desc: '每日饮水' },
+  { key: 'water', name: '饮水', unit: 'ml', icon: 'WI', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [1500, 2500], collection: 'waterIntakes', desc: '每日饮水' },
   { key: 'temperature', name: '体温', unit: '°C', icon: 'T', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [36.0, 37.3], collection: 'temperatures', desc: '体温监测' },
   { key: 'weight', name: '体重', unit: 'kg', icon: 'W', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [40, 100], collection: 'bodyMeasurements', desc: '体重管理' }
 ];
