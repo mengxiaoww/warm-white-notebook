@@ -399,29 +399,14 @@ Component({
 
         if (chart && option && option.dataZoom && option.dataZoom[0]) {
           console.log('✅ 通过了条件检查，准备调用 setOption');
-          // 使用 setOption 更新，不合并配置
-          chart.setOption({
-            dataZoom: [{
-              type: 'slider',
-              show: true,
-              xAxisIndex: [0],
-              start: newStart,
-              end: newEnd,
-              height: option.dataZoom[0].height,
-              bottom: option.dataZoom[0].bottom,
-              backgroundColor: option.dataZoom[0].backgroundColor,
-              dataBackground: option.dataZoom[0].dataBackground,
-              selectedDataBackground: option.dataZoom[0].selectedDataBackground,
-              handleStyle: option.dataZoom[0].handleStyle,
-              handleIcon: option.dataZoom[0].handleIcon,
-              handleSize: option.dataZoom[0].handleSize,
-              textStyle: option.dataZoom[0].textStyle,
-              borderColor: option.dataZoom[0].borderColor,
-              fillerColor: option.dataZoom[0].fillerColor,
-              realtime: true,
-              filterMode: 'filter'
-            }]
-          }, false); // 第二个参数false表示不合并
+
+          // 🎯 关键修复：使用 dispatchAction 而不是 setOption
+          // dispatchAction 是 ECharts 官方推荐的方式来更新 dataZoom
+          chart.dispatchAction({
+            type: 'dataZoom',
+            start: newStart,
+            end: newEnd
+          });
           console.log('🎯 更新 dataZoom', {
             newStart: newStart.toFixed(2),
             newEnd: newEnd.toFixed(2),
