@@ -260,29 +260,34 @@ Component({
     },
 
     touchStart(e) {
-      console.log('🔥🔥🔥 touchStart 被触发了！', e);
+      console.log('🔥🔥🔥 touchStart 被触发了！');
+      console.log('📊 this.data.chart:', this.data.chart);
+      console.log('📊 this.data:', this.data);
 
       if (!this.data.chart) {
-        console.log('❌ 图表实例不存在');
-        return;
-      }
+        console.log('❌ 图表实例不存在，尝试从组件实例获取');
 
-      console.log('✅ 图表实例存在');
+        // 尝试从组件其他地方获取图表实例
+        if (this.chart) {
+          console.log('✅ 从 this.chart 找到图表实例');
+          // 使用组件实例上的 chart
+          const chart = this.chart;
+        } else {
+          console.log('❌ 完全找不到图表实例，放弃处理');
+          return;
+        }
+      } else {
+        console.log('✅ 图表实例存在');
+      }
 
       // 触摸开始时重新测量，避免切换后偏移
       this.measureCanvasRect();
 
       const touch = e.touches[0];
       // 微信小程序 Canvas 2D 中，touch.x/y 已经是相对于 canvas 的坐标
-      // 如果没有 touch.x/y，则使用 clientX/Y 减去 canvas 偏移量
-      let x, y;
-      if (typeof touch.x === 'number' && typeof touch.y === 'number') {
-        x = touch.x;
-        y = touch.y;
-      } else {
-        x = touch.clientX - (this.canvasRect?.left || 0);
-        y = touch.clientY - (this.canvasRect?.top || 0);
-      }
+      // 优先使用 touch.x/y（相对于 canvas），如果不存在才使用 clientX/Y
+      let x = touch.x;
+      let y = touch.y;
 
       console.log('📍 触摸坐标:', { x, y });
 
@@ -295,12 +300,23 @@ Component({
 
       // 🎯 检测是否触摸到 dataZoom 滚动条
       const chart = this.data.chart;
-      if (chart && chart._model && chart._model.option && chart._model.option.dataZoom) {
-        const dataZoom = chart._model.option.dataZoom[0];
+      console.log('🔍 开始检测 dataZoom');
+      console.log('📊 chart 对象:', chart);
+      console.log('📊 chart 的所有属性:', Object.keys(chart || {}));
+
+      // 尝试多种方式获取 option
+      const option = chart?.getOption?.() || chart?._option || chart?.option;
+      console.log('📊 获取到的 option:', option);
+      console.log('📊 option.dataZoom:', option?.dataZoom);
+
+      if (chart && option && option.dataZoom) {
+        console.log('✅ 通过了第一层条件判断');
+        const dataZoom = option.dataZoom[0];
+        console.log('📊 dataZoom[0]:', dataZoom);
         if (dataZoom && dataZoom.show) {
-          // 获取 canvas 的实际高度
-          const canvasHeight = chart.getHeight();
-          const canvasWidth = chart.getWidth();
+          // 获取 canvas 的实际高度 - 使用图表内部属性
+          const canvasHeight = chart.height || option.height || 215;
+          const canvasWidth = chart.width || option.width || 348;
 
           // dataZoom 配置（从 home/index.js 的配置中获取）
           const dataZoomHeight = dataZoom.height || 18;
