@@ -340,7 +340,12 @@ Component({
     },
 
     touchMove(e) {
-      if (!this.data.chart || !this.data.isTouch) return;
+      console.log('👆 touchMove 被触发');
+
+      if (!this.data.chart || !this.data.isTouch) {
+        console.log('❌ touchMove 被拦截:', { hasChart: !!this.data.chart, isTouch: this.data.isTouch });
+        return;
+      }
 
       const touch = e.touches[0];
       // 微信小程序 Canvas 2D 中，touch.x/y 已经是相对于 canvas 的坐标
@@ -352,6 +357,8 @@ Component({
         x = touch.clientX - (this.canvasRect?.left || 0);
         y = touch.clientY - (this.canvasRect?.top || 0);
       }
+
+      console.log('👆 touchMove 坐标:', { x, y, isDraggingDataZoom: this.isDraggingDataZoom });
 
       // 🎯 处理 dataZoom 拖动
       if (this.isDraggingDataZoom && this.currentDataZoom) {
