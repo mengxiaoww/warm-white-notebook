@@ -387,41 +387,54 @@ Component({
           newStart = 100 - range;
         }
 
+        console.log('🔍 准备更新dataZoom', { deltaX, deltaPercent: deltaPercent.toFixed(2), newStart: newStart.toFixed(2), newEnd: newEnd.toFixed(2) });
+
         // 更新图表的 dataZoom
         const chart = this.data.chart;
-        if (chart && chart._model && chart._model.option) {
-          const option = chart._model.option;
-          if (option.dataZoom && option.dataZoom[0]) {
-            // 使用 setOption 更新，不合并配置
-            chart.setOption({
-              dataZoom: [{
-                type: 'slider',
-                show: true,
-                xAxisIndex: [0],
-                start: newStart,
-                end: newEnd,
-                height: option.dataZoom[0].height,
-                bottom: option.dataZoom[0].bottom,
-                backgroundColor: option.dataZoom[0].backgroundColor,
-                dataBackground: option.dataZoom[0].dataBackground,
-                selectedDataBackground: option.dataZoom[0].selectedDataBackground,
-                handleStyle: option.dataZoom[0].handleStyle,
-                handleIcon: option.dataZoom[0].handleIcon,
-                handleSize: option.dataZoom[0].handleSize,
-                textStyle: option.dataZoom[0].textStyle,
-                borderColor: option.dataZoom[0].borderColor,
-                fillerColor: option.dataZoom[0].fillerColor,
-                realtime: true,
-                filterMode: 'filter'
-              }]
-            }, false); // 第二个参数false表示不合并
-            console.log('🎯 更新 dataZoom', {
-              newStart: newStart.toFixed(2),
-              newEnd: newEnd.toFixed(2),
-              deltaX,
-              deltaPercent: deltaPercent.toFixed(2)
-            });
-          }
+
+        // 尝试多种方式获取 option（与 touchStart 保持一致）
+        const option = chart?.getOption?.() || chart?._option || chart?.option;
+        console.log('📊 获取到的 option:', option);
+        console.log('📊 option.dataZoom:', option?.dataZoom);
+
+        if (chart && option && option.dataZoom && option.dataZoom[0]) {
+          console.log('✅ 通过了条件检查，准备调用 setOption');
+          // 使用 setOption 更新，不合并配置
+          chart.setOption({
+            dataZoom: [{
+              type: 'slider',
+              show: true,
+              xAxisIndex: [0],
+              start: newStart,
+              end: newEnd,
+              height: option.dataZoom[0].height,
+              bottom: option.dataZoom[0].bottom,
+              backgroundColor: option.dataZoom[0].backgroundColor,
+              dataBackground: option.dataZoom[0].dataBackground,
+              selectedDataBackground: option.dataZoom[0].selectedDataBackground,
+              handleStyle: option.dataZoom[0].handleStyle,
+              handleIcon: option.dataZoom[0].handleIcon,
+              handleSize: option.dataZoom[0].handleSize,
+              textStyle: option.dataZoom[0].textStyle,
+              borderColor: option.dataZoom[0].borderColor,
+              fillerColor: option.dataZoom[0].fillerColor,
+              realtime: true,
+              filterMode: 'filter'
+            }]
+          }, false); // 第二个参数false表示不合并
+          console.log('🎯 更新 dataZoom', {
+            newStart: newStart.toFixed(2),
+            newEnd: newEnd.toFixed(2),
+            deltaX,
+            deltaPercent: deltaPercent.toFixed(2)
+          });
+        } else {
+          console.log('❌ 无法更新dataZoom:', {
+            hasChart: !!chart,
+            hasOption: !!option,
+            hasDataZoom: !!(option?.dataZoom),
+            dataZoomLength: option?.dataZoom?.length
+          });
         }
         return; // 不触发图表的其他事件
       }
