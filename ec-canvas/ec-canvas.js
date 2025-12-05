@@ -168,7 +168,8 @@ Component({
               getContext: () => ctx,
               setChart: (chart) => {
                 this.setData({ chart: chart });
-              }
+              },
+              draw: () => {} // Canvas 2D自动渲染，提供空方法保持兼容
             };
 
             // 为Canvas添加必要的属性和方法（但不覆盖已定义的）
@@ -238,7 +239,8 @@ Component({
               getContext: () => ctx,
               setChart: (chart) => {
                 this.setData({ chart: chart });
-              }
+              },
+              draw: () => {} // Canvas 2D自动渲染，提供空方法保持兼容
             };
 
             // 为Canvas添加必要的属性和方法（但不覆盖已定义的）
