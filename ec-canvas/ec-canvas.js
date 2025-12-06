@@ -387,49 +387,26 @@ Component({
           newStart = 100 - range;
         }
 
-        console.log('🔍 准备更新dataZoom', { deltaX, deltaPercent: deltaPercent.toFixed(2), newStart: newStart.toFixed(2), newEnd: newEnd.toFixed(2) });
-
         // 更新图表的 dataZoom
         const chart = this.data.chart;
 
-        // 🔧 直接访问图表内部配置（_option）避免调用 getOption()
-        const option = chart?._option || chart?.option;
-        console.log('📊 获取到的 option:', option);
-        console.log('📊 option.dataZoom:', option?.dataZoom);
-
-        if (chart && option && option.dataZoom && option.dataZoom[0]) {
-          console.log('✅ 通过了条件检查，准备更新 dataZoom');
-
+        if (chart && chart.option && chart.option.dataZoom && chart.option.dataZoom[0]) {
           try {
-            // 🎯 手写图表专用方案：直接修改内部 _option，不调用 setOption
-            // 因为这是手写的图表实现，setOption 可能会触发完整的数据重新计算
+            // 🔧 关键修复：直接修改 option 后，调用 setOption 重新渲染图表
+            // 这样会触发 render() → drawChart() → drawDataZoom()，重新绘制滚动条
+            chart.option.dataZoom[0].start = newStart;
+            chart.option.dataZoom[0].end = newEnd;
 
-            // 直接更新内部配置
-            option.dataZoom[0].start = newStart;
-            option.dataZoom[0].end = newEnd;
+            // 调用 setOption 触发完整的图表重绘
+            chart.setOption(chart.option);
 
-            // 🔧 手动触发 ZRender 重绘，而不是调用 setOption
-            if (chart._zr) {
-              chart._zr.refresh();
-            }
-
-            console.log('🎯 dataZoom 更新成功（手动刷新ZRender）', {
-              method: 'direct update _option + zr.refresh()',
+            console.log('🎯 dataZoom 更新成功', {
               newStart: newStart.toFixed(2),
-              newEnd: newEnd.toFixed(2),
-              deltaX,
-              deltaPercent: deltaPercent.toFixed(2)
+              newEnd: newEnd.toFixed(2)
             });
           } catch (error) {
             console.error('❌ 更新失败:', error);
           }
-        } else {
-          console.log('❌ 无法更新dataZoom:', {
-            hasChart: !!chart,
-            hasOption: !!option,
-            hasDataZoom: !!(option?.dataZoom),
-            dataZoomLength: option?.dataZoom?.length
-          });
         }
         return; // 不触发图表的其他事件
       }
