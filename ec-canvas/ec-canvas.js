@@ -311,10 +311,7 @@ Component({
     },
 
     touchMove(e) {
-      console.log('👆 touchMove 被触发');
-
       if (!this.data.chart || !this.data.isTouch) {
-        console.log('❌ touchMove 被拦截:', { hasChart: !!this.data.chart, isTouch: this.data.isTouch });
         return;
       }
 
@@ -329,9 +326,7 @@ Component({
         y = touch.clientY - (this.canvasRect?.top || 0);
       }
 
-      console.log('👆 touchMove 坐标:', { x, y, isDraggingDataZoom: this.isDraggingDataZoom });
-
-      // 🎯 处理 dataZoom 拖动
+      // 处理 dataZoom 拖动
       if (this.isDraggingDataZoom && this.currentDataZoom) {
         // 阻止事件冒泡
         if (e.stopPropagation) e.stopPropagation();
@@ -370,11 +365,6 @@ Component({
 
             // 调用 setOption 触发完整的图表重绘
             chart.setOption(chart.option);
-
-            console.log('🎯 dataZoom 更新成功', {
-              newStart: newStart.toFixed(2),
-              newEnd: newEnd.toFixed(2)
-            });
           } catch (error) {
             console.error('❌ 更新失败:', error);
           }

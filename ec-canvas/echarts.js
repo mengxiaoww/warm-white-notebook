@@ -29,6 +29,9 @@ class SimpleChart {
     this.visibleDataCount = 0; // 可见数据点数量
     this.needsScrollbar = false; // 是否需要显示滚动条
 
+    // 空状态动画 ID
+    this.noDataAnimationId = null;
+
   }
 
   setOption(option) {
@@ -616,17 +619,13 @@ class SimpleChart {
       ctx.strokeStyle = `rgba(255, 184, 77, ${breathOpacity})`;
       ctx.lineWidth = 1.5;
 
-      // 绘制椭圆
+      // 使用 save/restore + scale 绘制椭圆（兼容性更好）
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.scale(curve.width * breathScale / 50, curve.height * breathScale / 50);
       ctx.beginPath();
-      ctx.ellipse(
-        centerX,
-        centerY,
-        curve.width * breathScale,
-        curve.height * breathScale,
-        0,
-        0,
-        2 * Math.PI
-      );
+      ctx.arc(0, 0, 50, 0, 2 * Math.PI);
+      ctx.restore();
       ctx.stroke();
     });
 
