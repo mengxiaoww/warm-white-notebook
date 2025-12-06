@@ -776,7 +776,8 @@ Page({
         borderColor: '#ddd',
         fillerColor: 'rgba(255, 184, 77, 0.2)',
         realtime: true,
-        filterMode: 'filter'
+        filterMode: 'none', // 🔧 修复：使用none避免数据被过滤，只改变显示范围
+        zoomLock: false // 允许缩放
       }];
     }
 

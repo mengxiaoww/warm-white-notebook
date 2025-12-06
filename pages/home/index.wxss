@@ -499,6 +499,108 @@ page {
 }
 
 /* ==================== 空状态设计 ==================== */
+/* ==================== 优雅的图表空状态设计 ==================== */
+.empty-state-elegant {
+  position: relative;
+  height: 450rpx;
+  background: linear-gradient(135deg, #FFFBF5 0%, #FFF8F0 100%);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 背景装饰曲线 */
+.empty-bg-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.decoration-curve {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400rpx;
+  height: 200rpx;
+  background: transparent;
+  border: 3rpx solid rgba(255, 184, 77, 0.15);
+  border-radius: 50%;
+  animation: elegant-pulse 3s ease-in-out infinite;
+}
+
+.decoration-curve::before,
+.decoration-curve::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3rpx solid rgba(255, 184, 77, 0.1);
+}
+
+.decoration-curve::before {
+  width: 300rpx;
+  height: 150rpx;
+  animation: elegant-pulse 3s ease-in-out infinite 0.5s;
+}
+
+.decoration-curve::after {
+  width: 200rpx;
+  height: 100rpx;
+  animation: elegant-pulse 3s ease-in-out infinite 1s;
+}
+
+/* 空状态内容 */
+.empty-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.empty-icon-wrapper {
+  margin-bottom: 24rpx;
+  opacity: 0.9;
+  filter: drop-shadow(0 4rpx 12rpx rgba(255, 184, 77, 0.2));
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #FFB84D;
+  margin-bottom: 12rpx;
+  letter-spacing: 0.5rpx;
+}
+
+.empty-subtitle {
+  font-size: 26rpx;
+  color: #CCCCCC;
+  line-height: 1.5;
+  max-width: 400rpx;
+}
+
+@keyframes elegant-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+/* ==================== 旧版空状态保留（向后兼容）==================== */
 .empty-state {
   display: flex;
   flex-direction: column;
