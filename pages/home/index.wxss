@@ -527,36 +527,35 @@ page {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background: transparent;
+  border-radius: 50%;
+  border: 3rpx solid rgba(255, 184, 77, 0.15);
+}
+
+/* 第1层 - 最大 */
+.decoration-curve-1 {
   width: 400rpx;
   height: 200rpx;
-  background: transparent;
-  border: 3rpx solid rgba(255, 184, 77, 0.15);
-  border-radius: 50%;
   animation: elegant-pulse 3s ease-in-out infinite;
 }
 
-.decoration-curve::before,
-.decoration-curve::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 3rpx solid rgba(255, 184, 77, 0.1);
-}
-
-.decoration-curve::before {
+/* 第2层 - 中等 */
+.decoration-curve-2 {
   width: 300rpx;
   height: 150rpx;
+  border-color: rgba(255, 184, 77, 0.12);
   animation: elegant-pulse 3s ease-in-out infinite 0.5s;
 }
 
-.decoration-curve::after {
+/* 第3层 - 最小 */
+.decoration-curve-3 {
   width: 200rpx;
   height: 100rpx;
+  border-color: rgba(255, 184, 77, 0.1);
   animation: elegant-pulse 3s ease-in-out infinite 1s;
 }
+
+/* 删除伪元素样式（微信小程序不支持） */
 
 /* 空状态内容 */
 .empty-content {

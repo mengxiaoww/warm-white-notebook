@@ -147,9 +147,11 @@
           </view>
           <!-- 无数据状态 - 优雅的渐变卡片设计 -->
           <view wx:else class="empty-state-elegant">
-            <!-- 背景装饰曲线 -->
+            <!-- 背景装饰曲线 - 3层椭圆 -->
             <view class="empty-bg-decoration">
-              <view class="decoration-curve"></view>
+              <view class="decoration-curve decoration-curve-1"></view>
+              <view class="decoration-curve decoration-curve-2"></view>
+              <view class="decoration-curve decoration-curve-3"></view>
             </view>
             <!-- 空状态内容 -->
             <view class="empty-content">
