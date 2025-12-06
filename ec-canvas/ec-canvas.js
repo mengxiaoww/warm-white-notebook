@@ -398,35 +398,42 @@ Component({
         console.log('📊 option.dataZoom:', option?.dataZoom);
 
         if (chart && option && option.dataZoom && option.dataZoom[0]) {
-          console.log('✅ 通过了条件检查，准备调用 setOption');
-
-          // 🎯 终极修复：获取完整的dataZoom配置，只更新start和end
-          const currentDataZoom = option.dataZoom[0];
-          const updatedDataZoom = {
-            ...currentDataZoom,
-            start: newStart,
-            end: newEnd
-          };
+          console.log('✅ 通过了条件检查，准备更新 dataZoom');
 
           try {
-            // 使用完整配置对象，确保所有属性都保留
-            chart.setOption({
-              dataZoom: [updatedDataZoom]
-            }, false); // false = 合并模式
+            // 🎯 终极修复：使用 ECharts 的 dispatchAction API 直接控制 dataZoom
+            // 这个方法不会触发数据过滤，只改变视图范围
+            chart.dispatchAction({
+              type: 'dataZoom',
+              dataZoomIndex: 0,
+              start: newStart,
+              end: newEnd
+            });
 
-            console.log('🎯 更新 dataZoom 成功', {
+            console.log('🎯 dataZoom 更新成功', {
+              method: 'dispatchAction',
               newStart: newStart.toFixed(2),
               newEnd: newEnd.toFixed(2),
               deltaX,
               deltaPercent: deltaPercent.toFixed(2)
             });
-
-            // 强制重绘canvas
-            if (chart._zr && chart._zr.painter) {
-              chart._zr.painter.refresh();
-            }
           } catch (error) {
-            console.error('❌ setOption 调用失败:', error);
+            console.error('❌ dispatchAction 失败，尝试备用方案:', error);
+
+            // 备用方案：直接修改内部模型
+            try {
+              const dataZoomModel = chart._componentsMap?.get('dataZoom')?.[0];
+              if (dataZoomModel) {
+                dataZoomModel.setRawRange({
+                  start: newStart,
+                  end: newEnd
+                });
+                chart._zr.painter.refresh();
+                console.log('✅ 使用内部模型更新成功');
+              }
+            } catch (e2) {
+              console.error('❌ 备用方案也失败:', e2);
+            }
           }
         } else {
           console.log('❌ 无法更新dataZoom:', {
