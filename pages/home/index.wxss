@@ -504,7 +504,7 @@ page {
   position: relative;
   height: 450rpx;
   background: linear-gradient(135deg, #FFFBF5 0%, #FFF8F0 100%);
-  border-radius: var(--radius-2xl);
+  border-radius: 24rpx;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -529,13 +529,14 @@ page {
   transform: translate(-50%, -50%);
   background: transparent;
   border-radius: 50%;
-  border: 3rpx solid rgba(255, 184, 77, 0.15);
+  border: 6rpx solid rgba(255, 184, 77, 0.4);
 }
 
 /* 第1层 - 最大 */
 .decoration-curve-1 {
   width: 400rpx;
   height: 200rpx;
+  border-color: rgba(255, 184, 77, 0.5);
   animation: elegant-pulse 3s ease-in-out infinite;
 }
 
@@ -543,7 +544,7 @@ page {
 .decoration-curve-2 {
   width: 300rpx;
   height: 150rpx;
-  border-color: rgba(255, 184, 77, 0.12);
+  border-color: rgba(255, 184, 77, 0.4);
   animation: elegant-pulse 3s ease-in-out infinite 0.5s;
 }
 
@@ -551,7 +552,7 @@ page {
 .decoration-curve-3 {
   width: 200rpx;
   height: 100rpx;
-  border-color: rgba(255, 184, 77, 0.1);
+  border-color: rgba(255, 184, 77, 0.3);
   animation: elegant-pulse 3s ease-in-out infinite 1s;
 }
 
