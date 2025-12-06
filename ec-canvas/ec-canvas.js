@@ -401,39 +401,31 @@ Component({
           console.log('✅ 通过了条件检查，准备更新 dataZoom');
 
           try {
-            // 🎯 终极修复：使用 ECharts 的 dispatchAction API 直接控制 dataZoom
-            // 这个方法不会触发数据过滤，只改变视图范围
-            chart.dispatchAction({
-              type: 'dataZoom',
-              dataZoomIndex: 0,
-              start: newStart,
-              end: newEnd
-            });
+            // 🎯 最终修复方案：直接使用 setOption 但不传递 merge 参数
+            // 关键：必须获取完整的当前配置并只修改 dataZoom 部分
+            const currentOption = chart.getOption();
+
+            // 深度克隆当前配置，避免引用问题
+            const newOption = {
+              dataZoom: [{
+                ...currentOption.dataZoom[0],
+                start: newStart,
+                end: newEnd
+              }]
+            };
+
+            // 使用 silent 模式更新，不触发事件
+            chart.setOption(newOption);
 
             console.log('🎯 dataZoom 更新成功', {
-              method: 'dispatchAction',
+              method: 'setOption with full config',
               newStart: newStart.toFixed(2),
               newEnd: newEnd.toFixed(2),
               deltaX,
               deltaPercent: deltaPercent.toFixed(2)
             });
           } catch (error) {
-            console.error('❌ dispatchAction 失败，尝试备用方案:', error);
-
-            // 备用方案：直接修改内部模型
-            try {
-              const dataZoomModel = chart._componentsMap?.get('dataZoom')?.[0];
-              if (dataZoomModel) {
-                dataZoomModel.setRawRange({
-                  start: newStart,
-                  end: newEnd
-                });
-                chart._zr.painter.refresh();
-                console.log('✅ 使用内部模型更新成功');
-              }
-            } catch (e2) {
-              console.error('❌ 备用方案也失败:', e2);
-            }
+            console.error('❌ 更新失败:', error);
           }
         } else {
           console.log('❌ 无法更新dataZoom:', {
