@@ -275,8 +275,8 @@ Component({
       console.log('📊 chart 对象:', chart);
       console.log('📊 chart 的所有属性:', Object.keys(chart || {}));
 
-      // 尝试多种方式获取 option
-      const option = chart?.getOption?.() || chart?._option || chart?.option;
+      // 🔧 直接访问图表内部配置（_option）避免调用 getOption()
+      const option = chart?._option || chart?.option;
       console.log('📊 获取到的 option:', option);
       console.log('📊 option.dataZoom:', option?.dataZoom);
 
@@ -392,8 +392,8 @@ Component({
         // 更新图表的 dataZoom
         const chart = this.data.chart;
 
-        // 尝试多种方式获取 option（与 touchStart 保持一致）
-        const option = chart?.getOption?.() || chart?._option || chart?.option;
+        // 🔧 直接访问图表内部配置（_option）避免调用 getOption()
+        const option = chart?._option || chart?.option;
         console.log('📊 获取到的 option:', option);
         console.log('📊 option.dataZoom:', option?.dataZoom);
 
@@ -401,24 +401,23 @@ Component({
           console.log('✅ 通过了条件检查，准备更新 dataZoom');
 
           try {
-            // 🎯 最终修复方案：直接使用 setOption 但不传递 merge 参数
-            // 关键：必须获取完整的当前配置并只修改 dataZoom 部分
-            const currentOption = chart.getOption();
+            // 🎯 最终修复方案：直接修改内部配置并调用 setOption
+            // 微信小程序的 ECharts 精简版不支持 getOption()，需要直接操作 _option
 
-            // 深度克隆当前配置，避免引用问题
-            const newOption = {
+            // 直接更新 dataZoom 的 start 和 end
+            option.dataZoom[0].start = newStart;
+            option.dataZoom[0].end = newEnd;
+
+            // 调用 setOption 触发重绘（传入空对象也会触发更新）
+            chart.setOption({
               dataZoom: [{
-                ...currentOption.dataZoom[0],
                 start: newStart,
                 end: newEnd
               }]
-            };
-
-            // 使用 silent 模式更新，不触发事件
-            chart.setOption(newOption);
+            });
 
             console.log('🎯 dataZoom 更新成功', {
-              method: 'setOption with full config',
+              method: 'direct update _option + setOption',
               newStart: newStart.toFixed(2),
               newEnd: newEnd.toFixed(2),
               deltaX,
