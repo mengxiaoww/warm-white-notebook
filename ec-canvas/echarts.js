@@ -591,43 +591,68 @@ class SimpleChart {
     ctx.save();
 
     // 绘制背景渐变
-    const gradient = ctx.createLinearGradient(0, 0, 0, this.height);
+    const gradient = ctx.createLinearGradient(0, 0, this.width, this.height);
     gradient.addColorStop(0, '#FFFBF5');
     gradient.addColorStop(1, '#FFF8F0');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // 绘制柔和的光晕效果
-    const glowGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 100);
-    glowGradient.addColorStop(0, 'rgba(255, 184, 77, 0.15)');
-    glowGradient.addColorStop(0.5, 'rgba(255, 184, 77, 0.08)');
-    glowGradient.addColorStop(1, 'rgba(255, 184, 77, 0)');
-    ctx.fillStyle = glowGradient;
-    ctx.fillRect(0, 0, this.width, this.height);
+    // 绘制多层装饰曲线（模拟呼吸动画效果）
+    const time = Date.now() / 1000; // 当前时间（秒）
 
-    // 绘制图表图标（简化的图表线条）
-    ctx.strokeStyle = 'rgba(255, 184, 77, 0.3)';
-    ctx.lineWidth = 2;
+    // 绘制3层椭圆曲线，每层有不同的相位和尺寸
+    const curves = [
+      { width: 200, height: 100, phase: 0, opacity: 0.15 },
+      { width: 150, height: 75, phase: 0.5, opacity: 0.12 },
+      { width: 100, height: 50, phase: 1.0, opacity: 0.1 }
+    ];
+
+    curves.forEach(curve => {
+      // 计算呼吸效果（使用正弦波，周期3秒）
+      const breathPhase = (time + curve.phase) % 3 / 3; // 0-1循环
+      const breathScale = 0.95 + 0.1 * Math.sin(breathPhase * Math.PI * 2); // 0.95-1.05
+      const breathOpacity = curve.opacity * (0.5 + 0.5 * Math.sin(breathPhase * Math.PI * 2)); // 呼吸透明度
+
+      ctx.strokeStyle = `rgba(255, 184, 77, ${breathOpacity})`;
+      ctx.lineWidth = 1.5;
+
+      // 绘制椭圆
+      ctx.beginPath();
+      ctx.ellipse(
+        centerX,
+        centerY,
+        curve.width * breathScale,
+        curve.height * breathScale,
+        0,
+        0,
+        2 * Math.PI
+      );
+      ctx.stroke();
+    });
+
+    // 绘制图表图标（chart-line 风格）
+    ctx.strokeStyle = 'rgba(255, 184, 77, 0.6)';
+    ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    // 绘制简化的曲线
-    const iconSize = 60;
+    // 绘制简化的曲线图标
+    const iconSize = 50;
     const startX = centerX - iconSize;
-    const startY = centerY - 10;
+    const startY = centerY - 15;
 
     ctx.beginPath();
     ctx.moveTo(startX, startY + 15);
-    ctx.quadraticCurveTo(startX + iconSize / 3, startY - 10, startX + iconSize * 2 / 3, startY + 5);
-    ctx.quadraticCurveTo(startX + iconSize, startY + 20, startX + iconSize * 2, startY - 5);
+    ctx.quadraticCurveTo(startX + iconSize / 3, startY - 8, startX + iconSize * 2 / 3, startY + 8);
+    ctx.quadraticCurveTo(startX + iconSize, startY + 25, startX + iconSize * 2, startY);
     ctx.stroke();
 
     // 绘制数据点
-    ctx.fillStyle = 'rgba(255, 184, 77, 0.4)';
+    ctx.fillStyle = '#FFB84D';
     [startX, startX + iconSize * 2 / 3, startX + iconSize * 2].forEach((x, i) => {
-      const y = i === 0 ? startY + 15 : (i === 1 ? startY + 5 : startY - 5);
+      const y = i === 0 ? startY + 15 : (i === 1 ? startY + 8 : startY);
       ctx.beginPath();
-      ctx.arc(x, y, 3, 0, 2 * Math.PI);
+      ctx.arc(x, y, 4, 0, 2 * Math.PI);
       ctx.fill();
     });
 
@@ -636,14 +661,30 @@ class SimpleChart {
     ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('暂无数据', centerX, centerY + 40);
+    ctx.fillText('暂无数据', centerX, centerY + 45);
 
     // 绘制提示文字
     ctx.fillStyle = '#CCCCCC';
-    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.fillText('记录数据后，这里将显示趋势图表', centerX, centerY + 62);
+    ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('记录数据后，这里将显示趋势图表', centerX, centerY + 68);
 
     ctx.restore();
+
+    // 启动动画循环（仅在有数据时停止）
+    if (!this.noDataAnimationId && this.canvas.draw) {
+      const animate = () => {
+        // 检查是否还是无数据状态
+        const series = this.option.series?.[0];
+        if (!series || !series.data || series.data.length === 0) {
+          this.drawNoData();
+          this.canvas.draw(true);
+          this.noDataAnimationId = setTimeout(animate, 100); // 10fps 动画
+        } else {
+          this.noDataAnimationId = null;
+        }
+      };
+      this.noDataAnimationId = setTimeout(animate, 100);
+    }
   }
 
   // 模拟事件方法

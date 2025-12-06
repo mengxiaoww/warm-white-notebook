@@ -257,11 +257,6 @@ Component({
       let x = touch.x;
       let y = touch.y;
 
-      console.log('📍 触摸坐标:', {
-        原始touch: { x: touch.x, y: touch.y },
-        使用坐标: { x, y }
-      });
-
       this.setData({
         isTouch: true,
         'touchData.startX': x,
@@ -269,21 +264,14 @@ Component({
         'touchData.startTime': Date.now()
       });
 
-      // 🎯 检测是否触摸到 dataZoom 滚动条
+      // 检测是否触摸到 dataZoom 滚动条
       const chart = this.data.chart;
-      console.log('🔍 开始检测 dataZoom');
-      console.log('📊 chart 对象:', chart);
-      console.log('📊 chart 的所有属性:', Object.keys(chart || {}));
 
-      // 🔧 直接访问图表内部配置（_option）避免调用 getOption()
+      // 直接访问图表内部配置
       const option = chart?._option || chart?.option;
-      console.log('📊 获取到的 option:', option);
-      console.log('📊 option.dataZoom:', option?.dataZoom);
 
       if (chart && option && option.dataZoom) {
-        console.log('✅ 通过了第一层条件判断');
         const dataZoom = option.dataZoom[0];
-        console.log('📊 dataZoom[0]:', dataZoom);
         if (dataZoom && dataZoom.show) {
           // 获取 canvas 的实际高度 - 使用图表内部属性
           const canvasHeight = chart.height || option.height || 215;
@@ -293,22 +281,11 @@ Component({
           const dataZoomHeight = dataZoom.height || 18;
           const dataZoomBottom = dataZoom.bottom || 25;
 
-          // 计算 dataZoom 区域（从底部向上）
-          // 🔧 扩大检测区域：向上扩展10px，向下扩展到canvas底部
-          const dataZoomTop = canvasHeight - dataZoomBottom - dataZoomHeight - 10;  // 向上扩展10px
-          const dataZoomBottomY = canvasHeight;  // 扩展到canvas底部
+          // 计算 dataZoom 区域（从底部向上，扩大检测区域）
+          const dataZoomTop = canvasHeight - dataZoomBottom - dataZoomHeight - 10;
+          const dataZoomBottomY = canvasHeight;
 
-          console.log('🔍 触摸检测详情', {
-            '原始触摸坐标': { x: touch.x, y: touch.y, clientX: touch.clientX, clientY: touch.clientY },
-            '计算后触摸坐标': { x, y },
-            'Canvas逻辑尺寸': { canvasWidth, canvasHeight },
-            'Canvas位置': this.canvasRect,
-            'DataZoom配置': { height: dataZoomHeight, bottom: dataZoomBottom },
-            'DataZoom区域（扩大后）': { top: dataZoomTop, bottom: dataZoomBottomY },
-            '是否在区域内': y >= dataZoomTop && y <= dataZoomBottomY
-          });
-
-          // 检测触摸是否在 dataZoom 区域内（扩大后的区域）
+          // 检测触摸是否在 dataZoom 区域内
           if (y >= dataZoomTop && y <= dataZoomBottomY) {
             // 触摸在 dataZoom 区域内，阻止事件冒泡
             if (e.stopPropagation) e.stopPropagation();
@@ -324,13 +301,7 @@ Component({
               initialStart: dataZoom.start,
               initialEnd: dataZoom.end
             };
-            console.log('🎯 开始拖动 dataZoom', {
-              startX: x,
-              startY: y,
-              dataZoomArea: { top: dataZoomTop, bottom: dataZoomBottomY },
-              initialState: { start: dataZoom.start, end: dataZoom.end }
-            });
-            return; // 不触发图表的其他事件
+            return;
           }
         }
       }
@@ -441,8 +412,7 @@ Component({
         this.isDraggingDataZoom = false;
         this.dataZoomStartX = null;
         this.currentDataZoom = null;
-        console.log('🎯 结束拖动 dataZoom');
-        return; // 不触发图表的其他事件
+        return;
       }
 
       // 触发触摸结束事件
