@@ -529,31 +529,31 @@ page {
   transform: translate(-50%, -50%);
   background: transparent;
   border-radius: 50%;
-  border: 6rpx solid rgba(255, 184, 77, 0.4);
+  border: 4rpx solid rgba(255, 184, 77, 0.2);
 }
 
 /* 第1层 - 最大 */
 .decoration-curve-1 {
-  width: 400rpx;
-  height: 200rpx;
-  border-color: rgba(255, 184, 77, 0.5);
-  animation: elegant-pulse 3s ease-in-out infinite;
+  width: 500rpx;
+  height: 250rpx;
+  border-color: rgba(255, 184, 77, 0.15);
+  animation: elegant-pulse 4s ease-in-out infinite;
 }
 
 /* 第2层 - 中等 */
 .decoration-curve-2 {
-  width: 300rpx;
-  height: 150rpx;
-  border-color: rgba(255, 184, 77, 0.4);
-  animation: elegant-pulse 3s ease-in-out infinite 0.5s;
+  width: 380rpx;
+  height: 190rpx;
+  border-color: rgba(255, 184, 77, 0.18);
+  animation: elegant-pulse 4s ease-in-out infinite 0.8s;
 }
 
 /* 第3层 - 最小 */
 .decoration-curve-3 {
-  width: 200rpx;
-  height: 100rpx;
-  border-color: rgba(255, 184, 77, 0.3);
-  animation: elegant-pulse 3s ease-in-out infinite 1s;
+  width: 260rpx;
+  height: 130rpx;
+  border-color: rgba(255, 184, 77, 0.22);
+  animation: elegant-pulse 4s ease-in-out infinite 1.6s;
 }
 
 /* 删除伪元素样式（微信小程序不支持） */
@@ -566,27 +566,22 @@ page {
   flex-direction: column;
   align-items: center;
   text-align: center;
-}
-
-.empty-icon-wrapper {
-  margin-bottom: 24rpx;
-  opacity: 0.9;
-  filter: drop-shadow(0 4rpx 12rpx rgba(255, 184, 77, 0.2));
+  padding: 40rpx;
 }
 
 .empty-title {
-  font-size: 32rpx;
-  font-weight: 600;
+  font-size: 48rpx;
+  font-weight: 700;
   color: #FFB84D;
-  margin-bottom: 12rpx;
-  letter-spacing: 0.5rpx;
+  margin-bottom: 20rpx;
+  letter-spacing: 2rpx;
 }
 
 .empty-subtitle {
-  font-size: 26rpx;
-  color: #CCCCCC;
-  line-height: 1.5;
-  max-width: 400rpx;
+  font-size: 28rpx;
+  color: #BBBBBB;
+  line-height: 1.6;
+  max-width: 500rpx;
 }
 
 @keyframes elegant-pulse {

@@ -147,17 +147,14 @@
           </view>
           <!-- 无数据状态 - 优雅的渐变卡片设计 -->
           <view wx:else class="empty-state-elegant">
-            <!-- 背景装饰曲线 - 3层椭圆 -->
+            <!-- 背景装饰曲线 - 3层椭圆（背景层） -->
             <view class="empty-bg-decoration">
               <view class="decoration-curve decoration-curve-1"></view>
               <view class="decoration-curve decoration-curve-2"></view>
               <view class="decoration-curve decoration-curve-3"></view>
             </view>
-            <!-- 空状态内容 -->
+            <!-- 空状态内容（前景层） -->
             <view class="empty-content">
-              <view class="empty-icon-wrapper">
-                <t-icon name="chart-line" size="100rpx" color="#FFB84D" />
-              </view>
               <text class="empty-title">暂无数据</text>
               <text class="empty-subtitle">记录数据后，这里将显示趋势图表</text>
             </view>
