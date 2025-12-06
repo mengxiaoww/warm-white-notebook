@@ -401,23 +401,20 @@ Component({
           console.log('✅ 通过了条件检查，准备更新 dataZoom');
 
           try {
-            // 🎯 最终修复方案：直接修改内部配置并调用 setOption
-            // 微信小程序的 ECharts 精简版不支持 getOption()，需要直接操作 _option
+            // 🎯 手写图表专用方案：直接修改内部 _option，不调用 setOption
+            // 因为这是手写的图表实现，setOption 可能会触发完整的数据重新计算
 
-            // 直接更新 dataZoom 的 start 和 end
+            // 直接更新内部配置
             option.dataZoom[0].start = newStart;
             option.dataZoom[0].end = newEnd;
 
-            // 调用 setOption 触发重绘（传入空对象也会触发更新）
-            chart.setOption({
-              dataZoom: [{
-                start: newStart,
-                end: newEnd
-              }]
-            });
+            // 🔧 手动触发 ZRender 重绘，而不是调用 setOption
+            if (chart._zr) {
+              chart._zr.refresh();
+            }
 
-            console.log('🎯 dataZoom 更新成功', {
-              method: 'direct update _option + setOption',
+            console.log('🎯 dataZoom 更新成功（手动刷新ZRender）', {
+              method: 'direct update _option + zr.refresh()',
               newStart: newStart.toFixed(2),
               newEnd: newEnd.toFixed(2),
               deltaX,
