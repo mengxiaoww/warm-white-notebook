@@ -1171,10 +1171,11 @@ Page({
         });
       }
 
-      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+      query.orderBy('date', 'desc').get().then(res => {
+        console.log('✅ 血糖数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
-        console.error('加载血糖数据失败:', err);
+        console.error('❌ 加载血糖数据失败:', err);
         resolve([]);
       });
     });
@@ -1203,10 +1204,11 @@ Page({
         });
       }
 
-      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+      query.orderBy('date', 'desc').get().then(res => {
+        console.log('✅ 血氧数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
-        console.error('加载血氧数据失败:', err);
+        console.error('❌ 加载血氧数据失败:', err);
         resolve([]);
       });
     });
@@ -1235,10 +1237,11 @@ Page({
         });
       }
 
-      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+      query.orderBy('date', 'desc').get().then(res => {
+        console.log('✅ 血压数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
-        console.error('加载血压数据失败:', err);
+        console.error('❌ 加载血压数据失败:', err);
         resolve([]);
       });
     });
@@ -1267,10 +1270,11 @@ Page({
         });
       }
 
-      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+      query.orderBy('date', 'desc').get().then(res => {
+        console.log('✅ 饮水数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
-        console.error('加载饮水数据失败:', err);
+        console.error('❌ 加载饮水数据失败:', err);
         resolve([]);
       });
     });
@@ -1299,10 +1303,11 @@ Page({
         });
       }
 
-      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+      query.orderBy('date', 'desc').get().then(res => {
+        console.log('✅ 体温数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
-        console.error('加载体温数据失败:', err);
+        console.error('❌ 加载体温数据失败:', err);
         resolve([]);
       });
     });
@@ -1331,10 +1336,11 @@ Page({
         });
       }
 
-      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+      query.orderBy('date', 'desc').get().then(res => {
+        console.log('✅ 身体测量数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
-        console.error('加载身体测量数据失败:', err);
+        console.error('❌ 加载身体测量数据失败:', err);
         resolve([]);
       });
     });
@@ -1363,10 +1369,11 @@ Page({
         });
       }
 
-      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+      query.orderBy('date', 'desc').get().then(res => {
+        console.log('✅ 饮食数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
-        console.error('加载饮食数据失败:', err);
+        console.error('❌ 加载饮食数据失败:', err);
         resolve([]);
       });
     });
