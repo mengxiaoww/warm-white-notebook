@@ -222,6 +222,14 @@ page {
   z-index: 1;
 }
 
+/* 隐藏滚动条 */
+.content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
 /* ==================== 图表分组容器 ==================== */
 .chart-section {
   margin-bottom: 40rpx;
