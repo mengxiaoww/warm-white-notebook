@@ -243,21 +243,18 @@ Page({
     const selectedTypeByGroup = [...this.data.selectedTypeByGroup];
     selectedTypeByGroup[groupIndex] = typeIndex;
 
-    // 先清空当前分组的数据，显示"暂无数据"状态
+    // 🔧 修复：不清空数据，直接更新类型索引，避免触发组件重新创建
     this.setData({
-      selectedTypeByGroup,
-      [`chartDataByGroup[${groupIndex}]`]: null
+      selectedTypeByGroup
     });
 
-    // 延迟加载新数据，确保UI已更新
-    setTimeout(() => {
-      console.log(`📊 开始加载分组${groupIndex}的数据`);
-      this.loadGroupData(groupIndex)
-        .finally(() => {
-          this.setData({ isChanging: false });
-          console.log(`✅ 分组${groupIndex}数据加载完成，操作锁已释放`);
-        });
-    }, 50);
+    // 🔧 修复：立即加载新数据（不延迟），让新数据覆盖旧数据
+    console.log(`📊 开始加载分组${groupIndex}的数据`);
+    this.loadGroupData(groupIndex)
+      .finally(() => {
+        this.setData({ isChanging: false });
+        console.log(`✅ 分组${groupIndex}数据加载完成，操作锁已释放`);
+      });
   },
 
   // 移除ActionSheet相关方法，使用原生按钮选择以解决iOS canvas层级问题
