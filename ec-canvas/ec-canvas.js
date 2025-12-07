@@ -310,7 +310,8 @@ Component({
     },
 
     touchMove(e) {
-      if (!this.data.chart || !this.data.isTouch) {
+      // 只在拖动 dataZoom 时处理
+      if (!this.isDraggingDataZoom) {
         return;
       }
 
@@ -326,7 +327,7 @@ Component({
       }
 
       // 处理 dataZoom 拖动
-      if (this.isDraggingDataZoom && this.currentDataZoom) {
+      if (this.currentDataZoom) {
         // 阻止事件冒泡
         if (e.stopPropagation) e.stopPropagation();
         if (e.preventDefault) e.preventDefault();
@@ -375,48 +376,14 @@ Component({
       this.triggerChartEvent('mousemove', { x, y });
     },
 
-    touchEnd(e) {
-      if (!this.data.chart || !this.data.isTouch) return;
-
-      const touch = e.changedTouches[0];
-      // 微信小程序 Canvas 2D 中，touch.x/y 已经是相对于 canvas 的坐标
-      let x, y;
-      if (typeof touch.x === 'number' && typeof touch.y === 'number') {
-        x = touch.x;
-        y = touch.y;
-      } else {
-        x = touch.clientX - (this.canvasRect?.left || 0);
-        y = touch.clientY - (this.canvasRect?.top || 0);
-      }
-
-      const endTime = Date.now();
-      const timeDiff = endTime - this.data.touchData.startTime;
-      const distanceX = Math.abs(x - this.data.touchData.startX);
-      const distanceY = Math.abs(y - this.data.touchData.startY);
-
-      this.setData({ isTouch: false });
-
+    touchEnd() {
       // 🎯 处理 dataZoom 拖动结束
       if (this.isDraggingDataZoom) {
         this.isDraggingDataZoom = false;
         this.dataZoomStartX = null;
         this.currentDataZoom = null;
-        this.setData({ disableScroll: false });
+        this.setData({ disableScroll: false, isTouch: false });
         return;
-      }
-
-      // 触发触摸结束事件
-      this.triggerChartEvent('mouseup', { x, y });
-
-      // 判断是点击还是滑动
-
-      if (timeDiff < 300 && distanceX < 15 && distanceY < 15) {
-        // 短时间小距离移动，认为是点击
-        setTimeout(() => {
-          this.triggerChartEvent('click', { x, y });
-        }, 30);
-      } else {
-        // 长时间或大距离移动，认为是滑动
       }
     },
 

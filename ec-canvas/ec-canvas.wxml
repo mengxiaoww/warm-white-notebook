@@ -1,1 +1,1 @@
-<canvas type="2d" id="{{canvasId}}" class="ec-canvas" disable-scroll="{{false}}" />
+<canvas type="2d" id="{{canvasId}}" class="ec-canvas" disable-scroll="{{disableScroll}}" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd" />
