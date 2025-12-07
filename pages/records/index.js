@@ -84,6 +84,46 @@ Page({
     // 检测项目配置（动态加载，包含自定义指标）
     testTypeOptions: [],
 
+    // 数据类型图标配置映射（与每日记录页面保持一致）
+    dataTypeIconMap: {
+      'blood': 'blood-drop',
+      'checkReport': 'assignment',
+      'ebv': 'zoom-in',
+      'cmv': 'search',
+      'ldh': 'enzyme',
+      'liver': 'liver',
+      'kidney': 'filter',
+      'urine': 'fill-color-1',
+      'stool': 'layers',
+      'bloodSugar': 'glucose',
+      'bloodOxygen': 'oxygen',
+      'bloodPressure': 'blood-pressure',
+      'water': 'cup',
+      'temperature': 'thermometer',
+      'bodyMeasurement': 'body-measurement',
+      'diet': 'food'
+    },
+
+    // 数据类型标题配置
+    dataTypeTitleMap: {
+      'blood': '血常规',
+      'checkReport': '检查报告',
+      'ebv': 'EB病毒',
+      'cmv': '巨细胞病毒',
+      'ldh': '乳酸脱氢酶',
+      'liver': '肝功能',
+      'kidney': '肾功能',
+      'urine': '尿量记录',
+      'stool': '排便记录',
+      'bloodSugar': '血糖',
+      'bloodOxygen': '血氧',
+      'bloodPressure': '血压',
+      'water': '饮水',
+      'temperature': '体温',
+      'bodyMeasurement': '身高体重',
+      'diet': '饮食'
+    },
+
     // 用药统计 - 新结构
     medicationStats: {
       totalDays: 0,
@@ -1708,6 +1748,160 @@ Page({
       const dateA = a.originalDateKey || '';
       const dateB = b.originalDateKey || '';
       return dateB.localeCompare(dateA);
+    });
+
+    // 🔥 为每条记录添加数据类型列表和显示配置（用于动态渲染）
+    results.forEach(item => {
+      const dataTypes = [];
+
+      // 检查各种数据类型并构建显示配置
+      if (item.bloodData) {
+        dataTypes.push({
+          id: 'blood',
+          dataKey: 'bloodData',
+          icon: this.data.dataTypeIconMap['blood'],
+          title: this.data.dataTypeTitleMap['blood'],
+          navigateMethod: 'navigateToBlood'
+        });
+      }
+      if (item.checkReportData) {
+        dataTypes.push({
+          id: 'checkReport',
+          dataKey: 'checkReportData',
+          icon: this.data.dataTypeIconMap['checkReport'],
+          title: this.data.dataTypeTitleMap['checkReport'],
+          navigateMethod: 'navigateToCheckReport'
+        });
+      }
+      if (item.ebvData) {
+        dataTypes.push({
+          id: 'ebv',
+          dataKey: 'ebvData',
+          icon: this.data.dataTypeIconMap['ebv'],
+          title: this.data.dataTypeTitleMap['ebv'],
+          navigateMethod: 'navigateToEbv'
+        });
+      }
+      if (item.cmvData) {
+        dataTypes.push({
+          id: 'cmv',
+          dataKey: 'cmvData',
+          icon: this.data.dataTypeIconMap['cmv'],
+          title: this.data.dataTypeTitleMap['cmv'],
+          navigateMethod: 'navigateToCmv'
+        });
+      }
+      if (item.ldhData) {
+        dataTypes.push({
+          id: 'ldh',
+          dataKey: 'ldhData',
+          icon: this.data.dataTypeIconMap['ldh'],
+          title: this.data.dataTypeTitleMap['ldh'],
+          navigateMethod: 'navigateToLdh'
+        });
+      }
+      if (item.liverData) {
+        dataTypes.push({
+          id: 'liver',
+          dataKey: 'liverData',
+          icon: this.data.dataTypeIconMap['liver'],
+          title: this.data.dataTypeTitleMap['liver'],
+          navigateMethod: 'navigateToLiver'
+        });
+      }
+      if (item.kidneyData) {
+        dataTypes.push({
+          id: 'kidney',
+          dataKey: 'kidneyData',
+          icon: this.data.dataTypeIconMap['kidney'],
+          title: this.data.dataTypeTitleMap['kidney'],
+          navigateMethod: 'navigateToKidney'
+        });
+      }
+      if (item.urineData) {
+        dataTypes.push({
+          id: 'urine',
+          dataKey: 'urineData',
+          icon: this.data.dataTypeIconMap['urine'],
+          title: this.data.dataTypeTitleMap['urine'],
+          navigateMethod: 'navigateToUrine'
+        });
+      }
+      if (item.stoolData) {
+        dataTypes.push({
+          id: 'stool',
+          dataKey: 'stoolData',
+          icon: this.data.dataTypeIconMap['stool'],
+          title: this.data.dataTypeTitleMap['stool'],
+          navigateMethod: 'navigateToStool'
+        });
+      }
+      if (item.bloodSugarData) {
+        dataTypes.push({
+          id: 'bloodSugar',
+          dataKey: 'bloodSugarData',
+          icon: this.data.dataTypeIconMap['bloodSugar'],
+          title: this.data.dataTypeTitleMap['bloodSugar'],
+          navigateMethod: 'navigateToBloodSugar'
+        });
+      }
+      if (item.bloodOxygenData) {
+        dataTypes.push({
+          id: 'bloodOxygen',
+          dataKey: 'bloodOxygenData',
+          icon: this.data.dataTypeIconMap['bloodOxygen'],
+          title: this.data.dataTypeTitleMap['bloodOxygen'],
+          navigateMethod: 'navigateToBloodOxygen'
+        });
+      }
+      if (item.bloodPressureData) {
+        dataTypes.push({
+          id: 'bloodPressure',
+          dataKey: 'bloodPressureData',
+          icon: this.data.dataTypeIconMap['bloodPressure'],
+          title: this.data.dataTypeTitleMap['bloodPressure'],
+          navigateMethod: 'navigateToBloodPressure'
+        });
+      }
+      if (item.waterIntakeData) {
+        dataTypes.push({
+          id: 'water',
+          dataKey: 'waterIntakeData',
+          icon: this.data.dataTypeIconMap['water'],
+          title: this.data.dataTypeTitleMap['water'],
+          navigateMethod: 'navigateToWaterIntake'
+        });
+      }
+      if (item.temperatureData) {
+        dataTypes.push({
+          id: 'temperature',
+          dataKey: 'temperatureData',
+          icon: this.data.dataTypeIconMap['temperature'],
+          title: this.data.dataTypeTitleMap['temperature'],
+          navigateMethod: 'navigateToTemperature'
+        });
+      }
+      if (item.bodyMeasurementData) {
+        dataTypes.push({
+          id: 'bodyMeasurement',
+          dataKey: 'bodyMeasurementData',
+          icon: this.data.dataTypeIconMap['bodyMeasurement'],
+          title: this.data.dataTypeTitleMap['bodyMeasurement'],
+          navigateMethod: 'navigateToBodyMeasurement'
+        });
+      }
+      if (item.dietData) {
+        dataTypes.push({
+          id: 'diet',
+          dataKey: 'dietData',
+          icon: this.data.dataTypeIconMap['diet'],
+          title: this.data.dataTypeTitleMap['diet'],
+          navigateMethod: 'navigateToDiet'
+        });
+      }
+
+      // 将数据类型列表添加到记录中
+      item.dataTypes = dataTypes;
     });
 
     return results;
