@@ -1902,9 +1902,180 @@ Page({
 
       // 将数据类型列表添加到记录中
       item.dataTypes = dataTypes;
+
+      // 为每个数据类型格式化显示的指标内容
+      item.dataTypes.forEach(dataType => {
+        const data = item[dataType.dataKey];
+        dataType.displayItems = this.formatDataTypeDisplay(dataType.id, data);
+      });
     });
 
     return results;
+  },
+
+  // 格式化数据类型的显示内容（返回要显示的指标列表）
+  formatDataTypeDisplay(dataTypeId, data) {
+    if (!data) return [];
+
+    const items = [];
+
+    switch (dataTypeId) {
+      case 'blood':
+        // 血常规：显示常用指标
+        if (data.wbc !== undefined && data.wbc !== null && data.wbc !== '-') {
+          items.push({ label: '白细胞', value: data.wbc });
+        }
+        if (data.hgb !== undefined && data.hgb !== null && data.hgb !== '-' && data.hgb !== '') {
+          items.push({ label: '血红蛋白', value: data.hgb });
+        }
+        if (data.plt !== undefined && data.plt !== null && data.plt !== '-') {
+          items.push({ label: '血小板', value: data.plt });
+        }
+        // 显示自定义指标
+        if (data.customValues) {
+          Object.keys(data.customValues).forEach(key => {
+            const value = data.customValues[key];
+            if (value !== undefined && value !== null && value !== '' && value !== '-') {
+              // 自定义指标直接显示key作为label（实际使用时会从配置中获取真实名称）
+              items.push({ label: key, value });
+            }
+          });
+        }
+        break;
+
+      case 'checkReport':
+        if (data.projectName) {
+          items.push({ label: '检查项目', value: data.projectName || '未填写' });
+        }
+        if (data.resultTypeLabel) {
+          items.push({ label: '检查结果', value: data.resultTypeLabel || '未知' });
+        }
+        break;
+
+      case 'ebv':
+        items.push({ label: '病毒载量', value: data.ebvDna || '0' });
+        items.push({
+          label: '检测结果',
+          value: (data.ebvDna == '0' || data.ebvDna === 0 || !data.ebvDna) ? '阴性' : '阳性'
+        });
+        break;
+
+      case 'cmv':
+        items.push({ label: '病毒载量', value: data.hcmvDna || '0' });
+        items.push({
+          label: '检测结果',
+          value: (data.hcmvDna == '0' || data.hcmvDna === 0 || !data.hcmvDna) ? '阴性' : '阳性'
+        });
+        break;
+
+      case 'ldh':
+        if (data.ldh !== undefined && data.ldh !== null && data.ldh !== '') {
+          items.push({ label: '数值', value: data.ldh });
+        }
+        break;
+
+      case 'liver':
+        if (data.alt !== undefined && data.alt !== null && data.alt !== '') {
+          items.push({ label: 'ALT', value: data.alt });
+        }
+        if (data.ast !== undefined && data.ast !== null && data.ast !== '') {
+          items.push({ label: 'AST', value: data.ast });
+        }
+        if (data.tbil !== undefined && data.tbil !== null && data.tbil !== '') {
+          items.push({ label: '总胆红素', value: data.tbil });
+        }
+        break;
+
+      case 'kidney':
+        const crValue = data.cr || data.creatinine;
+        if (crValue !== undefined && crValue !== null && crValue !== '') {
+          items.push({ label: '肌酐', value: crValue });
+        }
+        if (data.bun !== undefined && data.bun !== null && data.bun !== '') {
+          items.push({ label: '尿素氮', value: data.bun });
+        }
+        if (data.ua !== undefined && data.ua !== null && data.ua !== '') {
+          items.push({ label: '尿酸', value: data.ua });
+        }
+        break;
+
+      case 'urine':
+        if (data.count !== undefined) {
+          items.push({ label: '记录次数', value: `${data.count}次` });
+        }
+        if (data.totalVolume !== undefined) {
+          items.push({ label: '总尿量', value: `${data.totalVolume}ml` });
+        }
+        break;
+
+      case 'stool':
+        if (data.count !== undefined) {
+          items.push({ label: '排便次数', value: `${data.count}次` });
+        }
+        if (data.hasAbnormal) {
+          items.push({ label: '状态', value: '有异常' });
+        }
+        break;
+
+      case 'bloodSugar':
+        if (data.bloodSugar !== undefined && data.bloodSugar !== null && data.bloodSugar !== '') {
+          items.push({ label: '血糖值', value: data.bloodSugar });
+        }
+        break;
+
+      case 'bloodOxygen':
+        if (data.spo2 !== undefined && data.spo2 !== null && data.spo2 !== '') {
+          items.push({ label: '血氧饱和度', value: `${data.spo2}%` });
+        }
+        if (data.heartRate !== undefined && data.heartRate !== null && data.heartRate !== '') {
+          items.push({ label: '心率', value: `${data.heartRate}次/分` });
+        }
+        break;
+
+      case 'bloodPressure':
+        if (data.systolic !== undefined && data.systolic !== null && data.systolic !== '') {
+          items.push({ label: '收缩压', value: `${data.systolic}mmHg` });
+        }
+        if (data.diastolic !== undefined && data.diastolic !== null && data.diastolic !== '') {
+          items.push({ label: '舒张压', value: `${data.diastolic}mmHg` });
+        }
+        break;
+
+      case 'water':
+        if (data.water !== undefined && data.water !== null && data.water !== '') {
+          items.push({ label: '饮水量', value: `${data.water}ml` });
+        }
+        break;
+
+      case 'temperature':
+        if (data.temperature !== undefined && data.temperature !== null && data.temperature !== '') {
+          items.push({ label: '体温', value: `${data.temperature}℃` });
+        }
+        break;
+
+      case 'bodyMeasurement':
+        if (data.weight !== undefined && data.weight !== null && data.weight !== '') {
+          items.push({ label: '体重', value: `${data.weight}kg` });
+        }
+        if (data.height !== undefined && data.height !== null && data.height !== '') {
+          items.push({ label: '身高', value: `${data.height}cm` });
+        }
+        break;
+
+      case 'diet':
+        if (data.calories !== undefined && data.calories !== null && data.calories !== '') {
+          items.push({ label: '热量', value: `${data.calories}kcal` });
+        }
+        if (data.protein !== undefined && data.protein !== null && data.protein !== '') {
+          items.push({ label: '蛋白质', value: `${data.protein}g` });
+        }
+        if (data.carbs !== undefined && data.carbs !== null && data.carbs !== '') {
+          items.push({ label: '碳水化合物', value: `${data.carbs}g` });
+        }
+        break;
+    }
+
+    return items;
   },
 
   // 按日期分组尿量数据
