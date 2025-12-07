@@ -85,6 +85,7 @@ Page({
 
     // 初始化图表实例数组（存储在页面实例上，不放在data中）
     this.chartInstancesByGroup = [];
+    console.log(`🚀 onLoad: 初始化chartInstancesByGroup数组`);
 
     // 初始化所有图表配置
     this.initAllChartConfigs();
@@ -102,7 +103,10 @@ Page({
           const chart = initChart(canvas, width, height, dpr);
           // 存储在页面实例属性中，而不是data中
           this.chartInstancesByGroup[groupIndex] = chart;
-          console.log(`图表实例${groupIndex}已初始化`);
+          console.log(`✅ 图表实例${groupIndex}已初始化`);
+          console.log(`  - chart对象: ${!!chart}`);
+          console.log(`  - 存储到chartInstancesByGroup[${groupIndex}]`);
+          console.log(`  - chartInstancesByGroup数组长度: ${this.chartInstancesByGroup.length}`);
           return chart;
         }
       };
@@ -209,15 +213,31 @@ Page({
     const groupIndex = parseInt(e.currentTarget.dataset.group);
     const typeIndex = parseInt(e.currentTarget.dataset.type);
 
+    console.log(`🔄 切换图表类型: groupIndex=${groupIndex}, typeIndex=${typeIndex}`);
+
     if (this.data.selectedTypeByGroup[groupIndex] === typeIndex) return;
 
     // 防止并发操作
     if (this.data.isChanging) {
+      console.warn(`⚠️ 操作锁已启用，跳过切换`);
       return;
     }
 
     // 设置操作锁
     this.setData({ isChanging: true });
+
+    // 🔧 关键修复：先清空图表实例，避免显示旧数据
+    const chart = this.chartInstancesByGroup ? this.chartInstancesByGroup[groupIndex] : null;
+    if (chart) {
+      console.log(`🧹 清空图表实例${groupIndex}`);
+      try {
+        chart.clear && chart.clear();
+      } catch (e) {
+        console.warn(`清空图表${groupIndex}失败:`, e);
+      }
+    } else {
+      console.warn(`⚠️ 图表实例${groupIndex}不存在，无法清空`);
+    }
 
     // 更新选中的类型
     const selectedTypeByGroup = [...this.data.selectedTypeByGroup];
@@ -231,9 +251,11 @@ Page({
 
     // 延迟加载新数据，确保UI已更新
     setTimeout(() => {
+      console.log(`📊 开始加载分组${groupIndex}的数据`);
       this.loadGroupData(groupIndex)
         .finally(() => {
           this.setData({ isChanging: false });
+          console.log(`✅ 分组${groupIndex}数据加载完成，操作锁已释放`);
         });
     }, 50);
   },
@@ -490,20 +512,32 @@ Page({
     const typeIndex = selectedTypeByGroup[groupIndex];
     const dataType = dataTypes[typeIndex];
 
+    console.log(`🎨 renderGroupChart: groupIndex=${groupIndex}, retryCount=${retryCount}`);
+    console.log(`  - chart存在: ${!!chart}`);
+    console.log(`  - chartData存在: ${!!chartData}, 长度: ${chartData ? chartData.length : 0}`);
+    console.log(`  - chartInstancesByGroup数组: ${this.chartInstancesByGroup ? 'exists' : 'null'}`);
+
     // 如果图表实例不存在，延迟重试
     if (!chart) {
       if (retryCount < maxRetries) {
-        console.warn(`图表实例${groupIndex}不存在，第${retryCount + 1}/${maxRetries}次重试，300ms后重试`);
+        console.warn(`⚠️ 图表实例${groupIndex}不存在，第${retryCount + 1}/${maxRetries}次重试，300ms后重试`);
         setTimeout(() => {
           this.renderGroupChart(groupIndex, retryCount + 1);
         }, 300);
       } else {
-        console.error(`图表实例${groupIndex}重试${maxRetries}次后仍未初始化，放弃渲染`);
+        console.error(`❌ 图表实例${groupIndex}重试${maxRetries}次后仍未初始化，放弃渲染`);
       }
       return;
     }
 
+    // 🔧 修复：即使数据为空，也要清空图表，避免显示旧数据
     if (!chartData || chartData.length === 0) {
+      console.log(`📭 图表${groupIndex}数据为空，清空图表`);
+      try {
+        chart.clear && chart.clear();
+      } catch (e) {
+        console.warn(`清空图表${groupIndex}失败:`, e);
+      }
       return;
     }
 
@@ -511,19 +545,22 @@ Page({
     const option = this.createChartOption(chartData, dataType);
 
     try {
+      console.log(`🖌️ 开始渲染图表${groupIndex}`);
       chart.clear && chart.clear();
       chart.setOption(option, true);
+      console.log(`✅ 图表${groupIndex}setOption完成`);
 
       // 强制重新渲染
       setTimeout(() => {
         try {
           chart.resize && chart.resize();
+          console.log(`✅ 图表${groupIndex}resize完成`);
         } catch (e) {
-          console.warn('图表resize失败:', e);
+          console.warn(`图表${groupIndex}resize失败:`, e);
         }
       }, 100);
     } catch (error) {
-      console.error(`渲染分组${groupIndex}图表失败:`, error);
+      console.error(`❌ 渲染分组${groupIndex}图表失败:`, error);
     }
   },
 
