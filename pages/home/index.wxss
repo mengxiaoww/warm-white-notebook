@@ -216,7 +216,8 @@ page {
 .content {
   box-sizing: border-box;
   width: 100%;
-  padding: 42rpx 24rpx 100rpx 24rpx;
+  height: calc(100vh - 120rpx); /* 减去tabBar高度 */
+  padding: 42rpx 24rpx 40rpx 24rpx; /* 底部padding改小 */
   position: relative;
   z-index: 1;
 }
