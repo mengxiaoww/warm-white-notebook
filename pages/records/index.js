@@ -743,6 +743,17 @@ Page({
         饮食: dietRecords.length
       });
 
+      // 🔍 调试：打印前几条新数据类型的记录
+      if (bloodSugarRecords.length > 0) {
+        console.log('📊 血糖数据示例:', bloodSugarRecords[0]);
+      }
+      if (bloodPressureRecords.length > 0) {
+        console.log('📊 血压数据示例:', bloodPressureRecords[0]);
+      }
+      if (waterIntakeRecords.length > 0) {
+        console.log('📊 饮水数据示例:', waterIntakeRecords[0]);
+      }
+
       // 合并并处理数据
       const healthRecords = this.mergeHealthRecords({
         bloodRecords,
@@ -762,6 +773,12 @@ Page({
         bodyMeasurementRecords,
         dietRecords
       });
+
+      // 🔍 调试：打印合并后的数据
+      console.log('📊 合并后的健康记录数量:', healthRecords.length);
+      if (healthRecords.length > 0) {
+        console.log('📊 第一条记录包含的数据类型:', Object.keys(healthRecords[0]).filter(key => key.endsWith('Data')));
+      }
 
 
 
