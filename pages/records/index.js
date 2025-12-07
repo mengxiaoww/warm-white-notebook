@@ -98,10 +98,10 @@ Page({
       'bloodSugar': 'glucose',
       'bloodOxygen': 'oxygen',
       'bloodPressure': 'blood-pressure',
-      'water': 'tea',
+      'water': 'cup',
       'temperature': 'thermometer',
-      'bodyMeasurement': 'dashboard',
-      'diet': 'bread'
+      'bodyMeasurement': 'body-measurement',
+      'diet': 'food'
     },
 
     // 数据类型标题配置
