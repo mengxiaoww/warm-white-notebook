@@ -258,13 +258,6 @@ Component({
       let x = touch.x;
       let y = touch.y;
 
-      this.setData({
-        isTouch: true,
-        'touchData.startX': x,
-        'touchData.startY': y,
-        'touchData.startTime': Date.now()
-      });
-
       // 检测是否触摸到 dataZoom 滚动条
       const chart = this.data.chart;
 
@@ -289,7 +282,13 @@ Component({
           // 检测触摸是否在 dataZoom 区域内
           if (y >= dataZoomTop && y <= dataZoomBottomY) {
             // 触摸在 dataZoom 区域内，阻止页面滚动
-            this.setData({ disableScroll: true });
+            this.setData({
+              disableScroll: true,
+              isTouch: true,
+              'touchData.startX': x,
+              'touchData.startY': y,
+              'touchData.startTime': Date.now()
+            });
 
             this.isDraggingDataZoom = true;
             this.dataZoomStartX = x;
@@ -306,11 +305,8 @@ Component({
         }
       }
 
-      // 不在 dataZoom 区域，允许页面滚动
-      this.setData({ disableScroll: false });
-
-      // 触发ECharts原生事件
-      this.triggerChartEvent('mousedown', { x, y });
+      // 不在 dataZoom 区域，允许页面滚动，不处理触摸事件
+      this.setData({ disableScroll: false, isTouch: false });
     },
 
     touchMove(e) {
