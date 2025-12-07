@@ -1167,7 +1167,9 @@ Page({
 
       if (timeRange) {
         query = query.where({
-          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
         });
       }
 
@@ -1200,7 +1202,9 @@ Page({
 
       if (timeRange) {
         query = query.where({
-          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
         });
       }
 
@@ -1233,7 +1237,9 @@ Page({
 
       if (timeRange) {
         query = query.where({
-          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
         });
       }
 
@@ -1266,7 +1272,9 @@ Page({
 
       if (timeRange) {
         query = query.where({
-          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
         });
       }
 
@@ -1299,7 +1307,9 @@ Page({
 
       if (timeRange) {
         query = query.where({
-          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
         });
       }
 
@@ -1332,7 +1342,9 @@ Page({
 
       if (timeRange) {
         query = query.where({
-          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
         });
       }
 
@@ -1365,7 +1377,9 @@ Page({
 
       if (timeRange) {
         query = query.where({
-          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
         });
       }
 
