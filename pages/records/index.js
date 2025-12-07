@@ -98,10 +98,10 @@ Page({
       'bloodSugar': 'glucose',
       'bloodOxygen': 'oxygen',
       'bloodPressure': 'blood-pressure',
-      'water': 'cup',
+      'water': 'tea',
       'temperature': 'thermometer',
-      'bodyMeasurement': 'body-measurement',
-      'diet': 'food'
+      'bodyMeasurement': 'dashboard',
+      'diet': 'bread'
     },
 
     // 数据类型标题配置
@@ -1613,6 +1613,7 @@ Page({
       }
 
       dateMap.get(dateKey).bloodSugarData = {
+        ...record, // 保留所有字段，包括 customValues
         bloodSugar: record.bloodSugar,
         hasData: true
       };
@@ -1632,6 +1633,7 @@ Page({
       }
 
       dateMap.get(dateKey).bloodOxygenData = {
+        ...record, // 保留所有字段，包括 customValues
         spo2: record.spo2,
         heartRate: record.heartRate,
         hasData: true
@@ -1652,6 +1654,7 @@ Page({
       }
 
       dateMap.get(dateKey).bloodPressureData = {
+        ...record, // 保留所有字段，包括 customValues
         systolic: record.systolic,
         diastolic: record.diastolic,
         hasData: true
@@ -1672,6 +1675,7 @@ Page({
       }
 
       dateMap.get(dateKey).waterIntakeData = {
+        ...record, // 保留所有字段，包括 customValues
         water: record.water,
         hasData: true
       };
@@ -1691,6 +1695,7 @@ Page({
       }
 
       dateMap.get(dateKey).temperatureData = {
+        ...record, // 保留所有字段，包括 customValues
         temperature: record.temperature,
         hasData: true
       };
@@ -1710,6 +1715,7 @@ Page({
       }
 
       dateMap.get(dateKey).bodyMeasurementData = {
+        ...record, // 保留所有字段，包括 customValues
         weight: record.weight,
         height: record.height,
         hasData: true
@@ -1730,6 +1736,7 @@ Page({
       }
 
       dateMap.get(dateKey).dietData = {
+        ...record, // 保留所有字段，包括 customValues
         calories: record.calories,
         protein: record.protein,
         carbs: record.carbs,
