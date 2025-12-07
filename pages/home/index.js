@@ -485,7 +485,16 @@ Page({
     const typeIndex = selectedTypeByGroup[groupIndex];
     const dataType = dataTypes[typeIndex];
 
-    if (!chart || !chartData || chartData.length === 0) {
+    // 如果图表实例不存在，延迟重试
+    if (!chart) {
+      console.warn(`图表实例${groupIndex}不存在，500ms后重试`);
+      setTimeout(() => {
+        this.renderGroupChart(groupIndex);
+      }, 500);
+      return;
+    }
+
+    if (!chartData || chartData.length === 0) {
       return;
     }
 
