@@ -4358,27 +4358,27 @@ Page({
       'bloodSugar': {
         name: '血糖',
         columns: [
-          { key: 'bloodSugar', label: '血糖值', unit: 'mmol/L' }
+          { key: 'bloodSugar', label: '数值', unit: 'mmol/L' }
         ]
       },
       'bloodOxygen': {
         name: '血氧',
         columns: [
-          { key: 'spo2', label: '血氧饱和度', unit: '%' },
+          { key: 'spo2', label: '数值', unit: '%' },
           { key: 'heartRate', label: '心率', unit: '次/分' }
         ]
       },
       'bloodPressure': {
         name: '血压',
         columns: [
-          { key: 'systolic', label: '收缩压', unit: 'mmHg' },
-          { key: 'diastolic', label: '舒张压', unit: 'mmHg' }
+          { key: 'systolic', label: '高压', unit: 'mmHg' },
+          { key: 'diastolic', label: '低压', unit: 'mmHg' }
         ]
       },
       'water': {
         name: '饮水',
         columns: [
-          { key: 'water', label: '饮水量', unit: 'ml' }
+          { key: 'water', label: '饮水', unit: 'ml' }
         ]
       },
       'temperature': {
@@ -4397,7 +4397,7 @@ Page({
       'diet': {
         name: '饮食',
         columns: [
-          { key: 'calories', label: '热量', unit: 'kcal' },
+          { key: 'calories', label: '总热量', unit: 'kcal' },
           { key: 'protein', label: '蛋白质', unit: 'g' },
           { key: 'carbs', label: '碳水化合物', unit: 'g' }
         ]
