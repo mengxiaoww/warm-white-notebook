@@ -447,6 +447,155 @@
                       <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
                     </view>
                   </view>
+                  <!-- 血糖 -->
+                  <view wx:if="{{item.bloodSugarData}}" class="health-record-item" bindtap="navigateToBloodSugar"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="blood-sugar" size="32" color="#FF5722" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">血糖</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">血糖值</view>
+                          <view class="data-value">{{item.bloodSugarData.bloodSugar}} mmol/L</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 血氧 -->
+                  <view wx:if="{{item.bloodOxygenData}}" class="health-record-item" bindtap="navigateToBloodOxygen"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="oxygen" size="32" color="#FF5722" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">血氧</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">血氧饱和度</view>
+                          <view class="data-value">{{item.bloodOxygenData.spo2}}%</view>
+                        </view>
+                        <view wx:if="{{item.bloodOxygenData.heartRate}}" class="summary-data-item">
+                          <view class="data-label">心率</view>
+                          <view class="data-value">{{item.bloodOxygenData.heartRate}} bpm</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 血压 -->
+                  <view wx:if="{{item.bloodPressureData}}" class="health-record-item" bindtap="navigateToBloodPressure"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="blood-pressure" size="32" color="#FF5722" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">血压</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">高压</view>
+                          <view class="data-value">{{item.bloodPressureData.systolic}} mmHg</view>
+                        </view>
+                        <view class="summary-data-item">
+                          <view class="data-label">低压</view>
+                          <view class="data-value">{{item.bloodPressureData.diastolic}} mmHg</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 饮水 -->
+                  <view wx:if="{{item.waterIntakeData}}" class="health-record-item" bindtap="navigateToWaterIntake"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="water" size="32" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">饮水</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">饮水量</view>
+                          <view class="data-value">{{item.waterIntakeData.water}} ml</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 体温 -->
+                  <view wx:if="{{item.temperatureData}}" class="health-record-item" bindtap="navigateToTemperature"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="temperature" size="32" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">体温</view>
+                      <view class="record-summary compact-grid">
+                        <view class="summary-data-item">
+                          <view class="data-label">体温值</view>
+                          <view class="data-value">{{item.temperatureData.temperature}} °C</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 体重身高 -->
+                  <view wx:if="{{item.bodyMeasurementData}}" class="health-record-item" bindtap="navigateToBodyMeasurement"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="body-measurement" size="32" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">身体测量</view>
+                      <view class="record-summary compact-grid">
+                        <view wx:if="{{item.bodyMeasurementData.weight}}" class="summary-data-item">
+                          <view class="data-label">体重</view>
+                          <view class="data-value">{{item.bodyMeasurementData.weight}} kg</view>
+                        </view>
+                        <view wx:if="{{item.bodyMeasurementData.height}}" class="summary-data-item">
+                          <view class="data-label">身高</view>
+                          <view class="data-value">{{item.bodyMeasurementData.height}} cm</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
+                  <!-- 饮食 -->
+                  <view wx:if="{{item.dietData}}" class="health-record-item" bindtap="navigateToDiet"
+                    data-date="{{item.originalDateKey}}">
+                    <view class="record-icon">
+                      <medical-icon name="food" size="32" color="#FFB84D" />
+                    </view>
+                    <view class="record-content">
+                      <view class="record-title">饮食</view>
+                      <view class="record-summary compact-grid">
+                        <view wx:if="{{item.dietData.calories}}" class="summary-data-item">
+                          <view class="data-label">总热量</view>
+                          <view class="data-value">{{item.dietData.calories}} kcal</view>
+                        </view>
+                        <view wx:if="{{item.dietData.protein}}" class="summary-data-item">
+                          <view class="data-label">蛋白质</view>
+                          <view class="data-value">{{item.dietData.protein}} g</view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="record-arrow">
+                      <t-icon name="chevron-right" size="24rpx" color="#C8C8C8" />
+                    </view>
+                  </view>
                 </view>
               </view>
             </view>

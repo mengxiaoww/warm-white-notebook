@@ -1902,6 +1902,48 @@ Page({
         if (dayRecord.stoolData.hasAbnormal) abnormalCount++;
       }
 
+      // 检查血糖数据
+      if (dayRecord.bloodSugarData) {
+        totalRecords++;
+        hasRecordThisDay = true;
+      }
+
+      // 检查血氧数据
+      if (dayRecord.bloodOxygenData) {
+        totalRecords++;
+        hasRecordThisDay = true;
+      }
+
+      // 检查血压数据
+      if (dayRecord.bloodPressureData) {
+        totalRecords++;
+        hasRecordThisDay = true;
+      }
+
+      // 检查饮水数据
+      if (dayRecord.waterIntakeData) {
+        totalRecords++;
+        hasRecordThisDay = true;
+      }
+
+      // 检查体温数据
+      if (dayRecord.temperatureData) {
+        totalRecords++;
+        hasRecordThisDay = true;
+      }
+
+      // 检查身体测量数据
+      if (dayRecord.bodyMeasurementData) {
+        totalRecords++;
+        hasRecordThisDay = true;
+      }
+
+      // 检查饮食数据
+      if (dayRecord.dietData) {
+        totalRecords++;
+        hasRecordThisDay = true;
+      }
+
       // 如果这一天有任何记录，增加记录天数
       if (hasRecordThisDay) {
         recordDays++;
@@ -3538,6 +3580,62 @@ Page({
     const date = e.currentTarget.dataset.date;
     wx.navigateTo({
       url: `/packageB/pages/stool-record/index?date=${date}`
+    });
+  },
+
+  // 跳转到血糖页面
+  navigateToBloodSugar(e) {
+    const date = e.currentTarget.dataset.date;
+    wx.navigateTo({
+      url: `/packageA/pages/blood-sugar/index?date=${date}`
+    });
+  },
+
+  // 跳转到血氧页面
+  navigateToBloodOxygen(e) {
+    const date = e.currentTarget.dataset.date;
+    wx.navigateTo({
+      url: `/packageA/pages/blood-oxygen/index?date=${date}`
+    });
+  },
+
+  // 跳转到血压页面
+  navigateToBloodPressure(e) {
+    const date = e.currentTarget.dataset.date;
+    wx.navigateTo({
+      url: `/packageA/pages/blood-pressure/index?date=${date}`
+    });
+  },
+
+  // 跳转到饮水页面
+  navigateToWaterIntake(e) {
+    const date = e.currentTarget.dataset.date;
+    wx.navigateTo({
+      url: `/packageA/pages/water-intake/index?date=${date}`
+    });
+  },
+
+  // 跳转到体温页面
+  navigateToTemperature(e) {
+    const date = e.currentTarget.dataset.date;
+    wx.navigateTo({
+      url: `/packageA/pages/temperature/index?date=${date}`
+    });
+  },
+
+  // 跳转到身体测量页面
+  navigateToBodyMeasurement(e) {
+    const date = e.currentTarget.dataset.date;
+    wx.navigateTo({
+      url: `/packageA/pages/body-measurement/index?date=${date}`
+    });
+  },
+
+  // 跳转到饮食页面
+  navigateToDiet(e) {
+    const date = e.currentTarget.dataset.date;
+    wx.navigateTo({
+      url: `/packageA/pages/diet/index?date=${date}`
     });
   },
 
