@@ -68,7 +68,6 @@ Page({
     chartDataByGroup: [], // 按分组存储图表数据
     latestValueByGroup: [], // 按分组存储最新值
     chartConfigByGroup: [], // 按分组存储图表配置
-    chartInstancesByGroup: [], // 按分组存储图表实例
     hasShownLoginTip: false, // 控制未登录提示只展示一次
 
     // 当前年份
@@ -84,6 +83,9 @@ Page({
   onLoad() {
     this.isDataReady = false;
 
+    // 初始化图表实例数组（存储在页面实例上，不放在data中）
+    this.chartInstancesByGroup = [];
+
     // 初始化所有图表配置
     this.initAllChartConfigs();
   },
@@ -91,7 +93,6 @@ Page({
   // 初始化所有图表的配置
   initAllChartConfigs() {
     const chartConfigByGroup = [];
-    const chartInstancesByGroup = [];
 
     // 为每个分组创建图表配置
     this.data.dataTypeGroups.forEach((group, groupIndex) => {
@@ -99,18 +100,16 @@ Page({
         lazyLoad: false,
         onInit: (canvas, width, height, dpr) => {
           const chart = initChart(canvas, width, height, dpr);
-          chartInstancesByGroup[groupIndex] = chart;
-          this.setData({
-            [`chartInstancesByGroup[${groupIndex}]`]: chart
-          });
+          // 存储在页面实例属性中，而不是data中
+          this.chartInstancesByGroup[groupIndex] = chart;
+          console.log(`图表实例${groupIndex}已初始化`);
           return chart;
         }
       };
     });
 
     this.setData({
-      chartConfigByGroup,
-      chartInstancesByGroup
+      chartConfigByGroup
     });
   },
 
@@ -484,8 +483,9 @@ Page({
   // 渲染单个分组的图表
   renderGroupChart(groupIndex, retryCount = 0) {
     const maxRetries = 5; // 最多重试5次
-    const { chartInstancesByGroup, chartDataByGroup, selectedTypeByGroup, dataTypes } = this.data;
-    const chart = chartInstancesByGroup[groupIndex];
+    // 从页面实例属性中获取图表实例，而不是从data中
+    const chart = this.chartInstancesByGroup ? this.chartInstancesByGroup[groupIndex] : null;
+    const { chartDataByGroup, selectedTypeByGroup, dataTypes } = this.data;
     const chartData = chartDataByGroup[groupIndex];
     const typeIndex = selectedTypeByGroup[groupIndex];
     const dataType = dataTypes[typeIndex];
