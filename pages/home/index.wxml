@@ -27,7 +27,7 @@
   <!-- 实际内容 -->
   <view class="content-wrapper {{isPageLoading ? 'content-hidden' : 'content-visible'}}">
     <!-- 主要内容区域 -->
-    <scroll-view class="content" scroll-y enhanced show-scrollbar="false">
+    <scroll-view class="content" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}" enable-back-to-top="{{true}}">
       <view class="home-top-section">
         <view class="home-banner" wx:if="{{bannerList.length > 0}}">
           <swiper class="banner-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="{{3000}}"
@@ -137,7 +137,7 @@
         <!-- 图表区域 -->
         <view class="chart-area">
           <!-- 有数据时显示图表 -->
-          <view wx:if="{{chartDataByGroup[groupIndex] && chartDataByGroup[groupIndex].length > 0}}" class="chart-container" catchtouchmove="preventScroll" catchtouchstart="preventScroll" catchtouchend="preventScroll">
+          <view wx:if="{{chartDataByGroup[groupIndex] && chartDataByGroup[groupIndex].length > 0}}" class="chart-container">
             <ec-canvas id="chart-group-{{groupIndex}}" canvasId="chart-group-{{groupIndex}}" ec="{{chartConfigByGroup[groupIndex]}}" class="chart-canvas"></ec-canvas>
             <!-- 图表底部信息 -->
             <!-- <view class="chart-footer">
