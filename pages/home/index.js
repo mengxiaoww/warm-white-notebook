@@ -369,6 +369,16 @@ Page({
       const timeRange = timeRanges[timeIndex];
       const dataType = dataTypes[typeIndex];
 
+      // 🔍 特别关注巨细胞病毒（索引12）
+      if (typeIndex === 12) {
+        console.log(`🔬 [巨细胞病毒] loadGroupData被调用`);
+        console.log(`  - groupIndex: ${groupIndex}`);
+        console.log(`  - typeIndex: ${typeIndex}`);
+        console.log(`  - dataType:`, dataType);
+        console.log(`  - collection: ${dataType.collection}`);
+        console.log(`  - key: ${dataType.key}`);
+      }
+
       if (!timeRange || !dataType) {
         console.error('时间范围或数据类型未找到', {
           groupIndex,
@@ -413,18 +423,47 @@ Page({
 
       allData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+      // 🔍 特别关注巨细胞病毒（索引12）
+      if (typeIndex === 12) {
+        console.log(`🔬 [巨细胞病毒] 数据库查询完成`);
+        console.log(`  - 原始数据数量: ${allData.length}`);
+        console.log(`  - 原始数据:`, allData);
+      }
+
       let chartData = [];
       let latestValue = '--';
 
       if (allData.length > 0) {
         let filteredData = this.filterDataByTimeRange(allData, timeRange.id);
+
+        // 🔍 特别关注巨细胞病毒（索引12）
+        if (typeIndex === 12) {
+          console.log(`🔬 [巨细胞病毒] 时间范围过滤后`);
+          console.log(`  - 过滤后数据数量: ${filteredData.length}`);
+          console.log(`  - 过滤后数据:`, filteredData);
+        }
+
         chartData = this.processDataForType(filteredData, dataType);
+
+        // 🔍 特别关注巨细胞病毒（索引12）
+        if (typeIndex === 12) {
+          console.log(`🔬 [巨细胞病毒] 处理后的图表数据`);
+          console.log(`  - chartData数量: ${chartData.length}`);
+          console.log(`  - chartData:`, chartData);
+        }
 
         if (chartData.length > 0) {
           const latest = chartData[chartData.length - 1].value;
           // 智能格式化：整数不显示小数点
           latestValue = this.formatNumber(latest) + dataType.unit;
         }
+      }
+
+      // 🔍 特别关注巨细胞病毒（索引12）
+      if (typeIndex === 12) {
+        console.log(`🔬 [巨细胞病毒] 准备设置数据到页面`);
+        console.log(`  - 最终chartData数量: ${chartData.length}`);
+        console.log(`  - latestValue: ${latestValue}`);
       }
 
       this.setData({
