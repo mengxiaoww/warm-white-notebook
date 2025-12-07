@@ -232,16 +232,6 @@ Page({
       console.log(`🧹 清空图表实例${groupIndex}`);
       try {
         chart.clear && chart.clear();
-
-        // 🍎 iOS兼容性修复：清空后立即dispose，强制iOS释放渲染资源
-        // 注意：不能真的dispose，否则图表实例会失效，只清空即可
-        // 但要通过setOption设置一个空配置，让iOS重置内部状态
-        try {
-          chart.setOption({}, true); // 第二个参数true表示不合并，完全替换
-          console.log(`🍎 iOS修复：已设置空配置，强制重置图表状态`);
-        } catch (e) {
-          console.warn(`设置空配置失败:`, e);
-        }
       } catch (e) {
         console.warn(`清空图表${groupIndex}失败:`, e);
       }
@@ -596,11 +586,22 @@ Page({
       chart.setOption(option, true);
       console.log(`✅ 图表${groupIndex}setOption完成`);
 
-      // 强制重新渲染
+      // 🍎 iOS兼容性修复：强制多次resize，确保iOS正确渲染
+      // iOS WebView 在某些情况下会缓存渲染状态，需要多次刺激才能刷新
       setTimeout(() => {
         try {
           chart.resize && chart.resize();
-          console.log(`✅ 图表${groupIndex}resize完成`);
+          console.log(`✅ 图表${groupIndex}第1次resize完成`);
+
+          // iOS专用：再次强制刷新
+          setTimeout(() => {
+            try {
+              chart.resize && chart.resize();
+              console.log(`🍎 iOS专用：图表${groupIndex}第2次resize完成`);
+            } catch (e) {
+              console.warn(`第2次resize失败:`, e);
+            }
+          }, 50);
         } catch (e) {
           console.warn(`图表${groupIndex}resize失败:`, e);
         }
