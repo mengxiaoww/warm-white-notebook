@@ -224,15 +224,19 @@ Page({
     const selectedTypeByGroup = [...this.data.selectedTypeByGroup];
     selectedTypeByGroup[groupIndex] = typeIndex;
 
+    // 先清空当前分组的数据，显示"暂无数据"状态
     this.setData({
-      selectedTypeByGroup
+      selectedTypeByGroup,
+      [`chartDataByGroup[${groupIndex}]`]: null
     });
 
-    // 重新加载该分组的数据
-    this.loadGroupData(groupIndex)
-      .finally(() => {
-        this.setData({ isChanging: false });
-      });
+    // 延迟加载新数据，确保UI已更新
+    setTimeout(() => {
+      this.loadGroupData(groupIndex)
+        .finally(() => {
+          this.setData({ isChanging: false });
+        });
+    }, 50);
   },
 
   // 移除ActionSheet相关方法，使用原生按钮选择以解决iOS canvas层级问题
@@ -478,7 +482,8 @@ Page({
   },
 
   // 渲染单个分组的图表
-  renderGroupChart(groupIndex) {
+  renderGroupChart(groupIndex, retryCount = 0) {
+    const maxRetries = 5; // 最多重试5次
     const { chartInstancesByGroup, chartDataByGroup, selectedTypeByGroup, dataTypes } = this.data;
     const chart = chartInstancesByGroup[groupIndex];
     const chartData = chartDataByGroup[groupIndex];
@@ -487,10 +492,14 @@ Page({
 
     // 如果图表实例不存在，延迟重试
     if (!chart) {
-      console.warn(`图表实例${groupIndex}不存在，500ms后重试`);
-      setTimeout(() => {
-        this.renderGroupChart(groupIndex);
-      }, 500);
+      if (retryCount < maxRetries) {
+        console.warn(`图表实例${groupIndex}不存在，第${retryCount + 1}/${maxRetries}次重试，300ms后重试`);
+        setTimeout(() => {
+          this.renderGroupChart(groupIndex, retryCount + 1);
+        }, 300);
+      } else {
+        console.error(`图表实例${groupIndex}重试${maxRetries}次后仍未初始化，放弃渲染`);
+      }
       return;
     }
 
