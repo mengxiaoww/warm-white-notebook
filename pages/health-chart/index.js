@@ -35,9 +35,9 @@ Page({
     dataTypeGroups: healthChartConfig.dataTypeGroups,
 
 
-    // 每个分组的选中状态
-    selectedTypeByGroup: [0, 4, 8, 11, 13], // 每个分组默认选中第一个类型
-    selectedTimeByGroup: [1, 1, 1, 1, 1], // 每个分组默认选中30天
+    // 每个分组的选中状态（7个分组：血常规、肝功能、肾功能、病毒指标、酶类指标、生命体征、生活指标）
+    selectedTypeByGroup: [0, 4, 8, 11, 13, 14, 18], // 每个分组默认选中第一个类型
+    selectedTimeByGroup: [0, 0, 0, 0, 0, 0, 0], // 每个分组默认选中30天（索引0）
 
     // 数据类型配置 - 专业医学配色方案
     dataTypes: healthChartConfig.dataTypes,

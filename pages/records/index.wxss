@@ -3596,7 +3596,7 @@ page {
 /* 悬浮视图切换按钮 */
 .floating-toggle {
   position: fixed;
-  bottom: 165rpx;
+  bottom: 210rpx;
   right: 15rpx;
   z-index: 1000;
   display: flex;
