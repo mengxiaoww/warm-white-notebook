@@ -4237,7 +4237,25 @@ Page({
         // 添加自定义指标列
         if (customRes.data && customRes.data.length > 0) {
           customRes.data.forEach(customIndicator => {
-            const customKey = customIndicator.indicatorId || `custom_${customIndicator.name}`;
+            // 🔥 数据验证：确保自定义指标配置完整且有效
+            if (!customIndicator.indicatorId) {
+              console.warn(`⚠️ 跳过无效的自定义指标配置（缺少indicatorId）:`, customIndicator);
+              return;
+            }
+
+            if (!customIndicator.name || typeof customIndicator.name !== 'string' || customIndicator.name.trim() === '') {
+              console.warn(`⚠️ 跳过无效的自定义指标配置（name无效）:`, customIndicator);
+              return;
+            }
+
+            // 🔥 验证name不是纯数字（很可能是数据错误）
+            const trimmedName = customIndicator.name.trim();
+            if (/^\d+$/.test(trimmedName)) {
+              console.warn(`⚠️ 跳过可能错误的自定义指标配置（name为纯数字"${trimmedName}"）:`, customIndicator);
+              return;
+            }
+
+            const customKey = customIndicator.indicatorId;
 
             // 检查是否在用户配置中被选中（如果有配置的话）
             const isSelected = selectedConfig ? selectedConfig[customKey] : true; // 默认显示自定义指标
@@ -4245,7 +4263,7 @@ Page({
             if (isSelected) {
               dynamicColumns.push({
                 key: customKey,
-                label: customIndicator.name,
+                label: trimmedName,
                 unit: customIndicator.unit || '',
                 isCustom: true
               });
