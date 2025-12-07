@@ -232,6 +232,16 @@ Page({
       console.log(`🧹 清空图表实例${groupIndex}`);
       try {
         chart.clear && chart.clear();
+
+        // 🍎 iOS兼容性修复：清空后立即dispose，强制iOS释放渲染资源
+        // 注意：不能真的dispose，否则图表实例会失效，只清空即可
+        // 但要通过setOption设置一个空配置，让iOS重置内部状态
+        try {
+          chart.setOption({}, true); // 第二个参数true表示不合并，完全替换
+          console.log(`🍎 iOS修复：已设置空配置，强制重置图表状态`);
+        } catch (e) {
+          console.warn(`设置空配置失败:`, e);
+        }
       } catch (e) {
         console.warn(`清空图表${groupIndex}失败:`, e);
       }
