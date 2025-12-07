@@ -41,7 +41,11 @@ export const MEDICAL_ICONS = {
 export const ICON_NAME_MAP = {
   'chart-bubble': 'blood-drop',
   'heart-filled': 'liver',
-  'chart-line-data': 'enzyme'
+  'chart-line-data': 'enzyme',
+  // 新增数据类型的图标映射
+  'blood-sugar': 'glucose',
+  'water': 'cup',
+  'temperature': 'thermometer'
 }
 
 // 获取图标URL

@@ -81,74 +81,8 @@ Page({
     tableViewData: [],
     tableContainerClass: 'table-container',
 
-    // 检测项目配置
-    testTypeOptions: [
-      {
-        key: 'blood',
-        name: '血常规',
-        icon: 'blood-drop',
-        columns: [
-          { key: 'wbc', label: '白细胞', unit: '×10⁹/L', normalRange: '3.5-9.5' },
-          { key: 'neut', label: '中性粒细胞', unit: '×10⁹/L', normalRange: '2.0-7.0' },
-          { key: 'hgb', label: '血红蛋白', unit: 'g/L', normalRange: '115-150' },
-          { key: 'plt', label: '血小板', unit: '×10⁹/L', normalRange: '125-350' }
-        ]
-      },
-      {
-        key: 'checkReport',
-        name: '就医档案',
-        icon: 'folder-open',
-        columns: [
-          { key: 'projectName', label: '检查项目', unit: '', normalRange: '' },
-          { key: 'resultTypeLabel', label: '检查结果', unit: '', normalRange: '' },
-          { key: 'detailedResults', label: '详细结果', unit: '', normalRange: '' }
-        ]
-      },
-      {
-        key: 'ebv',
-        name: 'EB病毒',
-        icon: 'zoom-in',
-        columns: [
-          { key: 'ebvDna', label: '病毒载量', unit: 'copies/mL', normalRange: '<500' }
-        ]
-      },
-      {
-        key: 'cmv',
-        name: 'CMV病毒',
-        icon: 'search',
-        columns: [
-          { key: 'hcmvDna', label: '病毒载量', unit: 'copies/mL', normalRange: '<500' }
-        ]
-      },
-      {
-        key: 'ldh',
-        name: '乳酸脱氢酶',
-        icon: 'enzyme',
-        columns: [
-          { key: 'ldh', label: 'LDH值', unit: 'U/L', normalRange: '100-300' }
-        ]
-      },
-      {
-        key: 'liver',
-        name: '肝功能',
-        icon: 'liver',
-        columns: [
-          { key: 'alt', label: 'ALT', unit: 'U/L', normalRange: '<50' },
-          { key: 'ast', label: 'AST', unit: 'U/L', normalRange: '<40' },
-          { key: 'tbil', label: '总胆红素', unit: 'μmol/L', normalRange: '5.1-22.2' }
-        ]
-      },
-      {
-        key: 'kidney',
-        name: '肾功能',
-        icon: 'filter',
-        columns: [
-          { key: 'cr', label: '肌酐', unit: 'μmol/L', normalRange: '57-111' },
-          { key: 'bun', label: '尿素', unit: 'mmol/L', normalRange: '3.1-8.0' },
-          { key: 'ua', label: '尿酸', unit: 'μmol/L', normalRange: '208-428' }
-        ]
-      }
-    ],
+    // 检测项目配置（动态加载，包含自定义指标）
+    testTypeOptions: [],
 
     // 用药统计 - 新结构
     medicationStats: {
@@ -3906,7 +3840,14 @@ Page({
         'cmv': 'cmvIndicatorSettings',
         'ldh': 'ldhIndicatorSettings',
         'liver': 'liverIndicatorSettings',
-        'kidney': 'kidneyIndicatorSettings'
+        'kidney': 'kidneyIndicatorSettings',
+        'bloodSugar': 'bloodSugarIndicatorSettings',
+        'bloodOxygen': 'bloodOxygenIndicatorSettings',
+        'bloodPressure': 'bloodPressureIndicatorSettings',
+        'water': 'waterIntakeIndicatorSettings',
+        'temperature': 'temperatureIndicatorSettings',
+        'bodyMeasurement': 'bodyMeasurementIndicatorSettings',
+        'diet': 'dietIndicatorSettings'
       };
 
       const collection = collectionMap[testType];
@@ -4022,6 +3963,53 @@ Page({
           { key: 'type', label: '类型', unit: '' },
           { key: 'color', label: '颜色', unit: '' },
           { key: 'hasBlood', label: '血便', unit: '' }
+        ]
+      },
+      'bloodSugar': {
+        name: '血糖',
+        columns: [
+          { key: 'bloodSugar', label: '血糖值', unit: 'mmol/L' }
+        ]
+      },
+      'bloodOxygen': {
+        name: '血氧',
+        columns: [
+          { key: 'spo2', label: '血氧饱和度', unit: '%' },
+          { key: 'heartRate', label: '心率', unit: '次/分' }
+        ]
+      },
+      'bloodPressure': {
+        name: '血压',
+        columns: [
+          { key: 'systolic', label: '收缩压', unit: 'mmHg' },
+          { key: 'diastolic', label: '舒张压', unit: 'mmHg' }
+        ]
+      },
+      'water': {
+        name: '饮水',
+        columns: [
+          { key: 'water', label: '饮水量', unit: 'ml' }
+        ]
+      },
+      'temperature': {
+        name: '体温',
+        columns: [
+          { key: 'temperature', label: '体温', unit: '℃' }
+        ]
+      },
+      'bodyMeasurement': {
+        name: '体重',
+        columns: [
+          { key: 'weight', label: '体重', unit: 'kg' },
+          { key: 'height', label: '身高', unit: 'cm' }
+        ]
+      },
+      'diet': {
+        name: '饮食',
+        columns: [
+          { key: 'calories', label: '热量', unit: 'kcal' },
+          { key: 'protein', label: '蛋白质', unit: 'g' },
+          { key: 'carbs', label: '碳水化合物', unit: 'g' }
         ]
       }
     };
@@ -4221,6 +4209,34 @@ Page({
           } else {
             value = actualRecord[column.key] !== undefined ? actualRecord[column.key] : '';
           }
+        } else if (testConfig.name === '血糖') {
+          // 血糖记录字段：bloodSugar
+          value = recordData[column.key] !== undefined ? recordData[column.key] :
+            (recordData.customValues && recordData.customValues[column.key] !== undefined ? recordData.customValues[column.key] : '');
+        } else if (testConfig.name === '血氧') {
+          // 血氧记录字段：spo2, heartRate
+          value = recordData[column.key] !== undefined ? recordData[column.key] :
+            (recordData.customValues && recordData.customValues[column.key] !== undefined ? recordData.customValues[column.key] : '');
+        } else if (testConfig.name === '血压') {
+          // 血压记录字段：systolic, diastolic
+          value = recordData[column.key] !== undefined ? recordData[column.key] :
+            (recordData.customValues && recordData.customValues[column.key] !== undefined ? recordData.customValues[column.key] : '');
+        } else if (testConfig.name === '饮水') {
+          // 饮水记录字段：water
+          value = recordData[column.key] !== undefined ? recordData[column.key] :
+            (recordData.customValues && recordData.customValues[column.key] !== undefined ? recordData.customValues[column.key] : '');
+        } else if (testConfig.name === '体温') {
+          // 体温记录字段：temperature
+          value = recordData[column.key] !== undefined ? recordData[column.key] :
+            (recordData.customValues && recordData.customValues[column.key] !== undefined ? recordData.customValues[column.key] : '');
+        } else if (testConfig.name === '体重') {
+          // 体重记录字段：weight, height
+          value = recordData[column.key] !== undefined ? recordData[column.key] :
+            (recordData.customValues && recordData.customValues[column.key] !== undefined ? recordData.customValues[column.key] : '');
+        } else if (testConfig.name === '饮食') {
+          // 饮食记录字段：calories, protein, carbs
+          value = recordData[column.key] !== undefined ? recordData[column.key] :
+            (recordData.customValues && recordData.customValues[column.key] !== undefined ? recordData.customValues[column.key] : '');
         } else {
           // 默认情况，也要检查自定义值
           value = recordData[column.key] !== undefined ? recordData[column.key] :
