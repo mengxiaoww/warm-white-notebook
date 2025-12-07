@@ -146,8 +146,7 @@ Page({
 
     // 构建基础指标列表
     const basicIndicators = [
-      { id: 'spo2', name: '数值', unit: '%' },
-      { id: 'heartRate', name: '心率', unit: '次/分' }
+      { id: 'spo2', name: '数值', unit: '%' }
     ];
 
     // 过滤出被选中的基础指标

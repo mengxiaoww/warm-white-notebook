@@ -1635,7 +1635,6 @@ Page({
       dateMap.get(dateKey).bloodOxygenData = {
         ...record, // 保留所有字段，包括 customValues
         spo2: record.spo2,
-        heartRate: record.heartRate,
         hasData: true
       };
     });
@@ -2033,9 +2032,6 @@ Page({
       case 'bloodOxygen':
         if (data.spo2 !== undefined && data.spo2 !== null && data.spo2 !== '') {
           items.push({ label: '血氧饱和度', value: `${data.spo2}%` });
-        }
-        if (data.heartRate !== undefined && data.heartRate !== null && data.heartRate !== '') {
-          items.push({ label: '心率', value: `${data.heartRate}次/分` });
         }
         break;
 
@@ -4364,8 +4360,7 @@ Page({
       'bloodOxygen': {
         name: '血氧',
         columns: [
-          { key: 'spo2', label: '数值', unit: '%' },
-          { key: 'heartRate', label: '心率', unit: '次/分' }
+          { key: 'spo2', label: '数值', unit: '%' }
         ]
       },
       'bloodPressure': {

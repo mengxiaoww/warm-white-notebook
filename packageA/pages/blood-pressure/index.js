@@ -147,8 +147,8 @@ Page({
 
     // 构建基础指标列表
     const basicIndicators = [
-      { id: 'systolic', name: '高压', unit: 'mmHg' }, { id: 'diastolic', name: '低压', unit: 'mmHg' },
-      { id: 'heartRate', name: '心率', unit: '次/分' }
+      { id: 'systolic', name: '高压', unit: 'mmHg' },
+      { id: 'diastolic', name: '低压', unit: 'mmHg' }
     ];
 
     // 过滤出被选中的基础指标
