@@ -101,12 +101,29 @@ Page({
         lazyLoad: false,
         onInit: (canvas, width, height, dpr) => {
           const chart = initChart(canvas, width, height, dpr);
-          // 存储在页面实例属性中，而不是data中
+
+          // 🔧 关键修复：每次onInit都更新图表实例引用
+          // 当Canvas组件因wx:if被销毁后重新创建时，onInit会再次被调用
+          // 此时必须更新存储的图表实例，否则会引用已销毁的旧实例
+          if (this.chartInstancesByGroup[groupIndex]) {
+            console.log(`🔄 图表实例${groupIndex}重新创建（旧实例已被Canvas销毁）`);
+          }
+
           this.chartInstancesByGroup[groupIndex] = chart;
           console.log(`✅ 图表实例${groupIndex}已初始化`);
           console.log(`  - chart对象: ${!!chart}`);
           console.log(`  - 存储到chartInstancesByGroup[${groupIndex}]`);
-          console.log(`  - chartInstancesByGroup数组长度: ${this.chartInstancesByGroup.length}`);
+
+          // 🔧 重要：如果已经有数据，立即渲染
+          // 这解决了Canvas重新创建后需要重新渲染的问题
+          const chartData = this.data.chartDataByGroup[groupIndex];
+          if (chartData && chartData.length > 0) {
+            console.log(`🎨 检测到已有数据，立即渲染图表${groupIndex}`);
+            setTimeout(() => {
+              this.renderGroupChart(groupIndex);
+            }, 100);
+          }
+
           return chart;
         }
       };
@@ -226,29 +243,16 @@ Page({
     // 设置操作锁
     this.setData({ isChanging: true });
 
-    // 🔧 关键修复：先清空图表实例，避免显示旧数据
-    const chart = this.chartInstancesByGroup ? this.chartInstancesByGroup[groupIndex] : null;
-    if (chart) {
-      console.log(`🧹 清空图表实例${groupIndex}`);
-      try {
-        chart.clear && chart.clear();
-      } catch (e) {
-        console.warn(`清空图表${groupIndex}失败:`, e);
-      }
-    } else {
-      console.warn(`⚠️ 图表实例${groupIndex}不存在，无法清空`);
-    }
-
     // 更新选中的类型
     const selectedTypeByGroup = [...this.data.selectedTypeByGroup];
     selectedTypeByGroup[groupIndex] = typeIndex;
 
-    // 🔧 修复：不清空数据，直接更新类型索引，避免触发组件重新创建
+    // 更新类型索引
     this.setData({
       selectedTypeByGroup
     });
 
-    // 🔧 修复：立即加载新数据（不延迟），让新数据覆盖旧数据
+    // 立即加载新数据
     console.log(`📊 开始加载分组${groupIndex}的数据`);
     this.loadGroupData(groupIndex)
       .finally(() => {
@@ -369,16 +373,6 @@ Page({
       const timeRange = timeRanges[timeIndex];
       const dataType = dataTypes[typeIndex];
 
-      // 🔍 特别关注巨细胞病毒（索引12）
-      if (typeIndex === 12) {
-        console.log(`🔬 [巨细胞病毒] loadGroupData被调用`);
-        console.log(`  - groupIndex: ${groupIndex}`);
-        console.log(`  - typeIndex: ${typeIndex}`);
-        console.log(`  - dataType:`, dataType);
-        console.log(`  - collection: ${dataType.collection}`);
-        console.log(`  - key: ${dataType.key}`);
-      }
-
       if (!timeRange || !dataType) {
         console.error('时间范围或数据类型未找到', {
           groupIndex,
@@ -423,34 +417,12 @@ Page({
 
       allData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-      // 🔍 特别关注巨细胞病毒（索引12）
-      if (typeIndex === 12) {
-        console.log(`🔬 [巨细胞病毒] 数据库查询完成`);
-        console.log(`  - 原始数据数量: ${allData.length}`);
-        console.log(`  - 原始数据:`, allData);
-      }
-
       let chartData = [];
       let latestValue = '--';
 
       if (allData.length > 0) {
         let filteredData = this.filterDataByTimeRange(allData, timeRange.id);
-
-        // 🔍 特别关注巨细胞病毒（索引12）
-        if (typeIndex === 12) {
-          console.log(`🔬 [巨细胞病毒] 时间范围过滤后`);
-          console.log(`  - 过滤后数据数量: ${filteredData.length}`);
-          console.log(`  - 过滤后数据:`, filteredData);
-        }
-
         chartData = this.processDataForType(filteredData, dataType);
-
-        // 🔍 特别关注巨细胞病毒（索引12）
-        if (typeIndex === 12) {
-          console.log(`🔬 [巨细胞病毒] 处理后的图表数据`);
-          console.log(`  - chartData数量: ${chartData.length}`);
-          console.log(`  - chartData:`, chartData);
-        }
 
         if (chartData.length > 0) {
           const latest = chartData[chartData.length - 1].value;
@@ -459,12 +431,7 @@ Page({
         }
       }
 
-      // 🔍 特别关注巨细胞病毒（索引12）
-      if (typeIndex === 12) {
-        console.log(`🔬 [巨细胞病毒] 准备设置数据到页面`);
-        console.log(`  - 最终chartData数量: ${chartData.length}`);
-        console.log(`  - latestValue: ${latestValue}`);
-      }
+      console.log(`📊 分组${groupIndex}数据加载完成: ${chartData.length}条`);
 
       this.setData({
         [`chartDataByGroup[${groupIndex}]`]: chartData,
@@ -540,35 +507,31 @@ Page({
 
   // 渲染单个分组的图表
   renderGroupChart(groupIndex, retryCount = 0) {
-    const maxRetries = 5; // 最多重试5次
-    // 从页面实例属性中获取图表实例，而不是从data中
+    const maxRetries = 3; // 减少重试次数，3次足够
     const chart = this.chartInstancesByGroup ? this.chartInstancesByGroup[groupIndex] : null;
     const { chartDataByGroup, selectedTypeByGroup, dataTypes } = this.data;
     const chartData = chartDataByGroup[groupIndex];
     const typeIndex = selectedTypeByGroup[groupIndex];
     const dataType = dataTypes[typeIndex];
 
-    console.log(`🎨 renderGroupChart: groupIndex=${groupIndex}, retryCount=${retryCount}`);
-    console.log(`  - chart存在: ${!!chart}`);
-    console.log(`  - chartData存在: ${!!chartData}, 长度: ${chartData ? chartData.length : 0}`);
-    console.log(`  - chartInstancesByGroup数组: ${this.chartInstancesByGroup ? 'exists' : 'null'}`);
-
-    // 如果图表实例不存在，延迟重试
+    // 🔧 关键修复：如果图表实例不存在，说明Canvas还未创建或已被销毁
+    // 等待Canvas的onInit回调创建新实例并自动渲染
     if (!chart) {
       if (retryCount < maxRetries) {
-        console.warn(`⚠️ 图表实例${groupIndex}不存在，第${retryCount + 1}/${maxRetries}次重试，300ms后重试`);
+        console.warn(`⚠️ 图表实例${groupIndex}不存在，第${retryCount + 1}次重试（300ms后）`);
         setTimeout(() => {
           this.renderGroupChart(groupIndex, retryCount + 1);
         }, 300);
       } else {
-        console.error(`❌ 图表实例${groupIndex}重试${maxRetries}次后仍未初始化，放弃渲染`);
+        console.error(`❌ 图表实例${groupIndex}在${maxRetries}次重试后仍未初始化`);
+        console.log(`💡 这可能是因为数据为空导致Canvas未渲染，属于正常情况`);
       }
       return;
     }
 
-    // 🔧 修复：即使数据为空，也要清空图表，避免显示旧数据
+    // 数据为空时清空图表
     if (!chartData || chartData.length === 0) {
-      console.log(`📭 图表${groupIndex}数据为空，清空图表`);
+      console.log(`📭 图表${groupIndex}数据为空，清空显示`);
       try {
         chart.clear && chart.clear();
       } catch (e) {
@@ -577,37 +540,33 @@ Page({
       return;
     }
 
-    // 使用原有的图表配置，但适配新的数据结构
+    // 渲染图表
     const option = this.createChartOption(chartData, dataType);
 
     try {
-      console.log(`🖌️ 开始渲染图表${groupIndex}`);
+      console.log(`🎨 渲染图表${groupIndex}，数据点数量: ${chartData.length}`);
+
+      // 清空旧内容并设置新配置
       chart.clear && chart.clear();
       chart.setOption(option, true);
-      console.log(`✅ 图表${groupIndex}setOption完成`);
 
-      // 🍎 iOS兼容性修复：强制多次resize，确保iOS正确渲染
-      // iOS WebView 在某些情况下会缓存渲染状态，需要多次刺激才能刷新
+      // 🍎 iOS兼容性：强制刷新渲染
+      // iOS WebView 有时会缓存Canvas状态，需要通过resize触发重绘
       setTimeout(() => {
         try {
           chart.resize && chart.resize();
-          console.log(`✅ 图表${groupIndex}第1次resize完成`);
 
-          // iOS专用：再次强制刷新
+          // 第二次resize确保iOS正确渲染（仅在iOS上需要）
           setTimeout(() => {
-            try {
-              chart.resize && chart.resize();
-              console.log(`🍎 iOS专用：图表${groupIndex}第2次resize完成`);
-            } catch (e) {
-              console.warn(`第2次resize失败:`, e);
-            }
+            chart.resize && chart.resize();
           }, 50);
         } catch (e) {
           console.warn(`图表${groupIndex}resize失败:`, e);
         }
       }, 100);
+
     } catch (error) {
-      console.error(`❌ 渲染分组${groupIndex}图表失败:`, error);
+      console.error(`❌ 渲染图表${groupIndex}失败:`, error);
     }
   },
 
