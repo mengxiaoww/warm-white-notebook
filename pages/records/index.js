@@ -41,7 +41,6 @@ Page({
 
     // 筛选选项
     dateFilterOptions: [
-      { label: '最近7天', value: '7' },
       { label: '最近30天', value: '30' },
       { label: '最近90天', value: '90' },
       { label: '最近180天', value: '180' },
@@ -58,7 +57,14 @@ Page({
       { label: '肝功能', value: 'liver' },
       { label: '肾功能', value: 'kidney' },
       { label: '尿量记录', value: 'urine' },
-      { label: '排便记录', value: 'stool' }
+      { label: '排便记录', value: 'stool' },
+      { label: '血糖', value: 'bloodSugar' },
+      { label: '血氧', value: 'bloodOxygen' },
+      { label: '血压', value: 'bloodPressure' },
+      { label: '饮水', value: 'water' },
+      { label: '体温', value: 'temperature' },
+      { label: '体重', value: 'bodyMeasurement' },
+      { label: '饮食', value: 'diet' }
     ],
 
     // 健康统计
@@ -686,7 +692,14 @@ Page({
         liverRecords,
         kidneyRecords,
         urineRecords,
-        stoolRecords
+        stoolRecords,
+        bloodSugarRecords,
+        bloodOxygenRecords,
+        bloodPressureRecords,
+        waterIntakeRecords,
+        temperatureRecords,
+        bodyMeasurementRecords,
+        dietRecords
       ] = await Promise.race([
         Promise.all([
           this.loadBloodData(openid, timeRange),
@@ -697,10 +710,17 @@ Page({
           this.loadLiverData(openid, timeRange),
           this.loadKidneyData(openid, timeRange),
           this.loadUrineData(openid, timeRange),
-          this.loadStoolData(openid, timeRange)
+          this.loadStoolData(openid, timeRange),
+          this.loadBloodSugarData(openid, timeRange),
+          this.loadBloodOxygenData(openid, timeRange),
+          this.loadBloodPressureData(openid, timeRange),
+          this.loadWaterIntakeData(openid, timeRange),
+          this.loadTemperatureData(openid, timeRange),
+          this.loadBodyMeasurementData(openid, timeRange),
+          this.loadDietData(openid, timeRange)
         ]),
         new Promise((resolve) =>
-          setTimeout(() => resolve([[], [], [], [], [], [], [], [], []]), 3000)
+          setTimeout(() => resolve([[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]), 3000)
         )
       ]);
 
@@ -713,7 +733,14 @@ Page({
         肝功能: liverRecords.length,
         肾功能: kidneyRecords.length,
         尿量记录: urineRecords.length,
-        排便记录: stoolRecords.length
+        排便记录: stoolRecords.length,
+        血糖: bloodSugarRecords.length,
+        血氧: bloodOxygenRecords.length,
+        血压: bloodPressureRecords.length,
+        饮水: waterIntakeRecords.length,
+        体温: temperatureRecords.length,
+        身体测量: bodyMeasurementRecords.length,
+        饮食: dietRecords.length
       });
 
       // 合并并处理数据
@@ -726,7 +753,14 @@ Page({
         liverRecords,
         kidneyRecords,
         urineRecords,
-        stoolRecords
+        stoolRecords,
+        bloodSugarRecords,
+        bloodOxygenRecords,
+        bloodPressureRecords,
+        waterIntakeRecords,
+        temperatureRecords,
+        bodyMeasurementRecords,
+        dietRecords
       });
 
 
@@ -1097,6 +1131,230 @@ Page({
     });
   },
 
+  // 加载血糖数据
+  loadBloodSugarData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+
+      if (!currentProfileId) {
+        resolve([]);
+        return;
+      }
+
+      const db = wx.cloud.database();
+      let query = db.collection('bloodSugars').where({
+        openid: openid,
+        profileId: currentProfileId
+      });
+
+      if (timeRange) {
+        query = query.where({
+          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+        });
+      }
+
+      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+        resolve(res.data || []);
+      }).catch(err => {
+        console.error('加载血糖数据失败:', err);
+        resolve([]);
+      });
+    });
+  },
+
+  // 加载血氧数据
+  loadBloodOxygenData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+
+      if (!currentProfileId) {
+        resolve([]);
+        return;
+      }
+
+      const db = wx.cloud.database();
+      let query = db.collection('bloodOxygens').where({
+        openid: openid,
+        profileId: currentProfileId
+      });
+
+      if (timeRange) {
+        query = query.where({
+          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+        });
+      }
+
+      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+        resolve(res.data || []);
+      }).catch(err => {
+        console.error('加载血氧数据失败:', err);
+        resolve([]);
+      });
+    });
+  },
+
+  // 加载血压数据
+  loadBloodPressureData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+
+      if (!currentProfileId) {
+        resolve([]);
+        return;
+      }
+
+      const db = wx.cloud.database();
+      let query = db.collection('bloodPressures').where({
+        openid: openid,
+        profileId: currentProfileId
+      });
+
+      if (timeRange) {
+        query = query.where({
+          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+        });
+      }
+
+      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+        resolve(res.data || []);
+      }).catch(err => {
+        console.error('加载血压数据失败:', err);
+        resolve([]);
+      });
+    });
+  },
+
+  // 加载饮水数据
+  loadWaterIntakeData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+
+      if (!currentProfileId) {
+        resolve([]);
+        return;
+      }
+
+      const db = wx.cloud.database();
+      let query = db.collection('waterIntakes').where({
+        openid: openid,
+        profileId: currentProfileId
+      });
+
+      if (timeRange) {
+        query = query.where({
+          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+        });
+      }
+
+      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+        resolve(res.data || []);
+      }).catch(err => {
+        console.error('加载饮水数据失败:', err);
+        resolve([]);
+      });
+    });
+  },
+
+  // 加载体温数据
+  loadTemperatureData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+
+      if (!currentProfileId) {
+        resolve([]);
+        return;
+      }
+
+      const db = wx.cloud.database();
+      let query = db.collection('temperatures').where({
+        openid: openid,
+        profileId: currentProfileId
+      });
+
+      if (timeRange) {
+        query = query.where({
+          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+        });
+      }
+
+      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+        resolve(res.data || []);
+      }).catch(err => {
+        console.error('加载体温数据失败:', err);
+        resolve([]);
+      });
+    });
+  },
+
+  // 加载身体测量数据
+  loadBodyMeasurementData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+
+      if (!currentProfileId) {
+        resolve([]);
+        return;
+      }
+
+      const db = wx.cloud.database();
+      let query = db.collection('bodyMeasurements').where({
+        openid: openid,
+        profileId: currentProfileId
+      });
+
+      if (timeRange) {
+        query = query.where({
+          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+        });
+      }
+
+      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+        resolve(res.data || []);
+      }).catch(err => {
+        console.error('加载身体测量数据失败:', err);
+        resolve([]);
+      });
+    });
+  },
+
+  // 加载饮食数据
+  loadDietData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+
+      if (!currentProfileId) {
+        resolve([]);
+        return;
+      }
+
+      const db = wx.cloud.database();
+      let query = db.collection('diets').where({
+        openid: openid,
+        profileId: currentProfileId
+      });
+
+      if (timeRange) {
+        query = query.where({
+          date: db.command.gte(timeRange.start).and(db.command.lte(timeRange.end))
+        });
+      }
+
+      query.orderBy('date', 'desc').orderBy('createTime', 'desc').get().then(res => {
+        resolve(res.data || []);
+      }).catch(err => {
+        console.error('加载饮食数据失败:', err);
+        resolve([]);
+      });
+    });
+  },
+
   // 合并健康记录
   mergeHealthRecords(records) {
     const dateMap = new Map();
@@ -1329,10 +1587,148 @@ Page({
       }
     });
 
+    // 处理血糖数据
+    records.bloodSugarRecords.forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+
+      dateMap.get(dateKey).bloodSugarData = {
+        bloodSugar: record.bloodSugar,
+        hasData: true
+      };
+    });
+
+    // 处理血氧数据
+    records.bloodOxygenRecords.forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+
+      dateMap.get(dateKey).bloodOxygenData = {
+        spo2: record.spo2,
+        heartRate: record.heartRate,
+        hasData: true
+      };
+    });
+
+    // 处理血压数据
+    records.bloodPressureRecords.forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+
+      dateMap.get(dateKey).bloodPressureData = {
+        systolic: record.systolic,
+        diastolic: record.diastolic,
+        hasData: true
+      };
+    });
+
+    // 处理饮水数据
+    records.waterIntakeRecords.forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+
+      dateMap.get(dateKey).waterIntakeData = {
+        water: record.water,
+        hasData: true
+      };
+    });
+
+    // 处理体温数据
+    records.temperatureRecords.forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+
+      dateMap.get(dateKey).temperatureData = {
+        temperature: record.temperature,
+        hasData: true
+      };
+    });
+
+    // 处理身体测量数据
+    records.bodyMeasurementRecords.forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+
+      dateMap.get(dateKey).bodyMeasurementData = {
+        weight: record.weight,
+        height: record.height,
+        hasData: true
+      };
+    });
+
+    // 处理饮食数据
+    records.dietRecords.forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+
+      dateMap.get(dateKey).dietData = {
+        calories: record.calories,
+        protein: record.protein,
+        carbs: record.carbs,
+        hasData: true
+      };
+    });
+
     // 转换为数组并排序
     const results = Array.from(dateMap.values()).filter(item => {
       // 确保每个记录都有有效的数据
-      return item.bloodData || item.ebvData || item.cmvData || item.ldhData || item.liverData || item.kidneyData || item.urineData || item.stoolData;
+      return item.bloodData || item.ebvData || item.cmvData || item.ldhData || item.liverData || item.kidneyData || item.urineData || item.stoolData || item.bloodSugarData || item.bloodOxygenData || item.bloodPressureData || item.waterIntakeData || item.temperatureData || item.bodyMeasurementData || item.dietData;
     });
 
     // 按原始日期键排序（降序）
@@ -1603,12 +1999,33 @@ Page({
         case 'stool':
           if (dayRecord.stoolData) filteredRecord.stoolData = dayRecord.stoolData;
           break;
+        case 'bloodSugar':
+          if (dayRecord.bloodSugarData) filteredRecord.bloodSugarData = dayRecord.bloodSugarData;
+          break;
+        case 'bloodOxygen':
+          if (dayRecord.bloodOxygenData) filteredRecord.bloodOxygenData = dayRecord.bloodOxygenData;
+          break;
+        case 'bloodPressure':
+          if (dayRecord.bloodPressureData) filteredRecord.bloodPressureData = dayRecord.bloodPressureData;
+          break;
+        case 'water':
+          if (dayRecord.waterIntakeData) filteredRecord.waterIntakeData = dayRecord.waterIntakeData;
+          break;
+        case 'temperature':
+          if (dayRecord.temperatureData) filteredRecord.temperatureData = dayRecord.temperatureData;
+          break;
+        case 'bodyMeasurement':
+          if (dayRecord.bodyMeasurementData) filteredRecord.bodyMeasurementData = dayRecord.bodyMeasurementData;
+          break;
+        case 'diet':
+          if (dayRecord.dietData) filteredRecord.dietData = dayRecord.dietData;
+          break;
       }
 
       return filteredRecord;
     }).filter(record => {
       // 只保留有数据的记录
-      return record.bloodData || record.checkReportData || record.ebvData || record.cmvData || record.ldhData || record.liverData || record.kidneyData || record.urineData || record.stoolData;
+      return record.bloodData || record.checkReportData || record.ebvData || record.cmvData || record.ldhData || record.liverData || record.kidneyData || record.urineData || record.stoolData || record.bloodSugarData || record.bloodOxygenData || record.bloodPressureData || record.waterIntakeData || record.temperatureData || record.bodyMeasurementData || record.dietData;
     });
   },
 
