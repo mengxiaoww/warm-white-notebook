@@ -566,12 +566,20 @@ Page({
         console.log(`  ${key}: 值=${processedValues[key]}, 类型=${typeof processedValues[key]}`);
       });
 
+      // 🔍 调试日志：打印最终保存的日期
+      const finalDate = healthData.date || new Date().toISOString().split('T')[0];
+      console.log('🔍 保存日期:', {
+        'AI输出的日期': healthData.date,
+        '实际使用的日期': finalDate,
+        '当前时间': new Date().toISOString()
+      });
+
       // 保存数据
       const saveResult = await db.collection(collection).add({
         data: {
           openid: openid,
           profileId: profileId,
-          date: healthData.date || new Date().toISOString().split('T')[0],
+          date: finalDate,  // 使用计算后的日期
           ...processedValues,  // 使用处理后的数值
           notes: healthData.notes || '',
           source: 'ai_assistant',

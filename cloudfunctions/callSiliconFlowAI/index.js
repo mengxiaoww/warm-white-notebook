@@ -78,7 +78,6 @@ const SYSTEM_PROMPTS = {
 \`\`\`json
 {
   "dataType": "bloodTest",
-  "date": "2024-01-15",
   "values": {
     "wbc": 3.6,
     "plt": 120,
@@ -91,7 +90,6 @@ const SYSTEM_PROMPTS = {
 
 **字段说明**：
 - dataType: 数据类型标识（必须使用上述类型之一）
-- date: 日期（YYYY-MM-DD格式，默认为今天）
 - values: 🔥🔥🔥 **数值精度的致命要求** 🔥🔥🔥
   - 指标键值对（键名必须小写，如wbc、plt、hgb、neut、alt、ast等）
   - ⚠️⚠️⚠️ **绝对禁止修改用户输入的数值精度！这是最高优先级规则！**
@@ -116,7 +114,6 @@ const SYSTEM_PROMPTS = {
 \`\`\`json
 {
   "dataType": "bloodTest",
-  "date": "2025-12-08",
   "values": {
     "wbc": 4.2,
     "plt": 70,
@@ -134,7 +131,6 @@ const SYSTEM_PROMPTS = {
 \`\`\`json
 {
   "dataType": "bloodTest",
-  "date": "2025-12-08",
   "values": {
     "wbc": 3,
     "plt": 80,
@@ -147,7 +143,7 @@ const SYSTEM_PROMPTS = {
 注意：
 - 简短确认语句和JSON之间用**两个换行**分隔
 - JSON会被系统自动解析并保存，用户只看到确认语句
-- 日期使用今天的日期（YYYY-MM-DD格式）
+- **不要在JSON中包含date字段**，系统会自动使用当前日期
 - 🚨🚨🚨 **数值精度的绝对要求（最高优先级）**：
   - 用户说"白细胞4.2"，JSON中wbc字段必须是4.2，不能是4！
   - 用户说"中性粒2.8"，JSON中neut字段必须是2.8，不能是2或3！
