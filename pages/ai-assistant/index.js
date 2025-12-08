@@ -314,8 +314,13 @@ Page({
         // 保存AI消息到数据库
         this.saveMessage(assistantMessage, openid);
 
-        // 智能判断：尝试解析并保存数据
-        this.parseAndSaveHealthData(result.content, openid);
+        // 智能判断：尝试解析并保存数据（使用await确保错误被捕获）
+        try {
+          await this.parseAndSaveHealthData(result.content, openid);
+        } catch (saveError) {
+          console.error('❌❌❌ parseAndSaveHealthData执行失败:', saveError);
+          // 错误已在parseAndSaveHealthData中处理，这里只记录
+        }
 
         setTimeout(() => this.scrollToBottom(), 100);
       } else {
@@ -539,13 +544,35 @@ Page({
         'ldh': 'LDH'
       };
 
+      // 🔍 调试日志4: 保存前检查数值类型
+      console.log('🔍 保存前检查healthData.values:', healthData.values);
+      Object.keys(healthData.values).forEach(key => {
+        console.log(`  ${key}: 值=${healthData.values[key]}, 类型=${typeof healthData.values[key]}`);
+      });
+
+      // 🔥 确保数值类型正确：将所有数值转换为数字类型
+      const processedValues = {};
+      Object.keys(healthData.values).forEach(key => {
+        const value = healthData.values[key];
+        // 如果是数字或数字字符串，转换为数字；否则保持原样
+        if (value !== null && value !== undefined && value !== '') {
+          const numValue = parseFloat(value);
+          processedValues[key] = isNaN(numValue) ? value : numValue;
+        }
+      });
+
+      console.log('🔍 转换后的数值:', processedValues);
+      Object.keys(processedValues).forEach(key => {
+        console.log(`  ${key}: 值=${processedValues[key]}, 类型=${typeof processedValues[key]}`);
+      });
+
       // 保存数据
-      await db.collection(collection).add({
+      const saveResult = await db.collection(collection).add({
         data: {
           openid: openid,
           profileId: profileId,
           date: healthData.date || new Date().toISOString().split('T')[0],
-          ...healthData.values,
+          ...processedValues,  // 使用处理后的数值
           notes: healthData.notes || '',
           source: 'ai_assistant',
           createTime: new Date()
@@ -555,7 +582,8 @@ Page({
       console.log('✅ 健康数据已保存:', {
         dataType: healthData.dataType,
         collection: collection,
-        values: healthData.values
+        recordId: saveResult._id,
+        values: processedValues
       });
 
       // 显示成功提示
@@ -570,13 +598,18 @@ Page({
       // 用户已经可以看到Toast提示，不需要在对话中再次显示
 
     } catch (error) {
-      console.error('❌ 解析健康数据失败:', error);
+      console.error('❌ 解析或保存健康数据失败:', error);
+      console.error('❌ 错误详情:', {
+        message: error.message,
+        stack: error.stack,
+        errMsg: error.errMsg
+      });
 
       // 只有错误时才显示Toast提示
       wx.showToast({
-        title: '数据保存失败',
+        title: `数据保存失败: ${error.message || error.errMsg || '未知错误'}`,
         icon: 'error',
-        duration: 2000
+        duration: 3000
       });
     }
   },
