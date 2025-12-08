@@ -1620,26 +1620,25 @@ Page({
 
       for (const indicator of newCustomIndicators) {
         // 检查是否已存在
-        const existingRes = await db.collection('bloodPressureIndicators')
+        const existingRes = await db.collection('bloodPressureIndicatorSettings')
           .where({
             openid: openid,
             profileId: currentProfileId,
-            id: indicator.id
+            indicatorId: indicator.id
           })
           .get();
 
         if (existingRes.data.length === 0) {
-          // 新增自定义指标
-          await db.collection('bloodPressureIndicators').add({
+          // 新增自定义指标 - 使用统一的Settings集合
+          await db.collection('bloodPressureIndicatorSettings').add({
             data: {
               openid: openid,
               profileId: currentProfileId,
-              id: indicator.id,
-              shortName: indicator.shortName,
-              fullName: indicator.fullName,
-              min: indicator.min,
-              max: indicator.max,
+              indicatorId: indicator.id,
+              name: indicator.fullName,
               unit: indicator.unit,
+              minValue: indicator.min,
+              maxValue: indicator.max,
               createTime: db.serverDate(),
               updateTime: db.serverDate()
             }
