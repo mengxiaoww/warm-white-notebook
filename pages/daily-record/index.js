@@ -37,7 +37,7 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'liver', name: '肝功能', icon: 'liver', visible: false, order: 5, navigate: 'navigateToLiverFunction' },
 
-    { id: 'kidney', name: '肾功能', icon: 'filter', visible: false, order: 6, navigate: 'navigateToKidneyFunction' },
+    { id: 'kidney', name: '肾功能', icon: 'heart-filled', visible: false, order: 6, navigate: 'navigateToKidneyFunction' },
 
     { id: 'ldh', name: '乳酸脱氢酶', icon: 'enzyme', visible: isLymphomaPatient, order: 7, navigate: 'navigateToLdh' },
 
@@ -11879,7 +11879,7 @@ Page({
           'clinic': 'hospital',
           'checkReport': 'assignment',
           'liver': 'liver',
-          'kidney': 'filter',
+          'kidney': 'heart-filled',
           'ldh': 'enzyme',
           'ebv': 'zoom-in',
           'cmv': 'search',
@@ -12152,7 +12152,7 @@ Page({
           'clinic': 'hospital',
           'checkReport': 'assignment',
           'liver': 'liver',
-          'kidney': 'filter',
+          'kidney': 'heart-filled',
           'ldh': 'enzyme',
           'ebv': 'zoom-in',
           'cmv': 'search',
