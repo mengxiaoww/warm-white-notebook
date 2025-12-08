@@ -483,11 +483,21 @@ Page({
   // 解析并保存健康数据
   async parseAndSaveHealthData(content, openid) {
     try {
+      // 🔍 调试日志1: 打印AI的原始输出
+      console.log('🔍 AI原始输出内容:', content);
+
       // 尝试从AI回复中提取JSON数据
       const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
       if (!jsonMatch) return;
 
+      // 🔍 调试日志2: 打印提取的JSON字符串
+      console.log('🔍 提取的JSON字符串:', jsonMatch[1]);
+
       const healthData = JSON.parse(jsonMatch[1]);
+
+      // 🔍 调试日志3: 打印解析后的values对象
+      console.log('🔍 解析后的values对象:', JSON.stringify(healthData.values, null, 2));
+
       if (!healthData.dataType || !healthData.values) return;
 
       const app = getApp();
