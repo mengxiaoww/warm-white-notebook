@@ -18,8 +18,10 @@
 
 /* 消息内容包装器 - 提供底部内边距 */
 .message-content-wrapper {
-  min-height: 100%;
+  min-height: calc(100% - 42rpx);
   padding-bottom: 42rpx;  /* 底部内边距，确保最后一条消息可见 */
+  display: flex;
+  flex-direction: column;
 }
 
 /* 加载更多提示 */
@@ -55,8 +57,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   padding: 60rpx 40rpx;
+  flex: 1;
+  justify-content: flex-start;
+  padding-top: 120rpx;
 }
 
 .welcome-icon-wrapper {
