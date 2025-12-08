@@ -33,16 +33,16 @@ function parseMarkdown(markdown) {
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="font-weight:600;color:#1A1A1A;">$1</strong>');
   html = html.replace(/__([^_]+)__/g, '<strong style="font-weight:600;color:#1A1A1A;">$1</strong>');
 
-  // 5. 处理列表（有序和无序都转为统一样式，极简紧凑间距）
-  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:1px 0;line-height:1.4;padding-left:1.2em;text-indent:-1.2em;">• $2</div>');
-  html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin:1px 0;line-height:1.4;padding-left:1.2em;text-indent:-1.2em;">• $1</div>');
+  // 5. 处理列表（有序和无序都转为统一样式，超紧凑间距）
+  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:0;line-height:1.3;padding-left:1.2em;text-indent:-1.2em;">• $2</div>');
+  html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin:0;line-height:1.3;padding-left:1.2em;text-indent:-1.2em;">• $1</div>');
 
   // 6. 处理斜体（最后处理，避免与列表冲突）
   html = html.replace(/\*([^*\n]+)\*/g, '<em style="font-style:italic;">$1</em>');
   html = html.replace(/_([^_\n]+)_/g, '<em style="font-style:italic;">$1</em>');
 
-  // 7. 处理换行（极简段落间距）
-  html = html.replace(/\n\n+/g, '<div style="height:4px;"></div>');
+  // 7. 处理换行（超紧凑段落间距）
+  html = html.replace(/\n\n+/g, '<div style="height:2px;"></div>');
   html = html.replace(/\n/g, '<br/>');
 
   return html;
