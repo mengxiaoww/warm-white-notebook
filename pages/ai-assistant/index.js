@@ -551,37 +551,22 @@ Page({
       // 显示成功提示
       const dataTypeName = dataTypeNames[healthData.dataType] || '健康数据';
       wx.showToast({
-        title: `${dataTypeName}已自动保存`,
+        title: `${dataTypeName}已保存`,
         icon: 'success',
-        duration: 2000
+        duration: 1500
       });
 
-      // 添加系统提示消息
-      const systemMessage = {
-        id: Date.now() + 2,
-        role: 'system',
-        content: `✅ ${dataTypeName}数据已成功保存到您的健康档案`,
-        time: this.formatTime(new Date())
-      };
-
-      this.setData({
-        messages: [...this.data.messages, systemMessage]
-      });
+      // 不再添加系统提示消息，避免重复提示
+      // 用户已经可以看到Toast提示，不需要在对话中再次显示
 
     } catch (error) {
       console.error('❌ 解析健康数据失败:', error);
 
-      // 添加错误提示消息
-      const errorMessage = {
-        id: Date.now() + 2,
-        role: 'system',
-        content: '⚠️ 数据保存失败，请稍后重试或手动记录',
-        time: this.formatTime(new Date()),
-        isError: true
-      };
-
-      this.setData({
-        messages: [...this.data.messages, errorMessage]
+      // 只有错误时才显示Toast提示
+      wx.showToast({
+        title: '数据保存失败',
+        icon: 'error',
+        duration: 2000
       });
     }
   },

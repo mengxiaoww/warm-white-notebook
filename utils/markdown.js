@@ -15,6 +15,9 @@ function parseMarkdown(markdown) {
   html = html.replace(/◆/g, '♦');  // 替换钻石符号
   html = html.replace(/[^\u0000-\u007F\u4E00-\u9FA5\u3000-\u303F\uFF00-\uFFEF]/g, ''); // 移除不支持的特殊字符
 
+  // 🔥 移除JSON代码块（AI用于数据记录的内部格式，用户不需要看到）
+  html = html.replace(/```json\s*[\s\S]*?```/g, '');
+
   // 1. 先处理代码块（避免代码块内的符号被误处理）
   html = html.replace(/```(\w+)?\n([\s\S]*?)```/g,
     '<div style="background:#F5F5F5;padding:8px 10px;border-radius:4px;margin:6px 0;overflow-x:auto;"><code style="font-family:monospace;font-size:13px;line-height:1.5;color:#333;">$2</code></div>');
