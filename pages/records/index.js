@@ -463,14 +463,22 @@ Page({
         this.generateTableViewData(); // 异步调用，不需要等待
       }
     } else {
-      // 切换回时间轴模式
+      // 🔥 修复：切换回时间轴模式时，确保数据正确显示
       this.setData({
         viewMode: newMode
       });
-      // 立即隐藏骨架图，因为数据已经在内存中
-      setTimeout(() => {
-        this.setData({ isPageLoading: false });
-      }, 100);
+
+      // 🔥 检查healthRecords是否存在且不为空
+      if (!this.data.healthRecords || this.data.healthRecords.length === 0) {
+        console.log('⚠️ 切换回时间轴时healthRecords为空，重新加载数据');
+        this.loadHealthData();
+      } else {
+        // 数据已经存在，立即隐藏骨架图
+        console.log('✅ 切换回时间轴，healthRecords已存在，直接显示');
+        setTimeout(() => {
+          this.setData({ isPageLoading: false });
+        }, 100);
+      }
     }
   },
 
