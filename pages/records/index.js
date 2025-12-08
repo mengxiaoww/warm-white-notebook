@@ -473,11 +473,22 @@ Page({
         console.log('⚠️ 切换回时间轴时healthRecords为空，重新加载数据');
         this.loadHealthData();
       } else {
-        // 数据已经存在，立即隐藏骨架图
-        console.log('✅ 切换回时间轴，healthRecords已存在，直接显示');
-        setTimeout(() => {
-          this.setData({ isPageLoading: false });
-        }, 100);
+        // 🔥 数据存在，但需要检查dataTypes是否完整
+        const firstRecord = this.data.healthRecords[0];
+        console.log('✅ 切换回时间轴，healthRecords已存在');
+        console.log('📊 第一条记录的dataTypes:', firstRecord.dataTypes);
+
+        // 🔥 如果dataTypes为空或不存在，说明数据结构不完整，需要重新加载
+        if (!firstRecord.dataTypes || firstRecord.dataTypes.length === 0) {
+          console.log('⚠️ healthRecords的dataTypes为空，重新加载数据');
+          this.loadHealthData();
+        } else {
+          // 数据完整，立即隐藏骨架图
+          console.log('✅ 数据完整，直接显示');
+          setTimeout(() => {
+            this.setData({ isPageLoading: false });
+          }, 100);
+        }
       }
     }
   },
