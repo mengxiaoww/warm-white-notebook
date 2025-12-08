@@ -574,25 +574,67 @@ Page({
         '当前时间': new Date().toISOString()
       });
 
-      // 保存数据
-      const saveResult = await db.collection(collection).add({
-        data: {
+      // 🔥 关键修复：检查当天是否已有记录，如果有则更新，没有则新增
+      const existingRecords = await db.collection(collection)
+        .where({
           openid: openid,
           profileId: profileId,
-          date: finalDate,  // 使用计算后的日期
-          ...processedValues,  // 使用处理后的数值
-          notes: healthData.notes || '',
-          source: 'ai_assistant',
-          createTime: new Date()
-        }
+          date: finalDate
+        })
+        .get();
+
+      console.log('🔍 检查现有记录:', {
+        collection: collection,
+        date: finalDate,
+        existingCount: existingRecords.data.length
       });
 
-      console.log('✅ 健康数据已保存:', {
-        dataType: healthData.dataType,
-        collection: collection,
-        recordId: saveResult._id,
-        values: processedValues
-      });
+      let recordId;
+      if (existingRecords.data.length > 0) {
+        // 已有记录，更新
+        recordId = existingRecords.data[0]._id;
+        console.log('⚠️ 当天已有记录，执行更新操作，recordId:', recordId);
+
+        await db.collection(collection).doc(recordId).update({
+          data: {
+            ...processedValues,  // 使用处理后的数值
+            notes: healthData.notes || '',
+            source: 'ai_assistant',
+            updateTime: new Date()
+          }
+        });
+
+        console.log('✅ 健康数据已更新（覆盖）:', {
+          dataType: healthData.dataType,
+          collection: collection,
+          recordId: recordId,
+          values: processedValues
+        });
+      } else {
+        // 没有记录，新增
+        console.log('📝 当天无记录，执行新增操作');
+
+        const saveResult = await db.collection(collection).add({
+          data: {
+            openid: openid,
+            profileId: profileId,
+            date: finalDate,  // 使用计算后的日期
+            ...processedValues,  // 使用处理后的数值
+            notes: healthData.notes || '',
+            source: 'ai_assistant',
+            createTime: new Date()
+          }
+        });
+
+        recordId = saveResult._id;
+
+        console.log('✅ 健康数据已保存（新增）:', {
+          dataType: healthData.dataType,
+          collection: collection,
+          recordId: recordId,
+          values: processedValues
+        });
+      }
 
       // 显示成功提示
       const dataTypeName = dataTypeNames[healthData.dataType] || '健康数据';
