@@ -23,26 +23,26 @@ function parseMarkdown(markdown) {
   html = html.replace(/`([^`]+)`/g,
     '<code style="background:#FFF5E6;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#FF9F4D;border:1px solid #FFE0B2;">$1</code>');
 
-  // 3. 处理标题（从小到大，避免匹配冲突，统一使用一致的间距）
-  html = html.replace(/^####\s+(.+)$/gm, '<div style="font-size:15px;font-weight:bold;margin:12px 0 8px 0;line-height:1.5;color:#1A1A1A;">$1</div>');
-  html = html.replace(/^###\s+(.+)$/gm, '<div style="font-size:16px;font-weight:bold;margin:12px 0 8px 0;line-height:1.5;color:#1A1A1A;">$1</div>');
-  html = html.replace(/^##\s+(.+)$/gm, '<div style="font-size:17px;font-weight:bold;margin:14px 0 10px 0;line-height:1.5;color:#1A1A1A;">$1</div>');
-  html = html.replace(/^#\s+(.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:16px 0 10px 0;line-height:1.5;color:#1A1A1A;">$1</div>');
+  // 3. 处理标题（从小到大，避免匹配冲突，紧凑间距）
+  html = html.replace(/^####\s+(.+)$/gm, '<div style="font-size:15px;font-weight:bold;margin:8px 0 4px 0;line-height:1.4;color:#1A1A1A;">$1</div>');
+  html = html.replace(/^###\s+(.+)$/gm, '<div style="font-size:16px;font-weight:bold;margin:10px 0 5px 0;line-height:1.4;color:#1A1A1A;">$1</div>');
+  html = html.replace(/^##\s+(.+)$/gm, '<div style="font-size:17px;font-weight:bold;margin:12px 0 6px 0;line-height:1.4;color:#1A1A1A;">$1</div>');
+  html = html.replace(/^#\s+(.+)$/gm, '<div style="font-size:18px;font-weight:bold;margin:14px 0 6px 0;line-height:1.4;color:#1A1A1A;">$1</div>');
 
   // 4. 处理加粗（在标题之后）
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="font-weight:600;color:#1A1A1A;">$1</strong>');
   html = html.replace(/__([^_]+)__/g, '<strong style="font-weight:600;color:#1A1A1A;">$1</strong>');
 
-  // 5. 处理列表（有序和无序都转为统一样式，增加行间距）
-  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:4px 0;line-height:1.6;padding-left:1.2em;text-indent:-1.2em;">• $2</div>');
-  html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin:4px 0;line-height:1.6;padding-left:1.2em;text-indent:-1.2em;">• $1</div>');
+  // 5. 处理列表（有序和无序都转为统一样式，紧凑间距）
+  html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:2px 0;line-height:1.5;padding-left:1.2em;text-indent:-1.2em;">• $2</div>');
+  html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin:2px 0;line-height:1.5;padding-left:1.2em;text-indent:-1.2em;">• $1</div>');
 
   // 6. 处理斜体（最后处理，避免与列表冲突）
   html = html.replace(/\*([^*\n]+)\*/g, '<em style="font-style:italic;">$1</em>');
   html = html.replace(/_([^_\n]+)_/g, '<em style="font-style:italic;">$1</em>');
 
-  // 7. 处理换行
-  html = html.replace(/\n\n+/g, '<div style="height:10px;"></div>');
+  // 7. 处理换行（减小段落间距）
+  html = html.replace(/\n\n+/g, '<div style="height:6px;"></div>');
   html = html.replace(/\n/g, '<br/>');
 
   return html;
