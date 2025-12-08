@@ -1,6 +1,7 @@
 // 使用本地简化版本的echarts
 import echarts from '../../ec-canvas/echarts';
 const healthChartConfig = require('../../utils/healthChartConfig');
+const { getTodayLocalDate } = require('../../utils/util.js');
 const db = wx.cloud.database();
 
 // 初始化图表函数
@@ -1337,7 +1338,7 @@ Page({
 
   // 显示添加/编辑暖光里程碑弹窗
   showKeyDateEditPopup() {
-    const defaultDate = new Date().toISOString().split('T')[0];
+    const defaultDate = getTodayLocalDate();
     this.setData({
       showKeyDatePopup: false,
       showKeyDateEditPopup: true,

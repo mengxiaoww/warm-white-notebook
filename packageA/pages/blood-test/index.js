@@ -4,6 +4,9 @@
 const plugin = requirePlugin("WechatSI");
 const manager = plugin.getRecordRecognitionManager();
 
+// 引入工具函数
+const { getTodayLocalDate } = require('../../utils/util.js');
+
 Page({
   data: {
     // 选中的日期
@@ -80,8 +83,8 @@ Page({
   onLoad(options) {
     console.log('🎯 血常规页面 onLoad，传入参数:', options);
 
-    // 设置基础数据
-    const today = new Date().toISOString().split('T')[0];
+    // 设置基础数据 - 使用本地日期
+    const today = getTodayLocalDate();
     const selectedDate = options.date || today; // 如果有传入日期就使用传入的，否则使用今天
 
     console.log('🗓️ 设置日期:', selectedDate, '(今天:', today, ')');
@@ -1705,8 +1708,8 @@ Page({
     const { openid, currentProfileId, selectedDate } = this.data;
     const { selectedIndicators, customIndicators, dateType: configDateType } = tempConfig;
 
-    // 使用临时配置中的日期类型，或者重新判断
-    const today = new Date().toISOString().split('T')[0];
+    // 使用临时配置中的日期类型，或者重新判断 - 使用本地日期
+    const today = getTodayLocalDate();
     const dateType = configDateType || this.determineDateType(selectedDate, today);
 
     try {

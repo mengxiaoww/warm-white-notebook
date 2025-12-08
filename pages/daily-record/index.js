@@ -14,6 +14,7 @@
  */
 
 const functionCustomModule = require('./function-custom');
+const { getTodayLocalDate } = require('../../utils/util.js');
 
 const app = getApp()
 
@@ -5338,7 +5339,7 @@ Page({
   showKeyDateEditPopup() {
 
     // 使用选中的日期作为默认日期，如果没有选中日期则使用今天
-    const defaultDate = this.data.selectedDate || new Date().toISOString().split('T')[0]
+    const defaultDate = this.data.selectedDate || getTodayLocalDate()
 
     this.setData({
 
