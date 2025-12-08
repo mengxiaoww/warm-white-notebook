@@ -2007,29 +2007,11 @@ Page({
         if (data.bloodSugar !== undefined && data.bloodSugar !== null && data.bloodSugar !== '') {
           items.push({ label: '血糖值', value: data.bloodSugar });
         }
-        // 显示自定义指标
-        if (data.customValues) {
-          Object.keys(data.customValues).forEach(key => {
-            const value = data.customValues[key];
-            if (value !== undefined && value !== null && value !== '' && value !== '-') {
-              items.push({ label: key, value });
-            }
-          });
-        }
         break;
 
       case 'bloodOxygen':
         if (data.spo2 !== undefined && data.spo2 !== null && data.spo2 !== '') {
           items.push({ label: '数值', value: `${data.spo2}%` });
-        }
-        // 显示自定义指标
-        if (data.customValues) {
-          Object.keys(data.customValues).forEach(key => {
-            const value = data.customValues[key];
-            if (value !== undefined && value !== null && value !== '' && value !== '-') {
-              items.push({ label: key, value });
-            }
-          });
         }
         break;
 
@@ -2040,44 +2022,17 @@ Page({
         if (data.diastolic !== undefined && data.diastolic !== null && data.diastolic !== '') {
           items.push({ label: '舒张压', value: `${data.diastolic}mmHg` });
         }
-        // 显示自定义指标
-        if (data.customValues) {
-          Object.keys(data.customValues).forEach(key => {
-            const value = data.customValues[key];
-            if (value !== undefined && value !== null && value !== '' && value !== '-') {
-              items.push({ label: key, value });
-            }
-          });
-        }
         break;
 
       case 'water':
         if (data.water !== undefined && data.water !== null && data.water !== '') {
           items.push({ label: '饮水量', value: `${data.water}ml` });
         }
-        // 显示自定义指标
-        if (data.customValues) {
-          Object.keys(data.customValues).forEach(key => {
-            const value = data.customValues[key];
-            if (value !== undefined && value !== null && value !== '' && value !== '-') {
-              items.push({ label: key, value });
-            }
-          });
-        }
         break;
 
       case 'temperature':
         if (data.temperature !== undefined && data.temperature !== null && data.temperature !== '') {
           items.push({ label: '体温', value: `${data.temperature}℃` });
-        }
-        // 显示自定义指标
-        if (data.customValues) {
-          Object.keys(data.customValues).forEach(key => {
-            const value = data.customValues[key];
-            if (value !== undefined && value !== null && value !== '' && value !== '-') {
-              items.push({ label: key, value });
-            }
-          });
         }
         break;
 
@@ -2087,15 +2042,6 @@ Page({
         }
         if (data.height !== undefined && data.height !== null && data.height !== '') {
           items.push({ label: '身高', value: `${data.height}cm` });
-        }
-        // 显示自定义指标
-        if (data.customValues) {
-          Object.keys(data.customValues).forEach(key => {
-            const value = data.customValues[key];
-            if (value !== undefined && value !== null && value !== '' && value !== '-') {
-              items.push({ label: key, value });
-            }
-          });
         }
         break;
 
@@ -2108,15 +2054,6 @@ Page({
         }
         if (data.carbs !== undefined && data.carbs !== null && data.carbs !== '') {
           items.push({ label: '碳水化合物', value: `${data.carbs}g` });
-        }
-        // 显示自定义指标
-        if (data.customValues) {
-          Object.keys(data.customValues).forEach(key => {
-            const value = data.customValues[key];
-            if (value !== undefined && value !== null && value !== '' && value !== '-') {
-              items.push({ label: key, value });
-            }
-          });
         }
         break;
     }
