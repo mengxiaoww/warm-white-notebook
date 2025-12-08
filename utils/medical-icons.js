@@ -55,15 +55,29 @@ export const MEDICAL_ICONS = {
   'fill-color-1': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8IS0tIOaftuW9oueahOWuueWZqOaIluaYryAtLT4KICA8cGF0aCBkPSJNIDI0IDggTCAyNCAxMiBNIDI0IDEyIEMgMjQgMTIgMTggMTggMTggMjQgQyAxOCAzMCAyMSAzNCAyNCAzNCBDIDI3IDM0IDMwIDMwIDMwIDI0IEMgMzAgMTggMjQgMTIgMjQgMTIgWiIgZmlsbD0iI0ZGQjg0RCIgc3Ryb2tlPSIjRkY5ODAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDwhLS0g5rC05rOh5rOhIC0tPgogIDxwYXRoIGQ9Ik0gMjEgMjYgUSAyMiAyOCAyMyAyNiBRIDI0IDI4IDI1IDI2IiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMS41IiBmaWxsPSJub25lIiBvcGFjaXR5PSIwLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4='
 }
 
-// 图标名称映射（旧名称 -> 新名称）
+// 图标名称映射（旧名称 -> 新名称，功能ID -> 图标名称）
 export const ICON_NAME_MAP = {
+  // 旧名称兼容
   'chart-bubble': 'blood-drop',
   'heart-filled': 'liver',
   'chart-line-data': 'enzyme',
-  // 新增数据类型的图标映射
   'blood-sugar': 'glucose',
+  // 功能ID到图标名称的映射
+  'blood': 'blood-drop',
+  'checkReport': 'assignment',
+  'ebv': 'zoom-in',
+  'cmv': 'search',
+  'ldh': 'enzyme',
+  'kidney': 'filter',
+  'urine': 'fill-color-1',
+  'stool': 'layers',
+  'bloodSugar': 'glucose',
+  'bloodOxygen': 'oxygen',
+  'bloodPressure': 'blood-pressure',
   'water': 'cup',
-  'temperature': 'thermometer'
+  'temperature': 'thermometer',
+  'bodyMeasurement': 'body-measurement',
+  'diet': 'food'
 }
 
 // 获取图标URL
