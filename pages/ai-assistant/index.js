@@ -576,7 +576,8 @@ Page({
         return `${year}-${month}-${day}`;
       };
 
-      const finalDate = healthData.date || getTodayLocalDate();
+      // 🔥 强制使用本地日期，忽略AI可能输出的date字段（避免AI输出错误的UTC日期）
+      const finalDate = getTodayLocalDate();
       console.log('🔍 保存日期:', {
         'AI输出的日期': healthData.date,
         '实际使用的日期': finalDate,
