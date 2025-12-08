@@ -2537,8 +2537,20 @@ Page({
         // 2. 只加载当前配置中的指标数据（不加载其他字段）
         allConfiguredIds.forEach(indicatorId => {
           if (formData[indicatorId] === undefined) {
+            const dbValue = data[indicatorId];
+            // 🔍 调试日志：打印数据库中的原始值
+            console.log(`🔍 [loadTodayData] 加载指标 ${indicatorId}:`, {
+              '数据库原始值': dbValue,
+              '数据类型': typeof dbValue,
+              '是否为数字': typeof dbValue === 'number',
+              '转字符串': String(dbValue)
+            });
+
             // 🔥 修复：正确处理0值，不能用 || 运算符
-            formData[indicatorId] = (data[indicatorId] !== undefined && data[indicatorId] !== null) ? data[indicatorId] : '';
+            formData[indicatorId] = (dbValue !== undefined && dbValue !== null) ? dbValue : '';
+
+            // 🔍 调试日志：打印赋值后的结果
+            console.log(`🔍 [loadTodayData] 赋值后 ${indicatorId}:`, formData[indicatorId], '类型:', typeof formData[indicatorId]);
           }
         });
 
@@ -2560,6 +2572,14 @@ Page({
         this.setData({
           recordId: data._id,
           formData: protectedFormData
+        });
+
+        // 🔍 调试日志：验证 setData 后的实际值
+        console.log('🔍 [loadTodayData] setData 完成，验证页面数据:', {
+          'formData.wbc': this.data.formData.wbc,
+          'formData.plt': this.data.formData.plt,
+          'formData.hgb': this.data.formData.hgb,
+          'formData.neut': this.data.formData.neut
         });
 
         console.log('✅ 数据加载完成，已更新到页面（保护了用户输入）');
@@ -2659,8 +2679,20 @@ Page({
         // 2. 只加载当前配置中的指标数据（不加载其他字段）
         allConfiguredIds.forEach(indicatorId => {
           if (formData[indicatorId] === undefined) {
+            const dbValue = data[indicatorId];
+            // 🔍 调试日志：打印数据库中的原始值
+            console.log(`🔍 [loadRecordData] 加载指标 ${indicatorId}:`, {
+              '数据库原始值': dbValue,
+              '数据类型': typeof dbValue,
+              '是否为数字': typeof dbValue === 'number',
+              '转字符串': String(dbValue)
+            });
+
             // 🔥 修复：正确处理0值，不能用 || 运算符
-            formData[indicatorId] = (data[indicatorId] !== undefined && data[indicatorId] !== null) ? data[indicatorId] : '';
+            formData[indicatorId] = (dbValue !== undefined && dbValue !== null) ? dbValue : '';
+
+            // 🔍 调试日志：打印赋值后的结果
+            console.log(`🔍 [loadRecordData] 赋值后 ${indicatorId}:`, formData[indicatorId], '类型:', typeof formData[indicatorId]);
           }
         });
 
