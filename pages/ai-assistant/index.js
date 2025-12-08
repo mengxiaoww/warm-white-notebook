@@ -502,13 +502,32 @@ Page({
         'bloodTest': 'bloodTests',
         'liverFunction': 'liverFunctionTests',
         'kidneyFunction': 'kidneyFunctionTests',
+        'bloodSugar': 'bloodSugars',
+        'bloodOxygen': 'bloodOxygens',
+        'bloodPressure': 'bloodPressures',
         'ebv': 'ebvRecords',
         'cmv': 'cmvRecords',
         'ldh': 'ldhRecords'
       };
 
       const collection = collectionMap[healthData.dataType];
-      if (!collection) return;
+      if (!collection) {
+        console.warn('未识别的数据类型:', healthData.dataType);
+        return;
+      }
+
+      // 数据类型的中文名称映射
+      const dataTypeNames = {
+        'bloodTest': '血常规',
+        'liverFunction': '肝功能',
+        'kidneyFunction': '肾功能',
+        'bloodSugar': '血糖',
+        'bloodOxygen': '血氧',
+        'bloodPressure': '血压',
+        'ebv': 'EB病毒',
+        'cmv': '巨细胞病毒',
+        'ldh': 'LDH'
+      };
 
       // 保存数据
       await db.collection(collection).add({
@@ -523,9 +542,16 @@ Page({
         }
       });
 
+      console.log('✅ 健康数据已保存:', {
+        dataType: healthData.dataType,
+        collection: collection,
+        values: healthData.values
+      });
+
       // 显示成功提示
+      const dataTypeName = dataTypeNames[healthData.dataType] || '健康数据';
       wx.showToast({
-        title: '数据已自动保存',
+        title: `${dataTypeName}已自动保存`,
         icon: 'success',
         duration: 2000
       });
@@ -534,7 +560,7 @@ Page({
       const systemMessage = {
         id: Date.now() + 2,
         role: 'system',
-        content: '✅ 数据已成功保存到您的健康档案',
+        content: `✅ ${dataTypeName}数据已成功保存到您的健康档案`,
         time: this.formatTime(new Date())
       };
 
@@ -543,7 +569,20 @@ Page({
       });
 
     } catch (error) {
-      console.error('解析健康数据失败:', error);
+      console.error('❌ 解析健康数据失败:', error);
+
+      // 添加错误提示消息
+      const errorMessage = {
+        id: Date.now() + 2,
+        role: 'system',
+        content: '⚠️ 数据保存失败，请稍后重试或手动记录',
+        time: this.formatTime(new Date()),
+        isError: true
+      };
+
+      this.setData({
+        messages: [...this.data.messages, errorMessage]
+      });
     }
   },
 
