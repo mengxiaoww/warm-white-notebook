@@ -5,7 +5,7 @@ const plugin = requirePlugin("WechatSI");
 const manager = plugin.getRecordRecognitionManager();
 
 // 引入工具函数
-const { getTodayLocalDate } = require('../../utils/util.js');
+const { getTodayLocalDate } = require('../../../utils/util.js');
 
 Page({
   data: {

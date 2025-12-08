@@ -1,7 +1,7 @@
 // 移除Toast import，使用wx.showToast替代
 
 // 引入工具函数
-const { getTodayLocalDate } = require("../../utils/util.js");
+const { getTodayLocalDate } = require("../../../utils/util.js");
 
 
 Page({
