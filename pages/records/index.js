@@ -2016,55 +2016,55 @@ Page({
 
       case 'bloodSugar':
         if (data.bloodSugar !== undefined && data.bloodSugar !== null && data.bloodSugar !== '') {
-          items.push({ label: '血糖值', value: data.bloodSugar });
+          items.push({ label: '数值', value: data.bloodSugar });
         }
         break;
 
       case 'bloodOxygen':
         if (data.spo2 !== undefined && data.spo2 !== null && data.spo2 !== '') {
-          items.push({ label: '数值', value: `${data.spo2}%` });
+          items.push({ label: '数值', value: data.spo2 });
         }
         break;
 
       case 'bloodPressure':
         if (data.systolic !== undefined && data.systolic !== null && data.systolic !== '') {
-          items.push({ label: '收缩压', value: `${data.systolic}mmHg` });
+          items.push({ label: '收缩压', value: data.systolic });
         }
         if (data.diastolic !== undefined && data.diastolic !== null && data.diastolic !== '') {
-          items.push({ label: '舒张压', value: `${data.diastolic}mmHg` });
+          items.push({ label: '舒张压', value: data.diastolic });
         }
         break;
 
       case 'water':
         if (data.water !== undefined && data.water !== null && data.water !== '') {
-          items.push({ label: '饮水量', value: `${data.water}ml` });
+          items.push({ label: '饮水量', value: data.water });
         }
         break;
 
       case 'temperature':
         if (data.temperature !== undefined && data.temperature !== null && data.temperature !== '') {
-          items.push({ label: '体温', value: `${data.temperature}℃` });
+          items.push({ label: '体温', value: data.temperature });
         }
         break;
 
       case 'bodyMeasurement':
         if (data.weight !== undefined && data.weight !== null && data.weight !== '') {
-          items.push({ label: '体重', value: `${data.weight}kg` });
+          items.push({ label: '体重', value: data.weight });
         }
         if (data.height !== undefined && data.height !== null && data.height !== '') {
-          items.push({ label: '身高', value: `${data.height}cm` });
+          items.push({ label: '身高', value: data.height });
         }
         break;
 
       case 'diet':
         if (data.calories !== undefined && data.calories !== null && data.calories !== '') {
-          items.push({ label: '热量', value: `${data.calories}kcal` });
+          items.push({ label: '热量', value: data.calories });
         }
         if (data.protein !== undefined && data.protein !== null && data.protein !== '') {
-          items.push({ label: '蛋白质', value: `${data.protein}g` });
+          items.push({ label: '蛋白质', value: data.protein });
         }
         if (data.carbs !== undefined && data.carbs !== null && data.carbs !== '') {
-          items.push({ label: '碳水化合物', value: `${data.carbs}g` });
+          items.push({ label: '碳水化合物', value: data.carbs });
         }
         break;
     }
