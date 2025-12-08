@@ -92,7 +92,7 @@ Page({
       'cmv': 'search',
       'ldh': 'enzyme',
       'liver': 'liver',
-      'kidney': 'heart-filled',
+      'kidney': 'usergroup',
       'urine': 'fill-color-1',
       'stool': 'layers',
       'bloodSugar': 'glucose',
