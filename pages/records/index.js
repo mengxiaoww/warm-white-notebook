@@ -1134,20 +1134,16 @@ Page({
       }
 
       const db = wx.cloud.database();
-      let query = db.collection('bloodSugars').where({
+      const whereCondition = {
         openid: openid,
         profileId: currentProfileId
-      });
+      };
 
       if (timeRange) {
-        query = query.where({
-          openid: openid,
-          profileId: currentProfileId,
-          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
-        });
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
       }
 
-      query.orderBy('date', 'desc').get().then(res => {
+      db.collection('bloodSugars').where(whereCondition).orderBy('date', 'desc').get().then(res => {
         console.log('✅ 血糖数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
@@ -1169,20 +1165,16 @@ Page({
       }
 
       const db = wx.cloud.database();
-      let query = db.collection('bloodOxygens').where({
+      const whereCondition = {
         openid: openid,
         profileId: currentProfileId
-      });
+      };
 
       if (timeRange) {
-        query = query.where({
-          openid: openid,
-          profileId: currentProfileId,
-          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
-        });
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
       }
 
-      query.orderBy('date', 'desc').get().then(res => {
+      db.collection('bloodOxygens').where(whereCondition).orderBy('date', 'desc').get().then(res => {
         console.log('✅ 血氧数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
@@ -1204,20 +1196,16 @@ Page({
       }
 
       const db = wx.cloud.database();
-      let query = db.collection('bloodPressures').where({
+      const whereCondition = {
         openid: openid,
         profileId: currentProfileId
-      });
+      };
 
       if (timeRange) {
-        query = query.where({
-          openid: openid,
-          profileId: currentProfileId,
-          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
-        });
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
       }
 
-      query.orderBy('date', 'desc').get().then(res => {
+      db.collection('bloodPressures').where(whereCondition).orderBy('date', 'desc').get().then(res => {
         console.log('✅ 血压数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
@@ -1239,20 +1227,16 @@ Page({
       }
 
       const db = wx.cloud.database();
-      let query = db.collection('waterIntakes').where({
+      const whereCondition = {
         openid: openid,
         profileId: currentProfileId
-      });
+      };
 
       if (timeRange) {
-        query = query.where({
-          openid: openid,
-          profileId: currentProfileId,
-          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
-        });
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
       }
 
-      query.orderBy('date', 'desc').get().then(res => {
+      db.collection('waterIntakes').where(whereCondition).orderBy('date', 'desc').get().then(res => {
         console.log('✅ 饮水数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
@@ -1274,20 +1258,16 @@ Page({
       }
 
       const db = wx.cloud.database();
-      let query = db.collection('temperatures').where({
+      const whereCondition = {
         openid: openid,
         profileId: currentProfileId
-      });
+      };
 
       if (timeRange) {
-        query = query.where({
-          openid: openid,
-          profileId: currentProfileId,
-          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
-        });
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
       }
 
-      query.orderBy('date', 'desc').get().then(res => {
+      db.collection('temperatures').where(whereCondition).orderBy('date', 'desc').get().then(res => {
         console.log('✅ 体温数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
@@ -1309,20 +1289,16 @@ Page({
       }
 
       const db = wx.cloud.database();
-      let query = db.collection('bodyMeasurements').where({
+      const whereCondition = {
         openid: openid,
         profileId: currentProfileId
-      });
+      };
 
       if (timeRange) {
-        query = query.where({
-          openid: openid,
-          profileId: currentProfileId,
-          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
-        });
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
       }
 
-      query.orderBy('date', 'desc').get().then(res => {
+      db.collection('bodyMeasurements').where(whereCondition).orderBy('date', 'desc').get().then(res => {
         console.log('✅ 身体测量数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {
@@ -1344,20 +1320,16 @@ Page({
       }
 
       const db = wx.cloud.database();
-      let query = db.collection('diets').where({
+      const whereCondition = {
         openid: openid,
         profileId: currentProfileId
-      });
+      };
 
       if (timeRange) {
-        query = query.where({
-          openid: openid,
-          profileId: currentProfileId,
-          date: db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime))
-        });
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
       }
 
-      query.orderBy('date', 'desc').get().then(res => {
+      db.collection('diets').where(whereCondition).orderBy('date', 'desc').get().then(res => {
         console.log('✅ 饮食数据加载成功:', res.data.length);
         resolve(res.data || []);
       }).catch(err => {

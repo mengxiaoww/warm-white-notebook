@@ -968,7 +968,7 @@
 .other-section {
   box-sizing: border-box;
   width: 712rpx;
-  margin: 20rpx auto;
+  margin: 20rpx auto 120rpx auto;
   background: #FFFFFF;
   border-radius: 32rpx;
   padding: 0;
