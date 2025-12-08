@@ -51,11 +51,11 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'bloodPressure', name: '血压', icon: 'blood-pressure', visible: false, order: 12, navigate: 'navigateToBloodPressure' },
 
-    { id: 'bodyMeasurement', name: '身高体重', icon: 'body-measurement', visible: false, order: 13, navigate: 'navigateToBodyMeasurement' },
+    { id: 'bodyMeasurement', name: '身高体重', icon: 'dashboard', visible: false, order: 13, navigate: 'navigateToBodyMeasurement' },
 
-    { id: 'water', name: '饮水', icon: 'cup', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
+    { id: 'water', name: '饮水', icon: 'tea', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
 
-    { id: 'diet', name: '饮食', icon: 'food', visible: false, order: 15, navigate: 'navigateToDiet' },
+    { id: 'diet', name: '饮食', icon: 'bread', visible: false, order: 15, navigate: 'navigateToDiet' },
 
     { id: 'temperature', name: '体温', icon: 'thermometer', visible: false, order: 16, navigate: 'navigateToTemperature' },
 
@@ -11886,10 +11886,10 @@ Page({
           'bloodSugar': 'glucose',
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
-          'bodyMeasurement': 'body-measurement',
-          'water': 'cup',
-          'waterIntake': 'cup',  // 兼容旧 id
-          'diet': 'food',
+          'bodyMeasurement': 'dashboard',
+          'water': 'tea',
+          'waterIntake': 'tea',  // 兼容旧 id
+          'diet': 'bread',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
@@ -12159,10 +12159,10 @@ Page({
           'bloodSugar': 'glucose',
           'bloodOxygen': 'oxygen',
           'bloodPressure': 'blood-pressure',
-          'bodyMeasurement': 'body-measurement',
-          'water': 'cup',
-          'waterIntake': 'cup',  // 兼容旧 id
-          'diet': 'food',
+          'bodyMeasurement': 'dashboard',
+          'water': 'tea',
+          'waterIntake': 'tea',  // 兼容旧 id
+          'diet': 'bread',
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
