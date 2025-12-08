@@ -166,7 +166,7 @@
               <t-input 
                 value="{{formData.alt}}" 
                 placeholder="正常范围：9-50 U/L"
-                type="digit"
+                type="number"
                 bind:change="onAltInput"
                 class="form-input" />
               <text class="input-unit">U/L</text>
@@ -179,7 +179,7 @@
               <t-input 
                 value="{{formData.ast}}" 
                 placeholder="正常范围：15-40 U/L"
-                type="digit"
+                type="number"
                 bind:change="onAstInput"
                 class="form-input" />
               <text class="input-unit">U/L</text>
@@ -192,7 +192,7 @@
               <t-input 
                 value="{{formData.bilirubin}}" 
                 placeholder="正常范围：5.1-17.1 μmol/L"
-                type="digit"
+                type="number"
                 bind:change="onBilirubinInput"
                 class="form-input" />
               <text class="input-unit">μmol/L</text>
@@ -205,7 +205,7 @@
               <t-input 
                 value="{{formData.albumin}}" 
                 placeholder="正常范围：35-50 g/L"
-                type="digit"
+                type="number"
                 bind:change="onAlbuminInput"
                 class="form-input" />
               <text class="input-unit">g/L</text>
@@ -223,7 +223,7 @@
               <t-input 
                 value="{{formData.creatinine}}" 
                 placeholder="正常范围：59-104 μmol/L"
-                type="digit"
+                type="number"
                 bind:change="onCreatinineInput"
                 class="form-input" />
               <text class="input-unit">μmol/L</text>
@@ -236,7 +236,7 @@
               <t-input 
                 value="{{formData.urea}}" 
                 placeholder="正常范围：3.1-8.2 mmol/L"
-                type="digit"
+                type="number"
                 bind:change="onUreaInput"
                 class="form-input" />
               <text class="input-unit">mmol/L</text>
@@ -249,7 +249,7 @@
               <t-input 
                 value="{{formData.gfr}}" 
                 placeholder="正常范围：>90 ml/min/1.73m²"
-                type="digit"
+                type="number"
                 bind:change="onGfrInput"
                 class="form-input" />
               <text class="input-unit">ml/min/1.73m²</text>

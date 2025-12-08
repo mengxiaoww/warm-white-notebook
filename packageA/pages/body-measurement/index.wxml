@@ -31,7 +31,7 @@
           <view class="indicator-item" wx:for="{{displayedBasicIndicators}}" wx:key="id">
             <text class="indicator-name">{{item.name}}</text>
             <view class="indicator-input">
-              <input id="input-{{index}}" type="digit" value="{{formData[item.id]}}" focus="{{focusIndex === index}}" bindinput="onInputChange" bindfocus="onInputFocus" bindblur="onInputBlur" data-field="{{item.id}}" data-index="{{index}}" data-total="{{displayedBasicIndicators.length + customIndicators.length}}" placeholder="请输入" class="input-field" />
+              <input id="input-{{index}}" type="number" value="{{formData[item.id]}}" focus="{{focusIndex === index}}" bindinput="onInputChange" bindfocus="onInputFocus" bindblur="onInputBlur" data-field="{{item.id}}" data-index="{{index}}" data-total="{{displayedBasicIndicators.length + customIndicators.length}}" placeholder="请输入" class="input-field" />
               <text class="unit">{{item.unit || 'cm'}}</text>
             </view>
           </view>
@@ -39,7 +39,7 @@
           <view class="indicator-item" wx:for="{{customIndicators}}" wx:key="id" wx:for-index="customIndex">
             <text class="indicator-name">{{item.name}}</text>
             <view class="indicator-input">
-              <input id="input-{{displayedBasicIndicators.length + customIndex}}" type="digit" value="{{formData[item.id]}}" focus="{{focusIndex === displayedBasicIndicators.length + customIndex}}" bindinput="onInputChange" bindfocus="onInputFocus" bindblur="onInputBlur" data-field="{{item.id}}" data-index="{{displayedBasicIndicators.length + customIndex}}" data-total="{{displayedBasicIndicators.length + customIndicators.length}}" placeholder="请输入" class="input-field" />
+              <input id="input-{{displayedBasicIndicators.length + customIndex}}" type="number" value="{{formData[item.id]}}" focus="{{focusIndex === displayedBasicIndicators.length + customIndex}}" bindinput="onInputChange" bindfocus="onInputFocus" bindblur="onInputBlur" data-field="{{item.id}}" data-index="{{displayedBasicIndicators.length + customIndex}}" data-total="{{displayedBasicIndicators.length + customIndicators.length}}" placeholder="请输入" class="input-field" />
               <text class="unit">{{item.unit}}</text>
             </view>
           </view>
