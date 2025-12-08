@@ -165,6 +165,16 @@ Page({
 
   // 更新滚动按钮显示状态
   updateScrollButton(scrollTop, scrollHeight, scrollViewHeight) {
+    // 如果没有消息，不显示按钮
+    if (this.data.messages.length === 0) {
+      if (this.data.showScrollToBottom) {
+        this.setData({
+          showScrollToBottom: false
+        });
+      }
+      return;
+    }
+
     // 计算距离底部的距离
     const distanceToBottom = scrollHeight - scrollTop - scrollViewHeight;
 
