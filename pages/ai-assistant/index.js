@@ -567,11 +567,21 @@ Page({
       });
 
       // 🔍 调试日志：打印最终保存的日期
-      const finalDate = healthData.date || new Date().toISOString().split('T')[0];
+      // 🔥 修复时区问题：使用本地日期而不是UTC日期
+      const getTodayLocalDate = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      const finalDate = healthData.date || getTodayLocalDate();
       console.log('🔍 保存日期:', {
         'AI输出的日期': healthData.date,
         '实际使用的日期': finalDate,
-        '当前时间': new Date().toISOString()
+        'UTC时间': new Date().toISOString(),
+        '本地时间': new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
       });
 
       // 🔥 关键修复：检查当天是否已有记录，如果有则更新，没有则新增
