@@ -137,6 +137,11 @@
               </view>
             </view>
           </view>
+          <!-- 日历标记提示 -->
+          <view class="calendar-tip" bindtap="showCalendarView">
+            <t-icon name="view-list" size="32rpx" color="#FF9800" />
+            <text>日历视图</text>
+          </view>
         </view>
         <!-- 紧凑统计栏 -->
         <!-- <view class="compact-stats-bar">
@@ -793,6 +798,31 @@
                 <text class="button-text">关闭</text>
               </view>
               <view class="button-shine"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </t-popup>
+    <!-- 日历视图弹窗 -->
+    <t-popup visible="{{showCalendarPopup}}" bind:visible-change="closeCalendarView" placement="bottom">
+      <view class="calendar-popup">
+        <view class="calendar-popup-header">
+          <view class="calendar-popup-drag-bar"></view>
+          <text class="calendar-popup-title">记录日历</text>
+          <view class="calendar-popup-close" bindtap="closeCalendarView">
+            <t-icon name="close" size="32rpx" color="#666" />
+          </view>
+        </view>
+        <view class="calendar-container">
+          <marked-calendar
+            markedDates="{{markedDates}}"
+            bind:dayselect="onCalendarDaySelect"
+          />
+          <!-- 日历日期标记说明 -->
+          <view class="calendar-legend">
+            <view class="legend-item">
+              <view class="legend-dot has-record"></view>
+              <text>有记录</text>
             </view>
           </view>
         </view>

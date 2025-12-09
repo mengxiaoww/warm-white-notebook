@@ -28,6 +28,10 @@ Page({
     // 筛选相关
     showDateFilterPopup: false,
     showDataTypeFilterPopup: false,
+    // 日历视图
+    showCalendarPopup: false,
+    calendarValue: Date.now(),
+    markedDates: [], // 有记录的日期列表
     // 使用原生滚动条，移除自定义指示器
     // 移除自定义滚动指示器
     selectedDateFilter: '30', // 30天
@@ -573,6 +577,129 @@ Page({
 
     // 重新加载数据
     this.loadHealthData();
+  },
+
+  // 显示日历视图
+  async showCalendarView() {
+    await this.loadMarkedDates();
+    this.setData({
+      showCalendarPopup: true
+    });
+  },
+
+  // 关闭日历视图
+  closeCalendarView() {
+    this.setData({
+      showCalendarPopup: false
+    });
+  },
+
+  // 加载有记录标记的日期
+  async loadMarkedDates() {
+    const app = getApp();
+    const openid = app.getOpenIdIfLoggedIn();
+    const profileId = app.getCurrentProfileId();
+
+    if (!openid || !profileId) {
+      return;
+    }
+
+    try {
+      const db = wx.cloud.database();
+      const _ = db.command;
+
+      // 查询所有记录集合的日期
+      const collections = [
+        'bloodTests',
+        'liverFunctionTests',
+        'kidneyFunctionTests',
+        'ebvRecords',
+        'cmvRecords',
+        'ldhRecords',
+        'bloodSugars',
+        'bloodOxygens',
+        'bloodPressures',
+        'urineRecords',
+        'stoolRecords',
+        'clinicRecords',
+        'waterIntakes',
+        'temperatures',
+        'bodyMeasurements',
+        'dietRecords'
+      ];
+
+      const allDates = new Set();
+
+      // 并发查询所有集合
+      await Promise.all(
+        collections.map(async (collectionName) => {
+          try {
+            const res = await db.collection(collectionName)
+              .where({
+                openid,
+                profileId
+              })
+              .field({
+                date: true
+              })
+              .get();
+
+            res.data.forEach(record => {
+              if (record.date) {
+                allDates.add(record.date);
+              }
+            });
+          } catch (err) {
+            console.error(`查询${collectionName}失败:`, err);
+          }
+        })
+      );
+
+      // 转换为数组并排序
+      const markedDates = Array.from(allDates).sort();
+
+      console.log('加载有记录的日期:', markedDates);
+
+      this.setData({
+        markedDates
+      });
+
+    } catch (err) {
+      console.error('加载标记日期失败:', err);
+    }
+  },
+
+  // 日历日期确认
+  onCalendarDaySelect(e) {
+    const selectedDate = e.detail.date;
+
+    // 关闭日历弹窗
+    this.setData({
+      showCalendarPopup: false
+    });
+
+    // 检查选中日期是否有记录
+    if (!this.data.markedDates.includes(selectedDate)) {
+      wx.showToast({
+        title: '该日期无记录',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 跳转到该日期的记录详情
+    wx.showToast({
+      title: `查看 ${selectedDate} 的记录`,
+      icon: 'none'
+    });
+  },
+
+  // 格式化日期
+  formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   },
 
   // 显示费用类型筛选
