@@ -1434,10 +1434,54 @@ Page({
     const endDate = new Date(medicineData.endDate);
     const today = this.formatDate(new Date());
 
-    // 生成所有日期
+    // 🔧 根据频率筛选需要创建记录的日期
     const allDates = [];
+    const frequency = medicineData.frequency || 'daily';
+    const customTakeDays = medicineData.customTakeDays || 0;
+    const customStopDays = medicineData.customStopDays || 0;
+
+    let dayIndex = 0;
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      allDates.push(this.formatDate(d));
+      const dateStr = this.formatDate(d);
+      let shouldInclude = false;
+
+      switch (frequency) {
+        case 'daily':
+          // 每天都创建记录
+          shouldInclude = true;
+          break;
+
+        case 'alternate':
+          // 隔天：从开始日期算起，第0、2、4天...有记录
+          shouldInclude = (dayIndex % 2 === 0);
+          break;
+
+        case 'weekly':
+          // 每周一次：从开始日期算起，第0、7、14天...有记录
+          shouldInclude = (dayIndex % 7 === 0);
+          break;
+
+        case 'custom':
+          // 自定义：吃N天停M天循环
+          if (customTakeDays > 0 && customStopDays > 0) {
+            const cycleLength = customTakeDays + customStopDays;
+            const positionInCycle = dayIndex % cycleLength;
+            shouldInclude = (positionInCycle < customTakeDays);
+          } else {
+            // 如果没有设置自定义天数，默认每天
+            shouldInclude = true;
+          }
+          break;
+
+        default:
+          shouldInclude = true;
+      }
+
+      if (shouldInclude) {
+        allDates.push(dateStr);
+      }
+
+      dayIndex++;
     }
 
     // 🔧 分批处理，每批最多500条（避免超过云数据库限制）
