@@ -1,5 +1,4 @@
 
-
 Page({
   data: {
     // 用户信息
@@ -22,16 +21,29 @@ Page({
     isEditMode: false,
     editingMedicineId: '',
 
+    // 最近使用的药品名称
+    recentMedicineNames: [],
+
     // 药品表单
     medicineForm: {
       name: '',
       dosage: '',
+      frequency: 'daily', // 服药频率：daily(每天), alternate(隔天), weekly(每周), custom(自定义)
+      frequencyText: '每天',
+      customTakeDays: 0, // 自定义：吃N天
+      customStopDays: 0, // 自定义：停N天
       timesPerDay: [],
       timesPerDayText: '',
       startDate: '',
       endDate: '',
       notes: ''
     },
+
+    // 频率选择
+    showFrequencySelector: false,
+    tempFrequency: 'daily',
+    customTakeDays: 3,
+    customStopDays: 4,
 
     // 时间选择
     showTimeSelector: false,
@@ -237,6 +249,9 @@ Page({
   addMedicine() {
     const selectedDate = this.data.selectedDate;
 
+    // 加载最近使用的药品名称
+    this.loadRecentMedicineNames();
+
     // 🔧 优化：开始日期和结束日期都默认为当前页面的日期
     // 用户在某个日期的用药记录页面添加药品，开始日期就是当前日期
     this.setData({
@@ -246,14 +261,161 @@ Page({
       medicineForm: {
         name: '',
         dosage: '',
+        frequency: 'daily',
+        frequencyText: '每天',
+        customTakeDays: 0,
+        customStopDays: 0,
         timesPerDay: [],
         timesPerDayText: '',
         startDate: selectedDate,     // 开始日期 = 当前页面日期
         endDate: selectedDate,       // 结束日期 = 当前页面日期（默认单次用药）
         notes: ''
       },
+      tempFrequency: 'daily',
       startDateTimestamp: new Date(selectedDate).getTime(),
       endDateTimestamp: new Date(selectedDate).getTime()
+    });
+  },
+
+  // 🔧 新增：加载最近使用的药品名称（最多15个）
+  async loadRecentMedicineNames() {
+    try {
+      const db = wx.cloud.database();
+
+      // 查询最近15天的用药记录
+      const fifteenDaysAgo = new Date();
+      fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+      const startDate = this.formatDate(fifteenDaysAgo);
+
+      const res = await db.collection('medications')
+        .where({
+          openid: this.data.openid,
+          profileId: this.data.currentProfileId,
+          date: db.command.gte(startDate)
+        })
+        .get();
+
+      // 提取药品名称并去重
+      const medicineNames = new Set();
+      res.data.forEach(record => {
+        if (record.medicines && Array.isArray(record.medicines)) {
+          record.medicines.forEach(med => {
+            if (med.name) {
+              medicineNames.add(med.name);
+            }
+          });
+        }
+      });
+
+      // 转换为数组并限制最多15个
+      const recentNames = Array.from(medicineNames).slice(0, 15);
+
+      this.setData({
+        recentMedicineNames: recentNames
+      });
+    } catch (err) {
+      console.error('加载最近药品名称失败:', err);
+    }
+  },
+
+  // 🔧 新增：选择最近使用的药品
+  selectRecentMedicine(e) {
+    const name = e.currentTarget.dataset.name;
+    this.setData({
+      'medicineForm.name': name
+    });
+  },
+
+  // 🔧 新增：选择常用剂量
+  selectDosage(e) {
+    const dosage = e.currentTarget.dataset.dosage;
+    this.setData({
+      'medicineForm.dosage': dosage
+    });
+  },
+
+  // 🔧 新增：显示频率选择器
+  showFrequencySelector() {
+    this.setData({
+      showFrequencySelector: true,
+      tempFrequency: this.data.medicineForm.frequency || 'daily',
+      customTakeDays: this.data.medicineForm.customTakeDays || 3,
+      customStopDays: this.data.medicineForm.customStopDays || 4
+    });
+  },
+
+  // 🔧 新增：频率选择器关闭事件
+  onFrequencySelectorVisibleChange(e) {
+    if (!e.detail.visible) {
+      this.setData({
+        showFrequencySelector: false
+      });
+    }
+  },
+
+  // 🔧 新增：选择频率
+  selectFrequency(e) {
+    const value = e.currentTarget.dataset.value;
+    this.setData({
+      tempFrequency: value
+    });
+  },
+
+  // 🔧 新增：频率选择
+  onFrequencySelect(e) {
+    this.setData({
+      tempFrequency: e.detail.value
+    });
+  },
+
+  // 🔧 新增：自定义吃药天数输入
+  onCustomTakeDaysInput(e) {
+    this.setData({
+      customTakeDays: parseInt(e.detail.value) || 0
+    });
+  },
+
+  // 🔧 新增：自定义停药天数输入
+  onCustomStopDaysInput(e) {
+    this.setData({
+      customStopDays: parseInt(e.detail.value) || 0
+    });
+  },
+
+  // 🔧 新增：确认频率选择
+  confirmFrequencySelection() {
+    const { tempFrequency, customTakeDays, customStopDays } = this.data;
+
+    let frequencyText = '';
+    switch (tempFrequency) {
+      case 'daily':
+        frequencyText = '每天';
+        break;
+      case 'alternate':
+        frequencyText = '隔天';
+        break;
+      case 'weekly':
+        frequencyText = '每周一次';
+        break;
+      case 'custom':
+        if (customTakeDays > 0 && customStopDays > 0) {
+          frequencyText = `吃${customTakeDays}天停${customStopDays}天`;
+        } else {
+          wx.showToast({
+            title: '请输入吃药和停药天数',
+            icon: 'none'
+          });
+          return;
+        }
+        break;
+    }
+
+    this.setData({
+      'medicineForm.frequency': tempFrequency,
+      'medicineForm.frequencyText': frequencyText,
+      'medicineForm.customTakeDays': tempFrequency === 'custom' ? customTakeDays : 0,
+      'medicineForm.customStopDays': tempFrequency === 'custom' ? customStopDays : 0,
+      showFrequencySelector: false
     });
   },
 

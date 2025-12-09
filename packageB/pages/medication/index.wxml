@@ -118,12 +118,43 @@
       </view>
       <scroll-view class="dialog-content" scroll-y>
         <t-cell-group>
+          <!-- 药品名称输入 -->
           <view bindtap="setPopupFocus" data-index="0">
             <t-input label="药品名称" placeholder="请输入药品名称" value="{{medicineForm.name}}" bindchange="onFormInput" data-field="name" clearable bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="0" data-total="3" />
           </view>
+          <!-- 最近使用的药品名称 -->
+          <view class="recent-medicines" wx:if="{{recentMedicineNames.length > 0 && !medicineForm.name}}">
+            <view class="quick-selector-label">最近使用</view>
+            <view class="quick-medicine-buttons">
+              <view class="quick-medicine-btn" wx:for="{{recentMedicineNames}}" wx:key="*this" bindtap="selectRecentMedicine" data-name="{{item}}">
+                {{item}}
+              </view>
+            </view>
+          </view>
+
+          <!-- 剂量规格输入 -->
           <view bindtap="setPopupFocus" data-index="1">
             <t-input label="剂量规格" placeholder="如：500mg、10ml" value="{{medicineForm.dosage}}" bindchange="onFormInput" data-field="dosage" clearable bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="1" data-total="3" />
           </view>
+          <!-- 常用剂量快捷选择 -->
+          <view class="dosage-selector">
+            <view class="quick-selector-label">常用剂量</view>
+            <view class="quick-dosage-buttons">
+              <view class="quick-dosage-btn" bindtap="selectDosage" data-dosage="1片">1片</view>
+              <view class="quick-dosage-btn" bindtap="selectDosage" data-dosage="1/2片">1/2片</view>
+              <view class="quick-dosage-btn" bindtap="selectDosage" data-dosage="1/3片">1/3片</view>
+              <view class="quick-dosage-btn" bindtap="selectDosage" data-dosage="2/3片">2/3片</view>
+              <view class="quick-dosage-btn" bindtap="selectDosage" data-dosage="1/4片">1/4片</view>
+              <view class="quick-dosage-btn" bindtap="selectDosage" data-dosage="1/5片">1/5片</view>
+            </view>
+          </view>
+
+          <!-- 服药频率选择 -->
+          <t-cell title="服药频率" clickable bindtap="showFrequencySelector">
+            <text slot="note">{{medicineForm.frequencyText || '每天'}}</text>
+          </t-cell>
+
+          <!-- 服药时间选择 -->
           <t-cell clickable bindtap="showTimeSelector">
             <view slot="title" class="cell-title-with-tip">
               <text>服药时间</text>
@@ -136,10 +167,9 @@
               <block wx:else>
                 <text class="placeholder">请选择服药时间</text>
               </block>
-              <!-- 调试信息 -->
-              <!-- <text style="font-size: 20rpx; color: red; display: block;">调试: {{medicineForm.timesPerDay ? medicineForm.timesPerDay.length : 0}} 项 - {{medicineForm.timesPerDay}}</text> -->
             </view>
           </t-cell>
+
           <t-cell title="开始日期" clickable bindtap="showStartDatePicker">
             <text slot="note">{{medicineForm.startDate}}</text>
           </t-cell>
@@ -172,6 +202,50 @@
   <view wx:if="{{popupFocusIndex >= 0 && showMedicineDialog}}" class="floating-next-btn" catchtap="{{popupFocusIndex === 2 ? 'completePopupInput' : 'goToNextPopupInput'}}" data-index="{{popupFocusIndex}}">
     <t-icon name="{{popupFocusIndex === 2 ? 'check' : 'chevron-down'}}" size="48rpx" color="white" />
   </view>
+
+  <!-- 服药频率选择弹窗 -->
+  <t-popup visible="{{showFrequencySelector}}" placement="bottom" bind:visible-change="onFrequencySelectorVisibleChange">
+    <view class="frequency-selector">
+      <view class="selector-header">
+        <text class="selector-title">选择服药频率</text>
+        <view class="confirm-time-btn" bindtap="confirmFrequencySelection">确定</view>
+      </view>
+      <view class="frequency-options">
+        <t-radio-group value="{{tempFrequency}}" bindchange="onFrequencySelect">
+          <view class="frequency-option-item" bindtap="selectFrequency" data-value="daily">
+            <t-radio style="width: 620rpx;" value="daily" label="每天" />
+          </view>
+          <view class="frequency-option-item" bindtap="selectFrequency" data-value="alternate">
+            <t-radio style="width: 620rpx;" value="alternate" label="隔天（如奥雷巴）" />
+          </view>
+          <view class="frequency-option-item" bindtap="selectFrequency" data-value="weekly">
+            <t-radio style="width: 620rpx;" value="weekly" label="每周一次" />
+          </view>
+          <view class="frequency-option-item" bindtap="selectFrequency" data-value="custom">
+            <t-radio style="width: 620rpx;" value="custom" label="自定义（吃N天停N天）" />
+          </view>
+        </t-radio-group>
+
+        <!-- 自定义频率输入 -->
+        <view class="custom-frequency-input" wx:if="{{tempFrequency === 'custom'}}">
+          <view class="custom-input-row">
+            <text class="input-label">吃</text>
+            <input class="frequency-input" type="number" value="{{customTakeDays}}" bindinput="onCustomTakeDaysInput" placeholder="天数" />
+            <text class="input-label">天</text>
+          </view>
+          <view class="custom-input-row">
+            <text class="input-label">停</text>
+            <input class="frequency-input" type="number" value="{{customStopDays}}" bindinput="onCustomStopDaysInput" placeholder="天数" />
+            <text class="input-label">天</text>
+          </view>
+          <view class="frequency-example">
+            <text class="example-text">例如：磺胺 吃3天停4天</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </t-popup>
+
   <!-- 服药时间选择弹窗 -->
   <t-popup visible="{{showTimeSelector}}" placement="bottom" bind:visible-change="onTimeSelectorVisibleChange">
     <view class="time-selector">

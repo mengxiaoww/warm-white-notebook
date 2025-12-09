@@ -1148,3 +1148,142 @@ page .t-date-time-picker .t-button__content {
 .quick-date-btn.pending:active {
   background: linear-gradient(135deg, #FFB84D 0%, #FF9F2E 100%);
 }
+
+/* ==================== 最近使用药品样式 ==================== */
+.recent-medicines {
+  padding: 24rpx 32rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.3) 0%, rgba(254, 245, 235, 0.2) 100%);
+  border-radius: 16rpx;
+  margin: 0 32rpx 24rpx;
+}
+
+.quick-medicine-buttons {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.quick-medicine-btn {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 252, 248, 0.95) 100%);
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #FF9800;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+}
+
+.quick-medicine-btn:active {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  color: white;
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
+}
+
+/* ==================== 常用剂量选择样式 ==================== */
+.dosage-selector {
+  padding: 24rpx 32rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.3) 0%, rgba(254, 245, 235, 0.2) 100%);
+  border-radius: 16rpx;
+  margin: 0 32rpx 24rpx;
+}
+
+.quick-dosage-buttons {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.quick-dosage-btn {
+  flex: 0 0 calc(33.333% - 11rpx);
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 252, 248, 0.95) 100%);
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #FF9800;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+}
+
+.quick-dosage-btn:active {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  color: white;
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
+}
+
+/* ==================== 服药频率选择样式 ==================== */
+.frequency-selector {
+  background-color: var(--color-white-pure);
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 30rpx;
+}
+
+.frequency-options {
+  padding: 20rpx 0;
+}
+
+.frequency-option-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.frequency-option-item:last-child {
+  border-bottom: none;
+}
+
+/* 自定义频率输入 */
+.custom-frequency-input {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.5) 0%, rgba(254, 245, 235, 0.3) 100%);
+  border-radius: 16rpx;
+}
+
+.custom-input-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.custom-input-row:last-of-type {
+  margin-bottom: 16rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.frequency-input {
+  flex: 1;
+  height: 64rpx;
+  padding: 0 20rpx;
+  background: white;
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.frequency-example {
+  padding: 16rpx 20rpx;
+  background: rgba(255, 152, 0, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #FF9800;
+}
+
+.example-text {
+  font-size: 24rpx;
+  color: #999;
+  font-style: italic;
+}
