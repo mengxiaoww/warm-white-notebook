@@ -24,6 +24,7 @@ Page({
       visitTime: '',
       doctor: '',
       doctorTitle: '',
+      condition: '', // 病情描述
       diagnosis: '',
       prescription: '',
       advice: '',
@@ -208,16 +209,39 @@ Page({
   },
 
   // 添加门诊记录
-  addClinicRecord() {
+  async addClinicRecord() {
+    const { openid, currentProfileId } = this.data;
+
+    // 查询最近一次的门诊记录，用于自动填充医院、科室和医生
+    let lastRecord = null;
+    try {
+      const db = wx.cloud.database();
+      const res = await db.collection('clinicRecords')
+        .where({
+          openid: openid,
+          profileId: currentProfileId
+        })
+        .orderBy('createTime', 'desc')
+        .limit(1)
+        .get();
+
+      if (res.data && res.data.length > 0) {
+        lastRecord = res.data[0];
+      }
+    } catch (err) {
+      console.error('查询最近门诊记录失败:', err);
+    }
+
     this.setData({
       showClinicDialog: true,
       isEditMode: false,
       editingRecordId: '',
       clinicForm: {
-        hospital: '',
-        department: '',
-        doctor: '',
+        hospital: lastRecord?.hospital || '',
+        department: lastRecord?.department || '',
+        doctor: lastRecord?.doctor || '',
         doctorTitle: '',
+        condition: '',
         diagnosis: '',
         prescription: '',
         advice: '',
@@ -249,6 +273,7 @@ Page({
         department: record.department || '',
         doctor: record.doctor || '',
         doctorTitle: record.doctorTitle || '',
+        condition: record.condition || '',
         diagnosis: record.diagnosis || '',
         prescription: record.prescription || '',
         advice: record.advice || '',
@@ -375,26 +400,10 @@ Page({
   async saveClinicRecord() {
     const { clinicForm, isEditMode, editingRecordId, openid, currentProfileId, selectedDate } = this.data;
 
-    // 验证必填字段
+    // 验证必填字段 - 只有医院是必填的
     if (!clinicForm.hospital.trim()) {
       wx.showToast({
         title: '请输入医院名称',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (!clinicForm.department.trim()) {
-      wx.showToast({
-        title: '请输入科室名称',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (!clinicForm.doctor.trim()) {
-      wx.showToast({
-        title: '请输入医生姓名',
         icon: 'none'
       });
       return;
@@ -418,6 +427,7 @@ Page({
         department: clinicForm.department.trim(),
         doctor: clinicForm.doctor.trim(),
         doctorTitle: clinicForm.doctorTitle.trim(),
+        condition: clinicForm.condition.trim(), // 病情描述
         diagnosis: clinicForm.diagnosis.trim(),
         prescription: clinicForm.prescription.trim(),
         advice: clinicForm.advice.trim(),

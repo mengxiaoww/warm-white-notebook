@@ -152,20 +152,26 @@
         <view class="clinic-form-content">
           <!-- 就诊医院 -->
           <view class="form-item" bindtap="setPopupFocus" data-index="0">
-            <text class="form-label">就诊医院</text>
-            <t-input value="{{clinicForm.hospital}}" placeholder="请输入医院名称" bind:change="onFormInput" data-field="hospital" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="0" data-total="7" />
+            <text class="form-label required">就诊医院</text>
+            <t-input value="{{clinicForm.hospital}}" placeholder="请输入医院名称" bind:change="onFormInput" data-field="hospital" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="0" data-total="9" />
           </view>
 
           <!-- 科室 -->
           <view class="form-item" bindtap="setPopupFocus" data-index="1">
-            <text class="form-label">科室</text>
-            <t-input value="{{clinicForm.department}}" placeholder="请输入科室名称" bind:change="onFormInput" data-field="department" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="1" data-total="7" />
+            <text class="form-label">科室（可选）</text>
+            <t-input value="{{clinicForm.department}}" placeholder="请输入科室名称" bind:change="onFormInput" data-field="department" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="1" data-total="9" />
           </view>
 
           <!-- 门诊医生 -->
           <view class="form-item" bindtap="setPopupFocus" data-index="2">
-            <text class="form-label">门诊医生</text>
-            <t-input value="{{clinicForm.doctor}}" placeholder="请输入医生姓名" bind:change="onFormInput" data-field="doctor" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="2" data-total="7" />
+            <text class="form-label">门诊医生（可选）</text>
+            <t-input value="{{clinicForm.doctor}}" placeholder="请输入医生姓名" bind:change="onFormInput" data-field="doctor" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="2" data-total="9" />
+          </view>
+
+          <!-- 病情描述 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="3">
+            <text class="form-label">病情描述（可选）</text>
+            <t-textarea value="{{clinicForm.condition}}" placeholder="请描述当前病情状况" bind:change="onFormInput" data-field="condition" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="3" data-total="9" />
           </view>
 
           <!-- 门诊病历照片 -->
@@ -188,27 +194,27 @@
           </view>
 
           <!-- 诊断结果 -->
-          <view class="form-item" bindtap="setPopupFocus" data-index="3">
+          <view class="form-item" bindtap="setPopupFocus" data-index="4">
             <text class="form-label">诊断结果</text>
-            <t-textarea value="{{clinicForm.diagnosis}}" placeholder="请输入医生的诊断结果" bind:change="onFormInput" data-field="diagnosis" class="form-textarea" maxlength="500" indicator bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="3" data-total="7" />
+            <t-textarea value="{{clinicForm.diagnosis}}" placeholder="请输入医生的诊断结果" bind:change="onFormInput" data-field="diagnosis" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="4" data-total="9" />
           </view>
 
           <!-- 处方用药 -->
-          <view class="form-item" bindtap="setPopupFocus" data-index="4">
+          <view class="form-item" bindtap="setPopupFocus" data-index="5">
             <text class="form-label">处方用药</text>
-            <t-textarea value="{{clinicForm.prescription}}" placeholder="请输入医生开具的处方和用药建议" bind:change="onFormInput" data-field="prescription" class="form-textarea" maxlength="500" indicator bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="4" data-total="7" />
+            <t-textarea value="{{clinicForm.prescription}}" placeholder="请输入医生开具的处方和用药建议" bind:change="onFormInput" data-field="prescription" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="5" data-total="9" />
           </view>
 
           <!-- 医嘱建议 -->
-          <view class="form-item" bindtap="setPopupFocus" data-index="5">
+          <view class="form-item" bindtap="setPopupFocus" data-index="6">
             <text class="form-label">医嘱建议</text>
-            <t-textarea value="{{clinicForm.advice}}" placeholder="请输入医生的医嘱和建议" bind:change="onFormInput" data-field="advice" class="form-textarea" maxlength="500" indicator bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="5" data-total="7" />
+            <t-textarea value="{{clinicForm.advice}}" placeholder="请输入医生的医嘱和建议" bind:change="onFormInput" data-field="advice" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="6" data-total="9" />
           </view>
 
           <!-- 费用金额 -->
-          <view class="form-item" bindtap="setPopupFocus" data-index="6">
+          <view class="form-item" bindtap="setPopupFocus" data-index="7">
             <text class="form-label">费用金额</text>
-            <t-input value="{{clinicForm.cost}}" placeholder="请输入费用金额（元）" bind:change="onFormInput" data-field="cost" class="form-input" type="digit" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="6" data-total="7" />
+            <t-input value="{{clinicForm.cost}}" placeholder="请输入费用金额（元）" bind:change="onFormInput" data-field="cost" class="form-input" type="digit" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="7" data-total="9" />
           </view>
 
           <!-- 复诊时间 -->
@@ -221,9 +227,9 @@
           </view>
 
           <!-- 备注 -->
-          <view class="form-item" bindtap="setPopupFocus" data-index="6">
+          <view class="form-item" bindtap="setPopupFocus" data-index="8">
             <text class="form-label">备注</text>
-            <t-textarea value="{{clinicForm.notes}}" placeholder="其他需要记录的信息" bind:change="onFormInput" data-field="notes" class="form-textarea" maxlength="300" indicator bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="6" data-total="7" />
+            <t-textarea value="{{clinicForm.notes}}" placeholder="其他需要记录的信息" bind:change="onFormInput" data-field="notes" class="form-textarea" maxlength="300" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="8" data-total="9" />
           </view>
         </view>
       </scroll-view>
@@ -236,8 +242,8 @@
     </view>
   </t-popup>
   <!-- 浮动的下一项/完成按钮（弹窗中） - 移到弹窗外以正确fixed定位 -->
-  <view wx:if="{{popupFocusIndex >= 0 && showClinicDialog}}" class="floating-next-btn" catchtap="{{popupFocusIndex === 6 ? 'completePopupInput' : 'goToNextPopupInput'}}" data-index="{{popupFocusIndex}}">
-    <t-icon name="{{popupFocusIndex === 6 ? 'check' : 'chevron-down'}}" size="48rpx" color="white" />
+  <view wx:if="{{popupFocusIndex >= 0 && showClinicDialog}}" class="floating-next-btn" catchtap="{{popupFocusIndex === 8 ? 'completePopupInput' : 'goToNextPopupInput'}}" data-index="{{popupFocusIndex}}">
+    <t-icon name="{{popupFocusIndex === 8 ? 'check' : 'chevron-down'}}" size="48rpx" color="white" />
   </view>
   <!-- 页面就诊日期选择器 -->
   <t-date-time-picker visible="{{datePickerVisible}}" value="{{selectedDateTimestamp}}" mode="date" title="选择就诊日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" bind:visible-change="onDateVisibleChange" />
