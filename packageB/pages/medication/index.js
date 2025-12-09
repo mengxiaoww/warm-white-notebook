@@ -1131,8 +1131,32 @@ Page({
       return;
     }
 
+    // 🔧 计算日期跨度，防止操作过多
+    const startDate = new Date(medicineForm.startDate);
+    const endDate = new Date(medicineForm.endDate);
+    const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+    // 如果跨度超过2年（730天），给出警告
+    if (daysDiff > 730) {
+      const confirmResult = await new Promise((resolve) => {
+        wx.showModal({
+          title: '提示',
+          content: `用药时间跨度较大（${daysDiff}天），保存可能需要较长时间。是否继续？`,
+          confirmText: '继续保存',
+          cancelText: '取消',
+          success: (res) => {
+            resolve(res.confirm);
+          }
+        });
+      });
+
+      if (!confirmResult) {
+        return;
+      }
+    }
+
     wx.showLoading({
-      title: '保存中...',
+      title: daysDiff > 365 ? '处理中，请稍候...' : '保存中...',
       mask: true
     });
 
@@ -1162,190 +1186,10 @@ Page({
 
       if (isEditMode) {
         // 编辑模式：需要更新所有相关日期的记录
-        // 先删除所有包含该药品的记录
-        const deleteRes = await db.collection('medications')
-          .where({
-            openid: openid,
-            profileId: currentProfileId,
-            'medicines.id': editingMedicineId
-          })
-          .get();
-
-        // 批量更新操作
-        const updateOperations = [];
-
-        for (const doc of deleteRes.data) {
-          const updatedMedicines = doc.medicines.filter(m => m.id !== editingMedicineId);
-
-          if (updatedMedicines.length > 0) {
-            // 如果还有其他药品，更新记录
-            updateOperations.push(
-              db.collection('medications').doc(doc._id).update({
-                data: {
-                  medicines: updatedMedicines,
-                  updateTime: db.serverDate()
-                }
-              })
-            );
-          } else {
-            // 如果没有其他药品了，删除整条记录
-            updateOperations.push(
-              db.collection('medications').doc(doc._id).remove()
-            );
-          }
-        }
-
-        await Promise.all(updateOperations);
-
-        // 然后按新的日期范围添加药品
-        const startDate = new Date(medicineForm.startDate);
-        const endDate = new Date(medicineForm.endDate);
-        const addOperations = [];
-
-        // 批量查询编辑模式下的所有日期记录
-        const editDateStrings = [];
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-          editDateStrings.push(this.formatDate(d));
-        }
-
-        const editExistingRecordsRes = await db.collection('medications')
-          .where({
-            openid: openid,
-            profileId: currentProfileId,
-            date: db.command.in(editDateStrings)
-          })
-          .get();
-
-        // 创建现有记录的映射
-        const editExistingRecordsMap = {};
-        editExistingRecordsRes.data.forEach(record => {
-          editExistingRecordsMap[record.date] = record;
-        });
-
-        // 遍历日期范围进行操作
-        const today = this.formatDate(new Date());
-        editDateStrings.forEach(dateStr => {
-          const existingRecord = editExistingRecordsMap[dateStr];
-
-          // 🔧 修复：历史日期默认已服用，今天及未来日期默认未服用
-          const isHistoricalDate = dateStr < today;
-          const medicineDataForDate = { ...medicineData };
-          medicineDataForDate.taken = isHistoricalDate;
-          // 设置所有时段的状态
-          if (medicineForm.timesPerDay && medicineForm.timesPerDay.length > 0) {
-            medicineForm.timesPerDay.forEach(timeSlot => {
-              medicineDataForDate.timeSlotStatus[timeSlot] = isHistoricalDate;
-            });
-          }
-
-          if (existingRecord) {
-            // 编辑模式下保留现有药品状态
-            const updatedMedicines = [...(existingRecord.medicines || []), medicineDataForDate];
-
-            addOperations.push(
-              db.collection('medications')
-                .doc(existingRecord._id)
-                .update({
-                  data: {
-                    medicines: updatedMedicines,
-                    updateTime: db.serverDate()
-                  }
-                })
-            );
-          } else {
-            addOperations.push(
-              db.collection('medications').add({
-                data: {
-                  openid,
-                  profileId: currentProfileId,
-                  date: dateStr,
-                  medicines: [medicineDataForDate],
-                  createTime: db.serverDate(),
-                  updateTime: db.serverDate()
-                }
-              })
-            );
-          }
-        });
-
-        await Promise.all(addOperations);
+        await this.handleEditMedicine(db, medicineData, editingMedicineId, openid, currentProfileId);
       } else {
         // 新增模式：为药品有效期内的每一天创建或更新记录
-        const startDate = new Date(medicineForm.startDate);
-        const endDate = new Date(medicineForm.endDate);
-
-        // 批量操作数组
-        const operations = [];
-
-        // 先批量查询所有日期的现有记录
-        const dateStrings = [];
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-          dateStrings.push(this.formatDate(d));
-        }
-
-        const existingRecordsRes = await db.collection('medications')
-          .where({
-            openid: openid,
-            profileId: currentProfileId,
-            date: db.command.in(dateStrings)
-          })
-          .get();
-
-        // 创建现有记录的映射
-        const existingRecordsMap = {};
-        existingRecordsRes.data.forEach(record => {
-          existingRecordsMap[record.date] = record;
-        });
-
-        // 遍历日期范围，基于现有记录映射进行操作
-        const today = this.formatDate(new Date());
-        dateStrings.forEach(dateStr => {
-          const existingRecord = existingRecordsMap[dateStr];
-
-          // 🔧 修复：历史日期默认已服用，今天及未来日期默认未服用
-          const isHistoricalDate = dateStr < today;
-          const medicineDataForDate = { ...medicineData };
-          medicineDataForDate.taken = isHistoricalDate;
-          // 设置所有时段的状态
-          if (medicineForm.timesPerDay && medicineForm.timesPerDay.length > 0) {
-            medicineForm.timesPerDay.forEach(timeSlot => {
-              medicineDataForDate.timeSlotStatus[timeSlot] = isHistoricalDate;
-            });
-          }
-
-          if (existingRecord) {
-            // 更新现有记录 - 保留现有药品状态
-            const updatedMedicines = [...(existingRecord.medicines || []), medicineDataForDate];
-
-            operations.push(
-              db.collection('medications')
-                .doc(existingRecord._id)
-                .update({
-                  data: {
-                    medicines: updatedMedicines,
-                    updateTime: db.serverDate()
-                  }
-                })
-            );
-          } else {
-            // 创建新记录
-            operations.push(
-              db.collection('medications').add({
-                data: {
-                  openid,
-                  profileId: currentProfileId,
-                  date: dateStr,
-                  medicines: [medicineDataForDate],
-                  createTime: db.serverDate(),
-                  updateTime: db.serverDate()
-                }
-              })
-            );
-          }
-        });
-
-        // 执行所有操作
-        await Promise.all(operations);
+        await this.handleAddMedicine(db, medicineData, openid, currentProfileId);
       }
 
       wx.showToast({
@@ -1368,13 +1212,158 @@ Page({
       }
 
     } catch (err) {
-
+      console.error('保存用药记录失败:', err);
       wx.showToast({
         title: '保存失败，请重试',
         icon: 'error'
       });
     } finally {
       wx.hideLoading();
+    }
+  },
+
+  // 🔧 新增：处理编辑药品（分批处理）
+  async handleEditMedicine(db, medicineData, editingMedicineId, openid, currentProfileId) {
+    // 先删除所有包含该药品的记录
+    const deleteRes = await db.collection('medications')
+      .where({
+        openid: openid,
+        profileId: currentProfileId,
+        'medicines.id': editingMedicineId
+      })
+      .get();
+
+    // 批量更新操作
+    const updateOperations = [];
+
+    for (const doc of deleteRes.data) {
+      const updatedMedicines = doc.medicines.filter(m => m.id !== editingMedicineId);
+
+      if (updatedMedicines.length > 0) {
+        updateOperations.push(
+          db.collection('medications').doc(doc._id).update({
+            data: {
+              medicines: updatedMedicines,
+              updateTime: db.serverDate()
+            }
+          })
+        );
+      } else {
+        updateOperations.push(
+          db.collection('medications').doc(doc._id).remove()
+        );
+      }
+    }
+
+    await Promise.all(updateOperations);
+
+    // 然后按新的日期范围添加药品（使用分批处理）
+    await this.batchCreateMedicineRecords(db, medicineData, openid, currentProfileId);
+  },
+
+  // 🔧 新增：处理新增药品（分批处理）
+  async handleAddMedicine(db, medicineData, openid, currentProfileId) {
+    await this.batchCreateMedicineRecords(db, medicineData, openid, currentProfileId);
+  },
+
+  // 🔧 新增：分批创建药品记录
+  async batchCreateMedicineRecords(db, medicineData, openid, currentProfileId) {
+    const startDate = new Date(medicineData.startDate);
+    const endDate = new Date(medicineData.endDate);
+    const today = this.formatDate(new Date());
+
+    // 生成所有日期
+    const allDates = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      allDates.push(this.formatDate(d));
+    }
+
+    // 🔧 分批处理，每批最多500条（避免超过云数据库限制）
+    const BATCH_SIZE = 500;
+    const batches = [];
+
+    for (let i = 0; i < allDates.length; i += BATCH_SIZE) {
+      batches.push(allDates.slice(i, i + BATCH_SIZE));
+    }
+
+    // 逐批处理
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+      const batch = batches[batchIndex];
+
+      // 更新进度提示
+      if (batches.length > 1) {
+        wx.showLoading({
+          title: `处理中 ${batchIndex + 1}/${batches.length}`,
+          mask: true
+        });
+      }
+
+      // 批量查询当前批次的现有记录
+      const existingRecordsRes = await db.collection('medications')
+        .where({
+          openid: openid,
+          profileId: currentProfileId,
+          date: db.command.in(batch)
+        })
+        .get();
+
+      // 创建现有记录的映射
+      const existingRecordsMap = {};
+      existingRecordsRes.data.forEach(record => {
+        existingRecordsMap[record.date] = record;
+      });
+
+      // 构建当前批次的操作
+      const operations = [];
+
+      batch.forEach(dateStr => {
+        const existingRecord = existingRecordsMap[dateStr];
+
+        // 历史日期默认已服用，今天及未来日期默认未服用
+        const isHistoricalDate = dateStr < today;
+        const medicineDataForDate = { ...medicineData };
+        medicineDataForDate.taken = isHistoricalDate;
+
+        // 设置所有时段的状态
+        if (medicineData.timesPerDay && medicineData.timesPerDay.length > 0) {
+          medicineData.timesPerDay.forEach(timeSlot => {
+            medicineDataForDate.timeSlotStatus[timeSlot] = isHistoricalDate;
+          });
+        }
+
+        if (existingRecord) {
+          // 更新现有记录
+          const updatedMedicines = [...(existingRecord.medicines || []), medicineDataForDate];
+
+          operations.push(
+            db.collection('medications')
+              .doc(existingRecord._id)
+              .update({
+                data: {
+                  medicines: updatedMedicines,
+                  updateTime: db.serverDate()
+                }
+              })
+          );
+        } else {
+          // 创建新记录
+          operations.push(
+            db.collection('medications').add({
+              data: {
+                openid,
+                profileId: currentProfileId,
+                date: dateStr,
+                medicines: [medicineDataForDate],
+                createTime: db.serverDate(),
+                updateTime: db.serverDate()
+              }
+            })
+          );
+        }
+      });
+
+      // 执行当前批次的所有操作
+      await Promise.all(operations);
     }
   },
 
