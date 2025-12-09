@@ -10766,47 +10766,68 @@
 
 /* ==================== 日期记录标记样式 ==================== */
 
-/* 有记录的日期标记 - 更大更明显的圆点 */
+/* 有记录的日期标记 - 右上角角标样式 */
 .record-indicator {
   position: absolute;
-  bottom: 2rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 16rpx;
-  height: 16rpx;
+  top: -4rpx;
+  right: -4rpx;
+  width: 20rpx;
+  height: 20rpx;
   background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
   border-radius: 50%;
   box-shadow:
-    0 0 12rpx rgba(255, 152, 0, 0.9),
-    0 2rpx 4rpx rgba(245, 124, 0, 0.5);
+    0 0 16rpx rgba(255, 152, 0, 0.8),
+    0 4rpx 8rpx rgba(245, 124, 0, 0.4),
+    inset 0 -2rpx 4rpx rgba(245, 124, 0, 0.5);
   z-index: 10;
-  border: 2rpx solid rgba(255, 255, 255, 0.9);
+  border: 3rpx solid #fff;
+  animation: badge-pulse 2s ease-in-out infinite;
 }
 
-/* 有记录的日期 - 添加边框 */
+/* 角标脉动动画 */
+@keyframes badge-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 16rpx rgba(255, 152, 0, 0.8),
+      0 4rpx 8rpx rgba(245, 124, 0, 0.4),
+      inset 0 -2rpx 4rpx rgba(245, 124, 0, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 24rpx rgba(255, 152, 0, 1),
+      0 4rpx 12rpx rgba(245, 124, 0, 0.6),
+      inset 0 -2rpx 4rpx rgba(245, 124, 0, 0.5);
+  }
+}
+
+/* 有记录的日期不再需要边框（角标已经足够明显） */
 .calendar-day-compact.has-record-mark {
-  border: 2rpx solid rgba(255, 152, 0, 0.5);
+  /* 移除边框样式 */
 }
 
 /* 展开状态的月视图中有记录的日期 */
 .calendar-month-grid .calendar-day.has-record-mark {
-  border: 2rpx solid rgba(255, 152, 0, 0.5);
   position: relative;
 }
 
-/* 选中状态优先级最高,不显示边框 */
-.calendar-day-compact.selected,
-.calendar-month-grid .calendar-day.selected {
-  border: none !important;
-}
-
-/* 选中状态下的圆点也要显示 */
+/* 选中状态下的角标显示为白色 */
 .calendar-day-compact.selected .record-indicator {
   background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-  border: 2rpx solid rgba(255, 152, 0, 0.8);
+  border: 3rpx solid #FF9800;
   box-shadow:
-    0 0 8rpx rgba(255, 255, 255, 0.9),
-    0 2rpx 4rpx rgba(255, 152, 0, 0.3);
+    0 0 12rpx rgba(255, 255, 255, 0.9),
+    0 4rpx 8rpx rgba(255, 152, 0, 0.5),
+    inset 0 -2rpx 4rpx rgba(255, 152, 0, 0.3);
+  animation: none; /* 选中状态不需要动画 */
+}
+
+/* 月视图中的角标 */
+.calendar-month-grid .calendar-day .record-indicator {
+  top: -2rpx;
+  right: -2rpx;
+  width: 16rpx;
+  height: 16rpx;
+  border: 2rpx solid #fff;
 }
 
 /* ==================== 日期记录标记样式结束 ==================== */
