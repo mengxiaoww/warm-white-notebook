@@ -8410,8 +8410,8 @@
 
 /* 收起状态日历样式 - 增大尺寸以容纳标记 */
 .calendar-day-compact {
-  width: 76rpx !important;
-  height: 76rpx !important;
+  width: 64rpx !important;
+  height: 64rpx !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
