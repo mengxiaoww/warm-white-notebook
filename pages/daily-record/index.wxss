@@ -10766,28 +10766,28 @@
 
 /* ==================== 日期记录标记样式 ==================== */
 
-/* 有记录的日期标记 - 小圆点 */
+/* 有记录的日期标记 - 增大圆点 */
 .record-indicator {
   position: absolute;
-  bottom: 6rpx;
+  bottom: 3rpx;
   left: 50%;
   transform: translateX(-50%);
-  width: 8rpx;
-  height: 8rpx;
+  width: 12rpx;
+  height: 12rpx;
   background: #FF9800;
   border-radius: 50%;
-  box-shadow: 0 0 6rpx rgba(255, 152, 0, 0.6);
+  box-shadow: 0 0 8rpx rgba(255, 152, 0, 0.8);
   z-index: 10;
 }
 
 /* 有记录的日期 - 添加边框 */
 .calendar-day-compact.has-record-mark {
-  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border: 2rpx solid rgba(255, 152, 0, 0.4);
 }
 
 /* 展开状态的月视图中有记录的日期 */
 .calendar-month-grid .calendar-day.has-record-mark {
-  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border: 2rpx solid rgba(255, 152, 0, 0.4);
   position: relative;
 }
 
