@@ -1017,6 +1017,55 @@ Page({
     });
   },
 
+  // 快速设置结束日期
+  setQuickEndDate(e) {
+    const days = e.currentTarget.dataset.days;
+
+    // 如果没有开始日期,使用今天
+    let startDate = this.data.medicineForm.startDate;
+    if (!startDate) {
+      const today = new Date();
+      startDate = this.formatDate(today);
+      this.setData({
+        'medicineForm.startDate': startDate,
+        startDateTimestamp: today.getTime()
+      });
+    }
+
+    if (days === 'pending') {
+      // 待定：设置为99年后（表示长期服用）
+      const endDate = new Date(startDate);
+      endDate.setFullYear(endDate.getFullYear() + 99);
+      const endDateStr = this.formatDate(endDate);
+
+      this.setData({
+        'medicineForm.endDate': endDateStr,
+        endDateTimestamp: endDate.getTime()
+      });
+
+      wx.showToast({
+        title: '已设置为长期服用',
+        icon: 'success'
+      });
+    } else {
+      // 根据天数计算结束日期
+      const numDays = parseInt(days);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + numDays - 1); // -1是因为包含开始日期当天
+      const endDateStr = this.formatDate(endDate);
+
+      this.setData({
+        'medicineForm.endDate': endDateStr,
+        endDateTimestamp: endDate.getTime()
+      });
+
+      wx.showToast({
+        title: `已设置${days}天疗程`,
+        icon: 'success'
+      });
+    }
+  },
+
   // 关闭药品弹窗
   closeMedicineDialog() {
     this.setData({

@@ -124,7 +124,11 @@
           <view bindtap="setPopupFocus" data-index="1">
             <t-input label="剂量规格" placeholder="如：500mg、10ml" value="{{medicineForm.dosage}}" bindchange="onFormInput" data-field="dosage" clearable bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="1" data-total="3" />
           </view>
-          <t-cell title="服药时间" clickable bindtap="showTimeSelector">
+          <t-cell clickable bindtap="showTimeSelector">
+            <view slot="title" class="cell-title-with-tip">
+              <text>服药时间</text>
+              <text class="tip-badge">可多选</text>
+            </view>
             <view slot="note" class="time-display">
               <block wx:if="{{medicineForm.timesPerDayText}}">
                 <text class="selected-times">{{medicineForm.timesPerDayText}}</text>
@@ -142,6 +146,17 @@
           <t-cell title="结束日期" clickable bindtap="showEndDatePicker">
             <text slot="note">{{medicineForm.endDate}}</text>
           </t-cell>
+          <!-- 快速选择结束日期 -->
+          <view class="quick-end-date-selector">
+            <view class="quick-selector-label">快速选择</view>
+            <view class="quick-date-buttons">
+              <view class="quick-date-btn" bindtap="setQuickEndDate" data-days="1">1天</view>
+              <view class="quick-date-btn" bindtap="setQuickEndDate" data-days="3">3天</view>
+              <view class="quick-date-btn" bindtap="setQuickEndDate" data-days="7">7天</view>
+              <view class="quick-date-btn" bindtap="setQuickEndDate" data-days="14">14天</view>
+              <view class="quick-date-btn pending" bindtap="setQuickEndDate" data-days="pending">待定</view>
+            </view>
+          </view>
           <view bindtap="setPopupFocus" data-index="2">
             <t-input label="备注" placeholder="如：饭后服用" value="{{medicineForm.notes}}" bindchange="onFormInput" data-field="notes" type="textarea" maxlength="100" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="2" data-total="3" />
           </view>
