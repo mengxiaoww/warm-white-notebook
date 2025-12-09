@@ -515,35 +515,6 @@
             </view>
             <text class="expense-label">总费用</text>
           </view>
-          <view class="expense-breakdown-grid">
-            <view class="breakdown-grid-item">
-              <view class="breakdown-icon-wrapper">
-                <t-icon name="secured" size="32rpx" color="#4CAF50" />
-              </view>
-              <view class="breakdown-info">
-                <text class="breakdown-label">医保支付</text>
-                <text class="breakdown-amount">¥{{expenseStats.medicalInsurance}}</text>
-              </view>
-            </view>
-            <view class="breakdown-grid-item">
-              <view class="breakdown-icon-wrapper">
-                <t-icon name="wallet" size="32rpx" color="#FF9800" />
-              </view>
-              <view class="breakdown-info">
-                <text class="breakdown-label">自费支付</text>
-                <text class="breakdown-amount">¥{{expenseStats.selfPay}}</text>
-              </view>
-            </view>
-            <view class="breakdown-grid-item">
-              <view class="breakdown-icon-wrapper">
-                <t-icon name="shop" size="32rpx" color="#2196F3" />
-              </view>
-              <view class="breakdown-info">
-                <text class="breakdown-label">商保支付</text>
-                <text class="breakdown-amount">¥{{expenseStats.commercialInsurance}}</text>
-              </view>
-            </view>
-          </view>
         </view>
         <!-- 紧凑统计栏 -->
         <view class="compact-stats-bar">
@@ -607,9 +578,6 @@
                       </view>
                       <view class="record-right">
                         <text class="record-amount">¥{{record.amount}}</text>
-                        <view class="payment-method-badge {{record.paymentMethodClass}}">
-                          {{record.paymentMethod}}
-                        </view>
                       </view>
                     </view>
                   </view>

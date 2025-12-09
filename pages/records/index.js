@@ -163,9 +163,6 @@ Page({
     expenseRecords: [],
     expenseStats: {
       totalExpense: 0,        // 总费用
-      medicalInsurance: 0,    // 医保支付
-      selfPay: 0,             // 自费支付
-      commercialInsurance: 0, // 商保支付
       recordCount: 0,         // 记录数
       avgExpensePerDay: 0     // 日均费用
     },
@@ -278,9 +275,6 @@ Page({
       expenseRecords: [],
       expenseStats: {
         totalExpense: 0,
-        medicalInsurance: 0,
-        selfPay: 0,
-        commercialInsurance: 0,
         recordCount: 0,
         avgExpensePerDay: 0
       },
@@ -5091,9 +5085,6 @@ Page({
         expenseRecords: [],
         expenseStats: {
           totalExpense: 0,
-          medicalInsurance: 0,
-          selfPay: 0,
-          commercialInsurance: 0,
           recordCount: 0,
           avgExpensePerDay: 0
         },
@@ -5109,24 +5100,12 @@ Page({
 
     // 计算统计数据
     let totalExpense = 0;
-    let medicalInsurance = 0;
-    let selfPay = 0;
-    let commercialInsurance = 0;
     const expenseTypeMap = {}; // 费用类型统计
     const dateSet = new Set(); // 记录有费用的日期
 
     filteredRecords.forEach(record => {
       const amount = parseFloat(record.amount) || 0;
       totalExpense += amount;
-
-      // 按支付方式分类
-      if (record.paymentMethod === '医保') {
-        medicalInsurance += amount;
-      } else if (record.paymentMethod === '自费') {
-        selfPay += amount;
-      } else if (record.paymentMethod === '商保') {
-        commercialInsurance += amount;
-      }
 
       // 按费用类型分类
       const expenseType = record.expenseType || '其他';
@@ -5155,9 +5134,6 @@ Page({
       expenseRecords: recordsByDate,
       expenseStats: {
         totalExpense: totalExpense.toFixed(2),
-        medicalInsurance: medicalInsurance.toFixed(2),
-        selfPay: selfPay.toFixed(2),
-        commercialInsurance: commercialInsurance.toFixed(2),
         recordCount: filteredRecords.length,
         avgExpensePerDay: avgExpensePerDay.toFixed(2)
       },
@@ -5197,17 +5173,9 @@ Page({
         };
       }
 
-      // 添加支付方式的英文类名
-      const paymentMethodClassMap = {
-        '医保': 'method-medical',
-        '自费': 'method-self',
-        '商保': 'method-commercial',
-        '其他': 'method-other'
-      };
-
+      // 不再添加支付方式类名
       const recordWithClass = {
-        ...record,
-        paymentMethodClass: paymentMethodClassMap[record.paymentMethod] || 'method-other'
+        ...record
       };
 
       groupedMap[date].records.push(recordWithClass);
