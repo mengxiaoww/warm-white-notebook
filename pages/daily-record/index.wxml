@@ -45,10 +45,11 @@
       <!-- 未展开状态：直接显示日期条在顶部 -->
       <view class="calendar-compact" wx:if="{{!calendarExpanded}}">
         <view class="calendar-week-strip">
-          <view class="calendar-day calendar-day-compact {{item.isSelected ? 'selected' : ''}}" wx:for="{{weekDays}}"
+          <view class="calendar-day calendar-day-compact {{item.isSelected ? 'selected' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}}" wx:for="{{weekDays}}"
             wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
             <text class="day-number">{{item.day}}</text>
             <text class="day-name">{{item.dayName}}</text>
+            <view wx:if="{{item.hasRecord}}" class="record-indicator"></view>
           </view>
         </view>
         <view class="calendar-expand-btn" bindtap="toggleCalendarExpanded">
@@ -78,9 +79,10 @@
         </view>
         <!-- 日期网格 -->
         <view class="calendar-month-grid">
-          <view class="calendar-day {{item.isSelected ? 'selected' : ''}} {{item.isEmpty ? 'empty' : ''}}"
+          <view class="calendar-day {{item.isSelected ? 'selected' : ''}} {{item.isEmpty ? 'empty' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}}"
             wx:for="{{monthDays}}" wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
             {{item.day}}
+            <view wx:if="{{item.hasRecord && !item.isEmpty}}" class="record-indicator"></view>
           </view>
         </view>
       </view>

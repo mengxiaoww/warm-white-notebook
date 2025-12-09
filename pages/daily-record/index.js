@@ -148,6 +148,8 @@ Page({
 
     monthDays: [], // 月视图数据（完整月份）
 
+    markedDates: [], // 有记录标记的日期列表 (YYYY-MM-DD格式)
+
     selectedDate: '', // 当前选中日期 YYYY-MM-DD
 
     selectedDateText: '', // 选中日期显示文本
@@ -1172,6 +1174,8 @@ Page({
         this.loadKeyDates(openid, currentProfileId);
 
         this.loadTodayTasks(openid, currentProfileId);
+
+        this.loadMarkedDates(openid, currentProfileId); // 加载有记录标记的日期
 
 
 
@@ -9791,7 +9795,9 @@ Page({
 
         dayName: dayNames[date.getDay()],
 
-        isSelected: dateStr === this.data.selectedDate
+        isSelected: dateStr === this.data.selectedDate,
+
+        hasRecord: this.data.markedDates.includes(dateStr) // 检查是否有记录
 
       })
 
@@ -9865,7 +9871,9 @@ Page({
 
         isEmpty: false,
 
-        isSelected: dateStr === this.data.selectedDate
+        isSelected: dateStr === this.data.selectedDate,
+
+        hasRecord: this.data.markedDates.includes(dateStr) // 检查是否有记录
 
       })
 
@@ -13117,6 +13125,83 @@ Page({
   },
 
   // ==================== 今日事项管理结束 ====================
+
+  // 加载有记录标记的日期
+  async loadMarkedDates(openid, profileId) {
+    if (!openid || !profileId) {
+      return;
+    }
+
+    try {
+      const db = wx.cloud.database();
+
+      // 查询所有记录集合的日期
+      const collections = [
+        'bloodTests',
+        'liverFunctionTests',
+        'kidneyFunctionTests',
+        'ebvRecords',
+        'cmvRecords',
+        'ldhRecords',
+        'bloodSugars',
+        'bloodOxygens',
+        'bloodPressures',
+        'urineRecords',
+        'stoolRecords',
+        'clinicRecords',
+        'waterIntakes',
+        'temperatures',
+        'bodyMeasurements',
+        'dietRecords',
+        'medications'
+      ];
+
+      const allDates = new Set();
+
+      // 并发查询所有集合
+      await Promise.all(
+        collections.map(async (collectionName) => {
+          try {
+            const res = await db.collection(collectionName)
+              .where({
+                openid,
+                profileId
+              })
+              .field({
+                date: true
+              })
+              .get();
+
+            res.data.forEach(record => {
+              if (record.date) {
+                allDates.add(record.date);
+              }
+            });
+          } catch (err) {
+            console.error(`查询${collectionName}失败:`, err);
+          }
+        })
+      );
+
+      // 转换为数组并排序
+      const markedDates = Array.from(allDates).sort();
+
+      console.log('加载有记录的日期:', markedDates.length, '天');
+
+      this.setData({
+        markedDates
+      });
+
+      // 重新生成日历视图以应用标记
+      this.generateWeekView();
+      if (this.data.calendarExpanded) {
+        this.generateMonthView();
+      }
+
+    } catch (err) {
+      console.error('加载标记日期失败:', err);
+    }
+  },
 
   // 分享功能
   async onShareAppMessage() {
