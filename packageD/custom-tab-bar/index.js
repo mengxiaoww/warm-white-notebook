@@ -44,18 +44,22 @@ Component({
     switchTab(e) {
       const data = e.currentTarget.dataset;
       const url = '/' + data.path;
-      
-      
+
+      // 如果点击的是当前页（记录页面），不做任何操作
+      if (data.path === 'pages/daily-record/index') {
+        return;
+      }
+
+      // 跳转到其他主包页面，使用 switchTab
       wx.switchTab({
         url,
         success: () => {
-          
           this.setData({
             selected: data.index
           });
         },
         fail: (err) => {
-          
+          console.error('switchTab failed:', err);
         }
       });
     }
