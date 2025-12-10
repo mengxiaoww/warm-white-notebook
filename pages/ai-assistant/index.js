@@ -491,14 +491,30 @@ Page({
       // 🔍 调试日志1: 打印AI的原始输出
       console.log('🔍 AI原始输出内容:', content);
 
-      // 尝试从AI回复中提取JSON数据
+      let jsonStr = null;
+
+      // 方法1: 尝试从 markdown 代码块中提取
       const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
-      if (!jsonMatch) return;
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1];
+      } else {
+        // 方法2: 尝试直接查找 JSON 对象 (从第一个 { 到最后一个 })
+        const jsonStart = content.indexOf('{');
+        const jsonEnd = content.lastIndexOf('}');
+        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+          jsonStr = content.substring(jsonStart, jsonEnd + 1);
+        }
+      }
+
+      if (!jsonStr) {
+        console.log('未找到有效的JSON数据');
+        return;
+      }
 
       // 🔍 调试日志2: 打印提取的JSON字符串
-      console.log('🔍 提取的JSON字符串:', jsonMatch[1]);
+      console.log('🔍 提取的JSON字符串:', jsonStr);
 
-      const healthData = JSON.parse(jsonMatch[1]);
+      const healthData = JSON.parse(jsonStr);
 
       // 🔍 调试日志3: 打印解析后的values对象
       console.log('🔍 解析后的values对象:', JSON.stringify(healthData.values, null, 2));
