@@ -1,0 +1,394 @@
+/* ============================
+   暖白记事本 - 最优雅的拖拽设计（GPU加速优化版）
+   ============================ */
+
+/* 温暖的拖拽容器 - 完美水平对齐 */
+.ios-drag-container {
+  box-sizing: border-box;
+  width: 100%;
+  flex: 1;
+  background: linear-gradient(145deg, #FFFBF7 0%, #FFF8F0 100%);
+  border-radius: 18rpx;
+  padding: 15rpx 8rpx;
+  position: relative;
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
+  margin-bottom: 10rpx;
+  /* 为scroll-view组件需要明确的高度 */
+  height: 0;
+  min-height: 400rpx;
+  max-height: 55vh;
+  overflow: visible;
+  /* GPU加速 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* 温暖优雅的功能卡片 - 简化设计 + GPU加速 */
+.ios-drag-item {
+  height: 112rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin: 0 12rpx 8rpx 12rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 20rpx;
+  position: relative;
+  /* 优化的过渡效果 - 使用transform代替其他属性以触发GPU加速 */
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 2rpx 12rpx rgba(255, 184, 77, 0.06);
+  border: 1rpx solid rgba(255, 184, 77, 0.08);
+  backdrop-filter: blur(8rpx);
+  /* GPU加速 */
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.ios-drag-item:last-child {
+  margin-bottom: 8rpx;
+}
+
+/* 温暖的可见状态 */
+.ios-drag-item.item-visible {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFCF7 100%);
+  border-color: rgba(255, 184, 77, 0.15);
+  box-shadow: 0 6rpx 25rpx rgba(255, 184, 77, 0.12);
+}
+
+/* 温暖的隐藏状态 */
+.ios-drag-item.item-hidden {
+  background: linear-gradient(135deg, #FAF7F2 0%, #F5F0E8 100%);
+  opacity: 0.7;
+  border-color: rgba(255, 184, 77, 0.08);
+  transform: scale(0.98) translateZ(0);
+}
+
+/* 温暖的拖拽状态 - 优化GPU性能 */
+.ios-drag-item.item-dragging {
+  /* 使用3D transform触发GPU加速 */
+  transform: scale(1.08) rotate(-0.5deg) translate3d(0, 0, 0);
+  box-shadow:
+    0 20rpx 60rpx rgba(255, 152, 0, 0.4),
+    0 10rpx 30rpx rgba(255, 184, 77, 0.3),
+    0 4rpx 12rpx rgba(255, 193, 7, 0.2);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFF8F0 100%);
+  border-color: #FF9800;
+  border-width: 2rpx;
+  z-index: 999;
+  opacity: 0.95;
+  /* 强制GPU加速 */
+  will-change: transform;
+  -webkit-transform: scale(1.08) rotate(-0.5deg) translate3d(0, 0, 0);
+}
+
+/* 简化的拖拽指示 - 仅长按时显示 */
+.ios-drag-handle {
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+  background: transparent;
+  border-radius: 8rpx;
+  transition: opacity 0.25s ease, background 0.25s ease;
+  opacity: 0.3;
+  /* GPU加速 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.ios-drag-item:active .ios-drag-handle,
+.ios-drag-item.item-dragging .ios-drag-handle {
+  opacity: 1;
+  background: rgba(255, 184, 77, 0.15);
+}
+
+/* 简化的拖拽点阵 */
+.drag-lines {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rpx;
+  align-items: center;
+}
+
+.drag-line {
+  width: 3rpx;
+  height: 3rpx;
+  background: #D4A574;
+  border-radius: 50%;
+  transition: transform 0.25s ease, background 0.25s ease;
+  /* GPU加速 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.ios-drag-item:active .drag-line,
+.ios-drag-item.item-dragging .drag-line {
+  background: #FFB84D;
+  transform: scale(1.5) translateZ(0);
+  -webkit-transform: scale(1.5) translateZ(0);
+}
+
+/* 温暖的功能内容区域 */
+.ios-item-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.ios-item-icon {
+  width: 56rpx;
+  height: 56rpx;
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.12) 0%, rgba(255, 184, 77, 0.06) 100%);
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  border: 1rpx solid rgba(255, 184, 77, 0.15);
+  /* GPU加速 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.ios-drag-item.item-visible .ios-item-icon {
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.18) 0%, rgba(255, 184, 77, 0.1) 100%);
+  border-color: rgba(255, 184, 77, 0.25);
+  box-shadow: 0 1rpx 4rpx rgba(255, 184, 77, 0.1);
+}
+
+.ios-drag-item.item-hidden .ios-item-icon {
+  background: linear-gradient(135deg, rgba(212, 165, 116, 0.08) 0%, rgba(212, 165, 116, 0.04) 100%);
+  border-color: rgba(212, 165, 116, 0.12);
+}
+
+.ios-item-info {
+  flex: 1;
+}
+
+.ios-item-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #2D1810;
+  line-height: 1.4;
+  margin-bottom: 6rpx;
+  display: block;
+  letter-spacing: 0.5rpx;
+}
+
+.ios-item-status {
+  font-size: 24rpx;
+  color: #8B6C42;
+  line-height: 1;
+  display: block;
+  font-weight: 400;
+}
+
+.ios-drag-item.item-visible .ios-item-status {
+  color: #D4A574;
+  font-weight: 500;
+}
+
+.ios-drag-item.item-hidden .ios-item-status {
+  color: #A68B5B;
+}
+
+/* 隐藏状态的文字颜色 */
+.ios-drag-item.item-hidden .ios-item-name {
+  color: #8E8E93;
+}
+
+.ios-drag-item.item-hidden .ios-item-status {
+  color: #C7C7CC;
+}
+
+/* 温暖优雅的开关 */
+.ios-switch {
+  width: 88rpx;
+  height: 48rpx;
+  position: relative;
+  margin-left: 20rpx;
+}
+
+.ios-switch-bg {
+  width: 100%;
+  height: 100%;
+  border-radius: 24rpx;
+  position: relative;
+  transition: background 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  box-shadow: inset 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+  /* GPU加速 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.ios-switch-bg.switch-on {
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9800 100%);
+  box-shadow:
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2),
+    0 4rpx 12rpx rgba(255, 184, 77, 0.3);
+}
+
+.ios-switch-bg.switch-off {
+  background: linear-gradient(135deg, #E5DDD0 0%, #D4C7B5 100%);
+  box-shadow: inset 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.ios-switch-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FEFEFE 100%);
+  position: absolute;
+  top: 4rpx;
+  /* 优化过渡：只使用transform来获得最佳性能 */
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.15), 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  left: 4rpx;
+  /* GPU加速 */
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.ios-switch-bg.switch-on .ios-switch-circle {
+  transform: translateX(40rpx) translateZ(0);
+  -webkit-transform: translateX(40rpx) translateZ(0);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2), 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
+}
+
+.ios-switch-bg.switch-off .ios-switch-circle {
+  transform: translateX(0) translateZ(0);
+  -webkit-transform: translateX(0) translateZ(0);
+}
+
+/* 温暖优雅的拖拽引导线 */
+.drop-line {
+  position: absolute;
+  left: 20rpx;
+  right: 20rpx;
+  height: 4rpx;
+  background: linear-gradient(90deg,
+      rgba(255, 152, 0, 0) 0%,
+      rgba(255, 152, 0, 0.7) 15%,
+      #FF9800 30%,
+      #FF6F00 50%,
+      #FF9800 70%,
+      rgba(255, 152, 0, 0.7) 85%,
+      rgba(255, 152, 0, 0) 100%);
+  border-radius: 2rpx;
+  z-index: 998;
+  margin-top: 0;
+  box-shadow:
+    0 0 30rpx rgba(255, 152, 0, 0.6),
+    0 2rpx 10rpx rgba(255, 111, 0, 0.4);
+  animation: warmGlow 1.2s ease-in-out infinite alternate;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  /* GPU加速 */
+  will-change: transform, opacity;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+@keyframes warmGlow {
+  0% {
+    opacity: 0.8;
+    transform: scaleY(1) scaleX(0.95) translateZ(0);
+    -webkit-transform: scaleY(1) scaleX(0.95) translateZ(0);
+    box-shadow:
+      0 0 20rpx rgba(255, 152, 0, 0.5),
+      0 2rpx 8rpx rgba(255, 111, 0, 0.3);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleY(1.3) scaleX(1.02) translateZ(0);
+    -webkit-transform: scaleY(1.3) scaleX(1.02) translateZ(0);
+    box-shadow:
+      0 0 35rpx rgba(255, 152, 0, 0.7),
+      0 3rpx 12rpx rgba(255, 111, 0, 0.5);
+  }
+}
+
+/* 温暖的长按反馈 */
+.ios-drag-item:active {
+  transform: scale(0.98) translateZ(0);
+  -webkit-transform: scale(0.98) translateZ(0);
+  transition: transform 0.1s ease;
+  filter: brightness(1.02);
+}
+
+/* 悬停状态的微妙反馈 */
+.ios-drag-item:hover {
+  border-color: rgba(255, 184, 77, 0.2);
+  box-shadow: 0 6rpx 25rpx rgba(255, 184, 77, 0.12);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* 图标的微妙旋转动画 */
+.ios-drag-item:active .ios-item-icon {
+  transform: scale(1.05) rotate(2deg) translateZ(0);
+  -webkit-transform: scale(1.05) rotate(2deg) translateZ(0);
+}
+
+/* 开关的点击反馈 */
+.ios-switch:active .ios-switch-bg {
+  transform: scale(0.96) translateZ(0);
+  -webkit-transform: scale(0.96) translateZ(0);
+}
+
+/* 空状态优化 */
+.ios-drag-container:empty::after {
+  content: "暂无可配置的功能项";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200rpx;
+  color: #8E8E93;
+  font-size: 28rpx;
+}
+
+/* 拖拽时的占位空间 */
+.ios-drag-item.dragging-placeholder {
+  background: transparent;
+  border: 2rpx dashed #C7C7CC;
+  box-shadow: none;
+}
+
+.ios-drag-item.dragging-placeholder .ios-item-content,
+.ios-drag-item.dragging-placeholder .ios-drag-handle,
+.ios-drag-item.dragging-placeholder .ios-switch {
+  opacity: 0;
+}
+
+/* 响应式设计 - 小屏幕优化 */
+@media (max-width: 375px) {
+  .ios-drag-item {
+    height: 80rpx;
+    padding: 0 16rpx;
+  }
+
+  .ios-item-name {
+    font-size: 30rpx;
+  }
+
+  .ios-item-status {
+    font-size: 24rpx;
+  }
+
+  .ios-item-icon {
+    width: 40rpx;
+    height: 40rpx;
+  }
+}
