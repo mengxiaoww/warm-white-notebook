@@ -1,12 +1,12 @@
 {
   "usingComponents": {
-    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar",
-    "t-button": "/miniprogram_npm/tdesign-miniprogram/button/button",
-    "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup",
-    "t-input": "/miniprogram_npm/tdesign-miniprogram/input/input",
-    "t-textarea": "/miniprogram_npm/tdesign-miniprogram/textarea/textarea",
-    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon",
-    "t-date-time-picker": "/miniprogram_npm/tdesign-miniprogram/date-time-picker/date-time-picker"
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-textarea": "tdesign-miniprogram/textarea/textarea",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker"
   },
   "navigationStyle": "custom"
 }

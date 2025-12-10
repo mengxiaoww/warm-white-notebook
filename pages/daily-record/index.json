@@ -1,8 +1,8 @@
 {
   "usingComponents": {
     "medical-icon": "/components/medical-icon/index",
-    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon",
-    "t-input": "/miniprogram_npm/tdesign-miniprogram/input/input",
-    "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup"
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-popup": "tdesign-miniprogram/popup/popup"
   }
 }

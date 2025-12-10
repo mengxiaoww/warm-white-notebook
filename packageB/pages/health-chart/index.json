@@ -3,6 +3,6 @@
     "t-navbar": "tdesign-miniprogram/navbar/navbar",
     "t-loading": "tdesign-miniprogram/loading/loading",
     "ec-canvas": "/ec-canvas/ec-canvas",
-    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon"
+    "t-icon": "tdesign-miniprogram/icon/icon"
   }
 }

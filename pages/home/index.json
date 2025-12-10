@@ -3,8 +3,8 @@
   "navigationBarBackgroundColor": "#FFB84D",
   "navigationBarTextStyle": "white",
   "usingComponents": {
-    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon",
-    "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-popup": "tdesign-miniprogram/popup/popup",
     "ec-canvas": "../../ec-canvas/ec-canvas"
   }
 }

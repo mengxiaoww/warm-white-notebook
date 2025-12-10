@@ -2,9 +2,9 @@
   "navigationBarTitleText": "配置乳酸脱氢酶",
   "navigationStyle": "custom",
   "usingComponents": {
-    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar",
-    "t-checkbox": "/miniprogram_npm/tdesign-miniprogram/checkbox/checkbox",
-    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon",
-    "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup"
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-checkbox": "tdesign-miniprogram/checkbox/checkbox",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-popup": "tdesign-miniprogram/popup/popup"
   }
 }

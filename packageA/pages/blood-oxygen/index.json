@@ -7,7 +7,7 @@
     "t-input": "tdesign-miniprogram/input/input",
     "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker",
     "t-popup": "tdesign-miniprogram/popup/popup",
-    "t-toast": "/miniprogram_npm/tdesign-miniprogram/toast/toast"
+    "t-toast": "tdesign-miniprogram/toast/toast"
   },
   "navigationStyle": "custom"
 }

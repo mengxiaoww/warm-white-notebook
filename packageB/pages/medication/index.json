@@ -1,20 +1,20 @@
 {
   "usingComponents": {
-    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar",
-    "t-swipe-cell": "/miniprogram_npm/tdesign-miniprogram/swipe-cell/swipe-cell",
-    "t-switch": "/miniprogram_npm/tdesign-miniprogram/switch/switch",
-    "t-radio": "/miniprogram_npm/tdesign-miniprogram/radio/radio",
-    "t-radio-group": "/miniprogram_npm/tdesign-miniprogram/radio-group/radio-group",
-    "t-checkbox": "/miniprogram_npm/tdesign-miniprogram/checkbox/checkbox",
-    "t-checkbox-group": "/miniprogram_npm/tdesign-miniprogram/checkbox-group/checkbox-group",
-    "t-dialog": "/miniprogram_npm/tdesign-miniprogram/dialog/dialog",
-    "t-date-time-picker": "/miniprogram_npm/tdesign-miniprogram/date-time-picker/date-time-picker",
-    "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup",
-    "t-cell": "/miniprogram_npm/tdesign-miniprogram/cell/cell",
-    "t-button": "/miniprogram_npm/tdesign-miniprogram/button/button",
-    "t-cell-group": "/miniprogram_npm/tdesign-miniprogram/cell-group/cell-group",
-    "t-input": "/miniprogram_npm/tdesign-miniprogram/input/input",
-    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon"
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-swipe-cell": "tdesign-miniprogram/swipe-cell/swipe-cell",
+    "t-switch": "tdesign-miniprogram/switch/switch",
+    "t-radio": "tdesign-miniprogram/radio/radio",
+    "t-radio-group": "tdesign-miniprogram/radio-group/radio-group",
+    "t-checkbox": "tdesign-miniprogram/checkbox/checkbox",
+    "t-checkbox-group": "tdesign-miniprogram/checkbox-group/checkbox-group",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "t-cell": "tdesign-miniprogram/cell/cell",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-icon": "tdesign-miniprogram/icon/icon"
   },
   "navigationStyle": "custom"
 }
