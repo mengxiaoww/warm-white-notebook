@@ -2,11 +2,11 @@
   "entryPagePath": "pages/home/index",
   "pages": [
     "pages/home/index",
+    "pages/daily-record/index",
     "pages/ai-assistant/index",
     "pages/records/index",
     "pages/profile/index",
     "pages/webview/index",
-    "pages/daily-record/index",
     "pages/health-profile/index",
     "pages/health-chart/index"
   ],
@@ -63,6 +63,13 @@
         "pages/cmv-config/index",
         "pages/ldh-record/index",
         "pages/ldh-config/index"
+      ]
+    },
+    {
+      "root": "packageD",
+      "name": "dailyRecord",
+      "pages": [
+        "pages/daily-record/index"
       ]
     }
   ],

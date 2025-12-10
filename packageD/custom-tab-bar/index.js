@@ -44,30 +44,18 @@ Component({
     switchTab(e) {
       const data = e.currentTarget.dataset;
       const url = '/' + data.path;
-
-      // 如果是跳转到每日记录页面（在分包中），使用 navigateTo
-      if (data.path === 'pages/daily-record/index') {
-        wx.navigateTo({
-          url: '/packageD/pages/daily-record/index',
-          success: () => {
-            this.setData({
-              selected: data.index
-            });
-          }
-        });
-        return;
-      }
-
+      
+      
       wx.switchTab({
         url,
         success: () => {
-
+          
           this.setData({
             selected: data.index
           });
         },
         fail: (err) => {
-
+          
         }
       });
     }
