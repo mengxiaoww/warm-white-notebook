@@ -7,7 +7,8 @@
     "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup",
     "t-date-time-picker": "/miniprogram_npm/tdesign-miniprogram/date-time-picker/date-time-picker",
     "t-picker": "/miniprogram_npm/tdesign-miniprogram/picker/picker",
-    "t-switch": "/miniprogram_npm/tdesign-miniprogram/switch/switch"
+    "t-switch": "/miniprogram_npm/tdesign-miniprogram/switch/switch",
+    "t-button": "/miniprogram_npm/tdesign-miniprogram/button/button"
   },
   "navigationStyle": "custom"
 }

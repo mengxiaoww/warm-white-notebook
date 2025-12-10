@@ -1,7 +1,3 @@
-/* pages/health-profile/index.wxss
-   现代轻奢健康档案页面 - 温暖米金色主题 */
-
-/* ==================== 骨架屏加载动画 ==================== */
 .skeleton-wrapper {
   position: absolute;
   top: 0;
@@ -100,7 +96,6 @@
   background: linear-gradient(135deg, #E8E4DD 0%, #F0EDE8 100%);
 }
 
-/* Tab骨架 */
 .skeleton-tabs {
   display: flex;
   gap: 16rpx;
@@ -117,7 +112,6 @@
   border-radius: 16rpx;
 }
 
-/* 筛选器骨架 */
 .skeleton-filters {
   display: flex;
   gap: 16rpx;
@@ -134,7 +128,6 @@
   border-radius: 16rpx;
 }
 
-/* 统计卡片骨架 */
 .skeleton-stats {
   display: flex;
   gap: 16rpx;
@@ -152,7 +145,6 @@
   gap: 8rpx;
 }
 
-/* 记录列表骨架 */
 .skeleton-records {
   display: flex;
   flex-direction: column;
@@ -188,7 +180,6 @@
   gap: 12rpx;
 }
 
-/* 🔥 表格视图骨架 */
 .skeleton-table {
   background: #FFFFFF;
   border-radius: 24rpx;
@@ -253,13 +244,11 @@
   background: linear-gradient(135deg, #D4A574 20%, #E8C89A 100%);
 }
 
-/* 页面根容器 */
 page {
   background-color: #FDFCFA;
-  /* 温暖白色背景 */
+  
 }
 
-/* 基础页面容器 */
 .page-container {
   position: fixed;
   top: 0;
@@ -272,10 +261,9 @@ page {
   background: linear-gradient(180deg,
       #FDFCFA 0%,
       #FAF8F4 100%);
-  /* 渐变温暖白色背景 */
+  
 }
 
-/* 自定义导航栏 - 温暖米金色主题 */
 page {
   --td-navbar-bg-color: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   --td-navbar-title-color: white;
@@ -322,7 +310,6 @@ page {
   filter: drop-shadow(0 2rpx 4rpx rgba(0, 0, 0, 0.3));
 }
 
-/* 内容包裹器 */
 .content-wrapper {
   position: fixed;
   top: 0;
@@ -334,7 +321,6 @@ page {
   overflow: hidden;
 }
 
-/* 背景装饰 */
 .bg-decoration {
   position: absolute;
   top: 0;
@@ -415,7 +401,6 @@ page {
   }
 }
 
-/* 内容容器 */
 .content-container {
   flex: 1;
   overflow-y: auto;
@@ -423,21 +408,20 @@ page {
   position: relative;
   z-index: 1;
   background: #FAF8F4;
-  /* 温暖白色 */
+  
 }
 
-/* Tab切换样式 - 现代轻奢设计 */
 .tab-container {
   display: flex;
   background: #FFFFFF;
-  /* 纯白卡片背景 */
+  
   margin: 24rpx 24rpx 0 24rpx;
   border-radius: 20rpx;
-  /* 现代圆角 */
+  
   box-shadow:
     0 4rpx 20rpx rgba(255, 184, 77, 0.15),
     0 1rpx 3rpx rgba(0, 0, 0, 0.05);
-  /* 现代阴影 */
+  
   border: 1rpx solid rgba(255, 184, 77, 0.2);
   position: relative;
   overflow: hidden;
@@ -552,13 +536,11 @@ page {
   transform: scale(0.98);
 }
 
-/* 确保TDesign图标居中 */
 .tab-icon-wrapper .t-icon {
   display: block !important;
   margin: 0 auto !important;
 }
 
-/* 筛选区域 */
 .filter-section {
   display: flex;
   gap: 20rpx;
@@ -572,13 +554,13 @@ page {
   gap: 16rpx;
   padding: 20rpx 24rpx;
   background: #FFFFFF;
-  /* 纯白背景 */
+  
   border-radius: 16rpx;
-  /* 现代圆角 */
+  
   box-shadow:
     0 4rpx 16rpx rgba(255, 184, 77, 0.12),
     0 2rpx 4rpx rgba(0, 0, 0, 0.04);
-  /* 精致阴影 */
+  
   border: 1rpx solid rgba(255, 184, 77, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -646,7 +628,6 @@ page {
   transform: rotate(180deg);
 }
 
-/* 紧凑统计栏设计 */
 .compact-stats-bar {
   display: flex;
   align-items: center;
@@ -696,10 +677,6 @@ page {
   margin: 0 16rpx;
 }
 
-/* 旧的卡片样式已删除，统一使用紧凑统计栏 */
-
-/* 用药概览使用统一的紧凑统计栏 */
-
 .section-icon-wrapper {
   position: relative;
   display: flex;
@@ -734,7 +711,6 @@ page {
   margin-left: 20rpx;
 }
 
-/* 健康记录时间轴（朋友圈风格） */
 .health-timeline {
   position: relative;
   padding: 40rpx 0 40rpx 88rpx;
@@ -744,7 +720,6 @@ page {
       transparent 100%);
 }
 
-/* 时间轴主线 - 高级渐变效果 */
 .health-timeline::before {
   content: '';
   position: absolute;
@@ -764,7 +739,6 @@ page {
   filter: blur(0.5rpx);
 }
 
-/* 时间轴主线内核 */
 .health-timeline::after {
   content: '';
   position: absolute;
@@ -779,7 +753,6 @@ page {
   border-radius: 1rpx;
 }
 
-/* 时间轴项目 - 优化间距 */
 .timeline-item {
   position: relative;
   margin-bottom: 40rpx;
@@ -820,7 +793,6 @@ page {
   }
 }
 
-/* 时间轴点 - 高级立体效果 */
 .timeline-dot {
   position: absolute;
   left: -56rpx;
@@ -863,7 +835,6 @@ page {
   }
 }
 
-/* 时间轴内容区域 - 高级玻璃拟态效果 */
 .timeline-content {
   background: linear-gradient(135deg,
       rgba(255, 255, 255, 0.95) 0%,
@@ -881,7 +852,6 @@ page {
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* 卡片顶部装饰线 */
 .timeline-content::before {
   content: '';
   position: absolute;
@@ -913,7 +883,6 @@ page {
   border-color: rgba(255, 184, 77, 0.15);
 }
 
-/* 时间轴头部 - 紧凑优化 */
 .timeline-header {
   display: flex;
   align-items: center;
@@ -927,7 +896,6 @@ page {
   position: relative;
 }
 
-/* 头部装饰元素 */
 .timeline-header::before {
   content: '';
   position: absolute;
@@ -941,7 +909,6 @@ page {
       transparent 100%);
 }
 
-/* 时间轴左侧布局 */
 .timeline-left {
   display: flex;
   flex-direction: column;
@@ -949,7 +916,6 @@ page {
   gap: 2rpx;
 }
 
-/* 完整日期显示 */
 .timeline-full-date {
   font-size: 24rpx;
   color: rgba(255, 184, 77, 0.8);
@@ -981,12 +947,10 @@ page {
   border: 1rpx solid rgba(255, 255, 255, 0.2);
 }
 
-/* 健康记录列表 - 紧凑布局 */
 .health-records-list {
   padding: 4rpx 0;
 }
 
-/* 健康记录项目 - 紧凑优化 */
 .health-record-item {
   display: flex;
   align-items: center;
@@ -1027,7 +991,6 @@ page {
   width: 0;
 }
 
-/* 记录图标 - 紧凑优化 */
 .record-icon {
   width: 48rpx;
   height: 48rpx;
@@ -1071,7 +1034,6 @@ page {
   opacity: 0.8;
 }
 
-/* 记录内容 - 紧凑优化 */
 .record-content {
   flex: 1;
   display: flex;
@@ -1105,7 +1067,6 @@ page {
   line-height: 1.3;
 }
 
-/* 紧凑网格布局 */
 .compact-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140rpx, 1fr));
@@ -1114,7 +1075,6 @@ page {
   width: 100%;
 }
 
-/* 数据项样式 */
 .summary-data-item {
   display: flex;
   flex-direction: column;
@@ -1162,7 +1122,6 @@ page {
   color: #34495E;
 }
 
-/* 状态徽章 - 高级渐变效果 */
 .status-badge {
   box-sizing: border-box;
   display: inline-flex;
@@ -1252,7 +1211,6 @@ page {
   left: 100%;
 }
 
-/* 箭头 - 高级动画效果 */
 .record-arrow {
   display: flex;
   align-items: center;
@@ -1293,8 +1251,6 @@ page {
   transform: scale(0.9);
 }
 
-
-/* 微交互动画 */
 @keyframes breathe {
 
   0%,
@@ -1338,7 +1294,6 @@ page {
   opacity: 1;
 }
 
-/* 响应式适配 - 增强版 */
 @media screen and (max-width: 375px) {
   .health-timeline {
     padding: 32rpx 0 32rpx 76rpx;
@@ -1406,7 +1361,6 @@ page {
   }
 }
 
-/* 大屏幕优化 */
 @media screen and (min-width: 768px) {
   .health-timeline {
     padding: 48rpx 0 48rpx 100rpx;
@@ -1448,7 +1402,6 @@ page {
   }
 }
 
-/* 高性能动画优化 */
 .health-record-item,
 .record-icon,
 .record-arrow,
@@ -1459,10 +1412,6 @@ page {
   -webkit-backface-visibility: hidden;
 }
 
-/* 深色模式适配 */
-/* 移除暗色模式样式，保持温暖米金色主题 */
-
-/* 旧的健康记录列表样式（保留用于兼容） */
 .health-records {
   margin: 0 24rpx;
   background: #FFFFFF;
@@ -1473,7 +1422,6 @@ page {
     0 4rpx 16rpx rgba(0, 0, 0, 0.04);
   border: 1rpx solid rgba(255, 184, 77, 0.1);
 }
-
 
 .record-group {
   margin-bottom: 36rpx;
@@ -1523,7 +1471,6 @@ page {
   border-radius: 2rpx;
 }
 
-/* 记录项目 - 现代3D设计 */
 .record-item {
   margin-bottom: 20rpx;
   border-radius: 16rpx;
@@ -1542,13 +1489,13 @@ page {
   gap: 20rpx;
   padding: 24rpx;
   background: #FFFFFF;
-  /* 纯白背景 */
+  
   border: 1rpx solid rgba(255, 184, 77, 0.1);
   border-radius: 16rpx;
   box-shadow:
     0 4rpx 16rpx rgba(255, 184, 77, 0.08),
     0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-  /* 轻微阴影 */
+  
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -1693,12 +1640,11 @@ page {
   opacity: 0.6;
 }
 
-/* 用药列表 - 现代轻奢设计 */
 .current-medications,
 .medication-history {
   margin: 0 24rpx 36rpx;
   background: #FFFFFF;
-  /* 纯白背景 */
+  
   border-radius: 20rpx;
   overflow: hidden;
   box-shadow:
@@ -1912,7 +1858,6 @@ page {
   opacity: 0.6;
 }
 
-/* 空状态 - 现代设计 */
 .empty-state {
   text-align: center;
   padding: 120rpx 40rpx;
@@ -1972,7 +1917,6 @@ page {
   border-radius: 2rpx;
 }
 
-/* 筛选弹窗 - 现代设计 */
 .filter-popup {
   background: #FFFFFF;
   border-radius: 32rpx 32rpx 0 0;
@@ -2170,7 +2114,6 @@ page {
   margin: 25rpx 0 15rpx 0;
 }
 
-/* 健康详情弹窗 - 现代轻奢设计 */
 .health-detail-popup {
   width: 92vw;
   max-width: 750rpx;
@@ -2421,7 +2364,6 @@ page {
   font-weight: 700;
 }
 
-/* 指标网格 - 现代设计 */
 .indicators-grid-3d {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2515,7 +2457,6 @@ page {
   position: relative;
 }
 
-/* 详情底部按钮 - 现代设计 */
 .detail-footer {
   padding: 32rpx 40rpx;
   background: linear-gradient(135deg,
@@ -2594,7 +2535,6 @@ page {
     0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
-/* 底部弹窗样式 - 现代轻奢主题 */
 .bottom-filter-popup {
   background: linear-gradient(135deg,
       rgba(253, 252, 250, 0.98) 0%,
@@ -2664,7 +2604,7 @@ page {
   padding: 24rpx 40rpx;
   padding-bottom: calc(42rpx + env(safe-area-inset-bottom));
   max-height: 50vh;
-  /* 移除overflow-y，由scroll-view组件控制滚动 */
+  
 }
 
 .bottom-filter-option {
@@ -2762,7 +2702,6 @@ page {
   transform: scale(1.1);
 }
 
-/* 各种状态详情样式 - 使用新的颜色主题 */
 .ebv-results,
 .cmv-results,
 .urine-summary,
@@ -2848,7 +2787,6 @@ page {
   font-weight: 700;
 }
 
-/* 备注信息样式 */
 .notes-text {
   font-size: 28rpx;
   color: #666;
@@ -2862,7 +2800,6 @@ page {
   margin-top: 8rpx;
 }
 
-/* 用药状态样式 */
 .status-completed,
 .status-partial,
 .status-missed,
@@ -2900,7 +2837,6 @@ page {
   border-color: rgba(114, 46, 209, 0.2);
 }
 
-/* 用药状态信息容器 */
 .medication-status-info {
   display: flex;
   flex-direction: column;
@@ -2912,7 +2848,6 @@ page {
   display: inline-block;
 }
 
-/* 日期记录相关样式 */
 .daily-medication-records {
   margin-top: 20rpx;
 }
@@ -3086,7 +3021,6 @@ page {
   font-weight: 700;
 }
 
-/* 空状态样式适配 */
 .daily-medication-records .empty-state {
   text-align: center;
   padding: 120rpx 40rpx;
@@ -3116,7 +3050,6 @@ page {
   font-weight: 500;
 }
 
-/* 响应式优化 */
 @media (max-width: 750rpx) {
   .stats-cards {
     flex-direction: column;
@@ -3174,7 +3107,6 @@ page {
   }
 }
 
-/* 滚动条优化 */
 ::-webkit-scrollbar {
   width: 8rpx;
 }
@@ -3193,7 +3125,6 @@ page {
   background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-color) 100%);
 }
 
-/* 动画效果 */
 .daily-record-item {
   animation: recordSlideIn 0.5s ease-out;
 }
@@ -3236,9 +3167,6 @@ page {
   }
 }
 
-/* ========== 用药档案时间轴样式 ========== */
-
-/* 用药档案时间轴容器 */
 .medication-timeline {
   position: relative;
   padding: 40rpx 0 40rpx 80rpx;
@@ -3257,7 +3185,6 @@ page {
       rgba(255, 184, 77, 0.3) 100%);
 }
 
-/* 统一的时间轴卡片 */
 .unified-timeline-card {
   background: #FAFAFA;
   border-radius: 12rpx;
@@ -3361,7 +3288,6 @@ page {
   transition: width 0.3s ease;
 }
 
-/* 相对时间显示样式 */
 .timeline-relative-time {
   font-size: 22rpx;
   color: #999;
@@ -3369,10 +3295,6 @@ page {
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
 }
-
-/* 健康档案页面已使用全局 .function-item 样式，所有功能项目样式已移至 app.wxss */
-
-/* ========== 检查报告档案样式 ========== */
 
 .check-report-archive {
   position: relative;
@@ -3385,7 +3307,6 @@ page {
   gap: 16rpx;
 }
 
-/* 报告头部区域 */
 .report-header {
   display: flex;
   justify-content: space-between;
@@ -3422,7 +3343,6 @@ page {
   flex: 1;
 }
 
-/* 元数据信息区域 */
 .report-meta-info {
   display: flex;
   flex-direction: column;
@@ -3449,7 +3369,6 @@ page {
   font-weight: 600;
 }
 
-/* 检查报告图片展示 */
 .report-images {
   display: grid;
   gap: 12rpx;
@@ -3457,7 +3376,6 @@ page {
   width: 100%;
 }
 
-/* 单张图片 - 大图显示 */
 .report-images-count-1 {
   grid-template-columns: 1fr;
 }
@@ -3467,7 +3385,6 @@ page {
   height: 360rpx;
 }
 
-/* 两张图片 - 并排显示 */
 .report-images-count-2 {
   grid-template-columns: repeat(2, 1fr);
 }
@@ -3477,7 +3394,6 @@ page {
   height: 200rpx;
 }
 
-/* 三张图片 - 第一张占整行，后两张并排 */
 .report-images-count-3 {
   grid-template-columns: repeat(2, 1fr);
 }
@@ -3493,7 +3409,6 @@ page {
   height: 200rpx;
 }
 
-/* 四张及以上图片 - 2x2网格 */
 .report-images-count-4,
 .report-images-count-5,
 .report-images-count-6,
@@ -3513,7 +3428,6 @@ page {
   height: 200rpx;
 }
 
-/* 图片通用样式 */
 .report-image {
   border-radius: 12rpx;
   border: 2rpx solid rgba(255, 184, 77, 0.2);
@@ -3527,7 +3441,6 @@ page {
   box-shadow: 0 2rpx 8rpx rgba(255, 184, 77, 0.15);
 }
 
-/* 状态徽章 - 移到右上角 */
 .result-badge {
   display: inline-flex;
   align-items: center;
@@ -3579,13 +3492,11 @@ page {
   word-break: break-all;
 }
 
-/* 健康监测容器 */
 .health-monitoring {
   position: relative;
   padding-top: 20rpx;
 }
 
-/* 筛选区域样式 */
 .filter-row {
   width: 100%;
   display: flex;
@@ -3593,7 +3504,6 @@ page {
   gap: 20rpx;
 }
 
-/* 悬浮视图切换按钮 */
 .floating-toggle {
   position: fixed;
   bottom: 210rpx;
@@ -3647,9 +3557,6 @@ page {
   transform: translateY(0);
 }
 
-/* 旧的视图模式切换样式已移除，使用新的紧凑型设计 */
-
-/* 检测项目选择器样式 */
 .test-type-selector {
   margin-top: 16rpx;
   background: rgba(255, 255, 255, 0.9);
@@ -3721,7 +3628,6 @@ page {
   font-weight: 600;
 }
 
-/* 简洁美观的表格设计 */
 .health-table {
   margin: 0 24rpx 24rpx;
   background: #fff;
@@ -3731,7 +3637,7 @@ page {
   position: relative;
   transform: translateZ(0);
   z-index: 10;
-  /* 确保表格在合适的层级 */
+  
 }
 
 .scroll-hint {
@@ -3752,16 +3658,15 @@ page {
 .table-scroll {
   width: 100%;
   max-height: 700rpx;
-  /* 限制高度，超出时显示y轴滚动条 */
+  
   overflow-x: auto;
   overflow-y: auto;
-  /* 使用原生CSS滚动，x轴和y轴都显示滚动条 */
+  
   -webkit-overflow-scrolling: touch;
   position: relative;
-  /* 为sticky定位提供正确的上下文 */
+  
 }
 
-/* 自定义滚动条样式 - x轴和y轴都使用相同效果 */
 .table-scroll::-webkit-scrollbar {
   width: 8rpx;
   height: 8rpx;
@@ -3778,12 +3683,10 @@ page {
   border-radius: 4rpx;
 }
 
-/* 滚动条交叉点样式 */
 .table-scroll::-webkit-scrollbar-corner {
   background: rgba(255, 184, 77, 0.2);
 }
 
-/* 当不需要滚动时，表格填充整个宽度 */
 .table-scroll.no-scroll .table-container {
   width: 100%;
   min-width: 100%;
@@ -3795,7 +3698,6 @@ page {
   min-width: 100%;
 }
 
-/* 确保列数较少时表格也能撑满宽度 */
 .table-container:not(.many-columns) {
   width: 100%;
   min-width: 100%;
@@ -3809,43 +3711,38 @@ page {
 
 .table-container:not(.many-columns) .table-cell {
   flex: 1;
-  /* 平均分配宽度 */
+  
   min-width: 80rpx;
 }
-
-/* 已删除自定义滚动指示器，使用原生滚动条 */
 
 .table-container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* 默认撑满整个宽度 */
+  
   min-width: 100%;
-  /* 确保至少撑满容器宽度 */
+  
   position: relative;
   white-space: nowrap;
   height: 100%;
-  /* 确保容器高度正确 */
+  
 }
 
-
-
-/* 当列数较多时，强制使用固定宽度触发滚动 */
 .table-container.many-columns {
   min-width: 100%;
-  /* 确保至少撑满容器宽度 */
+  
   width: max-content;
-  /* 根据内容自动调整宽度 */
+  
 }
 
 .table-container.many-columns .table-cell {
   flex: 0 0 140rpx;
-  /* 固定列宽，防止压缩 */
+  
 }
 
 .table-container.many-columns .date-cell {
   flex: 0 0 120rpx;
-  /* 日期列固定宽度 */
+  
 }
 
 .table-header {
@@ -3859,11 +3756,11 @@ page {
   z-index: 100;
   width: 100%;
   min-width: 100%;
-  /* 确保表头至少撑满容器宽度 */
+  
   white-space: nowrap;
-  /* 防止表头内容换行 */
+  
   min-height: 90rpx;
-  /* 确保表头有足够高度 */
+  
   box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
 }
 
@@ -3871,7 +3768,7 @@ page {
   background: #fff;
   position: relative;
   display: block;
-  /* 确保行垂直排列 */
+  
 }
 
 .table-row {
@@ -3879,9 +3776,9 @@ page {
   border-bottom: 2rpx solid rgba(255, 184, 77, 0.08);
   width: 100%;
   min-width: 100%;
-  /* 确保行至少撑满容器宽度 */
+  
   white-space: nowrap;
-  /* 防止行内容换行，确保触发横向滚动 */
+  
   position: relative;
   transform: translateZ(0);
   transition: all 0.2s ease;
@@ -3905,13 +3802,13 @@ page {
 
 .table-cell {
   flex: 1;
-  /* 默认自适应列宽，平均分配空间 */
+  
   min-width: 100rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* 内容居中 */
+  
   padding: 24rpx 12rpx;
   font-size: 26rpx;
   text-align: center;
@@ -3932,14 +3829,13 @@ page {
   padding: 20rpx 12rpx;
   border-right: 2rpx solid rgba(255, 255, 255, 0.4);
   min-height: 90rpx;
-  /* 确保表头单元格有足够高度 */
+  
   display: flex;
   align-items: center;
   justify-content: center;
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
 }
 
-/* 日期列固定在左侧不滚动 */
 .date-cell {
   flex: 0 0 120rpx;
   min-width: 120rpx;
@@ -3963,12 +3859,10 @@ page {
   box-shadow: 4rpx 0 12rpx rgba(255, 152, 0, 0.3);
 }
 
-/* 默认情况下，数据列使用自适应宽度 */
 .data-cell {
-  /* flex: 1 继承自 .table-cell */
+  
 }
 
-/* 多列情况下，数据列使用固定宽度 */
 .table-container.many-columns .data-cell {
   flex: 0 0 140rpx;
   min-width: 140rpx;
@@ -3978,7 +3872,7 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* 内容居中 */
+  
   width: 100%;
   gap: 6rpx;
 }
@@ -3989,7 +3883,7 @@ page {
   color: white;
   text-align: center;
   width: 100%;
-  /* 撑满整个列宽 */
+  
   line-height: 1.3;
 }
 
@@ -3998,7 +3892,7 @@ page {
   color: rgba(255, 255, 255, 0.9);
   text-align: center;
   width: 100%;
-  /* 撑满整个列宽 */
+  
   font-weight: 500;
   line-height: 1.2;
 }
@@ -4011,9 +3905,9 @@ page {
   word-break: break-all;
   line-height: 1.4;
   width: 100%;
-  /* 撑满整个列宽 */
+  
   display: block;
-  /* 确保作为块级元素占满宽度 */
+  
 }
 
 .abnormal-row {
@@ -4056,13 +3950,11 @@ page {
   color: #666;
 }
 
-/* 表格数据值样式 */
 .table-row .table-cell {
   color: #333;
   font-weight: 600;
 }
 
-/* 日期列数据行样式优化 */
 .table-row .date-cell {
   font-weight: 700;
   color: #FF8F00;
@@ -4077,7 +3969,6 @@ page {
   font-size: 20rpx;
   color: #666;
 }
-
 
 .legend-item {
   display: flex;
@@ -4101,9 +3992,6 @@ page {
   font-weight: 600;
 }
 
-/* ==================== 费用记录样式 ==================== */
-
-/* 费用统计卡片 */
 .expense-stats-card {
   margin: 24rpx 24rpx 16rpx;
   background: linear-gradient(135deg, #FFF8F0 0%, #FFE8D6 50%, #FFF5EB 100%);
@@ -4318,7 +4206,6 @@ page {
   width: 100%;
 }
 
-/* 费用记录每日汇总 */
 .expense-day-summary {
   padding: 28rpx;
 }
@@ -4383,7 +4270,6 @@ page {
   background-clip: text;
 }
 
-/* 费用记录列表 */
 .expense-records-list {
   display: flex;
   flex-direction: column;
@@ -4511,13 +4397,11 @@ page {
   color: #9E9E9E;
 }
 
-/* 费用记录档案页面适配 */
 .expense-archive {
   position: relative;
   padding-bottom: 40rpx;
 }
 
-/* 日历视图相关样式 */
 .calendar-tip {
   margin-top: 16rpx;
   display: flex;
@@ -4595,7 +4479,6 @@ page {
   padding: 20rpx;
 }
 
-/* 日历标记说明 */
 .calendar-legend {
   display: flex;
   justify-content: center;
@@ -4621,7 +4504,6 @@ page {
   background: #FF9800;
 }
 
-/* TDesign日历组件自定义样式 */
 .records-calendar .t-calendar__cell--active {
   background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
 }
@@ -4630,7 +4512,6 @@ page {
   background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
 }
 
-/* 为有记录的日期添加标记 */
 .records-calendar .t-calendar__cell[data-has-record="true"]::after {
   content: '';
   position: absolute;

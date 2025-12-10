@@ -1,26 +1,9 @@
-/**
- * 功能项自定义配置模块
- *
- * 核心逻辑：
- * 1. 配置存储：用户的功能项配置保存在云数据库 functionCustomConfig 集合中
- * 2. 配置加载：页面加载时从数据库读取配置，首次使用则用默认配置
- * 3. 配置更新：用户修改后保存到数据库，并立即刷新页面显示
- * 4. 疾病适配：淋巴瘤患者默认显示 LDH、EB病毒、巨细胞病毒
- *
- * 数据流：
- * - 保存：编辑弹窗 → 数据库 → 主页面刷新
- * - 加载：数据库 → 筛选可见项 → 主页面显示
- * - 刷新：等待 profileId 初始化 → 加载配置 → 显示
- */
-
 const functionCustomModule = require('./function-custom');
 const { getTodayLocalDate } = require('../../utils/util.js');
 
 const app = getApp()
 
 const db = wx.cloud.database()
-
-
 
 // 统一功能项配置生成器
 
@@ -68,8 +51,6 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
   ]
 
-
-
   if (withDataKey) {
 
     return baseConfig.map(item => ({
@@ -82,13 +63,9 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
   }
 
-
-
   return baseConfig
 
 }
-
-
 
 Page({
 
@@ -97,7 +74,6 @@ Page({
     // 页面加载状态
     isPageLoading: true,
     hasLoadedBefore: false, // 标记页面是否已加载过数据
-
 
     // 轮播图数据
     bannerList: [],
@@ -281,13 +257,7 @@ Page({
 
     },
 
-
-
-
-
     isLoggedIn: false,
-
-
 
     // 🎨 美化功能数据
 
@@ -311,13 +281,9 @@ Page({
 
     todayKidneyData: null, // 今日肾功能数据
 
-
-
     animatedProgress: 0, // 动画进度值
 
     progressAnimationTimer: null, // 动画定时器
-
-
 
     // 🔥 关键：选中日期的数据（修复数据不显示问题）
 
@@ -360,15 +326,11 @@ Page({
 
     },
 
-
-
     // ✨ 功能项自定义编辑
 
     functionEditMode: false, // 功能项编辑模式
 
     showFunctionCustomPopup: false, // 功能项自定义弹窗
-
-
 
     // 主页面显示的功能项配置（按用户排序）
     mainPageFunctions: [],
@@ -615,8 +577,6 @@ Page({
 
     ],
 
-
-
     // 拖拽相关
 
     dragStartIndex: -1, // 拖拽开始位置
@@ -628,8 +588,6 @@ Page({
     isDragging: false // 是否正在拖拽
 
   },
-
-
 
   // 获取今天的日期字符串（YYYY-MM-DD）
 
@@ -647,15 +605,11 @@ Page({
 
   },
 
-
-
   onLoad() {
 
     // 初始化新日历组件
 
     this.initNewCalendar()
-
-
 
     // 计算拖拽区域高度
 
@@ -664,7 +618,6 @@ Page({
     const itemCount = this.data.customFunctionList.length
 
     const dragAreaHeight = itemCount * itemHeight
-
 
     // 🔧 不在 onLoad 时设置默认配置，避免与 loadMainPageFunctionConfig 冲突导致闪烁
     // 配置将在 checkLoginAndLoadData -> loadMainPageFunctionConfig 中统一加载
@@ -679,8 +632,6 @@ Page({
 
     })
 
-
-
     // 🔧 延迟检查登录状态，确保app.js的onLaunch完成
 
     // 功能项配置在checkLoginAndLoadData中加载，确保有用户信息后再加载
@@ -690,8 +641,6 @@ Page({
       this.checkLoginAndLoadData()
 
     }, 500)
-
-
 
     // 🛡️ 终极保护：5秒后强制隐藏骨架屏（防止页面永久卡住）
 
@@ -876,9 +825,6 @@ Page({
     }
   },
 
-
-
-
   onShow() {
 
     // 如果已经加载过，立即隐藏骨架屏（避免每次onShow都显示骨架屏）
@@ -892,8 +838,6 @@ Page({
         selected: 1
       });
     }
-
-
 
     const app = getApp()
     const openid = app.getOpenIdIfLoggedIn()
@@ -961,8 +905,6 @@ Page({
       return
     }
 
-
-
     // 🔧 检查是否需要刷新数据（档案切换）
 
     if (app.globalData.needRefreshData) {
@@ -1010,15 +952,11 @@ Page({
       // 刷新日历事件标记（可能有新的记录）
       this.updateCalendarEvents()
 
-
-
       // 刷新今日待办和里程碑（可能在其他页面有变化）
 
       const openid = app.globalData.openid
 
       const profileId = app.globalData.currentProfile?.profileId
-
-
 
       if (openid && profileId) {
 
@@ -1027,8 +965,6 @@ Page({
         this.loadTodayTasks(openid, profileId)
 
       }
-
-
 
       // 启动数据同步检查器
 
@@ -1042,11 +978,6 @@ Page({
 
   },
 
-
-
-
-
-
   // 获取用户信息
 
   getUserInfo() {
@@ -1055,19 +986,11 @@ Page({
 
     const openid = app.getOpenIdIfLoggedIn();
 
-
-
-
-
-
     if (!openid) {
-
 
       return null;
 
     }
-
-
 
     // 统一使用 profileId 字段（与配置保存/读取一致）
 
@@ -1083,16 +1006,11 @@ Page({
 
     }
 
-
-
     if (!currentProfileId) {
-
 
       return null;
 
     }
-
-
 
     this.setData({
 
@@ -1102,13 +1020,9 @@ Page({
 
     });
 
-
-
     return { openid, currentProfileId };
 
   },
-
-
 
   // 检查登录状态并加载数据
 
@@ -1118,10 +1032,7 @@ Page({
 
     const openid = app.getOpenIdIfLoggedIn();
 
-
-
     if (!openid) {
-
 
       this.setData({
 
@@ -1141,26 +1052,17 @@ Page({
 
     }
 
-
-
     const userInfo = this.getUserInfo();
-
-
 
     if (userInfo) {
 
       const { openid, currentProfileId } = userInfo;
-
-
-
 
       this.setData({
 
         isLoggedIn: true
 
       });
-
-
 
       try {
 
@@ -1171,8 +1073,6 @@ Page({
         this.loadTodayTasks(openid, currentProfileId);
 
         this.loadMarkedDates(openid, currentProfileId); // 加载有记录标记的日期
-
-
 
         // 等待 profileId 初始化完成（最多等待1秒）
         // 🔧 Android兼容性：使用Promise.race确保不会永久阻塞
@@ -1204,18 +1104,13 @@ Page({
           this.setData({ mainPageFunctions: visibleDefaults });
         }
 
-
-
         // 立即加载今日数据 - loadDataForDate 会处理所有功能项数据
 
         this.updateCalendarEvents();
 
-
-
         // 立即加载当前选中日期的数据（初始为今天），优化用户体验
 
         const currentSelectedDate = this.data.selectedDate || this.formatDate(new Date());
-
 
         this.loadDataForDate(currentSelectedDate);
 
@@ -1238,14 +1133,11 @@ Page({
 
       }
 
-
-
     } else {
 
       // 已登录但档案信息未就绪，进行重试
 
       if (retryCount < 3) {
-
 
         setTimeout(() => {
 
@@ -1254,7 +1146,6 @@ Page({
         }, 500 * (retryCount + 1)); // 递增延迟
 
       } else {
-
 
         this.setData({
 
@@ -1274,18 +1165,13 @@ Page({
 
   },
 
-
-
   // 加载暖光里程碑
 
   loadKeyDates(openid, currentProfileId) {
 
-
-
     // 使用传递的参数，避免重复获取
 
     if (!openid || !currentProfileId) {
-
 
       this.setData({
 
@@ -1322,7 +1208,6 @@ Page({
         console.log('查询到的暖光里程碑数量:', res.data.length)
         console.log('查询结果:', res.data)
 
-
         const keyDates = res.data.map(item => {
 
           const statusObj = this.getStatusText(item.date)
@@ -1346,8 +1231,6 @@ Page({
           }
 
         })
-
-
 
         // 🔧 修复排序逻辑：未来日期在上方按剩余天数排序，过去日期在下方按日期排序
         const sortedKeyDates = keyDates.sort((a, b) => {
@@ -1386,8 +1269,6 @@ Page({
 
       .catch(err => {
 
-
-
         wx.showToast({
 
           title: '加载暖光里程碑失败',
@@ -1401,8 +1282,6 @@ Page({
       })
 
   },
-
-
 
   // 加载今日任务（修改为加载选中日期的任务）
 
@@ -1487,8 +1366,6 @@ Page({
 
   },
 
-
-
   // 初始化日历
 
   initCalendar() {
@@ -1517,25 +1394,15 @@ Page({
 
   },
 
-
-
   // 更新日历事件标记
 
   updateCalendarEvents() {
 
     if (!this.data.days || this.data.days.length === 0) {
 
-
-
       return
 
     }
-
-
-
-
-
-
 
     // 加载血常规数据
 
@@ -1544,8 +1411,6 @@ Page({
     const openid = app.getOpenIdIfLoggedIn()
 
     const currentProfileId = app.getCurrentProfileId()
-
-
 
     if (openid && currentProfileId) {
 
@@ -1563,15 +1428,11 @@ Page({
 
       const lastDay = new Date(currentYear, currentMonth, 0)
 
-
-
       // 格式化日期用于查询
 
       const startDate = this.formatDate(firstDay)
 
       const endDate = this.formatDate(lastDay)
-
-
 
       // 并行查询当月的血常规数据、用药记录和门诊记录
 
@@ -1869,39 +1730,15 @@ Page({
 
         const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, bloodOxygenRes, checkReportRes, waterRes, dietRes, temperatureRes, bodyMeasurementRes] = results;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // 创建血常规数据映射 - 只显示当前配置中的指标
 
         const bloodTestMap = {}
-
-
 
         // 使用更直接的方式：只显示数据库中实际存在的字段
 
         bloodTestRes.data.forEach(item => {
 
           const bloodData = {}
-
-
 
           // 1. 优先从customValues加载
 
@@ -1914,8 +1751,6 @@ Page({
             })
 
           }
-
-
 
           // 2. 从直接字段加载基础指标（不覆盖customValues）
 
@@ -1930,8 +1765,6 @@ Page({
             }
 
           })
-
-
 
           // 只保留有数据的指标（保留0值，因为0对某些检测是有意义的）
 
@@ -1951,8 +1784,6 @@ Page({
 
           })
 
-
-
           if (Object.keys(filteredBloodData).length > 0) {
 
             bloodTestMap[item.date] = filteredBloodData
@@ -1960,8 +1791,6 @@ Page({
           }
 
         })
-
-
 
         // 创建用药记录映射
 
@@ -1985,8 +1814,6 @@ Page({
 
             );
 
-
-
             if (activeMedicines.length > 0) {
 
               // 计算总的服药时段和已完成时段
@@ -1995,8 +1822,6 @@ Page({
 
               let completedTimeSlots = 0;
 
-
-
               // 为每个药品添加时间文本字段并计算完成状态
 
               const processedMedicines = activeMedicines.map(medicine => {
@@ -2004,8 +1829,6 @@ Page({
                 const timeSlots = medicine.timesPerDay ? medicine.timesPerDay.length : 1;
 
                 totalTimeSlots += timeSlots;
-
-
 
                 // 计算实际完成的时段数
 
@@ -2029,11 +1852,7 @@ Page({
 
                 }
 
-
-
                 completedTimeSlots += actualCompletedSlots;
-
-
 
                 return {
 
@@ -2048,8 +1867,6 @@ Page({
                 };
 
               });
-
-
 
               // 计算已服用的药品数量（至少服用了一个时段的药品）
 
@@ -2075,11 +1892,7 @@ Page({
 
               }).length;
 
-
-
               console.log('✅ 设置用药记录映射 for date:', item.date, '- activeMedicines:', activeMedicines.length, '- completedTimeSlots:', completedTimeSlots, '- totalTimeSlots:', totalTimeSlots)
-
-
 
               medicationMap[item.date] = {
 
@@ -2102,8 +1915,6 @@ Page({
           }
 
         });
-
-
 
         // 创建门诊记录映射
 
@@ -2147,8 +1958,6 @@ Page({
 
         });
 
-
-
         // 创建检查报告记录映射
 
         const checkReportMap = {}
@@ -2191,8 +2000,6 @@ Page({
 
         });
 
-
-
         // 创建尿量记录映射
 
         const urineMap = {}
@@ -2220,8 +2027,6 @@ Page({
           });
 
         });
-
-
 
         // 创建排便记录映射
 
@@ -2254,8 +2059,6 @@ Page({
           });
 
         });
-
-
 
         // 创建费用记录映射
 
@@ -2305,8 +2108,6 @@ Page({
 
         });
 
-
-
         // 创建EBV检测记录映射
 
         const ebvMap = {}
@@ -2335,8 +2136,6 @@ Page({
 
           }
 
-
-
           ebvMap[item.date].push({
 
             id: item._id,
@@ -2350,8 +2149,6 @@ Page({
           });
 
         });
-
-
 
         // 创建CMV检测记录映射
 
@@ -2395,10 +2192,6 @@ Page({
 
         });
 
-
-
-
-
         const ldhMap = {}
 
         ldhRes.data.forEach(item => {
@@ -2430,8 +2223,6 @@ Page({
           })
 
         })
-
-
 
         // 创建肝功能记录映射
 
@@ -2475,8 +2266,6 @@ Page({
 
         });
 
-
-
         // 创建肾功能记录映射
 
         const kidneyMap = {}
@@ -2519,8 +2308,6 @@ Page({
 
         });
 
-
-
         // 创建血糖数据映射
 
         const bloodSugarMap = {}
@@ -2542,8 +2329,6 @@ Page({
           });
 
         });
-
-
 
         // 创建血氧数据映射
 
@@ -2567,8 +2352,6 @@ Page({
 
         });
 
-
-
         // 创建饮水数据映射
 
         const waterMap = {}
@@ -2576,8 +2359,6 @@ Page({
         waterRes.data.forEach(item => {
 
           const waterData = {}
-
-
 
           // 从customValues加载自定义指标
 
@@ -2591,8 +2372,6 @@ Page({
 
           }
 
-
-
           // 加载基础指标（饮水量）
 
           if (item.water !== undefined && item.water !== null && item.water !== '') {
@@ -2600,8 +2379,6 @@ Page({
             waterData.water = item.water
 
           }
-
-
 
           // 只保留有数据的指标
 
@@ -2619,8 +2396,6 @@ Page({
 
           })
 
-
-
           if (Object.keys(filteredWaterData).length > 0) {
 
             waterMap[item.date] = filteredWaterData
@@ -2629,8 +2404,6 @@ Page({
 
         })
 
-
-
         // 创建饮食数据映射
 
         const dietMap = {}
@@ -2638,8 +2411,6 @@ Page({
         dietRes.data.forEach(item => {
 
           const dietData = {}
-
-
 
           // 从customValues加载自定义指标
 
@@ -2652,8 +2423,6 @@ Page({
             })
 
           }
-
-
 
           // 加载基础指标
 
@@ -2668,8 +2437,6 @@ Page({
             }
 
           })
-
-
 
           // 只保留有数据的指标
 
@@ -2687,8 +2454,6 @@ Page({
 
           })
 
-
-
           if (Object.keys(filteredDietData).length > 0) {
 
             dietMap[item.date] = filteredDietData
@@ -2697,8 +2462,6 @@ Page({
 
         })
 
-
-
         // 创建体温数据映射
 
         const temperatureMap = {}
@@ -2706,8 +2469,6 @@ Page({
         temperatureRes.data.forEach(item => {
 
           const tempData = {}
-
-
 
           // 从customValues加载自定义指标
 
@@ -2721,8 +2482,6 @@ Page({
 
           }
 
-
-
           // 加载基础指标（体温）
 
           if (item.temperature !== undefined && item.temperature !== null && item.temperature !== '') {
@@ -2730,8 +2489,6 @@ Page({
             tempData.temperature = item.temperature
 
           }
-
-
 
           // 只保留有数据的指标
 
@@ -2749,8 +2506,6 @@ Page({
 
           })
 
-
-
           if (Object.keys(filteredTempData).length > 0) {
 
             temperatureMap[item.date] = filteredTempData
@@ -2759,8 +2514,6 @@ Page({
 
         })
 
-
-
         // 创建身高体重数据映射
 
         const bodyMeasurementMap = {}
@@ -2768,8 +2521,6 @@ Page({
         bodyMeasurementRes.data.forEach(item => {
 
           const bodyData = {}
-
-
 
           // 从customValues加载自定义指标
 
@@ -2782,8 +2533,6 @@ Page({
             })
 
           }
-
-
 
           // 加载基础指标
 
@@ -2798,8 +2547,6 @@ Page({
             }
 
           })
-
-
 
           // 只保留有数据的指标
 
@@ -2817,8 +2564,6 @@ Page({
 
           })
 
-
-
           if (Object.keys(filteredBodyData).length > 0) {
 
             bodyMeasurementMap[item.date] = filteredBodyData
@@ -2827,8 +2572,6 @@ Page({
 
         })
 
-
-
         // 更新日历（包含所有记录数据）
 
         this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap, bloodOxygenMap, waterMap, dietMap, temperatureMap, bodyMeasurementMap)
@@ -2836,8 +2579,6 @@ Page({
       })
 
         .catch(err => {
-
-
 
           this.updateCalendarWithoutBloodData()
 
@@ -2853,8 +2594,6 @@ Page({
 
   },
 
-
-
   // 获取当月所有日期的实际配置（简化逻辑）
 
   async getCurrentBloodTestConfig() {
@@ -2864,8 +2603,6 @@ Page({
     const openid = app.getOpenIdIfLoggedIn()
 
     const currentProfileId = app.getCurrentProfileId()
-
-
 
     if (!openid || !currentProfileId) {
 
@@ -2883,13 +2620,9 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
-
-
 
       // 获取当月所有血常规配置
 
@@ -2909,8 +2642,6 @@ Page({
 
       const monthEnd = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`
 
-
-
       const configRes = await db.collection('userIndicatorConfig')
 
         .where({
@@ -2925,8 +2656,6 @@ Page({
 
         .get()
 
-
-
       // 合并所有配置：只显示在任何一天被配置为显示的指标
 
       const config = {
@@ -2940,8 +2669,6 @@ Page({
         plt: true
 
       }
-
-
 
       // 收集所有配置过的指标
 
@@ -2963,13 +2690,9 @@ Page({
 
       })
 
-
-
       return config
 
     } catch (err) {
-
-
 
       return {
 
@@ -2986,8 +2709,6 @@ Page({
     }
 
   },
-
-
 
   // 更新日历（包含所有数据）
 
@@ -3081,11 +2802,7 @@ Page({
 
       const bodyMeasurementData = bodyMeasurementMap[day.date] || null
 
-
-
       const hasEvent = hasTask || hasKeyDate || bloodData || medicationData || clinicData || checkReportData || urineData || stoolData || expenseData || ebvData || cmvData || liverData || kidneyData || ldhData || bloodSugarData || bloodOxygenData || waterData || dietData || temperatureData || bodyMeasurementData;
-
-
 
       return {
 
@@ -3137,8 +2854,6 @@ Page({
 
     });
 
-
-
     this.setData({
 
       days
@@ -3147,8 +2862,6 @@ Page({
 
   },
 
-
-
   // 更新日历（带血常规数据）
 
   updateCalendarWithBloodData(bloodTestMap) {
@@ -3156,8 +2869,6 @@ Page({
     const days = this.data.days.map(day => {
 
       if (!day.date) return day;
-
-
 
       // 检查是否有暖光里程碑
 
@@ -3171,11 +2882,7 @@ Page({
 
       const bloodData = bloodTestMap[day.date] || null;
 
-
-
       const hasEvent = hasTask || hasKeyDate || bloodData;
-
-
 
       return {
 
@@ -3193,8 +2900,6 @@ Page({
 
     });
 
-
-
     this.setData({
 
       days
@@ -3202,8 +2907,6 @@ Page({
     });
 
   },
-
-
 
   // 更新日历（使用所有血常规数据，兜底方案）
 
@@ -3233,15 +2936,11 @@ Page({
 
       }
 
-
-
       if (item.customValues) {
 
         Object.assign(bloodData, item.customValues)
 
       }
-
-
 
       Object.keys(item).forEach(key => {
 
@@ -3252,8 +2951,6 @@ Page({
         }
 
       })
-
-
 
       const filteredBloodData = {}
 
@@ -3267,8 +2964,6 @@ Page({
 
       })
 
-
-
       if (Object.keys(filteredBloodData).length > 0) {
 
         bloodTestMap[item.date] = filteredBloodData
@@ -3277,13 +2972,9 @@ Page({
 
     })
 
-
-
     this.updateCalendarWithBloodData(bloodTestMap)
 
   },
-
-
 
   // 不包含血常规数据的日历更新
 
@@ -3293,8 +2984,6 @@ Page({
 
       if (!day.date) return day;
 
-
-
       // 检查是否有暖光里程碑
 
       const hasKeyDate = this.data.keyDates && this.data.keyDates.some(item => item.date === day.date);
@@ -3303,11 +2992,7 @@ Page({
 
       const hasTask = this.data.todayTasks && this.data.todayTasks.some(item => item.date === day.date);
 
-
-
       const hasEvent = hasTask || hasKeyDate;
-
-
 
       return {
 
@@ -3323,8 +3008,6 @@ Page({
 
     });
 
-
-
     this.setData({
 
       days
@@ -3332,8 +3015,6 @@ Page({
     });
 
   },
-
-
 
   // 生成日历数据
 
@@ -3348,8 +3029,6 @@ Page({
     const firstDayWeek = firstDay.getDay();
 
     const lastDate = lastDay.getDate();
-
-
 
     // 填充上月剩余日期
 
@@ -3366,8 +3045,6 @@ Page({
       });
 
     }
-
-
 
     // 填充当月日期
 
@@ -3393,13 +3070,9 @@ Page({
 
     }
 
-
-
     return days;
 
   },
-
-
 
   // 获取指定日期的事件
 
@@ -3410,10 +3083,6 @@ Page({
     return [];
 
   },
-
-
-
-
 
   // 处理血常规数据，添加指标名称
 
@@ -3427,8 +3096,6 @@ Page({
 
     const processedData = [];
 
-
-
     // 获取自定义指标名称和当前选中的指标配置
 
     const app = getApp();
@@ -3437,13 +3104,9 @@ Page({
 
     const currentProfileId = app.getCurrentProfileId();
 
-
-
     let customIndicatorNames = {};
 
     let selectedIndicators = {};
-
-
 
     if (openid && currentProfileId) {
 
@@ -3463,8 +3126,6 @@ Page({
 
           .get();
 
-
-
         res.data.forEach(item => {
 
           customIndicatorNames[item.indicatorId] = item.name;
@@ -3473,13 +3134,9 @@ Page({
 
       } catch (err) {
 
-
-
       }
 
     }
-
-
 
     // 转换数据格式，添加名称
 
@@ -3488,8 +3145,6 @@ Page({
       const value = rawBloodData[indicatorId];
 
       let name = indicatorId;
-
-
 
       // 获取指标名称
 
@@ -3507,8 +3162,6 @@ Page({
 
       }
 
-
-
       processedData.push({
 
         id: indicatorId,
@@ -3521,8 +3174,6 @@ Page({
 
     });
 
-
-
     // 按照重要性排序：基础指标在前，自定义指标在后
 
     const orderPriority = ['wbc', 'neut', 'hgb', 'plt', 'rbc', 'hct', 'lymph', 'mono'];
@@ -3532,8 +3183,6 @@ Page({
       const aIndex = orderPriority.indexOf(a.id);
 
       const bIndex = orderPriority.indexOf(b.id);
-
-
 
       if (aIndex !== -1 && bIndex !== -1) {
 
@@ -3549,13 +3198,9 @@ Page({
 
     });
 
-
-
     return processedData;
 
   },
-
-
 
   // 打开添加事项弹窗
 
@@ -3575,8 +3220,6 @@ Page({
 
   },
 
-
-
   // 关闭弹窗
 
   onPopupClose() {
@@ -3591,8 +3234,6 @@ Page({
 
   },
 
-
-
   // 输入框内容变化
 
   onTaskInput(e) {
@@ -3604,8 +3245,6 @@ Page({
     });
 
   },
-
-
 
   // 确认添加事项
 
@@ -3631,8 +3270,6 @@ Page({
 
     }
 
-
-
     const app = getApp()
 
     const openid = app.getOpenIdIfLoggedIn()
@@ -3651,13 +3288,9 @@ Page({
 
     }
 
-
-
     const today = this.formatDate(new Date())
 
     const db = wx.cloud.database()
-
-
 
     const currentProfileId = app.getCurrentProfileId()
 
@@ -3675,8 +3308,6 @@ Page({
 
     }
 
-
-
     wx.showLoading({
 
       title: '添加中...',
@@ -3684,8 +3315,6 @@ Page({
       mask: true
 
     })
-
-
 
     try {
 
@@ -3709,12 +3338,6 @@ Page({
 
       })
 
-
-
-
-
-
-
       wx.showToast({
 
         title: '添加成功',
@@ -3722,8 +3345,6 @@ Page({
         icon: 'success'
 
       })
-
-
 
       this.setData({
 
@@ -3733,15 +3354,11 @@ Page({
 
       })
 
-
-
       // 重新加载今日待办
 
       this.loadTodayTasks(openid)
 
     } catch (err) {
-
-
 
       wx.showToast({
 
@@ -3759,8 +3376,6 @@ Page({
 
   },
 
-
-
   // 切换任务状态
 
   async toggleTask(e) {
@@ -3775,15 +3390,11 @@ Page({
 
     if (!task) return
 
-
-
     const app = getApp()
 
     const db = wx.cloud.database()
 
     const openid = app.getOpenIdIfLoggedIn()
-
-
 
     wx.showLoading({
 
@@ -3792,8 +3403,6 @@ Page({
       mask: true
 
     })
-
-
 
     try {
 
@@ -3809,8 +3418,6 @@ Page({
 
       })
 
-
-
       wx.showToast({
 
         title: task.completed ? '未完成' : '已完成',
@@ -3819,13 +3426,9 @@ Page({
 
       })
 
-
-
       this.loadTodayTasks(openid)
 
     } catch (err) {
-
-
 
       wx.showToast({
 
@@ -3843,8 +3446,6 @@ Page({
 
   },
 
-
-
   // 在弹窗中切换分时段服药状态
 
   async toggleTimeSlotInPopup(e) {
@@ -3857,8 +3458,6 @@ Page({
 
     } = e.currentTarget.dataset;
 
-
-
     // 获取用户信息
 
     const app = getApp();
@@ -3866,8 +3465,6 @@ Page({
     const openid = app.getOpenIdIfLoggedIn();
 
     const currentProfileId = app.getCurrentProfileId();
-
-
 
     if (!openid || !currentProfileId) {
 
@@ -3883,8 +3480,6 @@ Page({
 
     }
 
-
-
     wx.showLoading({
 
       title: '更新中...',
@@ -3893,13 +3488,9 @@ Page({
 
     });
 
-
-
     try {
 
       const db = wx.cloud.database();
-
-
 
       // 查找包含该药品的记录
 
@@ -3919,19 +3510,13 @@ Page({
 
         .get();
 
-
-
       if (res.data.length === 0) {
 
         throw new Error('未找到用药记录');
 
       }
 
-
-
       const record = res.data[0];
-
-
 
       // 更新分时段状态
 
@@ -3947,15 +3532,11 @@ Page({
 
           newTimeSlotStatus[timeSlot] = !newTimeSlotStatus[timeSlot];
 
-
-
           // 检查是否全部时段都已服用
 
           const allTimeSlots = m.timesPerDay || [];
 
           const allTaken = allTimeSlots.every(slot => newTimeSlotStatus[slot] === true);
-
-
 
           return {
 
@@ -3972,8 +3553,6 @@ Page({
         return m;
 
       });
-
-
 
       // 更新数据库
 
@@ -3992,8 +3571,6 @@ Page({
           }
 
         });
-
-
 
       // 更新弹窗中的数据
 
@@ -4015,23 +3592,17 @@ Page({
 
       };
 
-
-
       // 重新计算进度
 
       let totalTimeSlots = 0;
 
       let completedTimeSlots = 0;
 
-
-
       updatedMedicines.forEach(medicine => {
 
         const timeSlots = medicine.timesPerDay ? medicine.timesPerDay.length : 1;
 
         totalTimeSlots += timeSlots;
-
-
 
         if (medicine.timesPerDay && medicine.timesPerDay.length > 0 && medicine.timeSlotStatus) {
 
@@ -4048,8 +3619,6 @@ Page({
         }
 
       });
-
-
 
       // 计算已服用的药品数量（至少服用了一个时段的药品）
 
@@ -4075,8 +3644,6 @@ Page({
 
       }).length;
 
-
-
       updatedMedicationData.taken = takenCount;
 
       updatedMedicationData.totalTimeSlots = totalTimeSlots;
@@ -4085,21 +3652,15 @@ Page({
 
       updatedMedicationData.isFullyCompleted = completedTimeSlots === totalTimeSlots && totalTimeSlots > 0;
 
-
-
       this.setData({
 
         'currentDateDetail.medicationData': updatedMedicationData
 
       });
 
-
-
       // 重新加载日历数据
 
       this.updateCalendarEvents();
-
-
 
       if (this.data.currentDateDetail.date === this.getTodayString()) {
 
@@ -4113,8 +3674,6 @@ Page({
 
       }
 
-
-
       wx.showToast({
 
         title: '更新成功',
@@ -4123,11 +3682,7 @@ Page({
 
       });
 
-
-
     } catch (err) {
-
-
 
       wx.showToast({
 
@@ -4145,8 +3700,6 @@ Page({
 
   },
 
-
-
   // 弹窗中切换任务状态
 
   async toggleTaskInPopup(e) {
@@ -4161,15 +3714,11 @@ Page({
 
     if (!task) return
 
-
-
     const app = getApp()
 
     const db = wx.cloud.database()
 
     const openid = app.getOpenIdIfLoggedIn()
-
-
 
     wx.showLoading({
 
@@ -4178,8 +3727,6 @@ Page({
       mask: true
 
     })
-
-
 
     try {
 
@@ -4195,8 +3742,6 @@ Page({
 
       })
 
-
-
       wx.showToast({
 
         title: task.completed ? '未完成' : '已完成',
@@ -4206,8 +3751,6 @@ Page({
         duration: 1500
 
       })
-
-
 
       // 更新弹窗中的任务状态
 
@@ -4229,31 +3772,21 @@ Page({
 
       })
 
-
-
       this.setData({
 
         'currentDateDetail.tasks': updatedTasks
 
       })
 
-
-
       // 同时更新今日待办列表（如果是今天的任务）
 
       this.loadTodayTasks(openid)
-
-
 
       // 更新日历事件标记
 
       this.updateCalendarEvents()
 
-
-
     } catch (err) {
-
-
 
       wx.showToast({
 
@@ -4270,8 +3803,6 @@ Page({
     }
 
   },
-
-
 
   // 处理滑动删除
 
@@ -4291,8 +3822,6 @@ Page({
 
     } = e.detail
 
-
-
     if (position === 'left') {
 
       wx.showModal({
@@ -4311,8 +3840,6 @@ Page({
 
             const openid = app.getOpenIdIfLoggedIn()
 
-
-
             wx.showLoading({
 
               title: '删除中...',
@@ -4320,8 +3847,6 @@ Page({
               mask: true
 
             })
-
-
 
             try {
 
@@ -4340,8 +3865,6 @@ Page({
               this.updateCalendarEvents()
 
             } catch (err) {
-
-
 
               wx.showToast({
 
@@ -4369,8 +3892,6 @@ Page({
 
   },
 
-
-
   // 页面导航
 
   navigateToKeyDate() {
@@ -4393,8 +3914,6 @@ Page({
 
   },
 
-
-
   navigateToMedicine() {
 
     const selectedDate = this.data.selectedDate
@@ -4406,8 +3925,6 @@ Page({
     });
 
   },
-
-
 
   navigateToClinic() {
 
@@ -4421,8 +3938,6 @@ Page({
 
   },
 
-
-
   navigateToCheckReport() {
 
     const selectedDate = this.data.selectedDate
@@ -4434,8 +3949,6 @@ Page({
     });
 
   },
-
-
 
   navigateToUrine() {
 
@@ -4449,8 +3962,6 @@ Page({
 
   },
 
-
-
   navigateToStool() {
 
     const selectedDate = this.data.selectedDate
@@ -4462,8 +3973,6 @@ Page({
     })
 
   },
-
-
 
   navigateToExpense() {
 
@@ -4477,8 +3986,6 @@ Page({
 
   },
 
-
-
   navigateToEbv() {
 
     const selectedDate = this.data.selectedDate
@@ -4490,8 +3997,6 @@ Page({
     })
 
   },
-
-
 
   navigateToCmv() {
 
@@ -4505,8 +4010,6 @@ Page({
 
   },
 
-
-
   navigateToLdh() {
 
     const selectedDate = this.data.selectedDate
@@ -4519,8 +4022,6 @@ Page({
 
   },
 
-
-
   navigateToBloodSugar() {
 
     const selectedDate = this.data.selectedDate
@@ -4532,8 +4033,6 @@ Page({
     })
 
   },
-
-
 
   navigateToBloodOxygen() {
 
@@ -4607,8 +4106,6 @@ Page({
 
   },
 
-
-
   navigateToOrgan() {
 
     const selectedDate = this.data.selectedDate
@@ -4620,8 +4117,6 @@ Page({
     })
 
   },
-
-
 
   navigateToBloodTest() {
 
@@ -4635,8 +4130,6 @@ Page({
 
   },
 
-
-
   navigateToLiverFunction() {
 
     const selectedDate = this.data.selectedDate
@@ -4649,8 +4142,6 @@ Page({
 
   },
 
-
-
   navigateToKidneyFunction() {
 
     const selectedDate = this.data.selectedDate
@@ -4662,8 +4153,6 @@ Page({
     });
 
   },
-
-
 
   showKeyDateDetail() {
 
@@ -4684,8 +4173,6 @@ Page({
     // });
 
   },
-
-
 
   // 加载血液数据、移植日期、复查日期（云端）
 
@@ -4735,13 +4222,9 @@ Page({
 
     } catch (err) {
 
-
-
     }
 
   },
-
-
 
   formatDate(date) {
 
@@ -4754,8 +4237,6 @@ Page({
     return `${year}-${month}-${day}`;
 
   },
-
-
 
   // 格式化日期显示 - 用于里程碑卡片
 
@@ -4773,8 +4254,6 @@ Page({
 
   },
 
-
-
   // 格式化短日期 - 显示月日格式
 
   formatDateShort(dateString) {
@@ -4789,8 +4268,6 @@ Page({
 
   },
 
-
-
   showDatePicker() {
 
     this.setData({
@@ -4800,8 +4277,6 @@ Page({
     });
 
   },
-
-
 
   onDateConfirm(e) {
 
@@ -4815,8 +4290,6 @@ Page({
 
   },
 
-
-
   onDateCancel() {
 
     this.setData({
@@ -4827,8 +4300,6 @@ Page({
 
   },
 
-
-
   showTransplantDatePicker() {
 
     this.setData({
@@ -4838,8 +4309,6 @@ Page({
     });
 
   },
-
-
 
   // 保存移植日期到云端
 
@@ -4907,8 +4376,6 @@ Page({
 
   },
 
-
-
   onTransplantDateCancel() {
 
     this.setData({
@@ -4919,8 +4386,6 @@ Page({
 
   },
 
-
-
   showCheckupDatePicker() {
 
     this.setData({
@@ -4930,8 +4395,6 @@ Page({
     });
 
   },
-
-
 
   // 保存复查日期到云端
 
@@ -4995,8 +4458,6 @@ Page({
 
   },
 
-
-
   onCheckupDateCancel() {
 
     this.setData({
@@ -5006,8 +4467,6 @@ Page({
     });
 
   },
-
-
 
   onWbcChange(e) {
 
@@ -5019,8 +4478,6 @@ Page({
 
   },
 
-
-
   onHgbChange(e) {
 
     this.setData({
@@ -5030,8 +4487,6 @@ Page({
     });
 
   },
-
-
 
   onPltChange(e) {
 
@@ -5043,8 +4498,6 @@ Page({
 
   },
 
-
-
   onNeutChange(e) {
 
     this.setData({
@@ -5054,8 +4507,6 @@ Page({
     });
 
   },
-
-
 
   onUploadSuccess(e) {
 
@@ -5074,8 +4525,6 @@ Page({
     // TODO: 调用图片识别API
 
   },
-
-
 
   onUploadRemove(e) {
 
@@ -5097,15 +4546,11 @@ Page({
 
   },
 
-
-
   onSubmit() {
 
     // 保存数据到本地存储
 
     wx.setStorageSync('bloodData', this.data.bloodData);
-
-
 
     Toast({
 
@@ -5121,8 +4566,6 @@ Page({
 
   },
 
-
-
   calculateDaysSinceTransplant() {
 
     if (!this.data.transplantDate) return 0;
@@ -5136,8 +4579,6 @@ Page({
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   },
-
-
 
   // 长按任务项
 
@@ -5161,8 +4602,6 @@ Page({
 
           const openid = app.getOpenIdIfLoggedIn()
 
-
-
           wx.showLoading({
 
             title: '删除中...',
@@ -5170,8 +4609,6 @@ Page({
             mask: true
 
           })
-
-
 
           try {
 
@@ -5190,8 +4627,6 @@ Page({
             this.updateCalendarEvents()
 
           } catch (err) {
-
-
 
             wx.showToast({
 
@@ -5215,8 +4650,6 @@ Page({
 
   },
 
-
-
   // 检查登录状态并执行回调
 
   checkLoginAndExecute(callback, actionName = '此功能') {
@@ -5224,8 +4657,6 @@ Page({
     const app = getApp()
 
     const openid = app.getOpenIdIfLoggedIn()
-
-
 
     if (openid) {
 
@@ -5236,8 +4667,6 @@ Page({
       return
 
     }
-
-
 
     // 未登录，跳转到我的页面进行登录
 
@@ -5261,8 +4690,6 @@ Page({
 
   },
 
-
-
   // 显示暖光里程碑设置弹窗
 
   showKeyDatePopup() {
@@ -5274,8 +4701,6 @@ Page({
       const openid = app.getOpenIdIfLoggedIn();
 
       const currentProfileId = app.getCurrentProfileId();
-
-
 
       // 显示弹窗前先加载最新数据
 
@@ -5303,8 +4728,6 @@ Page({
 
   },
 
-
-
   // 关闭暖光里程碑设置弹窗
 
   closeKeyDatePopup(e) {
@@ -5330,8 +4753,6 @@ Page({
     }
 
   },
-
-
 
   // 显示添加/编辑暖光里程碑弹窗
 
@@ -5362,8 +4783,6 @@ Page({
 
   },
 
-
-
   // 编辑暖光里程碑
 
   editKeyDate(e) {
@@ -5371,8 +4790,6 @@ Page({
     const id = e.currentTarget.dataset.id;
 
     const keyDate = this.data.keyDates.find(item => item.id === id);
-
-
 
     if (!keyDate) {
 
@@ -5387,11 +4804,6 @@ Page({
       return;
 
     }
-
-
-
-
-
 
     // 设置编辑状态和数据
 
@@ -5425,8 +4837,6 @@ Page({
 
   },
 
-
-
   // 删除暖光里程碑
 
   deleteKeyDate(e) {
@@ -5434,8 +4844,6 @@ Page({
     const id = e.currentTarget.dataset.id;
 
     const keyDate = this.data.keyDates.find(item => item.id === id);
-
-
 
     if (!keyDate) {
 
@@ -5450,8 +4858,6 @@ Page({
       return;
 
     }
-
-
 
     wx.showModal({
 
@@ -5473,8 +4879,6 @@ Page({
 
   },
 
-
-
   // 执行删除暖光里程碑
 
   async doDeleteKeyDate(id) {
@@ -5482,8 +4886,6 @@ Page({
     const app = getApp();
 
     const openid = app.getOpenIdIfLoggedIn();
-
-
 
     if (!openid) {
 
@@ -5499,8 +4901,6 @@ Page({
 
     }
 
-
-
     wx.showLoading({
 
       title: '删除中...',
@@ -5509,15 +4909,11 @@ Page({
 
     });
 
-
-
     try {
 
       const db = wx.cloud.database();
 
       await db.collection('keyDates').doc(id).remove();
-
-
 
       wx.showToast({
 
@@ -5527,8 +4923,6 @@ Page({
 
       });
 
-
-
       // 重新加载数据
 
       const currentProfileId = app.getCurrentProfileId();
@@ -5536,8 +4930,6 @@ Page({
       this.loadKeyDates(openid, currentProfileId);
 
     } catch (err) {
-
-
 
       wx.showToast({
 
@@ -5554,8 +4946,6 @@ Page({
     }
 
   },
-
-
 
   // 关闭添加/编辑暖光里程碑弹窗
 
@@ -5621,8 +5011,6 @@ Page({
 
   },
 
-
-
   // 从编辑弹窗返回到总编辑列表
 
   backToKeyDateList() {
@@ -5648,8 +5036,6 @@ Page({
     });
 
   },
-
-
 
   // 暖光里程碑名称输入（保持兼容性）
 
@@ -5681,8 +5067,6 @@ Page({
     });
   },
 
-
-
   // 暖光里程碑日期选择
 
   onKeyDateChange(e) {
@@ -5694,8 +5078,6 @@ Page({
     });
 
   },
-
-
 
   // 保存暖光里程碑
 
@@ -5718,8 +5100,6 @@ Page({
       return
 
     }
-
-
 
     const currentProfileId = app.getCurrentProfileId()
 
@@ -5744,11 +5124,7 @@ Page({
 
     }
 
-
-
     const db = wx.cloud.database()
-
-
 
     const {
 
@@ -5757,8 +5133,6 @@ Page({
       editingKeyDate
 
     } = this.data
-
-
 
     if ((!keyDateForm.title && !keyDateForm.name) || !keyDateForm.date) {
 
@@ -5774,8 +5148,6 @@ Page({
 
     }
 
-
-
     wx.showLoading({
 
       title: editingKeyDate ? '更新中...' : '保存中...',
@@ -5783,8 +5155,6 @@ Page({
       mask: true
 
     })
-
-
 
     try {
 
@@ -5805,8 +5175,6 @@ Page({
       console.log('profileId 值:', data.profileId)
       console.log('profileId 类型:', typeof data.profileId)
 
-
-
       let res;
 
       if (editingKeyDate) {
@@ -5821,8 +5189,6 @@ Page({
 
         })
 
-
-
       } else {
 
         // 新增模式，添加数据
@@ -5835,11 +5201,7 @@ Page({
 
         })
 
-
-
       }
-
-
 
       wx.showToast({
 
@@ -5848,8 +5210,6 @@ Page({
         icon: 'success'
 
       })
-
-
 
       // 先关闭弹窗并清空表单
 
@@ -5873,8 +5233,6 @@ Page({
 
       })
 
-
-
       // 延迟重新加载数据，确保弹窗已关闭
 
       setTimeout(() => {
@@ -5886,8 +5244,6 @@ Page({
       }, 100)
 
     } catch (err) {
-
-
 
       wx.showToast({
 
@@ -5904,8 +5260,6 @@ Page({
     }
 
   },
-
-
 
   // 暖光里程碑 info 图标点击，展示所有同日暖光里程碑
 
@@ -5944,8 +5298,6 @@ Page({
     });
 
   },
-
-
 
   // 关闭日期详情弹窗
 
@@ -5987,8 +5339,6 @@ Page({
 
   },
 
-
-
   // 计算使用天数
 
   calculateUsageDays() {
@@ -5996,8 +5346,6 @@ Page({
     const firstUseDate = this.data.firstUseDate;
 
     if (!firstUseDate) return 0;
-
-
 
     const today = new Date();
 
@@ -6010,8 +5358,6 @@ Page({
     return diffDays;
 
   },
-
-
 
   // 计算天数
 
@@ -6031,8 +5377,6 @@ Page({
 
   },
 
-
-
   // 获取状态文本
 
   getStatusText(date) {
@@ -6048,11 +5392,6 @@ Page({
     const days = Math.floor((targetDate - today) / (1000 * 60 * 60 * 24))
 
     const absDays = Math.abs(days)
-
-
-
-
-
 
     // 当天的情况特殊处理
 
@@ -6074,11 +5413,7 @@ Page({
 
     }
 
-
-
     let daysText = ''
-
-
 
     if (absDays >= 365) {
 
@@ -6101,8 +5436,6 @@ Page({
       daysText = `${absDays}天`
 
     }
-
-
 
     // 分解为前缀、数字、后缀
 
@@ -6142,8 +5475,6 @@ Page({
 
   },
 
-
-
   // 显示添加待办弹窗
 
   showAddTaskPopup() {
@@ -6163,8 +5494,6 @@ Page({
     });
 
   },
-
-
 
   // 关闭添加待办弹窗
 
@@ -6186,8 +5515,6 @@ Page({
 
   },
 
-
-
   // 待办名称输入
 
   onTaskNameInput(e) {
@@ -6199,8 +5526,6 @@ Page({
     });
 
   },
-
-
 
   // 待办时间选择
 
@@ -6214,13 +5539,9 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次血常规数据 - 美化功能
 
   async loadTodayBloodData() {
-
-
 
     const app = getApp()
 
@@ -6228,11 +5549,7 @@ Page({
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -6243,8 +5560,6 @@ Page({
       return
 
     }
-
-
 
     try {
 
@@ -6268,15 +5583,9 @@ Page({
 
         .get()
 
-
-
       if (res.data.length > 0) {
 
         const bloodData = res.data[0]
-
-
-
-
 
         this.setData({
 
@@ -6284,13 +5593,7 @@ Page({
 
         })
 
-
-
-
-
       } else {
-
-
 
         this.setData({
 
@@ -6300,11 +5603,7 @@ Page({
 
       }
 
-
-
     } catch (err) {
-
-
 
       this.setData({
 
@@ -6316,23 +5615,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次用药数据 - 美化功能
 
   async loadTodayMedicationData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -6344,19 +5635,11 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
 
       const today = this.getTodayString()
-
-
-
-
-
-
 
       // 查询今日用药记录
 
@@ -6374,31 +5657,17 @@ Page({
 
         .get()
 
-
-
-
-
-
-
       if (res.data.length > 0) {
 
         const medicationRecord = res.data[0]
 
         const recordDate = today
 
-
-
         if (medicationRecord.medicines && medicationRecord.medicines.length > 0) {
 
           // 所有药品都应该是今日有效的（因为数据库设计已经确保了这一点）
 
           const activeMedicines = medicationRecord.medicines;
-
-
-
-
-
-
 
           if (activeMedicines.length > 0) {
 
@@ -6414,8 +5683,6 @@ Page({
 
             let nextMedicationTime = '';
 
-
-
             // 计算总时段和完成时段
 
             activeMedicines.forEach(medicine => {
@@ -6423,14 +5690,6 @@ Page({
               const timeSlots = medicine.timesPerDay ? medicine.timesPerDay.length : 1;
 
               totalTimeSlots += timeSlots;
-
-
-
-
-
-
-
-
 
               if (medicine.timesPerDay && medicine.timesPerDay.length > 0 && medicine.timeSlotStatus) {
 
@@ -6441,10 +5700,6 @@ Page({
                 ).length;
 
                 completedTimeSlots += completedSlotsCount;
-
-
-
-
 
                 // 查找最近一次服药时间（已完成的最晚时段）
 
@@ -6465,8 +5720,6 @@ Page({
                   }
 
                 }
-
-
 
                 // 查找下次服药时间（未完成的最早时段）
 
@@ -6496,8 +5749,6 @@ Page({
 
             });
 
-
-
             // 计算已服用的药品数量
 
             const takenCount = activeMedicines.filter(medicine => {
@@ -6518,8 +5769,6 @@ Page({
 
             }).length;
 
-
-
             // 计算连续服药天数（查询最近7天的记录作为示例）
 
             try {
@@ -6529,8 +5778,6 @@ Page({
               weekAgo.setDate(weekAgo.getDate() - 7);
 
               const weekAgoStr = this.formatDate(weekAgo);
-
-
 
               const recentRes = await db.collection('medications')
 
@@ -6548,15 +5795,11 @@ Page({
 
                 .get();
 
-
-
               // 从今天开始往前数连续天数
 
               let consecutive = 0;
 
               const currentDate = new Date();
-
-
 
               for (let i = 0; i < 7; i++) {
 
@@ -6565,8 +5808,6 @@ Page({
                 checkDate.setDate(checkDate.getDate() - i);
 
                 const checkDateStr = this.formatDate(checkDate);
-
-
 
                 const dayRecord = recentRes.data.find(record => record.date === checkDateStr);
 
@@ -6592,8 +5833,6 @@ Page({
 
                   });
 
-
-
                   if (hasAnyMedicationTaken) {
 
                     consecutive++;
@@ -6612,19 +5851,13 @@ Page({
 
               }
 
-
-
               continuousDays = consecutive;
 
             } catch (err) {
 
-
-
               continuousDays = 0;
 
             }
-
-
 
             const medicationData = {
 
@@ -6652,16 +5885,6 @@ Page({
 
             };
 
-
-
-
-
-
-
-
-
-
-
             this.setData({
 
               latestMedicationData: medicationData
@@ -6684,11 +5907,7 @@ Page({
 
       }
 
-
-
       // 没有今日用药记录
-
-
 
       this.setData({
 
@@ -6698,11 +5917,7 @@ Page({
 
       });
 
-
-
     } catch (err) {
-
-
 
       this.setData({
 
@@ -6713,8 +5928,6 @@ Page({
     }
 
   },
-
-
 
   // 辅助函数：比较时段时间
 
@@ -6736,8 +5949,6 @@ Page({
 
   },
 
-
-
   animateProgress(targetProgress) {
 
     // 清除之前的动画
@@ -6747,8 +5958,6 @@ Page({
       clearInterval(this.data.progressAnimationTimer);
 
     }
-
-
 
     const startProgress = this.data.animatedProgress || 0;
 
@@ -6760,8 +5969,6 @@ Page({
 
     let currentFrame = 0;
 
-
-
     // 使用easeOutCubic缓动函数，营造专业的动画感
 
     const easeOutCubic = (t) => {
@@ -6770,15 +5977,11 @@ Page({
 
     };
 
-
-
     const timer = setInterval(() => {
 
       currentFrame++;
 
       const progress = currentFrame / totalFrames;
-
-
 
       if (progress >= 1) {
 
@@ -6802,8 +6005,6 @@ Page({
 
         const currentProgress = Math.round(startProgress + (targetProgress - startProgress) * easedProgress);
 
-
-
         this.setData({
 
           animatedProgress: currentProgress
@@ -6814,8 +6015,6 @@ Page({
 
     }, 1000 / frameRate);
 
-
-
     this.setData({
 
       progressAnimationTimer: timer
@@ -6824,23 +6023,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次门诊数据 - 美化功能
 
   async loadTodayClinicData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -6851,8 +6042,6 @@ Page({
       return
 
     }
-
-
 
     try {
 
@@ -6874,18 +6063,11 @@ Page({
 
         .get()
 
-
-
       if (res.data && res.data.length > 0) {
 
         // 获取最近一次门诊记录
 
         const latestRecord = res.data[0]
-
-
-
-
-
 
         this.setData({
 
@@ -6909,8 +6091,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayClinicData: null
@@ -6920,8 +6100,6 @@ Page({
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -6933,23 +6111,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载今日尿量数据 - 美化功能
 
   async loadTodayUrineData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -6961,19 +6131,11 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
 
       const today = this.getTodayString() // 获取今日日期
-
-
-
-
-
-
 
       const res = await db.collection('urineRecords')
 
@@ -6991,8 +6153,6 @@ Page({
 
         .get() // 🔧 移除limit(1)，获取今日所有记录
 
-
-
       if (res.data.length > 0) {
 
         // 🔧 计算今日的总尿量和记录次数
@@ -7004,11 +6164,6 @@ Page({
         const recordCount = todayRecords.length
 
         const latestRecord = todayRecords[0] // 最新的一次记录
-
-
-
-
-
 
         this.setData({
 
@@ -7026,15 +6181,11 @@ Page({
 
       } else {
 
-
-
         await this.loadRecentUrineData(openid, currentProfileId, today)
 
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -7046,17 +6197,11 @@ Page({
 
   },
 
-
-
   // 👑 加载最近尿量记录（今日无数据时的备选方案）
 
   async loadRecentUrineData(openid, currentProfileId, today) {
 
     try {
-
-
-
-
 
       const db = wx.cloud.database()
 
@@ -7080,18 +6225,11 @@ Page({
 
         .get()
 
-
-
       if (res.data.length > 0) {
 
         const recentRecord = res.data[0]
 
         const daysDiff = this.calculateDaysDiff(recentRecord.date, today)
-
-
-
-
-
 
         this.setData({
 
@@ -7115,8 +6253,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayUrineData: null
@@ -7126,8 +6262,6 @@ Page({
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -7139,23 +6273,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载今日费用数据 - 美化功能
 
   async loadTodayExpenseData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -7167,17 +6293,11 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
 
       const today = this.getTodayString() // 获取今日日期
-
-
-
-
 
       const res = await db.collection('expenseRecords')
 
@@ -7195,10 +6315,6 @@ Page({
 
         .get() // 🔧 获取今日所有记录
 
-
-
-
-
       if (res.data.length > 0) {
 
         let total = 0;
@@ -7208,8 +6324,6 @@ Page({
           total += parseFloat(item.amount) || 0;
 
         });
-
-
 
         this.setData({
 
@@ -7225,8 +6339,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayExpenseData: null
@@ -7236,8 +6348,6 @@ Page({
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -7249,23 +6359,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载今日排便数据 - 美化功能
 
   async loadTodayStoolData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -7277,19 +6379,11 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
 
       const today = this.getTodayString() // 获取今日日期
-
-
-
-
-
-
 
       const res = await db.collection('stoolRecords')
 
@@ -7307,8 +6401,6 @@ Page({
 
         .get() // 🔧 移除limit(1)，获取今日所有记录
 
-
-
       if (res.data.length > 0) {
 
         // 🔧 计算今日的排便次数和异常情况
@@ -7318,8 +6410,6 @@ Page({
         const recordCount = todayRecords.length
 
         const latestRecord = todayRecords[0] // 最新的一次记录
-
-
 
         // 检查今日所有记录是否有异常指标
 
@@ -7343,11 +6433,6 @@ Page({
 
         }
 
-
-
-
-
-
         this.setData({
 
           todayStoolData: {
@@ -7366,15 +6451,11 @@ Page({
 
       } else {
 
-
-
         await this.loadRecentStoolData(openid, currentProfileId, today)
 
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -7386,17 +6467,11 @@ Page({
 
   },
 
-
-
   // 👑 加载最近排便记录（今日无数据时的备选方案）
 
   async loadRecentStoolData(openid, currentProfileId, today) {
 
     try {
-
-
-
-
 
       const db = wx.cloud.database()
 
@@ -7420,15 +6495,11 @@ Page({
 
         .get()
 
-
-
       if (res.data.length > 0) {
 
         const recentRecord = res.data[0]
 
         const daysDiff = this.calculateDaysDiff(recentRecord.date, today)
-
-
 
         // 检查最近记录的异常情况
 
@@ -7447,11 +6518,6 @@ Page({
           abnormalInfo = abnormalItems.join('、')
 
         }
-
-
-
-
-
 
         this.setData({
 
@@ -7477,8 +6543,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayStoolData: null
@@ -7489,8 +6553,6 @@ Page({
 
     } catch (err) {
 
-
-
       this.setData({
 
         todayStoolData: null
@@ -7500,8 +6562,6 @@ Page({
     }
 
   },
-
-
 
   // 📅 计算日期差值
 
@@ -7519,23 +6579,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次EB病毒检测数据 - 美化功能
 
   async loadTodayEbvData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -7547,13 +6599,9 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
-
-
 
       const res = await db.collection('ebvRecords')
 
@@ -7571,21 +6619,15 @@ Page({
 
         .get()
 
-
-
       if (res.data.length > 0) {
 
         const latestRecord = res.data[0]
-
-
 
         // 🔧 修复：根据数值判断阴性/阳性，而不是依赖result字段
 
         let result = '阴性'
 
         let hasAbnormal = false
-
-
 
         // 检查是否有数值数据
 
@@ -7609,8 +6651,6 @@ Page({
 
         }
 
-
-
         // 如果有明确的result字段，优先使用
 
         if (latestRecord.result && latestRecord.result !== '') {
@@ -7621,8 +6661,6 @@ Page({
 
         }
 
-
-
         let abnormalInfo = ''
 
         if (hasAbnormal) {
@@ -7630,8 +6668,6 @@ Page({
           abnormalInfo = `EB病毒${result}`
 
         }
-
-
 
         console.log('🎨 最近一次EB病毒检测数据处理完成:', {
 
@@ -7646,8 +6682,6 @@ Page({
           abnormalInfo: abnormalInfo
 
         })
-
-
 
         this.setData({
 
@@ -7669,8 +6703,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayEbvData: null
@@ -7680,8 +6712,6 @@ Page({
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -7693,23 +6723,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次巨细胞病毒检测数据 - 美化功能
 
   async loadTodayCmvData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -7721,13 +6743,9 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
-
-
 
       const res = await db.collection('cmvRecords')
 
@@ -7745,21 +6763,15 @@ Page({
 
         .get()
 
-
-
       if (res.data.length > 0) {
 
         const latestRecord = res.data[0]
-
-
 
         // 🔧 修复：根据数值判断阴性/阳性，而不是依赖result字段
 
         let result = '阴性'
 
         let hasAbnormal = false
-
-
 
         // 检查是否有数值数据
 
@@ -7783,8 +6795,6 @@ Page({
 
         }
 
-
-
         // 如果有明确的result字段，优先使用
 
         if (latestRecord.result && latestRecord.result !== '') {
@@ -7795,8 +6805,6 @@ Page({
 
         }
 
-
-
         let abnormalInfo = ''
 
         if (hasAbnormal) {
@@ -7804,8 +6812,6 @@ Page({
           abnormalInfo = `巨细胞病毒${result}`
 
         }
-
-
 
         console.log('🎨 最近一次巨细胞病毒检测数据处理完成:', {
 
@@ -7820,8 +6826,6 @@ Page({
           abnormalInfo: abnormalInfo
 
         })
-
-
 
         this.setData({
 
@@ -7843,8 +6847,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayCmvData: null
@@ -7854,8 +6856,6 @@ Page({
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -7867,23 +6867,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次乳酸脱氢酶数据 - 美化功能
 
   async loadTodayLdhData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -7895,13 +6887,9 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
-
-
 
       const res = await db.collection('ldhRecords')
 
@@ -7919,21 +6907,15 @@ Page({
 
         .get()
 
-
-
       if (res.data.length > 0) {
 
         const latestRecord = res.data[0]
-
-
 
         // 检查是否有异常值
 
         let hasAbnormal = false
 
         let abnormalInfo = ''
-
-
 
         // 检查主要指标是否异常（这里可以根据医学参考值调整）
 
@@ -7963,8 +6945,6 @@ Page({
 
         }
 
-
-
         console.log('🎨 最近一次乳酸脱氢酶检测数据处理完成:', {
 
           date: latestRecord.date,
@@ -7980,8 +6960,6 @@ Page({
           abnormalInfo: abnormalInfo
 
         })
-
-
 
         this.setData({
 
@@ -8005,8 +6983,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayLdhData: null
@@ -8016,8 +6992,6 @@ Page({
       }
 
     } catch (err) {
-
-
 
       this.setData({
 
@@ -8029,23 +7003,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次肝功能数据 - 美化功能
 
   async loadTodayLiverData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -8057,13 +7023,9 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
-
-
 
       // 🔧 修复：从肝功能独立集合和器官功能集合中查找数据
 
@@ -8083,13 +7045,9 @@ Page({
 
         .get()
 
-
-
       // 如果肝功能独立集合没有数据，从器官功能集合查找
 
       if (res.data.length === 0) {
-
-
 
         res = await db.collection('organFunctionRecords')
 
@@ -8189,31 +7147,19 @@ Page({
 
       }
 
-
-
       if (res.data.length > 0) {
 
         const latestRecord = res.data[0]
 
-
-
         // 🔧 修复：提取所有可能的肝功能指标，优先显示4个必选指标
 
         const liverData = {}
-
-
-
-
-
-
 
         // 标准指标映射 - 支持多种字段名
 
         if (latestRecord.alt) liverData.alt = latestRecord.alt
 
         if (latestRecord.ast) liverData.ast = latestRecord.ast
-
-
 
         // 总胆红素：支持多种字段名
 
@@ -8235,8 +7181,6 @@ Page({
 
         }
 
-
-
         // 直接胆红素：支持多种字段名
 
         if (latestRecord.dbil) {
@@ -8252,8 +7196,6 @@ Page({
           liverData.dbil = latestRecord.direct_bilirubin
 
         }
-
-
 
         // 其他肝功能指标
 
@@ -8281,8 +7223,6 @@ Page({
 
         }
 
-
-
         // 🔧 修复：从customValues中加载自定义指标
 
         if (latestRecord.customValues) {
@@ -8299,8 +7239,6 @@ Page({
 
         }
 
-
-
         // 🚀 智能检测：自动发现所有非空的肝功能相关字段
 
         const liverRelatedFields = ['alt', 'ast', 'tbil', 'dbil', 'alb', 'tp', 'ggt', 'alp', 'che', 'pa', 'tba', 'totalBilirubin', 'directBilirubin', 'albumin', 'totalProtein', 'bilirubin', 'total_bilirubin', 'direct_bilirubin']
@@ -8308,8 +7246,6 @@ Page({
         liverRelatedFields.forEach(field => {
 
           if (latestRecord[field] !== undefined && latestRecord[field] !== null && latestRecord[field] !== '' && !liverData[field]) {
-
-
 
             // 映射到标准字段名
 
@@ -8339,12 +7275,6 @@ Page({
 
         })
 
-
-
-
-
-
-
         // 只有当有实际数据时才设置
 
         if (Object.keys(liverData).length > 0) {
@@ -8361,8 +7291,6 @@ Page({
 
           })
 
-
-
           console.log('🎨 最近一次肝功能数据处理完成:', {
 
             date: latestRecord.date,
@@ -8375,8 +7303,6 @@ Page({
 
         } else {
 
-
-
           this.setData({
 
             todayLiverData: null
@@ -8386,8 +7312,6 @@ Page({
         }
 
       } else {
-
-
 
         this.setData({
 
@@ -8399,8 +7323,6 @@ Page({
 
     } catch (err) {
 
-
-
       this.setData({
 
         todayLiverData: null
@@ -8411,23 +7333,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次肾功能数据 - 美化功能
 
   async loadTodayKidneyData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -8439,13 +7353,9 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
-
-
 
       // 🔧 修复：从肾功能独立集合和器官功能集合中查找数据
 
@@ -8465,13 +7375,9 @@ Page({
 
         .get()
 
-
-
       // 如果肾功能独立集合没有数据，从器官功能集合查找
 
       if (res.data.length === 0) {
-
-
 
         res = await db.collection('organFunctionRecords')
 
@@ -8595,23 +7501,13 @@ Page({
 
       }
 
-
-
       if (res.data.length > 0) {
 
         const latestRecord = res.data[0]
 
-
-
         // 🔧 修复：提取所有可能的肾功能指标，优先显示3个必选指标
 
         const kidneyData = {}
-
-
-
-
-
-
 
         // 肌酐：支持多种字段名
 
@@ -8628,8 +7524,6 @@ Page({
           kidneyData.cr = latestRecord.serum_creatinine
 
         }
-
-
 
         // 尿素氮：支持多种字段名
 
@@ -8651,8 +7545,6 @@ Page({
 
         }
 
-
-
         // 尿酸：支持多种字段名
 
         if (latestRecord.ua) {
@@ -8673,8 +7565,6 @@ Page({
 
         }
 
-
-
         // eGFR：支持多种字段名
 
         if (latestRecord.egfr) {
@@ -8690,8 +7580,6 @@ Page({
           kidneyData.egfr = latestRecord.estimated_gfr
 
         }
-
-
 
         // 胱抑素C
 
@@ -8709,8 +7597,6 @@ Page({
 
         }
 
-
-
         // 🔧 修复：从customValues中加载自定义指标
 
         if (latestRecord.customValues) {
@@ -8727,8 +7613,6 @@ Page({
 
         }
 
-
-
         // 🚀 智能检测：自动发现所有非空的肾功能相关字段
 
         const kidneyRelatedFields = ['cr', 'bun', 'ua', 'egfr', 'cysc', 'b2mg', 'rtn', 'upro', 'microalb', 'creatinine', 'urea', 'uricAcid', 'gfr', 'cystatinC', 'serum_creatinine', 'urea_nitrogen', 'blood_urea_nitrogen', 'uric_acid', 'serum_uric_acid', 'estimated_gfr', 'cystatin_c']
@@ -8736,8 +7620,6 @@ Page({
         kidneyRelatedFields.forEach(field => {
 
           if (latestRecord[field] !== undefined && latestRecord[field] !== null && latestRecord[field] !== '' && !kidneyData[field]) {
-
-
 
             // 映射到标准字段名
 
@@ -8771,12 +7653,6 @@ Page({
 
         })
 
-
-
-
-
-
-
         // 只有当有实际数据时才设置
 
         if (Object.keys(kidneyData).length > 0) {
@@ -8793,8 +7669,6 @@ Page({
 
           })
 
-
-
           console.log('🎨 最近一次肾功能数据处理完成:', {
 
             date: latestRecord.date,
@@ -8807,8 +7681,6 @@ Page({
 
         } else {
 
-
-
           this.setData({
 
             todayKidneyData: null
@@ -8818,8 +7690,6 @@ Page({
         }
 
       } else {
-
-
 
         this.setData({
 
@@ -8831,8 +7701,6 @@ Page({
 
     } catch (err) {
 
-
-
       this.setData({
 
         todayKidneyData: null
@@ -8843,23 +7711,15 @@ Page({
 
   },
 
-
-
   // 🎨 加载最近一次肝肾功能数据 - 美化功能
 
   async loadTodayOrganData(openid) {
-
-
 
     const app = getApp()
 
     const currentProfileId = app.getCurrentProfileId()
 
-
-
     if (!openid || !currentProfileId) {
-
-
 
       this.setData({
 
@@ -8871,13 +7731,9 @@ Page({
 
     }
 
-
-
     try {
 
       const db = wx.cloud.database()
-
-
 
       const res = await db.collection('organFunctionRecords')
 
@@ -8895,8 +7751,6 @@ Page({
 
         .get()
 
-
-
       if (res.data.length > 0) {
 
         const latestRecord = res.data[0]
@@ -8904,8 +7758,6 @@ Page({
         // 检查是否有异常指标
 
         const abnormalItems = []
-
-
 
         // 检查肝功能异常
 
@@ -8917,8 +7769,6 @@ Page({
 
         if (latestRecord.albumin && parseFloat(latestRecord.albumin) < 35) abnormalItems.push('白蛋白偏低')
 
-
-
         // 检查肾功能异常
 
         if (latestRecord.creatinine && parseFloat(latestRecord.creatinine) > 104) abnormalItems.push('肌酐偏高')
@@ -8927,13 +7777,9 @@ Page({
 
         if (latestRecord.gfr && parseFloat(latestRecord.gfr) < 90) abnormalItems.push('GFR偏低')
 
-
-
         const hasAbnormal = abnormalItems.length > 0
 
         const abnormalInfo = abnormalItems.join('、')
-
-
 
         console.log('🎨 最近一次肝肾功能数据处理完成:', {
 
@@ -8944,8 +7790,6 @@ Page({
           abnormalInfo: abnormalInfo
 
         })
-
-
 
         this.setData({
 
@@ -8965,8 +7809,6 @@ Page({
 
       } else {
 
-
-
         this.setData({
 
           todayOrganData: null
@@ -8977,8 +7819,6 @@ Page({
 
     } catch (err) {
 
-
-
       this.setData({
 
         todayOrganData: null
@@ -8988,8 +7828,6 @@ Page({
     }
 
   },
-
-
 
   // 等待云数据库初始化
 
@@ -9005,15 +7843,11 @@ Page({
 
   },
 
-
-
   // 处理EBV检测数据，添加指标名称
 
   async processEbvDataWithNames(rawEbvData) {
 
     const processedData = [];
-
-
 
     // 获取自定义指标名称和当前选中的指标配置
 
@@ -9023,13 +7857,9 @@ Page({
 
     const currentProfileId = app.getCurrentProfileId();
 
-
-
     let customIndicatorNames = {};
 
     let selectedIndicators = {};
-
-
 
     if (openid && currentProfileId) {
 
@@ -9049,8 +7879,6 @@ Page({
 
           .get();
 
-
-
         res.data.forEach(item => {
 
           customIndicatorNames[item.indicatorId] = item.name;
@@ -9059,13 +7887,9 @@ Page({
 
       } catch (err) {
 
-
-
       }
 
     }
-
-
 
     // EBV基础指标名称映射 - 只保留必选项
 
@@ -9075,21 +7899,15 @@ Page({
 
     };
 
-
-
     // 转换数据格式，添加名称（只处理当前选中的指标）
 
     Object.keys(rawEbvData).forEach(indicatorId => {
 
       if (indicatorId === '_id' || indicatorId === 'openid' || indicatorId === 'profileId' || indicatorId === 'date' || indicatorId === 'time' || indicatorId === 'createTime' || indicatorId === 'updateTime' || indicatorId === 'hospital' || indicatorId === 'notes' || indicatorId === 'id' || indicatorId === 'type' || indicatorId === 'testType' || indicatorId === 'sampleType' || indicatorId === '_openid' || indicatorId === 'referenceValue') return;
 
-
-
       const value = rawEbvData[indicatorId];
 
       if (!value) return;
-
-
 
       // 检查指标是否在当前配置中选中
 
@@ -9097,11 +7915,7 @@ Page({
 
       const isSelectedInConfig = selectedIndicators[indicatorId] === true;
 
-
-
       let name = indicatorId;
-
-
 
       // 获取指标名称
 
@@ -9119,8 +7933,6 @@ Page({
 
       }
 
-
-
       processedData.push({
 
         id: indicatorId,
@@ -9133,21 +7945,15 @@ Page({
 
     });
 
-
-
     return processedData;
 
   },
-
-
 
   // 处理CMV检测数据，添加指标名称
 
   async processCmvDataWithNames(rawCmvData) {
 
     const processedData = [];
-
-
 
     // 获取自定义指标名称
 
@@ -9156,8 +7962,6 @@ Page({
     const openid = app.getOpenIdIfLoggedIn();
 
     const currentProfileId = app.getCurrentProfileId();
-
-
 
     let customIndicatorNames = {};
 
@@ -9177,8 +7981,6 @@ Page({
 
           .get();
 
-
-
         res.data.forEach(item => {
 
           customIndicatorNames[item.indicatorId] = item.name;
@@ -9187,13 +7989,9 @@ Page({
 
       } catch (err) {
 
-
-
       }
 
     }
-
-
 
     // CMV基础指标名称映射
 
@@ -9201,11 +7999,7 @@ Page({
 
       'hcmvDna': 'HCMV-DNA'
 
-
-
     };
-
-
 
     // 转换数据格式，添加名称
 
@@ -9213,17 +8007,11 @@ Page({
 
       if (indicatorId === '_id' || indicatorId === 'openid' || indicatorId === 'profileId' || indicatorId === 'date' || indicatorId === 'time' || indicatorId === 'createTime' || indicatorId === 'updateTime' || indicatorId === 'hospital' || indicatorId === 'notes' || indicatorId === 'id' || indicatorId === 'type' || indicatorId === 'testType' || indicatorId === 'sampleType' || indicatorId === '_openid' || indicatorId === 'referenceValue') return;
 
-
-
       const value = rawCmvData[indicatorId];
 
       if (!value) return;
 
-
-
       let name = indicatorId;
-
-
 
       // 获取指标名称
 
@@ -9241,8 +8029,6 @@ Page({
 
       }
 
-
-
       processedData.push({
 
         id: indicatorId,
@@ -9254,8 +8040,6 @@ Page({
       });
 
     });
-
-
 
     // 检查是否有异常值
 
@@ -9269,27 +8053,19 @@ Page({
 
     }
 
-
-
     // 给数组添加hasAbnormal属性
 
     processedData.hasAbnormal = hasAbnormal;
 
-
-
     return processedData;
 
   },
-
-
 
   // 处理LDH检测数据，添加指标名称
 
   async processLdhDataWithNames(rawLdhData) {
 
     const processedData = [];
-
-
 
     // 获取自定义指标名称
 
@@ -9298,8 +8074,6 @@ Page({
     const openid = app.getOpenIdIfLoggedIn();
 
     const currentProfileId = app.getCurrentProfileId();
-
-
 
     let customIndicatorNames = {};
 
@@ -9319,8 +8093,6 @@ Page({
 
           .get();
 
-
-
         res.data.forEach(item => {
 
           customIndicatorNames[item.indicatorId] = item.fullName || item.name;
@@ -9329,13 +8101,9 @@ Page({
 
       } catch (err) {
 
-
-
       }
 
     }
-
-
 
     // 乳酸脱氢酶基础指标名称映射
 
@@ -9349,8 +8117,6 @@ Page({
 
     };
 
-
-
     // 转换数据格式，添加名称
 
     Object.keys(rawLdhData).forEach(indicatorId => {
@@ -9363,11 +8129,7 @@ Page({
 
       if (!value) return;
 
-
-
       let name = indicatorId;
-
-
 
       // 获取指标名称
 
@@ -9385,8 +8147,6 @@ Page({
 
       }
 
-
-
       processedData.push({
 
         id: indicatorId,
@@ -9398,10 +8158,6 @@ Page({
       });
 
     });
-
-
-
-
 
     // 检查是否有异常值
 
@@ -9421,27 +8177,19 @@ Page({
 
     }
 
-
-
     // 给数组添加hasAbnormal属性
 
     processedData.hasAbnormal = hasAbnormal;
 
-
-
     return processedData;
 
   },
-
-
 
   // 处理肝功能数据，添加指标名称
 
   async processLiverDataWithNames(rawLiverData) {
 
     const processedData = [];
-
-
 
     // 获取自定义指标名称
 
@@ -9450,8 +8198,6 @@ Page({
     const openid = app.getOpenIdIfLoggedIn();
 
     const currentProfileId = app.getCurrentProfileId();
-
-
 
     let customIndicatorNames = {};
 
@@ -9471,8 +8217,6 @@ Page({
 
           .get();
 
-
-
         res.data.forEach(item => {
 
           customIndicatorNames[item.indicatorId] = item.name;
@@ -9481,13 +8225,9 @@ Page({
 
       } catch (err) {
 
-
-
       }
 
     }
-
-
 
     // 肝功能基础指标名称映射
 
@@ -9511,25 +8251,17 @@ Page({
 
     };
 
-
-
     // 转换数据格式，添加名称
 
     Object.keys(rawLiverData).forEach(indicatorId => {
 
       if (indicatorId === '_id' || indicatorId === 'openid' || indicatorId === 'profileId' || indicatorId === 'date' || indicatorId === 'time' || indicatorId === 'createTime' || indicatorId === 'updateTime' || indicatorId === 'hospital' || indicatorId === 'notes' || indicatorId === 'id' || indicatorId === 'type' || indicatorId === 'testType' || indicatorId === 'sampleType' || indicatorId === '_openid' || indicatorId === 'referenceValue') return;
 
-
-
       const value = rawLiverData[indicatorId];
 
       if (!value) return;
 
-
-
       let name = indicatorId;
-
-
 
       // 获取指标名称
 
@@ -9547,8 +8279,6 @@ Page({
 
       }
 
-
-
       processedData.push({
 
         id: indicatorId,
@@ -9561,21 +8291,15 @@ Page({
 
     });
 
-
-
     return processedData;
 
   },
-
-
 
   // 处理肾功能数据，添加指标名称
 
   async processKidneyDataWithNames(rawKidneyData) {
 
     const processedData = [];
-
-
 
     // 获取自定义指标名称
 
@@ -9584,8 +8308,6 @@ Page({
     const openid = app.getOpenIdIfLoggedIn();
 
     const currentProfileId = app.getCurrentProfileId();
-
-
 
     let customIndicatorNames = {};
 
@@ -9605,8 +8327,6 @@ Page({
 
           .get();
 
-
-
         res.data.forEach(item => {
 
           customIndicatorNames[item.indicatorId] = item.name;
@@ -9615,13 +8335,9 @@ Page({
 
       } catch (err) {
 
-
-
       }
 
     }
-
-
 
     // 肾功能基础指标名称映射
 
@@ -9639,25 +8355,17 @@ Page({
 
     };
 
-
-
     // 转换数据格式，添加名称
 
     Object.keys(rawKidneyData).forEach(indicatorId => {
 
       if (indicatorId === '_id' || indicatorId === 'openid' || indicatorId === 'profileId' || indicatorId === 'date' || indicatorId === 'time' || indicatorId === 'createTime' || indicatorId === 'updateTime' || indicatorId === 'hospital' || indicatorId === 'notes' || indicatorId === 'id' || indicatorId === 'type' || indicatorId === 'testType' || indicatorId === 'sampleType' || indicatorId === '_openid' || indicatorId === 'referenceValue') return;
 
-
-
       const value = rawKidneyData[indicatorId];
 
       if (!value) return;
 
-
-
       let name = indicatorId;
-
-
 
       // 获取指标名称
 
@@ -9675,8 +8383,6 @@ Page({
 
       }
 
-
-
       processedData.push({
 
         id: indicatorId,
@@ -9689,17 +8395,11 @@ Page({
 
     });
 
-
-
     return processedData;
 
   },
 
-
-
   // ==================== 🚀 新日历组件系统 ====================
-
-
 
   // 初始化新日历组件
 
@@ -9710,8 +8410,6 @@ Page({
     const todayStr = this.formatDate(today)
 
     const dayNames = ['日', '一', '二', '三', '四', '五', '六']
-
-
 
     this.setData({
 
@@ -9733,21 +8431,15 @@ Page({
 
     })
 
-
-
     // 生成周视图和月视图数据
 
     this.generateWeekView()
 
     this.generateMonthView()
 
-
-
     // 数据加载会在登录检查完成后进行
 
   },
-
-
 
   // 生成周视图数据（可指定目标日期）
 
@@ -9758,15 +8450,11 @@ Page({
 
     const weekDays = []
 
-
-
     // 生成包含目标日期的完整一周（以周一为起始）
     const dayOfWeek = target.getDay() // 0=周日, 1=周一, ..., 6=周六
     const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // 转换为周一起始的偏移量
     const weekStart = new Date(target)
     weekStart.setDate(target.getDate() - mondayOffset)
-
-
 
     for (let i = 0; i < 7; i++) {
 
@@ -9774,13 +8462,9 @@ Page({
 
       date.setDate(weekStart.getDate() + i)
 
-
-
       const dateStr = this.formatDate(date)
 
       const dayNames = ['日', '一', '二', '三', '四', '五', '六']
-
-
 
       weekDays.push({
 
@@ -9798,13 +8482,9 @@ Page({
 
     }
 
-
-
     this.setData({ weekDays })
 
   },
-
-
 
   // 生成月视图数据
 
@@ -9813,8 +8493,6 @@ Page({
     const { currentYear, currentMonth } = this.data
 
     const monthDays = []
-
-
 
     // 获取当月第一天和最后一天
 
@@ -9825,8 +8503,6 @@ Page({
     const firstDayOfWeek = firstDay.getDay()
 
     const lastDate = lastDay.getDate()
-
-
 
     // 填充上月的空白日期
 
@@ -9846,8 +8522,6 @@ Page({
 
     }
 
-
-
     // 填充当月日期
 
     for (let day = 1; day <= lastDate; day++) {
@@ -9855,8 +8529,6 @@ Page({
       const date = new Date(currentYear, currentMonth - 1, day)
 
       const dateStr = this.formatDate(date)
-
-
 
       monthDays.push({
 
@@ -9874,13 +8546,9 @@ Page({
 
     }
 
-
-
     this.setData({ monthDays })
 
   },
-
-
 
   // 切换日历展开/收起
 
@@ -9889,8 +8557,6 @@ Page({
     const expanded = !this.data.calendarExpanded
 
     this.setData({ calendarExpanded: expanded })
-
-
 
     if (expanded) {
 
@@ -9907,8 +8573,6 @@ Page({
 
   },
 
-
-
   // 调整周视图以显示选中的日期
   adjustWeekViewToSelectedDate() {
     const selectedDate = this.data.selectedDate
@@ -9924,8 +8588,6 @@ Page({
     }
   },
 
-
-
   // 选择日期
 
   selectDate(e) {
@@ -9933,8 +8595,6 @@ Page({
     const { date } = e.currentTarget.dataset
 
     if (!date) return
-
-
 
     // 添加轻微震动反馈
 
@@ -9954,15 +8614,11 @@ Page({
 
     }
 
-
-
     const dateObj = new Date(date)
 
     const dateText = this.formatDateText(dateObj)
 
     const dayNames = ['日', '一', '二', '三', '四', '五', '六']
-
-
 
     this.setData({
 
@@ -9985,16 +8641,12 @@ Page({
       this.setData({ dateChanged: false })
     }, 600)
 
-
-
     // 更新周视图和月视图的选中状态
 
     this.updateDateSelection()
 
     // 🔥 加载选中日期的最新数据（用户切换日期时不显示骨架屏）
     this.loadDataForDate(date, false)
-
-
 
     // 如果日历收起状态下选择日期，确保周视图显示选中日期
     if (!this.data.calendarExpanded) {
@@ -10003,15 +8655,11 @@ Page({
 
   },
 
-
-
   // 更新日期选择状态
 
   updateDateSelection() {
 
     const { selectedDate, weekDays, monthDays } = this.data
-
-
 
     // 更新周视图
 
@@ -10023,8 +8671,6 @@ Page({
 
     }))
 
-
-
     // 更新月视图
 
     const updatedMonthDays = monthDays.map(day => ({
@@ -10035,8 +8681,6 @@ Page({
 
     }))
 
-
-
     this.setData({
 
       weekDays: updatedWeekDays,
@@ -10046,8 +8690,6 @@ Page({
     })
 
   },
-
-
 
   // 上一个月
 
@@ -10067,15 +8709,11 @@ Page({
 
     }
 
-
-
     this.setData({ currentYear, currentMonth })
 
     this.generateMonthView()
 
   },
-
-
 
   // 下一个月
 
@@ -10095,15 +8733,11 @@ Page({
 
     }
 
-
-
     this.setData({ currentYear, currentMonth })
 
     this.generateMonthView()
 
   },
-
-
 
   // 格式化日期显示文本
 
@@ -10114,8 +8748,6 @@ Page({
     const yesterday = new Date(today)
 
     yesterday.setDate(yesterday.getDate() - 1)
-
-
 
     if (this.isSameDate(date, today)) {
 
@@ -10137,8 +8769,6 @@ Page({
 
   },
 
-
-
   // 判断是否是同一天
 
   isSameDate(date1, date2) {
@@ -10150,8 +8780,6 @@ Page({
       date1.getDate() === date2.getDate()
 
   },
-
-
 
   // 显示日期选择器
 
@@ -10171,8 +8799,6 @@ Page({
 
   },
 
-
-
   // 选择快捷日期
 
   selectQuickDate(e) {
@@ -10180,8 +8806,6 @@ Page({
     const selectedDate = e.currentTarget.dataset.date
 
     const date = new Date(selectedDate)
-
-
 
     this.setData({
 
@@ -10191,15 +8815,11 @@ Page({
 
     })
 
-
-
     // 加载选定日期的数据（快捷日期切换时不显示骨架屏）
 
     this.loadDataForDate(selectedDate, false)
 
   },
-
-
 
   // 根据日期加载数据
 
@@ -10235,8 +8855,6 @@ Page({
         }
       })
 
-
-
       // 检查基础条件
 
       const app = getApp()
@@ -10259,8 +8877,6 @@ Page({
 
       }
 
-
-
       if (!app.globalData.openid) {
 
         console.error('用户未登录')
@@ -10279,15 +8895,11 @@ Page({
 
       }
 
-
-
       console.log('=== 档案检查 ===')
 
       console.log('当前档案信息:', app.globalData.currentProfile)
 
       console.log('档案ID:', app.globalData.currentProfile?.profileId)
-
-
 
       // 如果档案信息还未初始化，等待一段时间后重试
 
@@ -10300,8 +8912,6 @@ Page({
         let retryCount = 0
 
         const maxRetries = 4
-
-
 
         while (retryCount < maxRetries && !app.globalData.profileInitialized) {
 
@@ -10318,8 +8928,6 @@ Page({
           }
 
         }
-
-
 
         // 如果还是没有档案信息，显示空数据（不显示弹窗）
 
@@ -10363,16 +8971,9 @@ Page({
 
         }
 
-
-
         console.log('档案信息初始化成功:', app.globalData.currentProfile.name)
 
       }
-
-
-
-
-
 
       // 并行加载所有数据
 
@@ -10458,11 +9059,6 @@ Page({
 
       ])
 
-
-
-
-
-
       const selectedDateData = {
         bloodData,
         ebvData,
@@ -10503,8 +9099,6 @@ Page({
 
       })
 
-
-
       // 即使出错也要设置空数据，避免界面卡住
 
       this.setData({
@@ -10541,8 +9135,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的血常规数据
 
   async getBloodDataForDate(dateStr) {
@@ -10553,25 +9145,17 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
-
       console.log('查询日期:', dateStr)
 
       console.log('openid:', app.globalData?.openid)
 
       console.log('profileId:', app.globalData?.currentProfile?.profileId)
 
-
-
       if (!app.globalData.currentProfile?.profileId) {
-
 
         return null
 
       }
-
-
 
       const queryCondition = {
 
@@ -10585,8 +9169,6 @@ Page({
 
       console.log('查询条件:', queryCondition)
 
-
-
       const res = await db.collection('bloodTests')
 
         .where(queryCondition)
@@ -10595,23 +9177,17 @@ Page({
 
         .get()
 
-
-
       console.log('血常规查询结果:', res)
 
       console.log('数据数量:', res.data.length)
-
-
 
       if (res.data.length > 0) {
 
         const bloodData = res.data[0]
 
-
         return bloodData
 
       } else {
-
 
         return null
 
@@ -10905,11 +9481,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       const res = await db.collection('ebvRecords')
 
@@ -10927,8 +9499,6 @@ Page({
 
         .get()
 
-
-
       return res.data.length > 0 ? res.data[0] : null
 
     } catch (error) {
@@ -10941,8 +9511,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的用药数据
 
   async getMedicationDataForDate(dateStr) {
@@ -10953,11 +9521,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       console.log('🔍 查询用药记录 - 参数:', {
         openid: app.globalData.openid,
@@ -10993,11 +9557,6 @@ Page({
         })
       })
 
-
-
-
-
-
       if (res.data.length === 0) {
 
         console.log('🚫 没有找到用药记录 for date:', dateStr)
@@ -11005,8 +9564,6 @@ Page({
         return null
 
       }
-
-
 
       // 获取当天的药物记录（medicines数组在第一个记录中）
 
@@ -11049,8 +9606,6 @@ Page({
 
       const progress = totalTimeSlots > 0 ? Math.round((completedTimeSlots / totalTimeSlots) * 100) : 0
 
-
-
       const result = {
 
         date: dateStr,
@@ -11069,27 +9624,17 @@ Page({
 
       }
 
-
-
       console.log('✅ 找到用药记录 for date:', dateStr, 'result:', result)
-
-
-
-
-
 
       return result
 
     } catch (error) {
-
 
       return null
 
     }
 
   },
-
-
 
   // 获取指定日期的巨细胞病毒数据
 
@@ -11101,11 +9646,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       const res = await db.collection('cmvRecords')
 
@@ -11123,12 +9664,9 @@ Page({
 
         .get()
 
-
-
       return res.data.length > 0 ? res.data[0] : null
 
     } catch (error) {
-
 
       return null
 
@@ -11136,11 +9674,7 @@ Page({
 
   },
 
-
-
   // 进度条已移除：保留位置以便将来扩展（如迷你趋势）
-
-
 
   // 获取指定日期的肝功能数据
 
@@ -11152,17 +9686,11 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       console.log('=== 肝功能数据查询开始 ===')
 
       console.log('查询日期:', dateStr)
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       // 🔧 修复：先从肝功能独立集合查询
 
@@ -11182,11 +9710,7 @@ Page({
 
         .get()
 
-
-
       console.log('独立肝功能集合查询结果:', res)
-
-
 
       // 如果独立集合没有数据，从器官功能统一集合查找
 
@@ -11218,13 +9742,9 @@ Page({
 
           .get()
 
-
-
         console.log('器官功能统一集合查询结果:', res)
 
       }
-
-
 
       console.log('最终肝功能查询结果:', res)
 
@@ -11240,8 +9760,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的肾功能数据
 
   async getKidneyDataForDate(dateStr) {
@@ -11252,17 +9770,11 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       console.log('=== 肾功能数据查询开始 ===')
 
       console.log('查询日期:', dateStr)
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       // 🔧 修复：先从肾功能独立集合查询
 
@@ -11282,11 +9794,7 @@ Page({
 
         .get()
 
-
-
       console.log('独立肾功能集合查询结果:', res)
-
-
 
       // 如果独立集合没有数据，从器官功能统一集合查找
 
@@ -11318,13 +9826,9 @@ Page({
 
           .get()
 
-
-
         console.log('器官功能统一集合查询结果:', res)
 
       }
-
-
 
       console.log('最终肾功能查询结果:', res)
 
@@ -11340,8 +9844,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的LDH数据
 
   async getLdhDataForDate(dateStr) {
@@ -11352,11 +9854,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       const res = await db.collection('ldhRecords')
 
@@ -11374,8 +9872,6 @@ Page({
 
         .get()
 
-
-
       return res.data.length > 0 ? res.data[0] : null
 
     } catch (error) {
@@ -11388,8 +9884,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的门诊数据
 
   async getClinicDataForDate(dateStr) {
@@ -11400,11 +9894,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       const res = await db.collection('clinicRecords')
 
@@ -11422,11 +9912,7 @@ Page({
 
         .get()
 
-
-
       console.log(`🏥 门诊记录数据 ${dateStr}:`, res.data)
-
-
 
       if (res.data.length === 0) {
 
@@ -11436,13 +9922,9 @@ Page({
 
       }
 
-
-
       const clinicRecord = res.data[0]
 
       console.log(`✅ 门诊记录 ${dateStr} 处理结果:`, clinicRecord)
-
-
 
       return clinicRecord
 
@@ -11456,8 +9938,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的检查报告数据
 
   async getCheckReportDataForDate(dateStr) {
@@ -11468,11 +9948,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       // 查询当天所有的检查报告记录
 
@@ -11492,11 +9968,7 @@ Page({
 
         .get()
 
-
-
       console.log(`📋 检查报告数据 ${dateStr}:`, res.data)
-
-
 
       if (res.data.length === 0) {
 
@@ -11506,19 +9978,13 @@ Page({
 
       }
 
-
-
       // 获取第一条记录作为显示内容
 
       const checkReportRecord = res.data[0]
 
-
-
       // 添加总记录数
 
       checkReportRecord.totalCount = res.data.length
-
-
 
       // 处理详细结果文本截断
 
@@ -11542,8 +10008,6 @@ Page({
 
       }
 
-
-
       // 格式化记录日期为 "x月x日" 格式
 
       if (checkReportRecord.recordDate) {
@@ -11552,11 +10016,7 @@ Page({
 
       }
 
-
-
       console.log(`✅ 检查报告 ${dateStr} 处理结果:`, checkReportRecord, `共 ${checkReportRecord.totalCount} 条`)
-
-
 
       return checkReportRecord
 
@@ -11570,8 +10030,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的尿量数据
 
   async getUrineDataForDate(dateStr) {
@@ -11582,11 +10040,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       const res = await db.collection('urineRecords')
 
@@ -11602,17 +10056,11 @@ Page({
 
         .get()
 
-
-
       if (res.data.length === 0) return null
-
-
 
       const records = res.data
 
       const totalVolume = records.reduce((sum, record) => sum + (record.volume || 0), 0)
-
-
 
       return {
 
@@ -11640,8 +10088,6 @@ Page({
 
   },
 
-
-
   // 获取指定日期的排便数据
 
   async getStoolDataForDate(dateStr) {
@@ -11652,11 +10098,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       const res = await db.collection('stoolRecords')
 
@@ -11672,17 +10114,11 @@ Page({
 
         .get()
 
-
-
       if (res.data.length === 0) return null
-
-
 
       const records = res.data
 
       const hasAbnormal = records.some(record => record.hasBlood || record.hasMucus)
-
-
 
       return {
 
@@ -11706,8 +10142,6 @@ Page({
 
   },
 
-
-
   // 获取费用记录数据
 
   async getExpenseDataForDate(dateStr) {
@@ -11718,11 +10152,7 @@ Page({
 
       const db = wx.cloud.database()
 
-
-
       if (!app.globalData.currentProfile?.profileId) return null
-
-
 
       const res = await db.collection('expenseRecords')
 
@@ -11738,11 +10168,7 @@ Page({
 
         .get()
 
-
-
       if (res.data.length === 0) return null
-
-
 
       const records = res.data
 
@@ -11753,8 +10179,6 @@ Page({
         total += parseFloat(record.amount) || 0
 
       })
-
-
 
       return {
 
@@ -11778,17 +10202,11 @@ Page({
 
   },
 
-
-
   // ========== 功能项自定义编辑方法 ==========
-
-
 
   // 切换功能项编辑模式
 
-  /**
-   * 打开功能项编辑弹窗
-   */
+  
   async toggleFunctionEditMode() {
 
     if (this.data.functionEditMode) {
@@ -11818,14 +10236,7 @@ Page({
 
   },
 
-
-
-  /**
-   * 加载主页面功能项配置
-   * 1. 优先从数据库读取用户自定义配置
-   * 2. 如果没有配置，使用默认配置（根据疾病类型）
-   * 3. 只显示 visible=true 的功能项
-   */
+  
   async loadMainPageFunctionConfig() {
 
     try {
@@ -12002,11 +10413,6 @@ Page({
 
   },
 
-
-
-
-
-
   // 根据功能ID获取数据键
   getDataKeyById(functionId) {
     return `${functionId}Data`;
@@ -12018,8 +10424,6 @@ Page({
 
     const { navigate, functionId } = e.currentTarget.dataset
 
-
-
     console.log('功能项点击:', {
 
       navigate,
@@ -12030,8 +10434,6 @@ Page({
 
     })
 
-
-
     // 🔥 所有功能项都直接跳转到记录页面，不显示弹窗
     if (navigate && typeof this[navigate] === 'function') {
       this[navigate]()
@@ -12041,8 +10443,6 @@ Page({
 
   },
 
-
-
   // 显示功能项详情弹窗
 
   showFunctionDetailPopup() {
@@ -12050,8 +10450,6 @@ Page({
     const selectedDate = this.data.selectedDate
 
     const selectedDateData = this.data.selectedDateData
-
-
 
     // 构建详情弹窗数据，包含当前选中日期的所有数据
 
@@ -12083,8 +10481,6 @@ Page({
 
     }
 
-
-
     this.setData({
 
       showDateDetailPopup: true,
@@ -12095,12 +10491,7 @@ Page({
 
   },
 
-
-
-  /**
-   * 加载编辑弹窗的功能项配置
-   * 用于显示所有功能项（包括隐藏的），供用户编辑
-   */
+  
   async loadFunctionCustomConfig() {
 
     try {
@@ -12283,11 +10674,6 @@ Page({
 
   },
 
-
-
-
-
-
   // 长按开始拖拽 - iOS风格
 
   onItemLongPress(e) {
@@ -12296,13 +10682,9 @@ Page({
 
     wx.vibrateShort({ type: 'medium' }) // 震动反馈
 
-
-
     const customFunctionList = [...this.data.customFunctionList]
 
     customFunctionList[index] = { ...customFunctionList[index], dragging: true, offsetX: 0, offsetY: 0 }
-
-
 
     this.setData({
 
@@ -12316,15 +10698,11 @@ Page({
 
   },
 
-
-
   // 触摸开始
 
   onItemTouchStart(e) {
 
     if (!this.data.isDragging) return
-
-
 
     const touch = e.touches[0]
 
@@ -12338,15 +10716,11 @@ Page({
 
   },
 
-
-
   // 拖拽移动 - 完全跟手
 
   onItemTouchMove(e) {
 
     if (!this.data.isDragging || this.data.dragStartIndex === -1) return
-
-
 
     const touch = e.touches[0]
 
@@ -12354,15 +10728,11 @@ Page({
 
     const moveY = touch.clientY - this.data.touchStartY
 
-
-
     // iOS风格：完全跟手，实时更新位置
 
     const customFunctionList = [...this.data.customFunctionList]
 
     const dragIndex = this.data.dragStartIndex
-
-
 
     if (customFunctionList[dragIndex]) {
 
@@ -12378,13 +10748,9 @@ Page({
 
     }
 
-
-
     this.setData({ customFunctionList })
 
   },
-
-
 
   // 拖拽结束 - iOS风格
 
@@ -12392,15 +10758,9 @@ Page({
 
     if (!this.data.isDragging || this.data.dragStartIndex === -1) return
 
-
-
     wx.vibrateShort({ type: 'light' })
 
-
-
     const { dragStartIndex, customFunctionList } = this.data
-
-
 
     // 清除拖拽状态，恢复原位
 
@@ -12415,8 +10775,6 @@ Page({
       offsetY: 0
 
     }))
-
-
 
     this.setData({
 
@@ -12434,15 +10792,7 @@ Page({
 
   },
 
-
-
-
-
-
-  /**
-   * 保存功能项自定义配置到数据库
-   * 保存后重新加载主页面配置以立即生效
-   */
+  
   async saveFunctionCustom() {
     const nowFunctionList = this.data.customFunctionList.filter(item => item.visible)
 
@@ -12550,8 +10900,6 @@ Page({
     }
   },
 
-
-
   // 关闭功能项自定义弹窗
 
   closeFunctionCustomPopup() {
@@ -12564,15 +10912,11 @@ Page({
 
     })
 
-
-
     // 🔧 关闭弹窗时不需要刷新配置，避免覆盖用户设置
 
     // 配置已在保存时更新
 
   },
-
-
 
   // 弹窗显示状态变化
 
@@ -12588,8 +10932,6 @@ Page({
 
       })
 
-
-
       // 🔧 弹窗关闭时不需要刷新配置，避免覆盖用户设置
 
       // 配置已在保存时更新
@@ -12597,8 +10939,6 @@ Page({
     }
 
   },
-
-
 
   // iOS风格拖拽相关方法
 
@@ -12614,8 +10954,6 @@ Page({
 
   },
 
-
-
   onItemTouchStart(e) {
 
     // 记录触摸开始位置
@@ -12623,8 +10961,6 @@ Page({
     this.touchStartY = e.touches[0].clientY
 
   },
-
-
 
   onItemTouchMove(e) {
 
@@ -12652,8 +10988,6 @@ Page({
 
   },
 
-
-
   onItemTouchEnd(e) {
 
     const result = functionCustomModule.handleTouchEnd(this.data)
@@ -12665,8 +10999,6 @@ Page({
     }
 
   },
-
-
 
   // 切换功能项显示状态
 
@@ -12699,8 +11031,6 @@ Page({
     wx.vibrateShort({ type: 'light' })
 
   },
-
-
 
   // 重置功能项顺序
 
@@ -12762,15 +11092,11 @@ Page({
 
   },
 
-
-
   // movable-view 移动事件
 
   onItemDragChange(e) {
 
     if (!this.data.isDragging) return
-
-
 
     const currentIndex = parseInt(e.currentTarget.dataset.index)
 
@@ -12780,15 +11106,11 @@ Page({
 
     const targetIndex = Math.round(y / itemHeight)
 
-
-
     // 计算目标位置
 
     if (targetIndex !== this.data.dragTargetIndex && targetIndex >= 0 && targetIndex < this.data.customFunctionList.length) {
 
       this.setData({ dragTargetIndex: targetIndex })
-
-
 
       // 轻微震动反馈
 
@@ -12798,19 +11120,13 @@ Page({
 
   },
 
-
-
   // movable-view 拖拽结束
 
   onItemDragEnd(e) {
 
     if (!this.data.isDragging) return
 
-
-
     const { dragStartIndex, dragTargetIndex, customFunctionList } = this.data
-
-
 
     // 如果有有效的目标位置，执行交换
 
@@ -12821,8 +11137,6 @@ Page({
       const dragItem = newList.splice(dragStartIndex, 1)[0]
 
       newList.splice(dragTargetIndex, 0, dragItem)
-
-
 
       // 更新 y 位置和order
 
@@ -12835,8 +11149,6 @@ Page({
         isDragging: false
 
       }))
-
-
 
       this.setData({ customFunctionList: updatedList })
 
@@ -12857,8 +11169,6 @@ Page({
       this.setData({ customFunctionList: restoredList })
 
     }
-
-
 
     // 清理拖拽状态
 

@@ -3,9 +3,7 @@ import { formatTime } from '../../utils/util.js';
 
 Page({
 
-  /**
-   * 页面的初始数据
-   */
+  
   data: {
     isLoggedIn: false,
     isPageLoading: true, // 页面加载状态
@@ -162,7 +160,6 @@ Page({
     ],
     allMedicalRecords: [], // 存储所有记录（未筛选）
 
-
     // 费用记录数据
     expenseRecords: [],
     expenseStats: {
@@ -191,9 +188,7 @@ Page({
     ]
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
+  
   onLoad(options) {
     console.log('健康档案页面 - onLoad');
     const canLoadData = this.checkLoginAndRedirect();
@@ -212,16 +207,12 @@ Page({
     }, 5000);
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
+  
   onReady() {
 
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
+  
   onShow() {
     console.log('健康档案页面 - onShow');
 
@@ -794,7 +785,6 @@ Page({
       // 计算时间范围
       const timeRange = this.getTimeRange();
 
-
       // 并行加载所有数据
       // 🔧 Android兼容性：添加3秒超时保护
       const [
@@ -894,12 +884,8 @@ Page({
         console.log('📊 第一条记录包含的数据类型:', Object.keys(healthRecords[0]).filter(key => key.endsWith('Data')));
       }
 
-
-
       // 按类型筛选记录
       const filteredRecords = this.filterRecordsByType(healthRecords);
-
-
 
       // 基于筛选后的数据计算统计数据
       const healthStats = this.calculateHealthStats(filteredRecords);
@@ -1486,7 +1472,6 @@ Page({
     // 处理血常规数据
     records.bloodRecords.forEach(record => {
 
-
       const dateKey = this.formatDateKey(record.date);
       if (!dateKey) return; // 跳过无效日期
 
@@ -1520,7 +1505,6 @@ Page({
         // 确保customValues被保留
         customValues: record.customValues || {}
       };
-
 
       dateMap.get(dateKey).bloodData = processedData;
     });
@@ -2978,7 +2962,6 @@ Page({
     };
   },
 
-
   // 日期格式化方法
   formatDate(date) {
     const year = date.getFullYear();
@@ -3344,13 +3327,10 @@ Page({
 
     if (!openid || !currentProfileId) {
 
-
       try {
         const app = getApp();
         const newOpenid = app.getOpenIdIfLoggedIn();
         const newCurrentProfileId = app.getCurrentProfileId();
-
-
 
         if (newOpenid && newCurrentProfileId) {
           this.setData({
@@ -3369,11 +3349,9 @@ Page({
     }
   },
 
-
   // 显示记录详情 - 统一按照血常规逻辑处理
   async showRecordDetail(e) {
     const { record } = e.currentTarget.dataset;
-
 
     this.ensureUserInfo();
 
@@ -3762,7 +3740,6 @@ Page({
         if (record.details && Array.isArray(record.details)) {
           // 处理已有details数组的记录(如健康档案记录)
 
-
           // 获取用户信息用于查询自定义指标名称
           const { openid, currentProfileId } = this.data;
 
@@ -3787,14 +3764,10 @@ Page({
                 };
               });
 
-
-
               // 处理每个详情项
               record.details.forEach(detail => {
                 const setting = indicatorNameMap[detail.name];
                 const displayName = setting ? setting.name : detail.name;
-
-
 
                 // 检查是否异常
                 const numValue = parseFloat(detail.value);
@@ -4407,10 +4380,7 @@ Page({
     }
   },
 
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
+  
   onReachBottom() {
     // 可以实现分页加载
   },
@@ -5048,16 +5018,12 @@ Page({
     return (stoolData.count !== undefined && stoolData.count !== null) ? stoolData.count : '';
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
+  
   onHide() {
 
   },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
+  
   onUnload() {
 
   },
@@ -5105,9 +5071,7 @@ Page({
 
   // ==================== 费用记录相关方法 ====================
 
-  /**
-   * 加载费用记录数据
-   */
+  
   async loadExpenseData() {
     const userInfo = this.getUserInfo();
 
@@ -5193,9 +5157,7 @@ Page({
     }
   },
 
-  /**
-   * 处理费用记录数据
-   */
+  
   async processExpenseRecords(records, dateFilter) {
     // 根据费用类型筛选
     const { selectedExpenseTypeFilter } = this.data;
@@ -5280,9 +5242,7 @@ Page({
     });
   },
 
-  /**
-   * 按日期分组费用记录
-   */
+  
   groupExpenseRecordsByDate(records) {
     const groupedMap = {};
 
@@ -5321,9 +5281,7 @@ Page({
     return groupedArray;
   },
 
-  /**
-   * 计算时间范围内的天数
-   */
+  
   calculateDaysInRange(dateFilter) {
     switch (dateFilter) {
       case '7': return 7;
@@ -5336,9 +5294,7 @@ Page({
     }
   },
 
-  /**
-   * 格式化日期用于数据库查询
-   */
+  
   formatDateForDB(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -5346,10 +5302,7 @@ Page({
     return `${year}-${month}-${day}`;
   },
 
-
-  /**
-   * 跳转到费用记录详情页
-   */
+  
   navigateToExpenseDetail(e) {
     const { date } = e.currentTarget.dataset;
     wx.navigateTo({

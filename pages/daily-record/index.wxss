@@ -10,10 +10,6 @@
   position: relative;
 }
 
-/* ================================
-   骨架屏加载动画 - 高级流畅设计
-   ================================ */
-
 .skeleton-wrapper {
   position: absolute;
   top: 0;
@@ -37,7 +33,6 @@
   }
 }
 
-/* 内容显示/隐藏动画 */
 .content-hidden {
   opacity: 0;
   pointer-events: none;
@@ -60,7 +55,6 @@
   }
 }
 
-/* 骨架屏基础元素 */
 .skeleton-shimmer {
   position: absolute;
   top: 0;
@@ -131,7 +125,6 @@
   background: linear-gradient(135deg, #E8E4DD 0%, #F0EDE8 100%);
 }
 
-/* 页面头部骨架 */
 .skeleton-page-header {
   margin: 24rpx 24rpx 16rpx;
   padding: 24rpx 28rpx;
@@ -153,7 +146,6 @@
   flex-direction: column;
 }
 
-/* 今日事项骨架 */
 .skeleton-tasks-card {
   margin: 16rpx 24rpx;
   padding: 24rpx 28rpx;
@@ -184,7 +176,6 @@
   margin-bottom: 0;
 }
 
-/* 日期横幅骨架 */
 .skeleton-date-banner {
   margin: 24rpx;
   padding: 28rpx 32rpx;
@@ -197,7 +188,6 @@
   overflow: hidden;
 }
 
-/* 日历骨架 */
 .skeleton-calendar {
   margin: 24rpx;
   padding: 24rpx;
@@ -220,7 +210,6 @@
   justify-content: center;
 }
 
-/* 功能项骨架 */
 .skeleton-functions {
   margin: 24rpx;
   display: grid;
@@ -243,7 +232,6 @@
   box-shadow: 0 2rpx 8rpx rgba(212, 165, 116, 0.08);
 }
 
-/* 通用卡片样式 - 现代轻奢设计 */
 .card {
   margin: 24rpx;
   background: #FFFFFF;
@@ -268,8 +256,6 @@
   border-radius: 0;
 }
 
-/* 移除外层复杂光晕以提升性能 */
-
 .banner-swiper {
   width: 100%;
   height: 100%;
@@ -279,12 +265,9 @@
   z-index: 2;
   box-shadow: 0 4rpx 20rpx var(--shadow-card);
   border: 1rpx solid var(--border-light);
-  /* 移除复杂的边框动画 */
+  
 }
 
-/* 移除边框流动动画以提升性能 */
-
-/* 🎆 超级炫酷轮播项 - 暖橙主题豪华渐变 */
 .banner-item {
   width: 100%;
   height: 100%;
@@ -312,7 +295,6 @@
   position: relative;
 }
 
-/* 🌈 简化渐变流动动画 - 高性能版 */
 @keyframes banner-simple-flow {
 
   0%,
@@ -325,7 +307,6 @@
   }
 }
 
-/* ✨ 全息光束扫描效果 */
 .banner-item::before {
   content: '';
   position: absolute;
@@ -346,7 +327,6 @@
   z-index: 1;
 }
 
-/* 🌟 简化扫描动画 - 高性能版 */
 @keyframes banner-simple-scan {
 
   0%,
@@ -361,7 +341,6 @@
   }
 }
 
-/* 🔥 数字雨效果线条 */
 .banner-item::after {
   content: '';
   position: absolute;
@@ -382,7 +361,6 @@
   box-shadow: var(--shadow-light);
 }
 
-/* 图片轮播样式 - 无padding，占满整个区域 */
 .banner-item-image {
   padding: 0 !important;
   background: none !important;
@@ -400,7 +378,6 @@
   height: 100%;
 }
 
-/* 💫 简化脉冲动画 - 高性能版 */
 @keyframes banner-simple-pulse {
 
   0%,
@@ -413,7 +390,6 @@
   }
 }
 
-/* 🎨 赛博朋克文字样式 - 超清晰全息效果 */
 .banner-text {
   color: var(--color-white-pure);
   font-size: 40rpx;
@@ -430,15 +406,14 @@
     0 2rpx 4rpx rgba(0, 0, 0, 0.8);
   letter-spacing: 2rpx;
   animation: banner-cyber-text 10s ease-in-out infinite;
-  /* 文字渲染优化 */
+  
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  /* 添加数字效果滤镜 */
+  
   filter: contrast(1.2) brightness(1.1);
 }
 
-/* 轮播图图片样式 */
 .banner-image {
   width: 100%;
   height: 100%;
@@ -446,7 +421,6 @@
   border-radius: 28rpx;
 }
 
-/* 📱 橙色主题文字动画 - 暖光闪烁效果 */
 @keyframes banner-cyber-text {
 
   0%,
@@ -487,7 +461,6 @@
   }
 }
 
-/* 关键日期卡片样式 */
 .date-card {
   width: 100%;
 }
@@ -601,9 +574,6 @@
   overflow: hidden;
 }
 
-/* 移除日历卡片动画以提升性能 */
-
-/* 现代轻奢顶部装饰线 */
 .calendar-card::before {
   content: '';
   position: absolute;
@@ -620,7 +590,6 @@
   border-radius: 24rpx 24rpx 0 0;
 }
 
-/* 🌈 彩虹流动动画 */
 @keyframes calendar-rainbow-flow {
   0% {
     background-position: -200% center;
@@ -630,8 +599,6 @@
     background-position: 200% center;
   }
 }
-
-/* 移除复杂的光粒子动画以提升性能 */
 
 .calendar-header {
   display: flex;
@@ -738,7 +705,6 @@
   padding: 0 8rpx;
 }
 
-/* 💎 玻璃透光日期格子 - 超级炫酷效果 */
 .day {
   width: 100%;
   aspect-ratio: 1;
@@ -758,7 +724,6 @@
   overflow: hidden;
 }
 
-/* ✨ 玻璃表面反光效果 */
 .day::before {
   content: '';
   position: absolute;
@@ -777,31 +742,24 @@
   transform: rotate(-45deg);
   transition: opacity 0.3s ease-out, transform 0.3s ease-out;
   opacity: 0;
-  /* 移除微光动画以提升性能 */
+  
 }
 
-/* 移除微光动画定义以提升性能 */
-
-/* 🎯 日期格子炫酷交互效果 - 震动配合视觉反馈 */
 .day:active {
   transform: scale3d(0.88, 0.88, 1) translateZ(20rpx);
   box-shadow: var(--shadow-light);
   backdrop-filter: blur(35rpx) saturate(180%) contrast(120%);
   -webkit-backdrop-filter: blur(35rpx) saturate(180%) contrast(120%);
-  /* 移除点击时的额外动画，只保留transform变化 */
+  
 }
-
-/* 移除点击脉冲动画以提升性能 */
 
 .day:active::before {
   opacity: 1;
   top: -30%;
   left: -30%;
   transform: rotate(-45deg) scale(1.5);
-  /* 简化光效，只改变透明度和尺寸 */
+  
 }
-
-/* 移除点击光效动画以提升性能 */
 
 .day-number {
   font-size: 30rpx;
@@ -812,7 +770,6 @@
   transition: all 0.3s ease;
 }
 
-/* 🌟 今日日期 - 超级炫酷全息玻璃效果 */
 .today {
   background: linear-gradient(145deg,
       #FFB84D 0%,
@@ -828,7 +785,6 @@
   z-index: 5;
 }
 
-/* 🎆 今日日期简化脉冲动画 - 高性能版 */
 @keyframes today-simple-pulse {
 
   0%,
@@ -841,7 +797,6 @@
   }
 }
 
-/* ✨ 今日日期超级光效 */
 .today::before {
   background: linear-gradient(45deg,
       transparent 0%,
@@ -857,7 +812,6 @@
   animation: today-simple-shine 8s ease-in-out infinite;
 }
 
-/* 🌟 今日简化光效动画 - 高性能版 */
 @keyframes today-simple-shine {
 
   0%,
@@ -908,7 +862,6 @@
   }
 }
 
-/* 🌟 选中日期 - 明亮透明橘色 */
 .selected {
   background: rgba(255, 152, 0, 0.8) !important;
   border: 2rpx solid rgba(255, 193, 7, 0.6);
@@ -987,7 +940,6 @@
   }
 }
 
-/* 🌟 事件标记点 - 立体微型宝石效果 */
 .has-event {
   position: relative;
 }
@@ -1071,7 +1023,6 @@
   position: absolute !important;
 }
 
-/* ==================== 暖光里程碑 - 完全参考个人档案 ==================== */
 .milestone-section {
   box-sizing: border-box;
   width: 712rpx;
@@ -1089,7 +1040,6 @@
   z-index: 1;
 }
 
-/* 标题栏 - 完全参考个人档案的section-header */
 .milestone-header {
   display: flex;
   justify-content: space-between;
@@ -1100,7 +1050,6 @@
   position: relative;
 }
 
-/* 装饰性下划线 */
 .milestone-header::after {
   content: '';
   position: absolute;
@@ -1144,7 +1093,6 @@
   letter-spacing: 0.2rpx;
 }
 
-/* 编辑按钮 - 完全使用公共样式 */
 .milestone-edit-btn {
   display: flex;
   align-items: center;
@@ -1195,7 +1143,6 @@
   min-height: 140rpx;
 }
 
-/* 里程碑网格 - 简单有效的2列布局 */
 .milestone-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1204,7 +1151,6 @@
   width: 100%;
 }
 
-/* 滚动视图样式 - 超过6个里程碑时使用 */
 .milestone-scroll {
   width: 100%;
   overflow-x: auto;
@@ -1225,7 +1171,6 @@
   flex-shrink: 0;
 }
 
-/* 里程碑卡片 - 简单固定宽度 */
 .milestone-card {
   width: 49%;
   background: linear-gradient(135deg, #ffffff 0%, #fefefe 50%, #ffffff 100%);
@@ -1246,35 +1191,31 @@
   box-sizing: border-box;
 }
 
-/* 单个里程碑时占满整行 */
 .milestone-grid.single-item {
   justify-content: flex-start;
 }
 
 .milestone-card.single-card {
   width: 100%;
-  /* 横向布局，左右分布 */
+  
   flex-direction: row;
   align-items: center;
   padding: 32rpx 40rpx;
   min-height: 180rpx;
 }
 
-/* 单个里程碑的头部信息 */
 .milestone-card.single-card .milestone-card-header {
   flex: 1;
   margin-bottom: 0;
   margin-right: 32rpx;
 }
 
-/* 单个里程碑的主体（数字区域） */
 .milestone-card.single-card .milestone-card-body {
   flex: none;
   width: auto;
   text-align: right;
 }
 
-/* 单个里程碑时数字样式调整 - 适配多位数 */
 .milestone-card.single-card .milestone-days-text {
   font-size: 88rpx;
   line-height: 1;
@@ -1288,7 +1229,6 @@
   font-size: 30rpx;
 }
 
-/* 卡片内光效 */
 .milestone-card::before {
   content: '';
   position: absolute;
@@ -1312,7 +1252,6 @@
     inset 0 2rpx 4rpx rgba(255, 255, 255, 0.6);
 }
 
-/* 卡片头部 - 精致版式 */
 .milestone-card-header {
   margin-bottom: 12rpx;
   position: relative;
@@ -1336,7 +1275,6 @@
   letter-spacing: 0.2rpx;
 }
 
-/* 卡片主体 - 左对齐倒数日显示 */
 .milestone-card-body {
   flex: 1;
   display: flex;
@@ -1424,7 +1362,6 @@
   position: relative;
 }
 
-/* 数字阴影效果 */
 .milestone-days-text::before {
   content: attr(data-days);
   position: absolute;
@@ -1504,8 +1441,6 @@
   opacity: 0.8;
 }
 
-
-/* ==================== 🎯 紧凑日期选择器设计 ==================== */
 .date-selector-section {
   margin: 24rpx 24rpx;
   padding: 0;
@@ -1586,19 +1521,17 @@
   background: var(--primary-alpha-06);
 }
 
-/* ==================== 🔥 高级功能项网格 - 与里程碑风格统一 ==================== */
 .functions-grid {
   box-sizing: border-box;
   width: 100%;
   display: grid;
-  /* 保证两列等宽且不被内部内容撑破 */
+  
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20rpx;
   padding: 0 24rpx;
   margin-bottom: 32rpx;
 }
 
-/* ==================== 功能卡片骨架屏 ==================== */
 .function-card-skeleton {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10rpx);
@@ -1683,7 +1616,6 @@
   }
 }
 
-/* 提高选择器优先级，避免弹窗中的通用 .function-card 规则干扰 */
 .functions-grid .function-card {
   box-sizing: border-box;
   width: 100%;
@@ -1797,7 +1729,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  /* 防止子元素宽度缩成内容宽 */
+  
   background: transparent;
 }
 
@@ -1805,15 +1737,14 @@
   box-sizing: border-box;
   flex: 1;
   padding: 10rpx 0;
-  /* 直接承担内层容器的内边距 */
+  
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: stretch;
-  /* 默认为flex布局 */
+  
 }
 
-/* 血常规类型：网格布局 */
 .function-card--blood .function-card-data,
 .function-card--liver .function-card-data,
 .function-card--kidney .function-card-data,
@@ -1824,7 +1755,6 @@
   gap: 14rpx;
 }
 
-/* 用药记录：两行垂直布局 */
 .function-card--medication .function-card-data {
   display: flex;
   flex-direction: column;
@@ -1832,7 +1762,6 @@
   justify-content: space-between;
 }
 
-/* 单指标类型：垂直居中 */
 .function-card--urine .function-card-data,
 .function-card--stool .function-card-data {
   display: flex;
@@ -1843,7 +1772,6 @@
   min-height: 150rpx;
 }
 
-/* EB病毒等单一数据类型：垂直布局 */
 .function-card--ebv .function-card-data,
 .function-card--cmv .function-card-data,
 .function-card--ldh .function-card-data {
@@ -1853,9 +1781,6 @@
   min-height: 94rpx;
 }
 
-/* ============================
-   🩺 简洁血常规展示设计
-   ============================ */
 .medical-data-preview {
   padding: 20rpx;
   background: rgba(255, 248, 240, 0.6);
@@ -1996,9 +1921,6 @@
   text-shadow: 0 1rpx 3rpx rgba(255, 107, 53, 0.2);
 }
 
-/* ============================
-   🦠 简洁病毒检测展示设计
-   ============================ */
 .virus-data-preview {
   padding: 20rpx;
   background: rgba(232, 245, 233, 0.6);
@@ -2089,9 +2011,6 @@
   transform: scale(0.95);
 }
 
-/* ============================
-   🫀 简洁器官功能展示设计
-   ============================ */
 .organ-data-preview {
   padding: 20rpx;
   background: rgba(255, 243, 224, 0.6);
@@ -2152,7 +2071,6 @@
   margin-top: 2rpx;
 }
 
-/* 精致空状态卡片 */
 .empty-state-card {
   display: flex;
   flex-direction: column;
@@ -2287,9 +2205,6 @@
   opacity: 0.9;
 }
 
-/* ============================
-   🩺 血压专业显示设计 - 简洁版
-   ============================ */
 .bp-display-container {
   display: flex;
   flex-direction: column;
@@ -2376,7 +2291,6 @@
   letter-spacing: 0.3rpx;
 }
 
-/* 血压卡片特殊布局 */
 .function-card--bloodPressure .function-card-data {
   padding: 16rpx;
   display: flex;
@@ -2384,9 +2298,6 @@
   gap: 0;
 }
 
-/* ============================
-   ✨ 专业级空状态设计
-   ============================ */
 .no-data-display {
   display: flex;
   flex-direction: column;
@@ -2439,7 +2350,6 @@
   opacity: 0.6;
 }
 
-/* 响应式设计优化 */
 @media (max-width: 375px) {
 
   .medical-data-preview,
@@ -2488,7 +2398,6 @@
   }
 }
 
-/* 平板设备优化 */
 @media (min-width: 768px) {
 
   .medical-indicators,
@@ -2505,8 +2414,6 @@
   }
 }
 
-
-/* 极简现代设计 */
 .data-item {
   display: flex;
   flex-direction: column;
@@ -2537,8 +2444,6 @@
   justify-items: center;
 }
 
-/* 极简设计，移除所有动画 */
-
 .data-label {
   font-size: 24rpx;
   color: rgba(0, 0, 0, 0.35);
@@ -2562,8 +2467,6 @@
   letter-spacing: -0.8rpx;
   line-height: 1.1;
 }
-
-/* 移除渐变动画 */
 
 .function-card-date {
   font-size: 22rpx;
@@ -2602,7 +2505,6 @@
   transform: scale(0.95);
 }
 
-/* 百万年薪级别的空状态设计 */
 .empty-state-premium {
   display: flex;
   flex-direction: column;
@@ -2821,8 +2723,6 @@
   letter-spacing: 0.5rpx;
 }
 
-
-/* 新增：功能卡片状态标记 */
 .function-card-status {
   position: absolute;
   top: 20rpx;
@@ -2867,13 +2767,11 @@
   opacity: 0.7;
 }
 
-/* 添加图标悬浮效果 */
 .function-card:hover .function-card-icon {
   transform: translateY(-2rpx);
   box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.15);
 }
 
-/* 数据加载动画 */
 @keyframes shimmer {
   0% {
     background-position: -200% center;
@@ -2893,7 +2791,6 @@
   animation: shimmer 1.5s infinite;
 }
 
-/* 用药记录特殊样式 */
 .medication-progress-mini {
   display: flex;
   flex-direction: column;
@@ -2925,8 +2822,6 @@
   font-size: 24rpx;
   color: var(--text-secondary);
 }
-
-/* 用药记录新版展示样式 - 已移除，现在使用网格布局 */
 
 .med-header {
   display: flex;
@@ -2982,7 +2877,6 @@
   position: relative;
 }
 
-/* 100%完成时使用低调的灰色 */
 .med-progress-fill.med-progress-completed {
   background: #666;
 }
@@ -2998,7 +2892,6 @@
   border-radius: 3rpx;
 }
 
-/* 最近用药展示区域 */
 .medication-recent-display {
   border-top: 1px solid #f0f0f0;
   padding-top: 16rpx;
@@ -3081,7 +2974,6 @@
   color: #999;
 }
 
-/* 用药记录卡片在功能项网格中的高度匹配 */
 .functions-grid .function-card--medication .blood-simple {
   min-height: 150rpx;
   display: flex;
@@ -3091,7 +2983,6 @@
   box-sizing: border-box;
 }
 
-/* 门诊记录简洁统一展示样式 */
 .clinic-main-info {
   display: flex;
   flex-direction: column;
@@ -3123,9 +3014,6 @@
   white-space: nowrap;
 }
 
-/* 门诊记录使用与血常规完全相同的样式 - 无需额外样式，直接复用 .blood-simple-item, .bs-label, .bs-value, .bs-unit */
-
-/* 门诊记录卡片在功能项网格中的高度匹配 */
 .functions-grid .function-card--clinic .blood-simple {
   min-height: 150rpx;
   display: flex;
@@ -3173,7 +3061,6 @@
   border-radius: 5rpx 5rpx 0 0;
 }
 
-/* ==================== 📱 响应式优化 ==================== */
 @media (max-width: 360px) {
   .functions-grid {
     padding: 0 16rpx;
@@ -3196,14 +3083,12 @@
   }
 }
 
-/* 功能列表样式 - 添加外层padding保持一致 */
 .function-list {
   width: 100%;
   background: transparent;
   box-sizing: border-box;
 }
 
-/* 强制分隔线显示 - 使用全局变量保持一致 */
 .function-list .function-item::after {
   content: '' !important;
   position: absolute !important;
@@ -3216,20 +3101,10 @@
   border-radius: 1rpx !important;
 }
 
-/* 最后一个功能项不显示分隔线 */
 .function-list .function-item:last-child::after {
   display: none !important;
 }
 
-
-
-/* 使用全局的 .function-icon 样式，已定义在 app.wxss 中 */
-
-/* 使用全局的 .function-info 和 .function-title 样式，已定义在 app.wxss 中 */
-
-/* 使用全局的 .function-info 和 .function-desc 样式，已定义在 app.wxss 中 */
-
-/* 今日事项样式 - 温暖橙色主题 */
 .today-tasks {
   width: 100%;
   margin: 24rpx;
@@ -3246,7 +3121,6 @@
   overflow: hidden;
 }
 
-/* 🌟 今日待办轻微跑马灯效果 */
 .today-tasks::before {
   content: '';
   position: absolute;
@@ -3265,7 +3139,6 @@
   z-index: 1;
 }
 
-/* 🎭 今日待办跑马灯动画 - 更慢更轻微 */
 @keyframes task-marquee-flow {
   0% {
     left: -100%;
@@ -3285,8 +3158,6 @@
     opacity: 0;
   }
 }
-
-/* 移除今日待办顶部横条 */
 
 .add-btn {
   width: 56rpx;
@@ -3327,8 +3198,6 @@
   overflow: hidden;
   box-shadow: var(--shadow-card);
 }
-
-/* 移除今日待办卡片顶部横条 */
 
 .task-item::after {
   content: '';
@@ -3456,7 +3325,6 @@
   opacity: 0.8;
 }
 
-/* 关键日空状态样式 */
 .empty-key-dates {
   display: flex;
   flex-direction: column;
@@ -3474,7 +3342,6 @@
   margin-top: 16rpx;
 }
 
-/* 添加事项弹窗样式 */
 .task-form {
   padding: 32rpx 0;
 }
@@ -3510,7 +3377,6 @@
   min-width: 160rpx;
 }
 
-/* 顶部日期选择 */
 .date-header {
   background-color: var(--color-white-pure);
   padding: 24rpx;
@@ -3531,7 +3397,6 @@
   font-weight: 500;
 }
 
-/* 血象记录表单 */
 .record-form {
   background: #FFFFFF;
   border-radius: 20rpx;
@@ -3550,7 +3415,6 @@
   margin-bottom: 24rpx;
 }
 
-/* 上传血常规报告 */
 .upload-section {
   background-color: var(--color-white-pure);
   border-radius: 16rpx;
@@ -3558,7 +3422,6 @@
   margin-bottom: 24rpx;
 }
 
-/* 自定义主题色 - 立体化按钮 */
 .t-button--primary {
   background: linear-gradient(135deg, #FFB84D 0%, #E6C390 100%) !important;
   box-shadow:
@@ -3593,7 +3456,6 @@
     0 4rpx 12rpx rgba(212, 165, 116, 0.1) !important;
 }
 
-/* 输入框样式 */
 .t-input {
   --td-input-vertical-padding: 24rpx;
 }
@@ -3607,7 +3469,6 @@
   color: #999;
 }
 
-/* 单元格样式 */
 .t-cell {
   padding: 24rpx 0;
 }
@@ -3630,7 +3491,6 @@
   background-color: var(--color-orange-500) !important;
 }
 
-/* 滑动删除按钮样式 */
 .t-button--danger {
   background-color: #E34D59 !important;
   color: var(--color-white-pure) !important;
@@ -3642,7 +3502,6 @@
   font-size: 28rpx !important;
 }
 
-/* 添加按钮样式 */
 .add-btn {
   width: 48rpx;
   height: 48rpx;
@@ -3659,7 +3518,6 @@
   background: var(--color-orange-100);
 }
 
-/* 弹窗样式 */
 .popup-content {
   background: #FFFFFF;
   border-radius: 24rpx 24rpx 0 0;
@@ -3879,7 +3737,6 @@
   transform: rotate(90deg);
 }
 
-/* 统一关闭按钮样式 - 暖色调设计 */
 .milestone-close-btn {
   width: 60rpx;
   height: 60rpx;
@@ -3937,8 +3794,6 @@
   transform: rotate(90deg);
 }
 
-/* 血常规样式复制 - 里程碑编辑弹窗 */
-/* 日期选择区域 */
 .date-section {
   background: white;
   padding: 30rpx;
@@ -3976,7 +3831,6 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 表单容器 */
 .form-container {
   flex: 1;
   padding: 30rpx;
@@ -4028,7 +3882,6 @@
   color: #333;
 }
 
-/* 底部按钮 */
 .bottom-actions {
   position: fixed;
   bottom: env(safe-area-inset-bottom, 0);
@@ -4043,7 +3896,6 @@
   z-index: 100;
 }
 
-/* 立体化保存按钮 */
 .save-btn {
   flex: 2;
   height: 92rpx !important;
@@ -4085,7 +3937,6 @@
     inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2) !important;
 }
 
-/* 立体化删除按钮 - 灰色主题区分 */
 .delete-btn {
   flex: 1;
   height: 88rpx;
@@ -4131,7 +3982,6 @@
     inset 0 3rpx 6rpx rgba(255, 255, 255, 0.15);
 }
 
-/* 里程碑编辑表单 - 应用血常规样式 */
 .milestone-edit-form {
   padding: 32rpx;
   background: white;
@@ -4280,7 +4130,6 @@
     inset 0 3rpx 6rpx rgba(255, 255, 255, 0.15);
 }
 
-/* 旧样式保留以防冲突 */
 .milestone-edit-form {
   padding: 32rpx;
   background: var(--color-bg-secondary);
@@ -4380,9 +4229,6 @@
   color: white !important;
 }
 
-/* 已删除重复样式 */
-
-/* 编辑表单样式 */
 .edit-form {
   margin-bottom: 30rpx;
 }
@@ -4528,9 +4374,6 @@
     inset 0 2rpx 4rpx rgba(212, 165, 116, 0.1);
 }
 
-
-
-/* 🎨 全局视觉增强 */
 .function-list {
   position: relative;
 }
@@ -4554,19 +4397,6 @@
   backdrop-filter: blur(12rpx);
 }
 
-/* 使用全局的 .function-item 样式，已定义在 app.wxss 中，包括分隔线样式 */
-
-/* 所有功能项目相关样式已移至全局 app.wxss，包括：
-   - .function-item（容器样式和分隔线）
-   - .function-icon（图标样式）
-   - .function-info、.function-title、.function-desc（文字样式）
-   - .function-arrow（箭头样式）
-   - :active 状态样式 */
-
-
-
-
-
 .blood-test-item,
 .ebv-item,
 .cmv-item,
@@ -4577,7 +4407,7 @@
 .urine-item,
 
 .stool-item {
-  /* 强制继承.function-item的所有样式 */
+  
   min-height: 140rpx !important;
   position: relative !important;
   overflow: hidden !important;
@@ -4602,7 +4432,6 @@
   filter: drop-shadow(0 10rpx 30rpx var(--primary-alpha-18)) blur(0.2rpx) contrast(1.08) !important;
 }
 
-/* 🩸 血常规 */
 .blood-test-item::before {
   animation-delay: 0.6s;
 }
@@ -4612,7 +4441,6 @@
   filter: drop-shadow(0 9rpx 28rpx var(--primary-alpha-16)) blur(0.1rpx) contrast(1.1) !important;
 }
 
-/* 🦠 EB病毒检测 */
 .ebv-item::before {
   animation-delay: 1.2s;
 }
@@ -4622,7 +4450,6 @@
   filter: drop-shadow(0 8rpx 26rpx var(--primary-alpha-15)) blur(0.3rpx) contrast(1.05) !important;
 }
 
-/* 🧬 巨细胞病毒检测 */
 .cmv-item::before {
   animation-delay: 1.5s;
 }
@@ -4632,9 +4459,6 @@
   filter: drop-shadow(0 8rpx 26rpx var(--primary-alpha-15)) blur(0.3rpx) contrast(1.05) !important;
 }
 
-/* 🩸 EB和CMV病毒检测 - 删除呼吸动画，保持一致性 */
-
-/* 🫀 肝肾功能 */
 .organ-item::before {
   animation-delay: 1.8s;
 }
@@ -4644,7 +4468,6 @@
   filter: drop-shadow(0 11rpx 32rpx var(--primary-alpha-19)) blur(0.2rpx) contrast(1.12) !important;
 }
 
-/* 💊 用药记录 */
 .medicine-item::before {
   animation-delay: 2.4s;
 }
@@ -4654,7 +4477,6 @@
   filter: drop-shadow(0 7rpx 24rpx rgba(255, 152, 0, 0.14)) blur(0.1rpx) contrast(1.06) !important;
 }
 
-/* 🏥 门诊记录 */
 .clinic-item::before {
   animation-delay: 3s;
 }
@@ -4664,7 +4486,6 @@
   filter: drop-shadow(0 12rpx 34rpx rgba(255, 152, 0, 0.20)) blur(0.2rpx) contrast(1.15) !important;
 }
 
-/* 💧 尿量记录 */
 .urine-item::before {
   animation-delay: 3.6s;
 }
@@ -4674,7 +4495,6 @@
   filter: drop-shadow(0 7rpx 22rpx rgba(255, 152, 0, 0.14)) blur(0.2rpx) !important;
 }
 
-/* 💩 排便记录 */
 .stool-item::before {
   animation-delay: 4.2s;
 }
@@ -4730,7 +4550,6 @@
   }
 }
 
-
 .blood-test-header {
   margin-bottom: 16rpx;
 }
@@ -4767,7 +4586,6 @@
   animation: fadeInUp 0.6s ease-out;
 }
 
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -4780,9 +4598,6 @@
   }
 }
 
-
-/* 移除关键日顶部横条 */
-
 .key-date-item::after {
   content: '';
   position: absolute;
@@ -4794,7 +4609,6 @@
   border-radius: 12rpx 12rpx 0 0;
   z-index: 3;
 }
-
 
 .key-date-header {
   margin-bottom: 12rpx;
@@ -4846,9 +4660,6 @@
   font-style: italic;
 }
 
-
-/* 移除用药记录顶部横条 */
-
 .medicine-item::after {
   content: '';
   position: absolute;
@@ -4860,7 +4671,6 @@
   border-radius: 12rpx 12rpx 0 0;
   z-index: 3;
 }
-
 
 .medicine-header {
   margin-bottom: 12rpx;
@@ -4902,7 +4712,6 @@
   border-radius: 12rpx;
   border: 1rpx solid rgba(255, 143, 0, 0.1);
 }
-
 
 .medication-title-row-perfect {
   display: flex;
@@ -5001,7 +4810,6 @@
     0 1rpx 2rpx rgba(0, 0, 0, 0.05);
 }
 
-/* 💊 用药进度条动态效果 */
 .medication-progress-fill-perfect {
   height: 100%;
   background: linear-gradient(135deg,
@@ -5167,10 +4975,6 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 门诊记录预览样式 - 统一深蓝灰主题 */
-
-/* 移除门诊记录顶部横条 */
-
 .clinic-item::after {
   content: '';
   position: absolute;
@@ -5182,7 +4986,6 @@
   border-radius: 12rpx 12rpx 0 0;
   z-index: 3;
 }
-
 
 .clinic-header {
   margin-bottom: 12rpx;
@@ -5286,7 +5089,7 @@
   align-items: center;
   gap: 10rpx;
   flex: 1;
-  /* 允许信息完整显示 */
+  
   min-width: 200rpx;
   flex-wrap: wrap;
 }
@@ -5307,7 +5110,7 @@
     inset 0 1rpx 2rpx rgba(255, 255, 255, 0.5);
   letter-spacing: 0.5rpx;
   text-shadow: 0 1rpx 2rpx var(--primary-alpha-10);
-  /* 移除省略号限制，显示完整医院名称 */
+  
   flex-shrink: 0;
 }
 
@@ -5326,7 +5129,7 @@
     0 2rpx 8rpx var(--primary-alpha-10),
     inset 0 1rpx 1rpx rgba(255, 255, 255, 0.4);
   letter-spacing: 0.3rpx;
-  /* 移除省略号限制，显示完整科室名称 */
+  
   flex-shrink: 0;
 }
 
@@ -5355,7 +5158,6 @@
   position: relative;
   overflow: hidden;
 }
-
 
 .clinic-title-row .function-title {
   margin-bottom: 0;
@@ -5435,7 +5237,6 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 门诊记录新增样式 */
 .clinic-date {
   margin-left: 20rpx;
   font-size: 24rpx;
@@ -5511,7 +5312,6 @@
   letter-spacing: 0.3rpx;
 }
 
-/* 门诊记录新版样式 */
 .clinic-header-new {
   margin-bottom: 12rpx;
 }
@@ -5603,7 +5403,6 @@
   font-weight: 500;
 }
 
-/* 用药记录新版样式 */
 .medication-header-new {
   margin-bottom: 12rpx;
 }
@@ -5656,7 +5455,7 @@
   border: 1rpx solid rgba(255, 143, 0, 0.3);
   position: relative;
   overflow: hidden;
-  /* 🌟 核心：数字变化时的轻微缩放动画 */
+  
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
     0 8rpx 20rpx rgba(255, 143, 0, 0.25),
@@ -5742,7 +5541,7 @@
   border-radius: 6rpx;
   position: relative;
   overflow: hidden;
-  /* 🌟 核心动画：缓动过渡 + 数值变化动画 */
+  
   transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
     0 2rpx 8rpx rgba(255, 143, 0, 0.3),
@@ -5834,7 +5633,6 @@
   font-weight: 600;
 }
 
-/* 门诊记录统一标签样式 */
 .clinic-header-unified {
   margin-bottom: 12rpx;
 }
@@ -5976,9 +5774,6 @@
   font-weight: 500;
 }
 
-
-
-/* 🌟 Recent记录样式 - 统一橘黄主题 */
 .recent-count {
   background: linear-gradient(135deg,
       var(--primary-alpha-15) 0%,
@@ -6054,7 +5849,6 @@
   font-weight: 600 !important;
 }
 
-/* 💩 排便记录专门样式设计 */
 .stool-header {
   margin-bottom: 8rpx;
 }
@@ -6127,7 +5921,6 @@
   font-weight: 600 !important;
 }
 
-/* 🦠 病毒检测专门样式设计 */
 .virus-header {
   margin-bottom: 12rpx;
 }
@@ -6202,7 +5995,6 @@
   font-weight: 600 !important;
 }
 
-/* 🫀 肝肾功能专门样式设计 */
 .organ-header {
   margin-bottom: 12rpx;
 }
@@ -6277,7 +6069,6 @@
   font-weight: 600 !important;
 }
 
-/* 🌟 Recent提示样式 */
 .recent-hint {
   padding: 6rpx 10rpx;
   background: linear-gradient(135deg,
@@ -6373,7 +6164,6 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-
 .recent-hint-icon {
   font-size: 20rpx;
   margin-right: 6rpx;
@@ -6389,8 +6179,6 @@
   text-shadow: 0 1rpx 2rpx var(--primary-alpha-10);
 }
 
-
-/* 日期详情弹窗样式 - 优化版 */
 .date-detail-popup {
   background: linear-gradient(135deg, var(--color-white-pure) 0%, #fafafa 100%);
   border-radius: 24rpx;
@@ -6469,8 +6257,6 @@
   }
 }
 
-
-
 .date-detail-title {
   font-size: 38rpx;
   color: white;
@@ -6504,10 +6290,6 @@
   position: relative;
   overflow: hidden;
 }
-
-/* 移除弹窗区块顶部横条基础样式 */
-
-/* 移除弹窗中各区块顶部横条 */
 
 .date-detail-section-title {
   font-size: 30rpx;
@@ -6576,8 +6358,6 @@
     inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
 }
 
-/* 移除弹窗血常规数据顶部横条 */
-
 .blood-data-item:active {
   transform: translateY(1rpx) scale(0.96);
   box-shadow:
@@ -6618,8 +6398,6 @@
     0 2rpx 8rpx rgba(0, 0, 0, 0.04),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.8);
 }
-
-/* 移除弹窗关键日期顶部横条 */
 
 .date-detail-keydate:active {
   transform: translateY(1rpx) scale(0.98);
@@ -6876,7 +6654,6 @@
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* 门诊记录相关样式 */
 .clinic-section .section-icon {
   background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
 }
@@ -7021,7 +6798,6 @@
   font-weight: 500;
 }
 
-/* 用药记录相关样式 */
 .medication-section .section-icon {
   background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
 }
@@ -7088,7 +6864,6 @@
   min-width: 0;
 }
 
-/* 弹窗中100%完成时使用低调的灰色 */
 .progress-fill.progress-completed {
   background: #666;
 }
@@ -7179,8 +6954,6 @@
   transform: translateX(4rpx);
 }
 
-
-/* 分时段服药状态显示 */
 .medication-time-slots-detail {
   display: flex;
   flex-wrap: wrap;
@@ -7248,9 +7021,6 @@
   border: 2rpx solid rgba(158, 158, 158, 0.3);
 }
 
-/* 尿量记录弹窗样式 */
-
-
 .urine-section .section-icon {
   background: rgba(255, 255, 255, 0.2);
 }
@@ -7317,9 +7087,6 @@
   border-radius: 16rpx;
   border: 1rpx solid var(--primary-alpha-20);
 }
-
-/* 排便记录弹窗样式 */
-
 
 .stool-section .section-icon {
   background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
@@ -7394,8 +7161,6 @@
   font-weight: 500;
 }
 
-
-
 .stool-info-detail {
   display: flex;
   align-items: center;
@@ -7434,7 +7199,6 @@
   font-weight: 500;
 }
 
-/* 美化病毒检测记录样式 */
 .virus-section-enhanced .section-icon {
   background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
 }
@@ -7647,7 +7411,6 @@
   flex: 1;
 }
 
-/* 肝肾功能指标展示样式 */
 .organ-indicators-display {
   margin-top: 12rpx;
 }
@@ -7701,7 +7464,6 @@
     inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
 }
 
-/* 肝功能标签 - 绿色系 */
 .liver-tag {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(129, 199, 132, 0.15) 100%);
   border: 1rpx solid rgba(76, 175, 80, 0.25);
@@ -7726,7 +7488,6 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 肾功能标签 - 蓝色系 */
 .kidney-tag {
   background: linear-gradient(135deg, rgba(255, 143, 0, 0.1) 0%, rgba(255, 183, 77, 0.15) 100%);
   border: 1rpx solid rgba(255, 143, 0, 0.25);
@@ -7751,7 +7512,6 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 美化肝肾功能记录样式 */
 .organ-section-enhanced .section-icon {
   background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
 }
@@ -7921,8 +7681,6 @@
   border: 1rpx solid rgba(76, 175, 80, 0.1);
 }
 
-
-/* 统一section样式 */
 .unified-section {
   margin-bottom: 24rpx;
   background: var(--bg-color);
@@ -7933,7 +7691,6 @@
   overflow: hidden;
 }
 
-/* 统一标题样式 */
 .unified-title {
   background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
   color: white;
@@ -7955,12 +7712,10 @@
   justify-content: center;
 }
 
-/* 统一数据详情区域 */
 .unified-data-detail {
   padding: 20rpx;
 }
 
-/* 统一摘要区域 */
 .unified-summary {
   display: flex;
   justify-content: space-between;
@@ -7996,7 +7751,6 @@
   color: white;
 }
 
-/* 统一数据网格 */
 .unified-data-grid {
   display: flex;
   flex-direction: column;
@@ -8031,7 +7785,6 @@
   color: #999;
 }
 
-/* 统一数据行 */
 .unified-item-content {
   display: flex;
   flex-direction: column;
@@ -8060,7 +7813,6 @@
   flex: 1;
 }
 
-/* ==================== 新日历组件 - 匹配暖光里程碑样式 ==================== */
 .calendar-section {
   box-sizing: border-box;
   width: 712rpx;
@@ -8076,7 +7828,6 @@
   backdrop-filter: blur(10rpx);
 }
 
-/* 日历标题栏 - 完全匹配里程碑样式 */
 .calendar-header {
   display: flex;
   justify-content: space-between;
@@ -8087,7 +7838,6 @@
   position: relative;
 }
 
-/* 装饰性下划线 */
 .calendar-header::after {
   content: '';
   position: absolute;
@@ -8117,7 +7867,6 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 展开按钮 - 使用公共样式 */
 .calendar-expand-btn {
   margin-left: 25rpx;
   display: flex;
@@ -8161,14 +7910,10 @@
   transform: translateY(1rpx);
 }
 
-/* 日历内容区域 - 极度紧凑设计 */
 .calendar-content {
   min-height: 40rpx;
 }
 
-/* ==================== 新日历紧凑模式 ==================== */
-
-/* 紧凑模式容器 */
 .calendar-compact {
   display: flex;
   align-items: center;
@@ -8176,7 +7921,6 @@
   gap: 16rpx;
 }
 
-/* 日期条 - 横向布局 */
 .calendar-week-strip {
   display: flex;
   align-items: center;
@@ -8185,12 +7929,6 @@
   padding: 8rpx 0;
 }
 
-
-/* 移除复杂装饰效果 */
-
-
-
-/* 奢华旋转动画 */
 @keyframes luxury-rotate {
   0% {
     transform: rotate(0deg);
@@ -8201,9 +7939,6 @@
   }
 }
 
-/* ===== 通透橘色动画系统 ===== */
-
-/* 橘色主体脉冲 */
 @keyframes orange-pulse {
   0% {
     transform: translateY(-8rpx) scale(1.15) rotateX(3deg) rotateZ(1deg);
@@ -8221,7 +7956,6 @@
   }
 }
 
-/* 橘色能量环旋转 */
 @keyframes orange-rotate {
   0% {
     transform: rotate(0deg) scale(1);
@@ -8249,7 +7983,6 @@
   }
 }
 
-/* 能量脉冲 */
 @keyframes energy-pulse {
   0% {
     opacity: 0.8;
@@ -8270,8 +8003,6 @@
   }
 }
 
-
-/* 粒子舞蹈 */
 @keyframes particle-dance {
   0% {
     transform: rotate(0deg) scale(1) skewX(0deg);
@@ -8304,7 +8035,6 @@
   }
 }
 
-/* 能量波动 */
 @keyframes energy-fluctuation {
   0% {
     opacity: 0.6;
@@ -8331,7 +8061,6 @@
   }
 }
 
-/* 反向旋转动画 */
 @keyframes counter-rotate {
   0% {
     transform: rotate(0deg) scale(1);
@@ -8342,7 +8071,6 @@
   }
 }
 
-/* 强度脉冲动画 */
 @keyframes pulse-intensity {
   0% {
     opacity: 0.8;
@@ -8360,7 +8088,6 @@
   }
 }
 
-/* 神圣脉冲动画 */
 @keyframes divine-pulse {
   0% {
     opacity: 0.6;
@@ -8387,7 +8114,6 @@
   }
 }
 
-/* 温和发光动画 - 升级版 */
 @keyframes gentle-glow {
   0% {
     opacity: 0.4;
@@ -8408,7 +8134,6 @@
   }
 }
 
-/* 收起状态日历样式 - 增大尺寸以容纳标记 */
 .calendar-day-compact {
   width: 64rpx !important;
   height: 64rpx !important;
@@ -8417,14 +8142,14 @@
   align-items: center !important;
   justify-content: center !important;
   border-radius: 50% !important;
-  /* 和展开状态一样的圆形 */
+  
   font-weight: 500 !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative !important;
   box-sizing: border-box !important;
   margin: 0 auto !important;
 
-  /* 使用和展开状态相同的橙色渐变背景 */
+  
   background:
     radial-gradient(ellipse at 25% 15%, rgba(255, 204, 128, 0.2) 0%, transparent 40%),
     radial-gradient(ellipse at 75% 85%, rgba(255, 224, 178, 0.15) 0%, transparent 50%),
@@ -8441,39 +8166,35 @@
   backdrop-filter: blur(28rpx) saturate(1.4) brightness(1.05) !important;
 }
 
-/* 点击反馈效果 - 与展开状态一致 */
 .calendar-day-compact:not(.selected):active {
   transform: translateY(1rpx) scale(0.98) !important;
 }
 
-/* 日期数字 - 大字在上，继承整体颜色 */
 .calendar-day-compact .day-number {
   font-size: 26rpx !important;
   font-weight: 600 !important;
   color: inherit !important;
-  /* 继承父元素的 #8B4513 颜色 */
+  
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
   letter-spacing: -0.3rpx;
   line-height: 1;
 }
 
-/* 星期几 - 小字在下，继承整体颜色但稍淡 */
 .calendar-day-compact .day-name {
   font-size: 16rpx !important;
   font-weight: 400 !important;
   color: inherit !important;
-  /* 继承父元素的 #8B4513 颜色 */
+  
   opacity: 0.7 !important;
-  /* 通过透明度让星期几显得更淡 */
+  
   margin-top: 1rpx;
   line-height: 1;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
 }
 
-/* 选中状态 - 完全与展开状态一致 */
 .calendar-day-compact.selected {
   background: rgba(255, 152, 0, 0.8) !important;
-  /* 和展开状态相同的橙色背景 */
+  
   border: 2rpx solid rgba(255, 193, 7, 0.6) !important;
   color: white !important;
   font-weight: 700 !important;
@@ -8488,26 +8209,22 @@
 
 .calendar-day-compact.selected .day-number {
   color: inherit !important;
-  /* 继承选中状态的白色 */
+  
   font-weight: inherit !important;
-  /* 继承选中状态的字重 */
+  
   text-shadow: inherit !important;
-  /* 继承选中状态的阴影 */
+  
 }
 
 .calendar-day-compact.selected .day-name {
   color: inherit !important;
-  /* 继承选中状态的白色 */
+  
   opacity: 0.85 !important;
-  /* 星期几稍微淡一点 */
+  
   text-shadow: inherit !important;
-  /* 继承选中状态的阴影 */
+  
 }
 
-
-
-
-/* 周标题 */
 .calendar-weekday-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -8528,7 +8245,6 @@
   min-height: 48rpx;
 }
 
-/* 周视图样式 - 紧凑圆形设计 */
 .calendar-week-view {
   display: flex;
   justify-content: space-between;
@@ -8537,7 +8253,6 @@
   min-height: 76rpx;
 }
 
-/* 周视图中的日期卡片 - 圆形设计 */
 .calendar-day-week {
   flex: 1;
   width: 72rpx;
@@ -8555,7 +8270,6 @@
   max-width: 72rpx;
 }
 
-/* 基础样式 - 橘色主题圆形设计 */
 .calendar-day-week {
   background: linear-gradient(135deg,
       rgba(255, 248, 240, 0.95) 0%,
@@ -8567,7 +8281,6 @@
     0 1rpx 3rpx rgba(255, 152, 0, 0.05);
 }
 
-/* 选中样式 - 橙色高亮 */
 .calendar-day-week.selected {
   background: #FF9800;
   color: white;
@@ -8579,7 +8292,6 @@
   transform: scale(1.05);
 }
 
-/* 周视图日期内容 */
 .week-day-content {
   display: flex;
   flex-direction: column;
@@ -8598,14 +8310,10 @@
   font-weight: 600;
 }
 
-
-
-/* 月视图容器 */
 .calendar-month-container {
   padding: 16rpx 0;
 }
 
-/* 月视图网格 - 圆形设计 */
 .calendar-month-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -8613,7 +8321,6 @@
   padding: 0 10rpx;
 }
 
-/* 月视图导航 */
 .calendar-month-nav {
   display: flex;
   align-items: center;
@@ -8654,7 +8361,6 @@
     inset 0 2rpx 4rpx rgba(255, 255, 255, 0.6);
 }
 
-/* 日期单元格 - 圆形设计 */
 .calendar-day {
   box-sizing: border-box;
   width: 72rpx;
@@ -8671,13 +8377,12 @@
   margin: 0 auto;
 }
 
-/* 基础样式 - 高级橘色主题液态玻璃质感 */
 .calendar-day {
   background:
-    /* 表面橘色液态反射 */
+    
     radial-gradient(ellipse at 25% 15%, rgba(255, 204, 128, 0.2) 0%, transparent 40%),
     radial-gradient(ellipse at 75% 85%, rgba(255, 224, 178, 0.15) 0%, transparent 50%),
-    /* 主体橘色液态渐变 */
+    
     linear-gradient(145deg,
       rgba(255, 248, 240, 0.98) 0%,
       rgba(254, 245, 235, 0.92) 20%,
@@ -8688,13 +8393,13 @@
   background-clip: padding-box;
   position: relative;
 
-  /* 橘色边框渐变效果 */
+  
   background-image:
-    /* 内容层 */
+    
     radial-gradient(ellipse at 25% 15%, rgba(255, 204, 128, 0.2) 0%, transparent 40%),
     radial-gradient(ellipse at 75% 85%, rgba(255, 224, 178, 0.15) 0%, transparent 50%),
     linear-gradient(145deg, rgba(255, 248, 240, 0.98) 0%, rgba(250, 233, 215, 0.8) 100%),
-    /* 边框层 */
+    
     linear-gradient(145deg,
       rgba(255, 184, 77, 0.4) 0%,
       rgba(255, 204, 128, 0.5) 25%,
@@ -8703,19 +8408,19 @@
       rgba(255, 184, 77, 0.35) 100%);
   background-origin: padding-box, padding-box, padding-box, border-box;
 
-  /* 橘色液态玻璃阴影系统 */
+  
   box-shadow:
-    /* 环境光层 */
+    
     0 16rpx 48rpx -6rpx rgba(255, 152, 0, 0.08),
     0 8rpx 24rpx -3rpx rgba(255, 152, 0, 0.06),
     0 4rpx 12rpx -1rpx rgba(255, 152, 0, 0.04),
 
-    /* 内层液态高光 */
+    
     inset 0 2rpx 4rpx rgba(255, 255, 255, 0.95),
     inset 0 1rpx 2rpx rgba(255, 248, 240, 0.9),
     inset 0 -1rpx 2rpx rgba(255, 204, 128, 0.2),
 
-    /* 外层微光环 */
+    
     0 0 0 1rpx rgba(255, 204, 128, 0.4);
 
   color: #8B4513;
@@ -8723,7 +8428,6 @@
   font-family: -apple-system, 'SF Pro Display', 'PingFang SC', sans-serif;
 }
 
-/* 选中样式 - 展开状态明亮透明橘色 */
 .calendar-day.selected {
   height: 74rpx;
   color: white;
@@ -8737,17 +8441,12 @@
     inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
 }
 
-
-
-
-/* 空日期（月视图中的填充单元格） */
 .calendar-day.empty {
   background: transparent;
   border: none;
   pointer-events: none;
 }
 
-/* 日期点击效果 - 立体交互 */
 .calendar-day:active {
   transform: translateY(1rpx) scale(0.98);
   box-shadow:
@@ -8755,7 +8454,6 @@
     0 1rpx 3rpx rgba(0, 0, 0, 0.06),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
 }
-
 
 .edit-btn-bottom {
   display: flex;
@@ -8781,7 +8479,6 @@
   overflow: hidden;
 }
 
-/* 内部微妙渐变 */
 .edit-btn-circle::before {
   content: '';
   position: absolute;
@@ -8796,7 +8493,6 @@
   pointer-events: none;
 }
 
-/* 背景光晕 */
 .edit-btn-circle::after {
   content: '';
   position: absolute;
@@ -8813,7 +8509,6 @@
   transition: all 0.4s ease;
 }
 
-/* 悬停效果 */
 .edit-btn-bottom:hover .edit-btn-circle {
   transform: translateY(-2rpx);
   box-shadow:
@@ -8831,7 +8526,6 @@
   transform: scale(1.1);
 }
 
-/* 按压效果 */
 .edit-btn-bottom:active .edit-btn-circle {
   transform: translateY(0) scale(0.96);
   box-shadow:
@@ -8840,12 +8534,10 @@
     inset 0 2rpx 4rpx rgba(0, 0, 0, 0.08);
 }
 
-/* 图标颜色调整 */
 .edit-btn-circle .t-icon {
   color: #FF9800 !important;
 }
 
-/* 暖白记事本 - 温暖优雅弹窗 */
 .function-custom-popup {
   background: linear-gradient(180deg,
       #FFFBF7 0%,
@@ -8866,7 +8558,6 @@
     inset 0 1rpx 0 rgba(255, 255, 255, 0.6);
 }
 
-/* 温暖的顶部指示条 */
 .popup-drag-indicator {
   width: 100%;
   height: 24rpx;
@@ -8885,7 +8576,6 @@
   box-shadow: 0 1rpx 3rpx rgba(212, 165, 116, 0.3);
 }
 
-/* 温暖的关闭按钮 */
 .popup-close-btn {
   position: absolute;
   top: 28rpx;
@@ -8910,7 +8600,6 @@
   box-shadow: 0 2rpx 8rpx rgba(212, 165, 116, 0.2);
 }
 
-/* 温暖的标题区 - 保持正确的头部布局 */
 .popup-header {
   padding: 32rpx 0 28rpx;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
@@ -8922,7 +8611,6 @@
   margin-bottom: 30rpx;
 }
 
-/* 针对不同弹窗的特殊处理 */
 .popup-content .popup-header {
   position: relative;
   display: flex;
@@ -8991,7 +8679,6 @@
   text-align: center;
 }
 
-/* 统一关闭按钮样式 */
 .close-btn {
   width: 52rpx;
   height: 52rpx;
@@ -9038,7 +8725,6 @@
   box-sizing: border-box;
 }
 
-/* 简洁的操作提示 */
 .custom-hint-card {
   display: flex;
   align-items: center;
@@ -9070,7 +8756,6 @@
   opacity: 0.85;
 }
 
-/* 功能项自定义弹窗内的网格，限制作用域避免影响主页面 */
 .function-custom-popup .function-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -9081,7 +8766,6 @@
   padding: 20rpx;
 }
 
-/* 功能卡片（仅用于弹窗区域） */
 .function-custom-popup .function-card {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 24rpx;
@@ -9113,7 +8797,6 @@
   transform: scale(0.96);
 }
 
-/* 拖拽手柄 */
 .drag-handle {
   position: absolute;
   top: 16rpx;
@@ -9136,7 +8819,6 @@
   font-weight: bold;
 }
 
-/* 开关 */
 .toggle-switch {
   position: absolute;
   top: 16rpx;
@@ -9188,7 +8870,6 @@
   transform: scale(1.05);
 }
 
-/* 卡片主内容 */
 .card-main {
   text-align: center;
   flex: 1;
@@ -9238,7 +8919,6 @@
   background: rgba(0, 0, 0, 0.06);
 }
 
-/* 温暖优雅的操作按钮 - 位置优化 */
 .action-buttons {
   display: flex;
   gap: 16rpx;
@@ -9332,7 +9012,6 @@
   box-shadow: 0 2rpx 12rpx rgba(255, 184, 77, 0.3);
 }
 
-/* 拖拽效果 */
 .function-card.card-dragging {
   z-index: 1000;
   transform: scale(1.05) rotate(1deg);
@@ -9342,17 +9021,11 @@
   background: linear-gradient(135deg, rgba(255, 184, 77, 0.12) 0%, rgba(255, 184, 77, 0.06) 100%);
 }
 
-
-/* ==========================================
-   全新数据展示布局 - 简洁小程序风格
-   ========================================== */
-
-/* 主容器 */
 .data-display-simple {
   box-sizing: border-box;
   width: 100%;
   align-self: stretch;
-  /* 在flex容器中占满 */
+  
   background: #FFFFFF;
   border-radius: 16rpx;
   padding: 20rpx 24rpx;
@@ -9360,10 +9033,9 @@
   box-shadow: 0 1rpx 8rpx rgba(0, 0, 0, 0.04);
   border: 1rpx solid #F8F8F8;
   min-height: 180rpx;
-  /* 与单值面板统一高度基线 */
+  
 }
 
-/* 数据行 */
 .data-item-row {
   width: 100%;
   display: flex;
@@ -9385,12 +9057,11 @@
   padding-top: 0;
 }
 
-/* 数据标签 */
 .data-label {
   font-size: 30rpx;
   color: #666666;
   flex: 0 0 160rpx;
-  /* 固定标签列宽，保证右侧数值列对齐 */
+  
   line-height: 44rpx;
   text-align: left;
   margin-right: 0;
@@ -9399,7 +9070,6 @@
   text-overflow: ellipsis;
 }
 
-/* 数据值 */
 .data-value {
   font-size: 32rpx;
   color: #333333;
@@ -9409,7 +9079,6 @@
   line-height: 44rpx;
 }
 
-/* 病毒检测状态 */
 .data-status {
   font-size: 30rpx;
   font-weight: 500;
@@ -9426,7 +9095,6 @@
   color: #51CF66;
 }
 
-/* 空数据提示 */
 .data-empty {
   text-align: center;
   color: #999999;
@@ -9435,21 +9103,20 @@
   line-height: 1.5;
 }
 
-/* —— 单指标精简展示（用于 EBV/CMV） —— */
 .single-metric-panel {
   width: 100%;
   box-sizing: border-box;
   padding: 18rpx 20rpx;
   background: #FFFFFF;
-  /* 与其他数据卡一致 */
+  
   border-radius: 16rpx;
   border: 1rpx solid #F8F8F8;
-  /* 与 .data-display-simple 保持一致 */
+  
   box-shadow: 0 1rpx 8rpx rgba(0, 0, 0, 0.04);
   position: relative;
   overflow: hidden;
   min-height: 180rpx;
-  /* 与 data-display-simple 统一 */
+  
 }
 
 .metric-top {
@@ -9496,7 +9163,7 @@
   display: flex;
   align-items: baseline;
   justify-content: flex-start;
-  /* 与血常规左对齐保持一致感 */
+  
   min-height: 72rpx;
   padding: 12rpx 0 6rpx;
   position: relative;
@@ -9530,7 +9197,6 @@
   color: var(--text-tertiary);
 }
 
-/* 元信息行：让单值卡更饱满 */
 .metric-meta {
   margin-top: 14rpx;
   padding: 0 4rpx;
@@ -9552,22 +9218,15 @@
   white-space: nowrap;
 }
 
-/* 缩减病毒类卡片的最小高度，减少留白 */
-/* 统一所有功能卡的高度，不做病毒类特殊缩减 */
 .functions-grid .function-card--ebv,
 .functions-grid .function-card--cmv {
   min-height: 180rpx;
 }
 
-/* 柔和装饰圆：与状态一致的淡色圆形，不喧宾夺主 */
-/* 取消装饰圆，避免与状态徽标冲突 */
 .metric-deco {
   display: none !important;
 }
 
-/* 删除进度条样式（不再需要） */
-
-/* 响应式适配 */
 @media screen and (max-width: 375px) {
   .data-display-simple {
     padding: 20rpx;
@@ -9588,11 +9247,6 @@
     font-size: 28rpx;
   }
 }
-
-/* ==========================================
-   单指标卡片样式 - 简洁美观设计
-   ========================================== */
-/* 单指标内层容器样式已移除，布局由 function-card-data 承担 */
 
 .indicator-header {
   display: flex;
@@ -9660,9 +9314,6 @@
   margin-left: 2rpx;
 }
 
-/* ==========================================
-   用药记录卡片样式
-   ========================================== */
 .record-list-card {
   background: #FFFFFF;
   border-radius: 16rpx;
@@ -9725,9 +9376,6 @@
   border-top: 1rpx solid #F8F8F8;
 }
 
-/* ==========================================
-   门诊记录卡片样式
-   ========================================== */
 .clinic-record-card {
   background: #FFFFFF;
   border-radius: 16rpx;
@@ -9765,11 +9413,6 @@
   line-height: 1.4;
 }
 
-/* ==========================================
-   血常规极简设计 - 清晰优雅
-   ========================================== */
-/* 血常规内层容器样式已移除，布局由 function-card-data 承担 */
-
 .blood-simple-item {
   display: flex;
   flex-direction: column;
@@ -9800,7 +9443,6 @@
   color: #BFBFBF;
 }
 
-/* 用药记录行样式 */
 .med-progress-row-full {
   display: flex;
   flex-direction: column;
@@ -9819,7 +9461,6 @@
   align-items: center;
 }
 
-/* 进度条样式 */
 .med-progress-bar {
   width: 100%;
   height: 6rpx;
@@ -9835,17 +9476,13 @@
   transition: width 0.3s ease;
 }
 
-/* 100%完成时使用低调的灰色 */
 .med-progress-fill.med-progress-completed {
   background: #666;
 }
 
-/* ==========================================
-   EB病毒单数据展示 - 使用血常规相同容器高度
-   ========================================== */
 .ebv-single-data {
   grid-column: 1 / -1;
-  /* 跨越整个grid区域 */
+  
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -9907,13 +9544,11 @@
   color: #FF4D4F;
 }
 
-/* 统一：血常规与EBV卡片内容区域的最小高度，保证并排卡片视觉一致 */
 .functions-grid .function-card--blood .blood-simple,
 .functions-grid .function-card--ebv .blood-simple {
   min-height: 150rpx;
 }
 
-/* EBV 状态胶囊视觉优化，与整体风格更协调 */
 .functions-grid .function-card--ebv .ebv-status-text {
   display: inline-flex;
   align-items: center;
@@ -9924,7 +9559,6 @@
   font-weight: 700;
 }
 
-/* 让 CMV 与 EBV 共用同一套展示视觉（同容器、同数值、同胶囊） */
 .functions-grid .function-card--cmv .ebv-status-text {
   display: inline-flex;
   align-items: center;
@@ -9947,7 +9581,6 @@
   border: 1rpx solid rgba(255, 77, 79, 0.25);
 }
 
-/* 乳酸脱氢酶 - 优化展示样式 */
 .ldh-single-data {
   grid-column: 1 / -1;
   display: flex;
@@ -10012,13 +9645,11 @@
   border: 1rpx solid rgba(255, 77, 79, 0.25);
 }
 
-/* 等高强化：让内层白色面板在同一行卡片中保持等高 */
 .functions-grid .function-card .function-card-data>.blood-simple {
   min-height: 100%;
   height: 100%;
 }
 
-/* 修复：EBV 卡片内出现的绿色半透明残影（禁用任何潜在伪元素并裁切） */
 .functions-grid .function-card--ebv .blood-simple,
 .functions-grid .function-card--ebv .ebv-single-data,
 .functions-grid .function-card--ebv .ebv-main,
@@ -10041,7 +9672,6 @@
   display: none !important;
 }
 
-/* 统一 CMV/乳酸脱氢酶 与 EBV 的展示布局和高度填充 */
 .functions-grid .function-card--cmv .single-indicator-card,
 .functions-grid .function-card--ldh .single-indicator-card {
   min-height: 150rpx;
@@ -10053,11 +9683,6 @@
   text-align: center;
 }
 
-/* ==========================================
-   肝功能和肾功能紧凑指标展示 - 统一血常规样式
-   ========================================== */
-
-/* 肝肾功能指标项：直接复用血常规网格布局和样式 */
 .liver-indicator-item,
 .kidney-indicator-item {
   display: flex;
@@ -10065,7 +9690,6 @@
   gap: 6rpx;
 }
 
-/* 统一高度和网格布局 - 与血常规完全一致 */
 .functions-grid .function-card--liver .blood-simple,
 .functions-grid .function-card--kidney .blood-simple {
   min-height: 150rpx;
@@ -10089,7 +9713,6 @@
   margin: 8rpx 0;
 }
 
-/* 响应式优化 */
 @media screen and (max-width: 375px) {
   .blood-panel {
     padding: 10rpx;
@@ -10123,11 +9746,6 @@
     font-size: 16rpx;
   }
 }
-
-/* ==========================================
-   EB病毒统一高度设计 - 与血常规保持一致
-   ========================================== */
-/* EB病毒内层容器样式已移除，布局由 function-card-data 承担 */
 
 .virus-content {
   display: flex;
@@ -10180,7 +9798,6 @@
   color: #FF4D4F;
 }
 
-/* 🏥 门诊记录 - 对称均衡设计 */
 .clinic-symmetric-row {
   display: flex;
   justify-content: space-between;
@@ -10218,7 +9835,6 @@
   color: #999 !important;
 }
 
-/* 💧 尿量记录 - 左右对称布局设计 */
 .urine-symmetric-row {
   display: flex;
   justify-content: space-between;
@@ -10254,7 +9870,6 @@
   line-height: 1.2;
 }
 
-/* 💩 排便记录 - 左右对称布局设计 */
 .stool-symmetric-row {
   display: flex;
   justify-content: space-between;
@@ -10305,7 +9920,6 @@
   line-height: 1.2;
 }
 
-/* 💰 费用记录 - 左右对称布局设计 */
 .expense-symmetric-row {
   display: flex;
   justify-content: space-between;
@@ -10349,12 +9963,10 @@
   line-height: 1.2;
 }
 
-/* 📋 检查报告记录样式 - 复用门诊记录样式 */
 .checkReport-result-color {
   color: #999;
 }
 
-/* 检查报告数量标记 */
 .check-report-count-badge {
   margin-top: 12rpx;
   padding: 8rpx 16rpx;
@@ -10371,10 +9983,6 @@
   width: 100%;
 }
 
-/* ================================
-   📅 日期指示横幅 - 连接日历和记录
-   ================================ */
-
 .selected-date-banner {
   margin: 24rpx 32rpx 20rpx;
   padding: 24rpx 32rpx;
@@ -10390,7 +9998,6 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 横幅光泽效果 */
 .selected-date-banner::before {
   content: '';
   position: absolute;
@@ -10410,7 +10017,6 @@
   box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.2);
 }
 
-/* 图标容器 */
 .banner-icon-wrapper {
   flex-shrink: 0;
   width: 72rpx;
@@ -10424,7 +10030,6 @@
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
-/* 文字容器 */
 .banner-text-wrapper {
   flex: 1;
   display: flex;
@@ -10447,7 +10052,6 @@
   letter-spacing: 0.5rpx;
 }
 
-/* 🎬 日期切换动画 */
 .date-changed-animation {
   animation: bannerPulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -10475,7 +10079,6 @@
   }
 }
 
-/* 🎬 记录区域高亮动画 */
 .records-highlight-animation {
   animation: recordsHighlight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -10501,7 +10104,6 @@
   }
 }
 
-/* 记录页头部 */
 .record-page-header {
   margin: 24rpx 24rpx 16rpx;
   padding: 24rpx 28rpx;
@@ -10560,9 +10162,6 @@
   border: 1rpx solid rgba(255, 152, 0, 0.2);
 }
 
-/* ==================== 今日事项卡片样式 ==================== */
-
-/* 今日事项卡片容器 - 优化版 */
 .today-tasks-card {
   margin: 42rpx 0 16rpx 0;
   padding: 24rpx 28rpx;
@@ -10576,7 +10175,6 @@
   overflow: hidden;
 }
 
-/* 事项头部 - 简洁版 */
 .tasks-header {
   display: flex;
   align-items: center;
@@ -10638,7 +10236,6 @@
               0 1rpx 4rpx rgba(255, 152, 0, 0.2);
 }
 
-/* 事项列表 */
 .tasks-list {
   display: flex;
   flex-direction: column;
@@ -10719,7 +10316,6 @@
   font-weight: 400;
 }
 
-/* 删除按钮 */
 .task-delete-btn {
   flex-shrink: 0;
   width: 42rpx;
@@ -10739,7 +10335,6 @@
   box-shadow: 0 4rpx 12rpx rgba(255, 107, 107, 0.3);
 }
 
-/* 空状态 - 简洁版 */
 .tasks-empty {
   display: flex;
   align-items: center;
@@ -10762,11 +10357,6 @@
   opacity: 0.7;
 }
 
-/* ==================== 今日事项样式结束 ==================== */
-
-/* ==================== 日期记录标记样式 ==================== */
-
-/* 有记录的日期标记 - 右上角角标样式 */
 .record-indicator {
   position: absolute;
   top: -4rpx;
@@ -10784,7 +10374,6 @@
   animation: badge-pulse 2s ease-in-out infinite;
 }
 
-/* 角标脉动动画 */
 @keyframes badge-pulse {
   0%, 100% {
     box-shadow:
@@ -10800,17 +10389,14 @@
   }
 }
 
-/* 有记录的日期不再需要边框（角标已经足够明显） */
 .calendar-day-compact.has-record-mark {
-  /* 移除边框样式 */
+  
 }
 
-/* 展开状态的月视图中有记录的日期 */
 .calendar-month-grid .calendar-day.has-record-mark {
   position: relative;
 }
 
-/* 选中状态下的角标显示为白色 */
 .calendar-day-compact.selected .record-indicator {
   background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
   border: 3rpx solid #FF9800;
@@ -10818,10 +10404,9 @@
     0 0 12rpx rgba(255, 255, 255, 0.9),
     0 4rpx 8rpx rgba(255, 152, 0, 0.5),
     inset 0 -2rpx 4rpx rgba(255, 152, 0, 0.3);
-  animation: none; /* 选中状态不需要动画 */
+  animation: none; 
 }
 
-/* 月视图中的角标 */
 .calendar-month-grid .calendar-day .record-indicator {
   top: -2rpx;
   right: -2rpx;
@@ -10829,5 +10414,3 @@
   height: 16rpx;
   border: 2rpx solid #fff;
 }
-
-/* ==================== 日期记录标记样式结束 ==================== */

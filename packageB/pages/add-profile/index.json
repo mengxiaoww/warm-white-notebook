@@ -1,4 +1,7 @@
 {
   "navigationBarTitleText": "添加档案",
-  "usingComponents": {}
+  "usingComponents": {
+    "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup",
+    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon"
+  }
 }

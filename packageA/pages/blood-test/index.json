@@ -1,6 +1,11 @@
 {
   "usingComponents": {
-    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar"
+    "t-navbar": "/miniprogram_npm/tdesign-miniprogram/navbar/navbar",
+    "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon",
+    "t-button": "/miniprogram_npm/tdesign-miniprogram/button/button",
+    "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup",
+    "t-date-time-picker": "/miniprogram_npm/tdesign-miniprogram/date-time-picker/date-time-picker",
+    "t-toast": "/miniprogram_npm/tdesign-miniprogram/toast/toast"
   },
   "navigationStyle": "custom"
 }
