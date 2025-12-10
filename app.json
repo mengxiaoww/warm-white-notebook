@@ -64,13 +64,6 @@
         "pages/ldh-record/index",
         "pages/ldh-config/index"
       ]
-    },
-    {
-      "root": "packageD",
-      "name": "dailyRecord",
-      "pages": [
-        "pages/daily-record/index"
-      ]
     }
   ],
   "preloadRule": {
