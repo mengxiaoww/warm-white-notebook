@@ -1,9 +1,9 @@
 {
   "usingComponents": {
     "medical-icon": "/components/medical-icon/index",
-    "t-icon": "tdesign-miniprogram/icon/icon",
-    "t-popup": "tdesign-miniprogram/popup/popup",
-    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-icon": "../../miniprogram_npm/tdesign-miniprogram/icon/icon",
+    "t-popup": "../../miniprogram_npm/tdesign-miniprogram/popup/popup",
+    "t-toast": "../../miniprogram_npm/tdesign-miniprogram/toast/toast",
     "marked-calendar": "../../components/marked-calendar/index"
   },
   "enablePullDownRefresh": false,
