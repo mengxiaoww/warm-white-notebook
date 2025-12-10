@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "medical-icon": "/components/medical-icon/index",
     "t-icon": "/miniprogram_npm/tdesign-miniprogram/icon/icon",
     "t-popup": "/miniprogram_npm/tdesign-miniprogram/popup/popup",
     "t-toast": "/miniprogram_npm/tdesign-miniprogram/toast/toast",

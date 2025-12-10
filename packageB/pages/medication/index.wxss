@@ -1239,25 +1239,7 @@ page .t-date-time-picker .t-button__content {
   border-bottom: none;
 }
 
-/* 🔧 覆盖TDesign Radio颜色为橘色 */
-.frequency-option-item >>> .t-radio__icon-wrap {
-  border-color: rgba(255, 152, 0, 0.3) !important;
-}
-
-.frequency-option-item >>> .t-radio__icon--checked {
-  background-color: #FF9800 !important;
-  border-color: #FF9800 !important;
-}
-
-.frequency-option-item >>> .t-radio__content-title {
-  color: #333;
-  font-size: 30rpx;
-}
-
-.frequency-option-item >>> .t-radio--checked .t-radio__content-title {
-  color: #FF9800 !important;
-  font-weight: 500;
-}
+/* 微信小程序不支持 >>> 深度选择器，移除这些样式覆盖 */
 
 
 /* 自定义频率输入 */

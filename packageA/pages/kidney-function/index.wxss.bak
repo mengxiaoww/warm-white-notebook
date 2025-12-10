@@ -1,4 +1,0 @@
-@import '../../../utils/skeleton.wxss';
-
-/* 引用血常规页面的样式 */
-@import "../blood-test/index.wxss";
