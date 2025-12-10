@@ -14,7 +14,7 @@
  */
 
 const functionCustomModule = require('./function-custom');
-const { getTodayLocalDate } = require('../../../utils/util.js');
+const { getTodayLocalDate } = require('../../utils/util.js');
 
 const app = getApp()
 
@@ -886,10 +886,9 @@ Page({
       this.setData({ isPageLoading: false })
     }
 
-    // 设置tabBar选中状态（分包中需要使用 selectComponent）
-    const tabBar = this.selectComponent('#custom-tab-bar');
-    if (tabBar) {
-      tabBar.setData({
+    // 设置tabBar选中状态（主包中使用 getTabBar）
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
         selected: 1
       });
     }

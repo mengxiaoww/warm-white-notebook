@@ -1,6 +1,5 @@
 {
   "usingComponents": {
-    "custom-tab-bar": "../../custom-tab-bar/index",
     "medical-icon": "/components/medical-icon/index",
     "t-button": "tdesign-miniprogram/button/button",
     "t-input": "tdesign-miniprogram/input/input",

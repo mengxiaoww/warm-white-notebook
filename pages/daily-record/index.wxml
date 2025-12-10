@@ -1,4 +1,4 @@
-<wxs module="numFmt" src="../../../utils/number-format.wxs"></wxs>
+<wxs module="numFmt" src="../../utils/number-format.wxs"></wxs>
 
 <view class="container">
   <!-- 实际内容 -->
@@ -1255,4 +1255,3 @@
   </view>
   <!-- 结束 content-wrapper -->
 </view>
-<custom-tab-bar id="custom-tab-bar" />
