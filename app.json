@@ -5,10 +5,7 @@
     "pages/daily-record/index",
     "pages/ai-assistant/index",
     "pages/records/index",
-    "pages/profile/index",
-    "pages/webview/index",
-    "pages/health-profile/index",
-    "pages/health-chart/index"
+    "pages/profile/index"
   ],
   "subPackages": [
     {
@@ -50,7 +47,10 @@
         "pages/expense-record/index",
         "pages/virus-record/index",
         "pages/complete-profile/index",
-        "pages/add-profile/index"
+        "pages/add-profile/index",
+        "pages/webview/index",
+        "pages/health-profile/index",
+        "pages/health-chart/index"
       ]
     },
     {

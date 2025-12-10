@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1765347230617, function(require, module, exports) {
+__DEFINE__(1765347231609, function(require, module, exports) {
 /*global exports*/
 var SignStream = require('./lib/sign-stream');
 var VerifyStream = require('./lib/verify-stream');
@@ -28,8 +28,8 @@ exports.createVerify = function createVerify(opts) {
   return new VerifyStream(opts);
 };
 
-}, function(modId) {var map = {"./lib/sign-stream":1765347230618,"./lib/verify-stream":1765347230621}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347230618, function(require, module, exports) {
+}, function(modId) {var map = {"./lib/sign-stream":1765347231610,"./lib/verify-stream":1765347231613}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1765347231610, function(require, module, exports) {
 /*global module*/
 var Buffer = require('safe-buffer').Buffer;
 var DataStream = require('./data-stream');
@@ -66,7 +66,12 @@ function jwsSign(opts) {
 }
 
 function SignStream(opts) {
-  var secret = opts.secret||opts.privateKey||opts.key;
+  var secret = opts.secret;
+  secret = secret == null ? opts.privateKey : secret;
+  secret = secret == null ? opts.key : secret;
+  if (/^hs/i.test(opts.header.alg) === true && secret == null) {
+    throw new TypeError('secret must be a string or buffer or a KeyObject')
+  }
   var secretStream = new DataStream(secret);
   this.readable = true;
   this.header = opts.header;
@@ -109,8 +114,8 @@ SignStream.sign = jwsSign;
 
 module.exports = SignStream;
 
-}, function(modId) { var map = {"./data-stream":1765347230619,"./tostring":1765347230620}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347230619, function(require, module, exports) {
+}, function(modId) { var map = {"./data-stream":1765347231611,"./tostring":1765347231612}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1765347231611, function(require, module, exports) {
 /*global module, process*/
 var Buffer = require('safe-buffer').Buffer;
 var Stream = require('stream');
@@ -168,7 +173,7 @@ DataStream.prototype.end = function end(data) {
 module.exports = DataStream;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347230620, function(require, module, exports) {
+__DEFINE__(1765347231612, function(require, module, exports) {
 /*global module*/
 var Buffer = require('buffer').Buffer;
 
@@ -181,7 +186,7 @@ module.exports = function toString(obj) {
 };
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347230621, function(require, module, exports) {
+__DEFINE__(1765347231613, function(require, module, exports) {
 /*global module*/
 var Buffer = require('safe-buffer').Buffer;
 var DataStream = require('./data-stream');
@@ -263,7 +268,12 @@ function jwsDecode(jwsSig, opts) {
 
 function VerifyStream(opts) {
   opts = opts || {};
-  var secretOrKey = opts.secret||opts.publicKey||opts.key;
+  var secretOrKey = opts.secret;
+  secretOrKey = secretOrKey == null ? opts.publicKey : secretOrKey;
+  secretOrKey = secretOrKey == null ? opts.key : secretOrKey;
+  if (/^hs/i.test(opts.algorithm) === true && secretOrKey == null) {
+    throw new TypeError('secret must be a string or buffer or a KeyObject')
+  }
   var secretStream = new DataStream(secretOrKey);
   this.readable = true;
   this.algorithm = opts.algorithm;
@@ -303,8 +313,8 @@ VerifyStream.verify = jwsVerify;
 
 module.exports = VerifyStream;
 
-}, function(modId) { var map = {"./data-stream":1765347230619,"./tostring":1765347230620}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1765347230617);
+}, function(modId) { var map = {"./data-stream":1765347231611,"./tostring":1765347231612}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1765347231609);
 })()
 //miniprogram-npm-outsideDeps=["safe-buffer","jwa","stream","util","buffer"]
 //# sourceMappingURL=index.js.map

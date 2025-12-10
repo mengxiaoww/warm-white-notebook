@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1765347229763, function(require, module, exports) {
+__DEFINE__(1765347230697, function(require, module, exports) {
 
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -35,8 +35,8 @@ function sign(options) {
 }
 exports.sign = sign;
 
-}, function(modId) {var map = {"./keyvalue":1765347229764,"./signer":1765347229766,"./utils.http":1765347229768,"./utils.lang":1765347229765,"./utils":1765347229767}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347229764, function(require, module, exports) {
+}, function(modId) {var map = {"./keyvalue":1765347230698,"./signer":1765347230700,"./utils.http":1765347230702,"./utils.lang":1765347230699,"./utils":1765347230701}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1765347230698, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_lang_1 = require("./utils.lang");
@@ -83,8 +83,8 @@ class SortedKeyValue {
 }
 exports.SortedKeyValue = SortedKeyValue;
 
-}, function(modId) { var map = {"./utils.lang":1765347229765}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347229765, function(require, module, exports) {
+}, function(modId) { var map = {"./utils.lang":1765347230699}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1765347230699, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 function isNumber(v) {
@@ -105,7 +105,7 @@ function isPlainObject(v) {
 exports.isPlainObject = isPlainObject;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347229766, function(require, module, exports) {
+__DEFINE__(1765347230700, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto = require("crypto");
@@ -293,8 +293,8 @@ class Signer {
 }
 exports.Signer = Signer;
 
-}, function(modId) { var map = {"./utils":1765347229767,"./utils.lang":1765347229765,"./keyvalue":1765347229764}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347229767, function(require, module, exports) {
+}, function(modId) { var map = {"./utils":1765347230701,"./utils.lang":1765347230699,"./keyvalue":1765347230698}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1765347230701, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto = require("crypto");
@@ -331,7 +331,7 @@ function isNodeEnv() {
 exports.isNodeEnv = isNodeEnv;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1765347229768, function(require, module, exports) {
+__DEFINE__(1765347230702, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
@@ -371,8 +371,8 @@ function mustUseFormdata(data) {
 }
 exports.mustUseFormdata = mustUseFormdata;
 
-}, function(modId) { var map = {"./utils":1765347229767,"./utils.lang":1765347229765}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1765347229763);
+}, function(modId) { var map = {"./utils":1765347230701,"./utils.lang":1765347230699}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1765347230697);
 })()
 //miniprogram-npm-outsideDeps=["clone","crypto","url","util","is-stream"]
 //# sourceMappingURL=index.js.map
