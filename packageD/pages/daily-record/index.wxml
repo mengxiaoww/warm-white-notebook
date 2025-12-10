@@ -1255,4 +1255,4 @@
   </view>
   <!-- 结束 content-wrapper -->
 </view>
-<custom-tab-bar />
+<custom-tab-bar id="custom-tab-bar" />

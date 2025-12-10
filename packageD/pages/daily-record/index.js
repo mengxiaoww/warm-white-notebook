@@ -886,16 +886,12 @@ Page({
       this.setData({ isPageLoading: false })
     }
 
-    // 设置tabBar选中状态
-
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-
-      this.getTabBar().setData({
-
+    // 设置tabBar选中状态（分包中需要使用 selectComponent）
+    const tabBar = this.selectComponent('#custom-tab-bar');
+    if (tabBar) {
+      tabBar.setData({
         selected: 1
-
       });
-
     }
 
 
