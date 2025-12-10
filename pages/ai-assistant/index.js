@@ -511,10 +511,31 @@ Page({
         return;
       }
 
-      // 🔍 调试日志2: 打印提取的JSON字符串
-      console.log('🔍 提取的JSON字符串:', jsonStr);
+      // 清理 JSON 字符串: 移除可能的 BOM 和其他不可见字符
+      jsonStr = jsonStr.trim();
+      // 移除 UTF-8 BOM
+      if (jsonStr.charCodeAt(0) === 0xFEFF) {
+        jsonStr = jsonStr.substring(1);
+      }
 
-      const healthData = JSON.parse(jsonStr);
+      // 🔍 调试日志2: 打印提取的JSON字符串和前几个字符的编码
+      console.log('🔍 提取的JSON字符串:', jsonStr);
+      console.log('🔍 JSON字符串长度:', jsonStr.length);
+      console.log('🔍 前10个字符:', jsonStr.substring(0, Math.min(10, jsonStr.length)));
+      console.log('🔍 前10个字符编码:', jsonStr.substring(0, Math.min(10, jsonStr.length)).split('').map(c => c.charCodeAt(0)));
+
+      let healthData;
+      try {
+        healthData = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.error('❌ JSON解析失败:', parseError);
+        console.error('❌ 失败的JSON字符串:', jsonStr);
+        wx.showToast({
+          title: 'AI返回数据格式错误',
+          icon: 'none'
+        });
+        return;
+      }
 
       // 🔍 调试日志3: 打印解析后的values对象
       console.log('🔍 解析后的values对象:', JSON.stringify(healthData.values, null, 2));
