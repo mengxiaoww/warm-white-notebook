@@ -14,7 +14,7 @@
  */
 
 const functionCustomModule = require('./function-custom');
-const { getTodayLocalDate } = require('/utils/util.js');
+const { getTodayLocalDate } = require('../../../utils/util.js');
 
 const app = getApp()
 
