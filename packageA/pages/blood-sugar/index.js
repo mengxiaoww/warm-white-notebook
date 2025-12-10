@@ -3075,12 +3075,45 @@ Page({
       if (res.result && res.result.success && res.result.content) {
         const content = res.result.content;
 
-        // 尝试提取JSON
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const data = JSON.parse(jsonMatch[0]);
+        // 尝试提取JSON（两种方法）
+        let jsonStr = null;
 
-          if (data.indicators && data.indicators.length > 0) {
+        // 方法1: 从 markdown 代码块中提取
+        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonMatch) {
+          jsonStr = jsonMatch[1];
+        } else {
+          // 方法2: 直接查找 JSON 对象 (从第一个 { 到最后一个 })
+          const jsonStart = content.indexOf('{');
+          const jsonEnd = content.lastIndexOf('}');
+          if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+            jsonStr = content.substring(jsonStart, jsonEnd + 1);
+          }
+        }
+
+        if (jsonStr) {
+          // 清理 JSON 字符串
+          jsonStr = jsonStr.trim();
+          if (jsonStr.charCodeAt(0) === 0xFEFF) {
+            jsonStr = jsonStr.substring(1);
+          }
+
+          console.log('提取的JSON字符串:', jsonStr);
+
+          let data;
+          try {
+            data = JSON.parse(jsonStr);
+          } catch (parseError) {
+            console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
+            wx.hideLoading();
+            wx.showToast({
+              title: 'AI返回数据格式错误',
+              icon: 'none'
+            });
+            return;
+          }
+
+          if (data && data.indicators && data.indicators.length > 0) {
             // 匹配当前配置的指标
             const { displayedBasicIndicators, customIndicators } = this.data;
             const allConfiguredIndicators = []
@@ -3251,11 +3284,54 @@ Page({
         if (aiRes.result && aiRes.result.success && aiRes.result.content) {
           const content = aiRes.result.content;
 
-          // 尝试提取JSON
-          const jsonMatch = content.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const data = JSON.parse(jsonMatch[0]);
+          // 尝试提取JSON（两种方法）
+          let jsonStr = null;
 
+          // 方法1: 从 markdown 代码块中提取
+          const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+          if (jsonMatch) {
+            jsonStr = jsonMatch[1];
+          } else {
+            // 方法2: 直接查找 JSON 对象 (从第一个 { 到最后一个 })
+            const jsonStart = content.indexOf('{');
+            const jsonEnd = content.lastIndexOf('}');
+            if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+              jsonStr = content.substring(jsonStart, jsonEnd + 1);
+            }
+          }
+
+          if (jsonStr) {
+            // 清理 JSON 字符串
+            jsonStr = jsonStr.trim();
+            if (jsonStr.charCodeAt(0) === 0xFEFF) {
+              jsonStr = jsonStr.substring(1);
+            }
+
+            console.log('提取的JSON字符串:', jsonStr);
+
+            let data;
+            try {
+              data = JSON.parse(jsonStr);
+            } catch (parseError) {
+              console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
+              wx.hideLoading();
+              wx.showToast({
+                title: 'AI返回数据格式错误',
+                icon: 'none'
+              });
+              return;
+            }
+          } else {
+            console.warn('未找到有效的JSON数据');
+            wx.hideLoading();
+            wx.showToast({
+              title: 'AI解析格式错误',
+              icon: 'none'
+            });
+            return;
+          }
+
+          if (data) {
             if (data.indicators && data.indicators.length > 0) {
               // 匹配当前配置的指标
               const { displayedBasicIndicators, customIndicators } = this.data;
@@ -3318,12 +3394,6 @@ Page({
                 icon: 'none'
               });
             }
-          } else {
-            wx.hideLoading();
-            wx.showToast({
-              title: 'AI解析格式错误',
-              icon: 'none'
-            });
           }
         } else {
           wx.hideLoading();
