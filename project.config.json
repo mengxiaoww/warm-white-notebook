@@ -20,6 +20,14 @@
         "value": "test"
       },
       {
+        "type": "folder",
+        "value": "cloudfunctions"
+      },
+      {
+        "type": "folder",
+        "value": "cloudfunctionTemplate"
+      },
+      {
         "type": "file",
         "value": ".gitignore"
       },
@@ -42,6 +50,14 @@
       {
         "type": "file",
         "value": "package-lock.json"
+      },
+      {
+        "type": "file",
+        "value": "cleanup-duplicate-records.js"
+      },
+      {
+        "type": "file",
+        "value": "fix-ai-json-parse.py"
       }
     ],
     "include": []
