@@ -91,7 +91,7 @@
         <view class="tab-item {{activeTab === 'checkReport' ? 'tab-active' : ''}}" bindtap="switchTab"
           data-tab="checkReport">
           <view class="tab-icon-wrapper">
-            <t-icon name="folder-open" size="44rpx" color="{{activeTab === 'checkReport' ? '#fff' : '#FF9800'}}" />
+            <t-icon name="folder" size="44rpx" color="{{activeTab === 'checkReport' ? '#fff' : '#FF9800'}}" />
             <view class="tab-pulse {{activeTab === 'checkReport' ? 'active' : ''}}"></view>
           </view>
           <text class="tab-text">就医档案</text>
@@ -136,11 +136,6 @@
                 <t-icon name="chevron-down" size="28rpx" color="#F57C00" />
               </view>
             </view>
-          </view>
-          <!-- 日历标记提示 -->
-          <view class="calendar-tip" bindtap="showCalendarView">
-            <t-icon name="view-list" size="32rpx" color="#FF9800" />
-            <text>日历视图</text>
           </view>
         </view>
         <!-- 紧凑统计栏 -->
