@@ -1,5 +1,3 @@
-<wxs module="numFmt" src="../../utils/number-format.wxs"></wxs>
-
 <view class="container">
   <!-- 实际内容 -->
   <view class="content-wrapper">
