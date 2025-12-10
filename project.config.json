@@ -5,6 +5,14 @@
     "ignore": [
       {
         "type": "folder",
+        "value": "node_modules"
+      },
+      {
+        "type": "folder",
+        "value": ".git"
+      },
+      {
+        "type": "folder",
         "value": "admin"
       },
       {
@@ -26,6 +34,14 @@
       {
         "type": "file",
         "value": "UPLOAD_TO_HOSTING.md"
+      },
+      {
+        "type": "file",
+        "value": "package.json"
+      },
+      {
+        "type": "file",
+        "value": "package-lock.json"
       }
     ],
     "include": []
