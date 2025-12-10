@@ -26,8 +26,8 @@ Component({
       {
         pagePath: "pages/records/index",
         text: "档案",
-        icon: "file-1",
-        selectedIcon: "file-1-filled"
+        icon: "folder",
+        selectedIcon: "folder"
       },
       {
         pagePath: "pages/profile/index",
