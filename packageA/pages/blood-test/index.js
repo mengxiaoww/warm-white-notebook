@@ -3248,17 +3248,42 @@ ${indicatorDesc}
 
       console.log('📝 原始AI响应:', aiResponse);
 
-      // 清理可能的markdown代码块标记（包括换行符）
-      aiResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+      // 提取 JSON（两种方法）
+      let jsonStr = null;
 
-      // 清理可能的json=前缀（有些AI模型会返回这种格式）
-      if (aiResponse.startsWith('json=')) {
-        aiResponse = aiResponse.substring(5);
+      // 方法1: 从 markdown 代码块中提取
+      const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1];
+      } else {
+        // 方法2: 直接查找 JSON 对象 (从第一个 { 到最后一个 })
+        const jsonStart = aiResponse.indexOf('{');
+        const jsonEnd = aiResponse.lastIndexOf('}');
+        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+          jsonStr = aiResponse.substring(jsonStart, jsonEnd + 1);
+        }
       }
 
-      console.log('🧹 清理后的响应:', aiResponse);
+      if (!jsonStr) {
+        console.error('未找到有效的JSON数据');
+        throw new Error('AI返回数据格式错误');
+      }
 
-      const parsed = JSON.parse(aiResponse);
+      // 清理 JSON 字符串
+      jsonStr = jsonStr.trim();
+      if (jsonStr.charCodeAt(0) === 0xFEFF) {
+        jsonStr = jsonStr.substring(1);
+      }
+
+      console.log('🧹 提取的JSON字符串:', jsonStr);
+
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
+        throw new Error('AI返回数据格式错误');
+      }
 
       console.log('📦 解析后的数据:', parsed);
 
@@ -3493,17 +3518,42 @@ ${indicatorDesc}
 
       console.log('📝 原始AI响应:', aiResponse);
 
-      // 清理可能的markdown代码块标记（包括换行符）
-      aiResponse = aiResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+      // 提取 JSON（两种方法）
+      let jsonStr = null;
 
-      // 清理可能的json=前缀（有些AI模型会返回这种格式）
-      if (aiResponse.startsWith('json=')) {
-        aiResponse = aiResponse.substring(5);
+      // 方法1: 从 markdown 代码块中提取
+      const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1];
+      } else {
+        // 方法2: 直接查找 JSON 对象 (从第一个 { 到最后一个 })
+        const jsonStart = aiResponse.indexOf('{');
+        const jsonEnd = aiResponse.lastIndexOf('}');
+        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+          jsonStr = aiResponse.substring(jsonStart, jsonEnd + 1);
+        }
       }
 
-      console.log('🧹 清理后的响应:', aiResponse);
+      if (!jsonStr) {
+        console.error('未找到有效的JSON数据');
+        throw new Error('AI返回数据格式错误');
+      }
 
-      const parsed = JSON.parse(aiResponse);
+      // 清理 JSON 字符串
+      jsonStr = jsonStr.trim();
+      if (jsonStr.charCodeAt(0) === 0xFEFF) {
+        jsonStr = jsonStr.substring(1);
+      }
+
+      console.log('🧹 提取的JSON字符串:', jsonStr);
+
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
+        throw new Error('AI返回数据格式错误');
+      }
 
       console.log('📦 解析后的数据:', parsed);
 
