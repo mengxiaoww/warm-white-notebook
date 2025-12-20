@@ -61,22 +61,14 @@
                   <text class="record-time">{{item.time}}</text>
                 </view>
                 <view class="value-badge">
-                  <text class="main-value">{{item.bloodSugar || item.fbg || item.pbg}}</text>
+                  <text class="main-value">{{item.fbg}}</text>
                   <text class="unit">mmol/L</text>
                 </view>
               </view>
               <view class="record-details">
-                <view class="detail-item" wx:if="{{item.bloodSugar}}">
-                  <text class="detail-label">随机血糖：</text>
-                  <text class="detail-value">{{item.bloodSugar}} mmol/L</text>
-                </view>
-                <view class="detail-item" wx:if="{{item.fbg}}">
+                <view class="detail-item">
                   <text class="detail-label">空腹血糖：</text>
                   <text class="detail-value">{{item.fbg}} mmol/L</text>
-                </view>
-                <view class="detail-item" wx:if="{{item.pbg}}">
-                  <text class="detail-label">餐后血糖：</text>
-                  <text class="detail-value">{{item.pbg}} mmol/L</text>
                 </view>
               </view>
               <!-- 备注预览 -->
@@ -147,54 +139,19 @@
             </picker>
           </view>
 
-          <!-- 随机血糖 -->
-          <view class="form-group">
-            <view class="form-label">
-              <text class="label-text">随机血糖</text>
-            </view>
-            <view class="form-input-wrapper">
-              <input 
-                class="form-input" 
-                type="digit" 
-                placeholder="请输入" 
-                value="{{recordForm.bloodSugar}}"
-                data-field="bloodSugar"
-                bindinput="onFormInput"
-              />
-              <text class="input-unit">mmol/L</text>
-            </view>
-          </view>
-
           <!-- 空腹血糖 -->
           <view class="form-group">
             <view class="form-label">
               <text class="label-text">空腹血糖</text>
+              <text class="required">*</text>
             </view>
             <view class="form-input-wrapper">
-              <input 
-                class="form-input" 
-                type="digit" 
-                placeholder="请输入" 
+              <input
+                class="form-input"
+                type="digit"
+                placeholder="请输入"
                 value="{{recordForm.fbg}}"
                 data-field="fbg"
-                bindinput="onFormInput"
-              />
-              <text class="input-unit">mmol/L</text>
-            </view>
-          </view>
-
-          <!-- 餐后血糖 -->
-          <view class="form-group">
-            <view class="form-label">
-              <text class="label-text">餐后血糖</text>
-            </view>
-            <view class="form-input-wrapper">
-              <input 
-                class="form-input" 
-                type="digit" 
-                placeholder="请输入" 
-                value="{{recordForm.pbg}}"
-                data-field="pbg"
                 bindinput="onFormInput"
               />
               <text class="input-unit">mmol/L</text>

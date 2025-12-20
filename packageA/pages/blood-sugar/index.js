@@ -29,9 +29,7 @@ Page({
     // 血糖记录表单
     recordForm: {
       time: '',
-      bloodSugar: '',  // 随机血糖
       fbg: '',         // 空腹血糖
-      pbg: '',         // 餐后血糖
       notes: ''
     }
   },
@@ -144,8 +142,8 @@ Page({
       let count = 0;
 
       res.data.forEach(item => {
-        // 优先使用 bloodSugar（随机血糖），其次 fbg，最后 pbg
-        const value = item.bloodSugar || item.fbg || item.pbg;
+        // 使用 fbg（空腹血糖）
+        const value = item.fbg;
         if (value) {
           totalBloodSugar += Number(value);
           maxBloodSugar = Math.max(maxBloodSugar, Number(value));
@@ -221,9 +219,7 @@ Page({
       editingRecordId: '',
       recordForm: {
         time: timeStr,
-        bloodSugar: '',
         fbg: '',
-        pbg: '',
         notes: ''
       }
     });
@@ -242,9 +238,7 @@ Page({
       editingRecordId: id,
       recordForm: {
         time: record.time || '',
-        bloodSugar: record.bloodSugar || '',
         fbg: record.fbg || '',
-        pbg: record.pbg || '',
         notes: record.notes || ''
       }
     });
@@ -306,10 +300,10 @@ Page({
   async saveRecord() {
     const { recordForm, selectedDate, openid, currentProfileId, isEditMode, editingRecordId } = this.data;
 
-    // 验证：至少填写一个血糖值
-    if (!recordForm.bloodSugar && !recordForm.fbg && !recordForm.pbg) {
+    // 验证：必须填写空腹血糖值
+    if (!recordForm.fbg) {
       wx.showToast({
-        title: '请至少填写一个血糖值',
+        title: '请填写空腹血糖值',
         icon: 'none'
       });
       return;
@@ -335,9 +329,7 @@ Page({
       // 构建保存数据
       const saveData = {
         time: recordForm.time,
-        bloodSugar: recordForm.bloodSugar ? parseFloat(recordForm.bloodSugar) : null,
         fbg: recordForm.fbg ? parseFloat(recordForm.fbg) : null,
-        pbg: recordForm.pbg ? parseFloat(recordForm.pbg) : null,
         notes: recordForm.notes || '',
         updateTime: db.serverDate()
       };
@@ -456,9 +448,7 @@ Page({
 
     // 构建详情文本
     let detailText = `时间：${record.time}\n`;
-    if (record.bloodSugar) detailText += `随机血糖：${record.bloodSugar} mmol/L\n`;
     if (record.fbg) detailText += `空腹血糖：${record.fbg} mmol/L\n`;
-    if (record.pbg) detailText += `餐后血糖：${record.pbg} mmol/L\n`;
     if (record.notes) detailText += `备注：${record.notes}`;
 
     wx.showModal({
