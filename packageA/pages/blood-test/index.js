@@ -217,9 +217,9 @@ Page({
 
     // 显示预览提示
     wx.showToast({
-//       title: '加载配置预览，保存后生效',
-//       icon: 'none',
-//       duration: 2500
+      title: '加载配置预览，保存后生效',
+      icon: 'none',
+      duration: 2500
     });
 
   },
@@ -1113,9 +1113,9 @@ Page({
   // 语音录入
   voiceInput() {
     wx.showToast({
-//       title: '语音录入功能开发中',
-//       icon: 'none'
-//     });
+      title: '语音录入功能开发中',
+      icon: 'none'
+    });
     // TODO: 实现语音录入功能
   },
 
@@ -1233,9 +1233,9 @@ Page({
     const { openid, currentProfileId, selectedDate, formData } = this.data;
     if (!openid || !currentProfileId) {
       wx.showToast({
-//         title: '请先登录并选择档案',
-//         icon: 'none'
-//       });
+        title: '请先登录并选择档案',
+        icon: 'none'
+      });
       return;
     }
 
@@ -1297,9 +1297,9 @@ Page({
       fail: (err) => {
         console.error('跳转到配置页面失败:', err);
         wx.showToast({
-//           title: '打开配置页面失败',
-//           icon: 'none'
-//         });
+          title: '打开配置页面失败',
+          icon: 'none'
+        });
       }
     });
   },
@@ -1314,9 +1314,9 @@ Page({
   // 导出数据
   exportData() {
     wx.showToast({
-//       title: '功能开发中',
-//       icon: 'none'
-//     });
+      title: '功能开发中',
+      icon: 'none'
+    });
   },
 
   // 保存数据
@@ -1331,9 +1331,9 @@ Page({
     if (!openid || !currentProfileId) {
       wx.hideLoading();
       wx.showToast({
-//         title: '请先登录并选择档案',
-//         icon: 'none'
-//       });
+        title: '请先登录并选择档案',
+        icon: 'none'
+      });
       return;
     }
 
@@ -1402,9 +1402,9 @@ Page({
       // 显示第一个错误信息，让用户明确知道哪个字段有问题
       const firstError = validationErrors[0];
       wx.showToast({
-//         title: firstError,
-//         icon: 'none'
-//       });
+        title: firstError,
+        icon: 'none'
+      });
 
       // 如果有多个错误，在控制台输出所有错误信息
       if (validationErrors.length > 1) {
