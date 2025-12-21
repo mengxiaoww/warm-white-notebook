@@ -10973,13 +10973,6 @@ Page({
     }
   },
 
-  // 导航到健康图谱页面
-  navigateToHealthChart() {
-    wx.navigateTo({
-      url: '/pages/health-chart/index'
-    })
-  },
-
   // ==================== 今日事项管理 ====================
 
   // 显示添加事项对话框
