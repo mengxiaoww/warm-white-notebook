@@ -207,9 +207,9 @@ Page({
 
     // 显示预览提示
     wx.showToast({
-//       title: '加载配置预览，保存后生效',
-//       icon: 'none',
-//       duration: 2500
+      title: '加载配置预览，保存后生效',
+      icon: 'none',
+      duration: 2500
     });
 
     console.log('✅ 肝功能临时配置预览加载完成:', {
@@ -387,9 +387,9 @@ Page({
                     if (dataSize > 800000) { // 800KB限制
                       wx.hideLoading();
                       wx.showToast({
-//                         title: '图片过大，请选择更小的图片',
-//                         icon: 'none',
-//                         duration: 2500
+      title: '图片过大，请选择更小的图片',
+      icon: 'none',
+      duration: 2500
                       });
                       return;
                     }
@@ -409,32 +409,32 @@ Page({
                           if (cloudRes.result.success === false) {
                             console.error('OCR识别失败:', cloudRes.result.error);
                             wx.showToast({
-//                               title: '识别失败: ' + (cloudRes.result.error || '未知错误'),
-//                               icon: 'none',
-//                               duration: 2500
+      title: '识别失败: ' + (cloudRes.result.error || '未知错误'),
+      icon: 'none',
+      duration: 2500
                             });
                           } else if (cloudRes.result.items && cloudRes.result.items.length > 0) {
                             // 解析OCR结果
                             that.parseOCRResult(cloudRes.result.items);
                           } else {
                             wx.showToast({
-//                               title: '未识别到有效内容',
-//                               icon: 'none'
-//                             });
+      title: '未识别到有效内容',
+      icon: 'none'
+    });
                           }
                         } else {
                           console.error('云函数返回异常:', cloudRes);
                           if (cloudRes.errMsg) {
                             wx.showToast({
-//                               title: '识别服务异常: ' + cloudRes.errMsg,
-//                               icon: 'none',
-//                               duration: 2500
+      title: '识别服务异常: ' + cloudRes.errMsg,
+      icon: 'none',
+      duration: 2500
                             });
                           } else {
                             wx.showToast({
-//                               title: '识别服务异常，请重新部署云函数',
-//                               icon: 'none',
-//                               duration: 3000
+      title: '识别服务异常，请重新部署云函数',
+      icon: 'none',
+      duration: 3000
                             });
                           }
                         }
@@ -446,15 +446,15 @@ Page({
                         // 处理数据过大错误
                         if (err.errMsg && err.errMsg.includes('data exceed max size')) {
                           wx.showToast({
-//                             title: '图片数据过大，请选择更小的图片',
-//                             icon: 'none',
-//                             duration: 3000
+      title: '图片数据过大，请选择更小的图片',
+      icon: 'none',
+      duration: 3000
                           });
                         } else {
                           wx.showToast({
-//                             title: '调用识别服务失败',
-//                             icon: 'none'
-//                           });
+      title: '调用识别服务失败',
+      icon: 'none'
+    });
                         }
                       }
                     });
@@ -463,9 +463,9 @@ Page({
                     wx.hideLoading();
                     console.error('读取图片失败:', err);
                     wx.showToast({
-//                       title: '读取图片失败',
-//                       icon: 'none'
-//                     });
+      title: '读取图片失败',
+      icon: 'none'
+    });
                   }
                 });
               },
@@ -473,9 +473,9 @@ Page({
                 wx.hideLoading();
                 console.error('压缩图片失败:', err);
                 wx.showToast({
-//                   title: '压缩图片失败',
-//                   icon: 'none'
-//                 });
+      title: '压缩图片失败',
+      icon: 'none'
+    });
               }
             });
           },
@@ -483,18 +483,18 @@ Page({
             wx.hideLoading();
             console.error('获取图片信息失败:', err);
             wx.showToast({
-//               title: '获取图片信息失败',
-//               icon: 'none'
-//             });
+      title: '获取图片信息失败',
+      icon: 'none'
+    });
           }
         });
       },
       fail: function (err) {
         console.error('选择图片失败:', err);
         wx.showToast({
-//           title: '选择图片失败',
-//           icon: 'none'
-//         });
+      title: '选择图片失败',
+      icon: 'none'
+    });
       }
     });
   },
@@ -565,14 +565,14 @@ Page({
       });
 
       wx.showToast({
-//         title: `成功识别${recognizedCount}个指标`,
-//         icon: 'success'
-//       });
+      title: `成功识别${recognizedCount}个指标`,
+      icon: 'success'
+    });
     } else {
       wx.showToast({
-//         title: '未识别到相关指标',
-//         icon: 'none'
-//       });
+      title: '未识别到相关指标',
+      icon: 'none'
+    });
     }
   },
 
@@ -676,9 +676,9 @@ Page({
     const { openid, currentProfileId, selectedDate, formData } = this.data;
     if (!openid || !currentProfileId) {
       wx.showToast({
-//         title: '请先登录并选择档案',
-//         icon: 'none'
-//       });
+      title: '请先登录并选择档案',
+      icon: 'none'
+    });
       return;
     }
 
@@ -740,9 +740,9 @@ Page({
       fail: (err) => {
 
         wx.showToast({
-//           title: '打开配置页面失败',
-//           icon: 'none'
-//         });
+      title: '打开配置页面失败',
+      icon: 'none'
+    });
       }
     });
   },
@@ -750,17 +750,17 @@ Page({
   // 查看历史记录
   viewHistory() {
     wx.showToast({
-//       title: '功能开发中',
-//       icon: 'none'
-//     });
+      title: '功能开发中',
+      icon: 'none'
+    });
   },
 
   // 导出数据
   exportData() {
     wx.showToast({
-//       title: '功能开发中',
-//       icon: 'none'
-//     });
+      title: '功能开发中',
+      icon: 'none'
+    });
   },
 
   // 保存数据
@@ -775,9 +775,9 @@ Page({
     if (!openid || !currentProfileId) {
       wx.hideLoading();
       wx.showToast({
-//         title: '请先登录并选择档案',
-//         icon: 'none'
-//       });
+      title: '请先登录并选择档案',
+      icon: 'none'
+    });
       return;
     }
 
@@ -829,9 +829,9 @@ Page({
       // 显示第一个错误信息，让用户明确知道哪个字段有问题
       const firstError = validationErrors[0];
       wx.showToast({
-//         title: firstError,
-//         icon: 'none'
-//       });
+      title: firstError,
+      icon: 'none'
+    });
 
       return;
     }
@@ -879,9 +879,9 @@ Page({
 
         wx.hideLoading();
         wx.showToast({
-//           title: '保存成功',
-//           icon: 'none'
-//         });
+      title: '保存成功',
+      icon: 'none'
+    });
 
       } else {
         // 更新现有记录
@@ -908,9 +908,9 @@ Page({
 
         wx.hideLoading();
         wx.showToast({
-//           title: '更新成功',
-//           icon: 'none'
-//         });
+      title: '更新成功',
+      icon: 'none'
+    });
       }
 
       // 🔧 关键逻辑：如果存在临时配置，现在保存它
@@ -936,9 +936,9 @@ Page({
 
       wx.hideLoading();
       wx.showToast({
-//         title: '保存失败，请重试',
-//         icon: 'none'
-//       });
+      title: '保存失败，请重试',
+      icon: 'none'
+    });
     }
   },
 
@@ -964,9 +964,9 @@ Page({
       if (res.data.length === 0) {
         wx.hideLoading();
         wx.showToast({
-//           title: '当天没有可删除的记录',
-//           icon: 'none'
-//         });
+      title: '当天没有可删除的记录',
+      icon: 'none'
+    });
         return;
       }
 
@@ -1002,9 +1002,9 @@ Page({
 
               wx.hideLoading();
               wx.showToast({
-//                 title: '删除成功',
-//                 icon: 'success'
-//               });
+      title: '删除成功',
+      icon: 'success'
+    });
 
               // 删除成功后返回每日记录页面
               setTimeout(() => {
@@ -1018,9 +1018,9 @@ Page({
             } catch (err) {
               wx.hideLoading();
               wx.showToast({
-//                 title: '删除失败，请重试',
-//                 icon: 'error'
-//               });
+      title: '删除失败，请重试',
+      icon: 'error'
+    });
             }
           }
         }
@@ -1029,9 +1029,9 @@ Page({
     } catch (err) {
       wx.hideLoading();
       wx.showToast({
-//         title: '查询失败，请重试',
-//         icon: 'error'
-//       });
+      title: '查询失败，请重试',
+      icon: 'error'
+    });
     }
   },
 
@@ -1322,9 +1322,9 @@ Page({
       });
 
       wx.showToast({
-//         title: '配置加载部分失败，使用默认配置',
-//         icon: 'none'
-//       });
+      title: '配置加载部分失败，使用默认配置',
+      icon: 'none'
+    });
     } finally {
       wx.hideLoading();
     }
@@ -1638,9 +1638,9 @@ Page({
 
       // 不影响主流程，只是警告
       wx.showToast({
-//         title: '配置保存部分失败',
-//         icon: 'none',
-//         duration: 2000
+      title: '配置保存部分失败',
+      icon: 'none',
+      duration: 2000
       });
     }
   },
@@ -1681,9 +1681,9 @@ Page({
         console.error('拍照失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
           wx.showToast({
-//             title: '拍照失败',
-//             icon: 'none'
-//           });
+      title: '拍照失败',
+      icon: 'none'
+    });
         }
       }
     });
@@ -1708,9 +1708,9 @@ Page({
         console.error('选择图片失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
           wx.showToast({
-//             title: '选择图片失败',
-//             icon: 'none'
-//           });
+      title: '选择图片失败',
+      icon: 'none'
+    });
         }
       }
     });
@@ -1792,9 +1792,9 @@ Page({
       });
 
       wx.showToast({
-//         title: '识别失败，请重试',
-//         icon: 'none'
-//       });
+      title: '识别失败，请重试',
+      icon: 'none'
+    });
     };
   },
 
@@ -1820,9 +1820,9 @@ Page({
         this.handleVoiceRecordComplete(recognizedText);
       } else {
         wx.showToast({
-//           title: '未识别到内容',
-//           icon: 'none'
-//         });
+      title: '未识别到内容',
+      icon: 'none'
+    });
       }
     }
   },
@@ -1871,9 +1871,9 @@ Page({
       console.error('AI解析失败:', err);
       wx.hideLoading();
       wx.showToast({
-//         title: 'AI解析失败',
-//         icon: 'none'
-//       });
+      title: 'AI解析失败',
+      icon: 'none'
+    });
     }
   },
 
@@ -1931,9 +1931,9 @@ Page({
             console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
             wx.hideLoading();
             wx.showToast({
-//               title: 'AI返回数据格式错误',
-//               icon: 'none'
-//             });
+      title: 'AI返回数据格式错误',
+      icon: 'none'
+    });
             return;
           }
 
@@ -1986,38 +1986,38 @@ Page({
             } else {
               wx.hideLoading();
               wx.showToast({
-//                 title: '未识别到有效数据',
-//                 icon: 'none'
-//               });
+      title: '未识别到有效数据',
+      icon: 'none'
+    });
             }
           } else {
             wx.hideLoading();
             wx.showToast({
-//               title: '未识别到有效数据',
-//               icon: 'none'
-//             });
+      title: '未识别到有效数据',
+      icon: 'none'
+    });
           }
         } else {
           wx.hideLoading();
           wx.showToast({
-//             title: 'AI解析格式错误',
-//             icon: 'none'
-//           });
+      title: 'AI解析格式错误',
+      icon: 'none'
+    });
         }
       } else {
         wx.hideLoading();
         wx.showToast({
-//           title: 'AI解析失败',
-//           icon: 'none'
-//         });
+      title: 'AI解析失败',
+      icon: 'none'
+    });
       }
     } catch (err) {
       console.error('AI解析错误:', err);
       wx.hideLoading();
       wx.showToast({
-//         title: 'AI解析失败',
-//         icon: 'none'
-//       });
+      title: 'AI解析失败',
+      icon: 'none'
+    });
     }
   },
 
@@ -2150,9 +2150,9 @@ Page({
               console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
               wx.hideLoading();
               wx.showToast({
-//                 title: 'AI返回数据格式错误',
-//                 icon: 'none'
-//               });
+      title: 'AI返回数据格式错误',
+      icon: 'none'
+    });
               return;
             }
 
@@ -2207,45 +2207,45 @@ Page({
               } else {
                 wx.hideLoading();
                 wx.showToast({
-//                   title: '未识别到有效数据',
-//                   icon: 'none'
-//                 });
+      title: '未识别到有效数据',
+      icon: 'none'
+    });
               }
             } else {
               wx.hideLoading();
               wx.showToast({
-//                 title: '未识别到有效数据',
-//                 icon: 'none'
-//               });
+      title: '未识别到有效数据',
+      icon: 'none'
+    });
             }
           } else {
             wx.hideLoading();
             wx.showToast({
-//               title: 'AI解析格式错误',
-//               icon: 'none'
-//             });
+      title: 'AI解析格式错误',
+      icon: 'none'
+    });
           }
         } else {
           wx.hideLoading();
           wx.showToast({
-//             title: 'AI解析失败',
-//             icon: 'none'
-//           });
+      title: 'AI解析失败',
+      icon: 'none'
+    });
         }
       } else {
         wx.hideLoading();
         wx.showToast({
-//           title: 'OCR识别失败',
-//           icon: 'none'
-//         });
+      title: 'OCR识别失败',
+      icon: 'none'
+    });
       }
     } catch (err) {
       console.error('图片识别错误:', err);
       wx.hideLoading();
       wx.showToast({
-//         title: '识别失败，请重试',
-//         icon: 'none'
-//       });
+      title: '识别失败，请重试',
+      icon: 'none'
+    });
     }
   },
 
@@ -2294,9 +2294,9 @@ Page({
 
     if (aiRecognizedData.length === 0) {
       wx.showToast({
-//         title: '没有可填充的数据',
-//         icon: 'none'
-//       });
+      title: '没有可填充的数据',
+      icon: 'none'
+    });
       return;
     }
 
@@ -2315,9 +2315,9 @@ Page({
     });
 
     wx.showToast({
-//       title: `已填充${aiRecognizedData.length}个指标`,
-//       icon: 'success'
-//     });
+      title: `已填充${aiRecognizedData.length}个指标`,
+      icon: 'success'
+    });
   },
 
   // 分享功能
