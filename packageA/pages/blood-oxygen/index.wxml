@@ -90,7 +90,7 @@
 
         <!-- 空状态 -->
         <view class="empty-state" wx:if="{{bloodOxygenRecords.length === 0}}">
-          <t-icon name="heart-pulse" size="120rpx" color="#ddd" />
+          <t-icon name="activity" size="120rpx" color="#ddd" />
           <text class="empty-text">暂无血氧记录</text>
           <text class="empty-hint">点击右上角添加血氧记录</text>
         </view>
