@@ -600,6 +600,10 @@ Page({
 
   // 创建图表配置选项
   createChartOption(data, dataType) {
+    // 计算阈值区域
+    const hasThreshold = dataType.normalRange && dataType.normalRange.length === 2 &&
+                        dataType.normalRange[0] !== dataType.normalRange[1];
+    const [minThreshold, maxThreshold] = hasThreshold ? dataType.normalRange : [null, null];
 
     const option = {
       backgroundColor: '#FFFFFF',
@@ -610,8 +614,11 @@ Page({
       },
       tooltip: {
         trigger: 'axis',
-        backgroundColor: 'transparent',
-        borderWidth: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        borderRadius: 8,
+        padding: 12,
         textStyle: {
           color: '#333',
           fontSize: 12,
@@ -625,23 +632,38 @@ Page({
           const name = point.name;
 
           let statusText = '';
-          if (dataType.normalRange && dataType.normalRange.length === 2) {
-            const [min, max] = dataType.normalRange;
-            if (value < min) {
-              statusText = '<br/><span style="color: #2196F3;">● 偏低</span>';
-            } else if (value > max) {
-              statusText = '<span style="color: #FFB84D;">● 偏高</span>';
+          let statusColor = dataType.color;
+          let statusIcon = '●';
+          let referenceInfo = '';
+
+          if (hasThreshold) {
+            if (value < minThreshold) {
+              statusText = '偏低';
+              statusColor = '#2196F3';
+              statusIcon = '▼';
+              referenceInfo = `<div style="font-size: 11px; color: #999; margin-top: 4px;">参考范围: ${minThreshold}-${maxThreshold}${dataType.unit}</div>`;
+            } else if (value > maxThreshold) {
+              statusText = '偏高';
+              statusColor = '#FF5722';
+              statusIcon = '▲';
+              referenceInfo = `<div style="font-size: 11px; color: #999; margin-top: 4px;">参考范围: ${minThreshold}-${maxThreshold}${dataType.unit}</div>`;
             } else {
-              statusText = '<br/><span style="color: #4CAF50;">● 正常</span>';
+              statusText = '正常';
+              statusColor = '#4CAF50';
+              statusIcon = '●';
+              referenceInfo = `<div style="font-size: 11px; color: #999; margin-top: 4px;">参考范围: ${minThreshold}-${maxThreshold}${dataType.unit}</div>`;
             }
           }
 
-          return `<div style="text-align: center;">
-            <div style="font-weight: bold; margin-bottom: 4px;">${name}</div>
-            <div style="color: ${dataType.color}; font-size: 14px; font-weight: bold;">
+          return `<div style="text-align: center; min-width: 120px;">
+            <div style="font-weight: 600; margin-bottom: 6px; font-size: 13px; color: #666;">${name}</div>
+            <div style="color: ${statusColor}; font-size: 20px; font-weight: bold; margin: 8px 0;">
               ${value}${dataType.unit}
             </div>
-            ${statusText}
+            ${statusText ? `<div style="margin-top: 8px; padding: 4px 12px; background: ${statusColor}15; border-radius: 12px; display: inline-block;">
+              <span style="color: ${statusColor}; font-weight: 600; font-size: 12px;">${statusIcon} ${statusText}</span>
+            </div>` : ''}
+            ${referenceInfo}
           </div>`;
         },
         axisPointer: {
@@ -716,7 +738,37 @@ Page({
       series: [{
         name: dataType.name,
         type: 'line',
-        data: data.map(item => item.value),
+        data: data.map((item, index) => {
+          // 根据阈值判断数据点状态
+          const value = item.value;
+          let itemConfig = { value };
+
+          if (hasThreshold) {
+            if (value < minThreshold || value > maxThreshold) {
+              // 异常值：使用特殊样式
+              itemConfig.itemStyle = {
+                color: value < minThreshold ? '#2196F3' : '#FF5722',
+                borderColor: value < minThreshold ? '#2196F3' : '#FF5722',
+                borderWidth: 3,
+                shadowBlur: 12,
+                shadowColor: value < minThreshold ? '#2196F3' : '#FF5722'
+              };
+              itemConfig.label = {
+                show: true,
+                position: 'top',
+                distance: 10,
+                fontSize: 11,
+                color: '#fff',
+                backgroundColor: value < minThreshold ? '#2196F3' : '#FF5722',
+                padding: [4, 8],
+                borderRadius: 10,
+                fontWeight: 'bold'
+              };
+            }
+          }
+
+          return itemConfig;
+        }),
         smooth: 0.4, // 🎨 贝塞尔曲线平滑度：0.4 = 柔滑自然（0-1，值越大越平滑）
         smoothMonotone: 'x', // 🎨 单调平滑：沿x轴方向保持单调性，避免过度弯曲
         symbol: 'circle',
@@ -792,29 +844,71 @@ Page({
             fontWeight: 'bold'
           }
         },
-        markLine: dataType.normalRange && dataType.normalRange[0] !== dataType.normalRange[1] ? {
+        // 🎯 阈值区域：用背景色标注正常范围
+        markArea: hasThreshold ? {
           silent: true,
-          symbol: ['none', 'none'], // 🎨 去掉箭头，更简洁
+          data: [
+            [
+              {
+                yAxis: minThreshold,
+                itemStyle: {
+                  color: 'rgba(76, 175, 80, 0.08)', // 正常区域：浅绿色
+                  borderColor: '#4CAF50',
+                  borderWidth: 0
+                }
+              },
+              {
+                yAxis: maxThreshold
+              }
+            ]
+          ]
+        } : null,
+        // 🎯 阈值线：更醒目的设计
+        markLine: hasThreshold ? {
+          silent: true,
+          symbol: ['none', 'none'],
           lineStyle: {
             color: '#4CAF50',
-            type: 'dashed',
-            width: 1.5, // 🎨 稍细的虚线，更精致
-            opacity: 0.5, // 🎨 降低不透明度，更柔和
-            dashOffset: 5 // 🎨 虚线偏移，增加视觉效果
+            type: 'solid',
+            width: 2,
+            opacity: 0.8
           },
           label: {
             show: true,
-            position: 'end',
-            fontSize: 10, // 🎨 标签字体稍大，更清晰
-            color: '#4CAF50',
-            fontWeight: '500',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)', // 🎨 添加半透明背景
-            padding: [2, 6],
-            borderRadius: 3
+            position: 'insideEndTop',
+            fontSize: 11,
+            color: '#fff',
+            fontWeight: '600',
+            backgroundColor: '#4CAF50',
+            padding: [3, 8],
+            borderRadius: 8,
+            shadowColor: 'rgba(76, 175, 80, 0.3)',
+            shadowBlur: 4,
+            shadowOffsetY: 2,
+            formatter: (params) => {
+              return params.name;
+            }
           },
           data: [
-            { yAxis: dataType.normalRange[0], name: '下限' },
-            { yAxis: dataType.normalRange[1], name: '上限' }
+            {
+              yAxis: minThreshold,
+              name: `下限 ${minThreshold}`,
+              lineStyle: { color: '#2196F3', type: 'dashed', width: 2, opacity: 0.6 },
+              label: {
+                backgroundColor: '#2196F3',
+                formatter: () => `▼ ${minThreshold}${dataType.unit}`
+              }
+            },
+            {
+              yAxis: maxThreshold,
+              name: `上限 ${maxThreshold}`,
+              lineStyle: { color: '#FF5722', type: 'dashed', width: 2, opacity: 0.6 },
+              label: {
+                backgroundColor: '#FF5722',
+                position: 'insideEndBottom',
+                formatter: () => `▲ ${maxThreshold}${dataType.unit}`
+              }
+            }
           ]
         } : null
       }]
