@@ -371,7 +371,8 @@ Page({
 
         if (chartData.length > 0) {
           const latest = chartData[chartData.length - 1].value;
-          latestValue = latest.toFixed(1) + dataType.unit;
+          // 饮食记录次数显示为整数，其他显示一位小数
+          latestValue = (dataType.key === 'mealCount' ? latest.toFixed(0) : latest.toFixed(1)) + dataType.unit;
         }
       }
 
@@ -400,6 +401,30 @@ Page({
       return [];
     }
 
+    // 特殊处理：饮食记录统计每天的记录次数
+    if (dataType.key === 'mealCount') {
+      // 按日期分组统计记录次数
+      const countByDate = {};
+      rawData.forEach(item => {
+        if (item.date) {
+          countByDate[item.date] = (countByDate[item.date] || 0) + 1;
+        }
+      });
+
+      // 转换为图表数据格式
+      const chartData = Object.keys(countByDate)
+        .sort((a, b) => new Date(a) - new Date(b))
+        .map((date, index) => ({
+          name: this.formatDate(date),
+          value: countByDate[date],
+          createTime: new Date(date),
+          index: index
+        }));
+
+      return chartData;
+    }
+
+    // 其他数据类型的常规处理
     const validData = [];
 
     rawData.forEach((item, index) => {
