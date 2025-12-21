@@ -820,6 +820,41 @@ Page({
       }]
     };
 
+    // 添加阈值线（因为精简版ECharts不支持markLine，用额外的series实现）
+    if (dataType.normalRange && dataType.normalRange[0] !== dataType.normalRange[1]) {
+      const xAxisData = data.map(item => item.name);
+      const lowerLimit = Array(data.length).fill(dataType.normalRange[0]);
+      const upperLimit = Array(data.length).fill(dataType.normalRange[1]);
+
+      // 添加下限线
+      option.series.push({
+        name: '下限',
+        type: 'line',
+        data: lowerLimit,
+        symbol: 'none',
+        lineStyle: {
+          color: '#2196F3',
+          width: 2,
+          type: 'dashed'
+        },
+        silent: true
+      });
+
+      // 添加上限线
+      option.series.push({
+        name: '上限',
+        type: 'line',
+        data: upperLimit,
+        symbol: 'none',
+        lineStyle: {
+          color: '#FF5722',
+          width: 2,
+          type: 'dashed'
+        },
+        silent: true
+      });
+    }
+
     // 添加dataZoom滚动条，超过7条数据时显示
     if (data.length > 7) {
       const visibleCount = 7;
