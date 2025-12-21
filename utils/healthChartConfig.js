@@ -89,42 +89,8 @@ const timeRanges = [
   { id: 0, label: '全部' }
 ];
 
-// 功能项ID到图表分组的映射关系
-// 用于根据用户配置的功能项动态显示图表
-const functionToGroupMap = {
-  'blood': 'blood',           // 血常规
-  'liver': 'liver',           // 肝功能
-  'kidney': 'kidney',         // 肾功能
-  'ebv': 'virus',             // EB病毒 -> 病毒指标组
-  'cmv': 'virus',             // 巨细胞病毒 -> 病毒指标组
-  'ldh': 'enzyme',            // 乳酸脱氢酶 -> 酶类指标组
-  'bloodSugar': 'vitals',     // 血糖 -> 生命体征组
-  'bloodOxygen': 'vitals',    // 血氧 -> 生命体征组
-  'bloodPressure': 'vitals',  // 血压 -> 生命体征组
-  'water': 'lifestyle',       // 饮水 -> 生活指标组
-  'temperature': 'lifestyle', // 体温 -> 生活指标组
-  'bodyMeasurement': 'lifestyle', // 身高体重 -> 生活指标组
-  'diet': 'lifestyle'         // 饮食 -> 生活指标组
-};
-
-// 默认启用的功能项（用户未配置时的默认值）
-const defaultEnabledFunctions = [
-  'blood',          // 血常规
-  'liver',          // 肝功能
-  'kidney',         // 肾功能
-  'ebv',            // EB病毒
-  'cmv',            // 巨细胞病毒
-  'ldh',            // 乳酸脱氢酶
-  'bloodSugar',     // 血糖
-  'bloodOxygen',    // 血氧
-  'bloodPressure',  // 血压
-  'temperature',    // 体温
-];
-
 module.exports = {
   dataTypeGroups,
   dataTypes,
-  timeRanges,
-  functionToGroupMap,
-  defaultEnabledFunctions
+  timeRanges
 };
