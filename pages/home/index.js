@@ -427,8 +427,12 @@ Page({
 
         if (chartData.length > 0) {
           const latest = chartData[chartData.length - 1].value;
-          // 智能格式化：整数不显示小数点
-          latestValue = this.formatNumber(latest) + dataType.unit;
+          // 饮食次数显示整数，其他数据智能格式化
+          if (dataType.key === 'mealCount') {
+            latestValue = latest.toFixed(0) + dataType.unit;
+          } else {
+            latestValue = this.formatNumber(latest) + dataType.unit;
+          }
         }
       }
 
@@ -470,6 +474,29 @@ Page({
   processDataForType(rawData, dataType) {
     if (rawData.length === 0) {
       return [];
+    }
+
+    // 特殊处理：饮食记录统计每天的记录次数
+    if (dataType.key === 'mealCount') {
+      // 按日期分组统计记录次数
+      const countByDate = {};
+      rawData.forEach(item => {
+        if (item.date) {
+          countByDate[item.date] = (countByDate[item.date] || 0) + 1;
+        }
+      });
+
+      // 转换为图表数据格式
+      const chartData = Object.keys(countByDate)
+        .sort((a, b) => new Date(a) - new Date(b))
+        .map((date, index) => ({
+          name: this.formatDate(date),
+          value: countByDate[date],
+          createTime: new Date(date),
+          index: index
+        }));
+
+      return chartData;
     }
 
     const validData = [];
