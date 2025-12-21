@@ -123,28 +123,22 @@
             <view class="form-item">
               <text class="form-label">检查项目名称</text>
               <t-input value="{{checkReportForm.projectName}}" placeholder="请输入检查项目名称" bind:change="onFormInput" data-field="projectName" class="form-input" />
-            </view>
-          </view>
-          <!-- 检查结果 -->
-          <view class="form-section">
-            <text class="section-label">检查结果</text>
-            <view class="form-item">
-              <text class="form-label">详细检查结果</text>
-              <t-textarea value="{{checkReportForm.detailedResults}}" placeholder="请输入详细检查结果和数据" bind:change="onFormInput" data-field="detailedResults" class="form-textarea" maxlength="800" indicator />
-            </view>
-            <view class="form-item">
-              <text class="form-label">检查结果</text>
-              <view class="option-cards">
-                <view class="option-card {{checkReportForm.resultType === item.value ? 'option-card-active' : ''}}" wx:for="{{resultTypeOptions}}" wx:key="value" bindtap="selectResultType" data-value="{{item.value}}" data-label="{{item.label}}">
-                  <text class="option-card-text">{{item.label}}</text>
-                  <t-icon wx:if="{{checkReportForm.resultType === item.value}}" name="check-circle-filled" size="32rpx" color="#FF9800" class="option-check-icon" />
+              <!-- 快捷选择提示词 -->
+              <view class="suggestion-buttons">
+                <view
+                  class="suggestion-btn"
+                  wx:for="{{projectNameSuggestions}}"
+                  wx:key="index"
+                  bindtap="selectProjectName"
+                  data-name="{{item}}"
+                >
+                  {{item}}
                 </view>
               </view>
             </view>
           </view>
-          <!-- 报告附件 -->
+          <!-- 报告附件（移到前面，去掉section-label标题） -->
           <view class="form-section">
-            <text class="section-label">报告附件</text>
             <view class="form-item">
               <text class="form-label">报告图片</text>
               <view class="image-upload-area">
@@ -166,6 +160,22 @@
                   </view>
                 </view>
               </view>
+            </view>
+          </view>
+          <!-- 检查结果（去掉section-label标题，交换顺序） -->
+          <view class="form-section">
+            <view class="form-item">
+              <text class="form-label">检查结果</text>
+              <view class="option-cards">
+                <view class="option-card {{checkReportForm.resultType === item.value ? 'option-card-active' : ''}}" wx:for="{{resultTypeOptions}}" wx:key="value" bindtap="selectResultType" data-value="{{item.value}}" data-label="{{item.label}}">
+                  <text class="option-card-text">{{item.label}}</text>
+                  <t-icon wx:if="{{checkReportForm.resultType === item.value}}" name="check-circle-filled" size="32rpx" color="#FF9800" class="option-check-icon" />
+                </view>
+              </view>
+            </view>
+            <view class="form-item">
+              <text class="form-label">详细检查结果</text>
+              <t-textarea value="{{checkReportForm.detailedResults}}" placeholder="选填，可输入详细检查结果和数据" bind:change="onFormInput" data-field="detailedResults" class="form-textarea" maxlength="800" indicator />
             </view>
           </view>
           <view class="form-section">

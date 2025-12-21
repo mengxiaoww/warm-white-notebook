@@ -61,6 +61,12 @@ Page({
     reportTypePickerVisible: false,
     selectedReportType: '',
 
+    // 检查项目名称快捷提示词
+    projectNameSuggestions: [
+      '血常规', '肝功能', '肾功能', 'CT检查', 'MRI检查',
+      'X光检查', 'B超检查', '心电图', '尿常规', '凝血功能'
+    ]
+
   },
 
   // 获取报告类型的中文标签
@@ -539,6 +545,14 @@ Page({
     this.setData({
       'checkReportForm.resultType': value,
       'checkReportForm.resultTypeLabel': label
+    });
+  },
+
+  // 选择项目名称提示词
+  selectProjectName(e) {
+    const { name } = e.currentTarget.dataset;
+    this.setData({
+      'checkReportForm.projectName': name
     });
   },
 
@@ -1044,14 +1058,6 @@ Page({
     if (!checkReportForm.projectName.trim()) {
       wx.showToast({
         title: '请输入检查项目名称',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (!checkReportForm.detailedResults.trim()) {
-      wx.showToast({
-        title: '请输入详细检查结果',
         icon: 'none'
       });
       return;

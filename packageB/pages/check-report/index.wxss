@@ -704,6 +704,32 @@
   font-weight: 500;
 }
 
+/* 快捷提示词按钮 */
+.suggestion-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.suggestion-btn {
+  padding: 12rpx 20rpx;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 152, 0, 0.05) 100%);
+  border: 1.5rpx solid rgba(255, 152, 0, 0.25);
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  color: #FF9800;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.suggestion-btn:active {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 152, 0, 0.1) 100%);
+  transform: scale(0.96);
+  border-color: rgba(255, 152, 0, 0.4);
+}
+
 .form-input {
   width: 100%;
   max-width: 100%;
