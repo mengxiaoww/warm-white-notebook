@@ -562,3 +562,37 @@
   transform: scale(0.98) !important;
   box-shadow: 0 2rpx 8rpx rgba(255, 184, 77, 0.4) !important;
 }
+
+/* 餐次选择按钮组 */
+.meal-type-buttons {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 32rpx;
+}
+
+.meal-type-btn {
+  flex: 1;
+  padding: 20rpx 8rpx;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 184, 77, 0.08) 0%, rgba(255, 184, 77, 0.03) 100%);
+  border: 2rpx solid rgba(255, 184, 77, 0.2);
+  border-radius: 16rpx;
+  color: #666;
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.meal-type-btn.active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9F2E 100%);
+  border: 2rpx solid #FFB84D;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(255, 184, 77, 0.3);
+  transform: translateY(-2rpx);
+}
+
+.meal-type-btn:active {
+  transform: scale(0.96);
+}

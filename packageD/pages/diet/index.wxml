@@ -85,7 +85,7 @@
 
         <!-- 空状态 -->
         <view class="empty-state" wx:if="{{dietRecords.length === 0}}">
-          <t-icon name="chart-bubble" size="120rpx" color="#ddd" />
+          <t-icon name="fork-spoon" size="120rpx" color="#ddd" />
           <text class="empty-text">暂无饮食记录</text>
           <text class="empty-hint">点击右上角添加饮食记录</text>
         </view>
@@ -139,13 +139,18 @@
               <text class="label-text">餐次</text>
               <text class="required">*</text>
             </view>
-            <picker mode="selector" range="{{mealTypes}}" range-key="label" value="{{mealTypeIndex}}" bindchange="onMealTypeChange">
-              <view class="form-input-wrapper time-picker">
-                <t-icon name="fork-spoon" size="32rpx" color="#FFB84D" />
-                <text class="time-value">{{recordForm.mealType || '请选择餐次'}}</text>
-                <t-icon name="chevron-right" size="32rpx" color="#999" />
+            <view class="meal-type-buttons">
+              <view
+                class="meal-type-btn {{mealTypeIndex === index ? 'active' : ''}}"
+                wx:for="{{mealTypes}}"
+                wx:key="value"
+                wx:for-index="index"
+                bindtap="selectMealType"
+                data-index="{{index}}"
+              >
+                {{item.label}}
               </view>
-            </picker>
+            </view>
           </view>
 
           <!-- 饮食内容 -->

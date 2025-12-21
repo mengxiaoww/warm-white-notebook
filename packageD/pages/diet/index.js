@@ -246,6 +246,14 @@ Page({
     });
   },
 
+  selectMealType(e) {
+    const index = e.currentTarget.dataset.index;
+    this.setData({
+      mealTypeIndex: index,
+      'recordForm.mealType': this.data.mealTypes[index].label
+    });
+  },
+
   onTimePickerChange(e) {
     this.setData({ 'recordForm.time': e.detail.value });
   },
