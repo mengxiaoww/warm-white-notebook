@@ -88,7 +88,111 @@ Page({
     this.chartInstancesByGroup = [];
     console.log(`🚀 onLoad: 初始化chartInstancesByGroup数组`);
 
-    // 初始化所有图表配置
+    // 先不初始化图表配置，等获取用户配置后再初始化
+  },
+
+  // 根据用户配置过滤图表分组
+  async filterChartGroupsByUserConfig() {
+    try {
+      const app = getApp();
+      const openid = app.getOpenIdIfLoggedIn();
+
+      if (!openid) {
+        // 未登录，使用默认配置
+        return this.applyDefaultChartGroups();
+      }
+
+      let profileId = '';
+      if (app.globalData && app.globalData.currentProfile) {
+        profileId = app.globalData.currentProfile.profileId;
+      } else if (app.getCurrentProfileId) {
+        profileId = app.getCurrentProfileId();
+      }
+
+      if (!profileId) {
+        return this.applyDefaultChartGroups();
+      }
+
+      // 读取用户的功能配置
+      const db = wx.cloud.database();
+      const configRes = await db.collection('functionCustomConfig')
+        .where({ openid, profileId })
+        .limit(1)
+        .get();
+
+      let enabledFunctions = [];
+
+      if (configRes.data && configRes.data.length > 0) {
+        // 用户有自定义配置，使用用户配置
+        const config = configRes.data[0];
+        enabledFunctions = (config.functionList || [])
+          .filter(func => func.visible !== false)
+          .map(func => func.id);
+      } else {
+        // 用户没有配置，使用默认配置
+        enabledFunctions = healthChartConfig.defaultEnabledFunctions;
+      }
+
+      // 根据启用的功能项过滤图表分组
+      const enabledGroups = new Set();
+      enabledFunctions.forEach(funcId => {
+        const groupId = healthChartConfig.functionToGroupMap[funcId];
+        if (groupId) {
+          enabledGroups.add(groupId);
+        }
+      });
+
+      // 过滤出需要显示的分组
+      const filteredGroups = healthChartConfig.dataTypeGroups.filter(group =>
+        enabledGroups.has(group.id)
+      );
+
+      // 如果没有任何启用的分组，使用默认配置
+      if (filteredGroups.length === 0) {
+        return this.applyDefaultChartGroups();
+      }
+
+      // 应用过滤后的分组
+      this.applyFilteredChartGroups(filteredGroups);
+
+    } catch (error) {
+      console.error('过滤图表分组失败:', error);
+      this.applyDefaultChartGroups();
+    }
+  },
+
+  // 应用默认图表分组
+  applyDefaultChartGroups() {
+    const defaultFunctions = healthChartConfig.defaultEnabledFunctions;
+    const enabledGroups = new Set();
+
+    defaultFunctions.forEach(funcId => {
+      const groupId = healthChartConfig.functionToGroupMap[funcId];
+      if (groupId) {
+        enabledGroups.add(groupId);
+      }
+    });
+
+    const filteredGroups = healthChartConfig.dataTypeGroups.filter(group =>
+      enabledGroups.has(group.id)
+    );
+
+    this.applyFilteredChartGroups(filteredGroups);
+  },
+
+  // 应用过滤后的图表分组
+  applyFilteredChartGroups(filteredGroups) {
+    // 为每个分组设置默认选中的类型和时间
+    const selectedTypeByGroup = filteredGroups.map(group => group.types[0]);
+    const selectedTimeByGroup = new Array(filteredGroups.length).fill(0);
+
+    this.setData({
+      dataTypeGroups: filteredGroups,
+      selectedTypeByGroup,
+      selectedTimeByGroup
+    });
+
+    // 初始化图表配置
     this.initAllChartConfigs();
   },
 
@@ -181,6 +285,9 @@ Page({
         hasShownLoginTip: true,
         keyDates: []
       });
+
+      // 未登录时也要应用默认图表分组
+      this.applyDefaultChartGroups();
       return;
     }
 
@@ -205,8 +312,10 @@ Page({
       app.globalData.shouldRefreshChart = false;
 
       // 重置所有分组的时间选择为30天，且重置hasLoadedBefore以显示骨架屏
+      // 注意：selectedTimeByGroup的长度会根据过滤后的分组数量动态调整
+      const timeByGroup = new Array(this.data.dataTypeGroups.length).fill(0);
       this.setData({
-        selectedTimeByGroup: [0, 0, 0, 0, 0, 0, 0], // 6个分组，默认选中30天（索引0）
+        selectedTimeByGroup: timeByGroup,
         isPageLoading: true, // 数据刷新时显示骨架屏
         hasLoadedBefore: false // 重置加载状态
       });
@@ -217,7 +326,11 @@ Page({
     if (!this.data.hasLoadedBefore) {
       this.setData({ isPageLoading: true });
     }
-    this.loadAllData();
+
+    // 先过滤图表分组，然后再加载数据
+    this.filterChartGroupsByUserConfig().then(() => {
+      this.loadAllData();
+    });
 
   },
 
