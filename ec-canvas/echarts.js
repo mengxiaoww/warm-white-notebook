@@ -95,6 +95,9 @@ class SimpleChart {
     // 绘制折线
     this.drawLine(series, chartArea);
 
+    // 绘制阈值线
+    this.drawThresholdLines(chartArea);
+
     // 绘制dataZoom滚动条（如果配置了）
     if (this.option.dataZoom && this.option.dataZoom.length > 0) {
       this.drawDataZoom(chartArea);
@@ -693,6 +696,84 @@ class SimpleChart {
 
   dispatchAction(action) {
 
+  }
+
+  // 绘制阈值线
+  drawThresholdLines(chartArea) {
+    const series = this.option.series?.[0];
+    if (!series || !series.data || series.data.length === 0) {
+      return;
+    }
+
+    // 从配置中获取阈值范围（通过markLine配置传递）
+    const markLine = series.markLine;
+    if (!markLine || !markLine.data || markLine.data.length !== 2) {
+      return;
+    }
+
+    const lowerLimit = markLine.data[0].yAxis;
+    const upperLimit = markLine.data[1].yAxis;
+
+    if (lowerLimit === upperLimit) {
+      return;
+    }
+
+    // 计算Y轴范围
+    const dataValues = series.data;
+    const dataMin = Math.min(...dataValues);
+    const dataMax = Math.max(...dataValues);
+    const yMin = Math.min(dataMin, lowerLimit) * 0.9;
+    const yMax = Math.max(dataMax, upperLimit) * 1.1;
+    const yRange = yMax - yMin;
+
+    // 计算阈值线的Y坐标
+    const lowerY = chartArea.y + chartArea.height - ((lowerLimit - yMin) / yRange) * chartArea.height;
+    const upperY = chartArea.y + chartArea.height - ((upperLimit - yMin) / yRange) * chartArea.height;
+
+    const ctx = this.ctx;
+    ctx.save();
+
+    // 绘制安全范围背景
+    ctx.fillStyle = 'rgba(76, 175, 80, 0.08)';
+    ctx.fillRect(chartArea.x, upperY, chartArea.width, lowerY - upperY);
+
+    // 绘制下限线（蓝色虚线）
+    ctx.strokeStyle = '#2196F3';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(chartArea.x, lowerY);
+    ctx.lineTo(chartArea.x + chartArea.width, lowerY);
+    ctx.stroke();
+
+    // 绘制下限标签
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#2196F3';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${lowerLimit}`, chartArea.x - 5, lowerY + 4);
+
+    // 绘制上限线（红色虚线）
+    ctx.strokeStyle = '#FF5722';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(chartArea.x, upperY);
+    ctx.lineTo(chartArea.x + chartArea.width, upperY);
+    ctx.stroke();
+
+    // 绘制上限标签
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#FF5722';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${upperLimit}`, chartArea.x - 5, upperY + 4);
+
+    ctx.restore();
   }
 
   resize() {
