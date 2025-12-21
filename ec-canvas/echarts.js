@@ -733,45 +733,76 @@ class SimpleChart {
     const ctx = this.ctx;
     ctx.save();
 
-    // 绘制安全范围背景
-    ctx.fillStyle = 'rgba(76, 175, 80, 0.08)';
+    // 绘制安全范围背景（淡绿色半透明）
+    ctx.fillStyle = 'rgba(139, 195, 74, 0.06)';
     ctx.fillRect(chartArea.x, upperY, chartArea.width, lowerY - upperY);
 
-    // 绘制下限线（蓝色虚线）
-    ctx.strokeStyle = '#2196F3';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
-    ctx.globalAlpha = 0.8;
+    // 绘制下限线（细虚线，柔和的蓝色）
+    ctx.strokeStyle = 'rgba(33, 150, 243, 0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
     ctx.beginPath();
     ctx.moveTo(chartArea.x, lowerY);
     ctx.lineTo(chartArea.x + chartArea.width, lowerY);
     ctx.stroke();
 
-    // 绘制下限标签
+    // 绘制下限标签背景圆角矩形
     ctx.setLineDash([]);
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#2196F3';
-    ctx.font = '11px sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${lowerLimit}`, chartArea.x - 5, lowerY + 4);
+    const lowerText = String(lowerLimit);
+    ctx.font = '10px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    const lowerTextWidth = ctx.measureText(lowerText).width;
+    const labelPadding = 6;
+    const labelHeight = 16;
+    const labelX = chartArea.x + chartArea.width + 15;
 
-    // 绘制上限线（红色虚线）
-    ctx.strokeStyle = '#FF5722';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
-    ctx.globalAlpha = 0.8;
+    // 下限标签背景
+    ctx.fillStyle = 'rgba(33, 150, 243, 0.1)';
+    this.roundRect(ctx, labelX - lowerTextWidth/2 - labelPadding, lowerY - labelHeight/2,
+                    lowerTextWidth + labelPadding * 2, labelHeight, 8);
+    ctx.fill();
+
+    // 下限标签边框
+    ctx.strokeStyle = 'rgba(33, 150, 243, 0.3)';
+    ctx.lineWidth = 1;
+    this.roundRect(ctx, labelX - lowerTextWidth/2 - labelPadding, lowerY - labelHeight/2,
+                    lowerTextWidth + labelPadding * 2, labelHeight, 8);
+    ctx.stroke();
+
+    // 下限标签文字
+    ctx.fillStyle = '#2196F3';
+    ctx.fillText(lowerText, labelX, lowerY + 4);
+
+    // 绘制上限线（细虚线，柔和的红色）
+    ctx.strokeStyle = 'rgba(244, 67, 54, 0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
     ctx.beginPath();
     ctx.moveTo(chartArea.x, upperY);
     ctx.lineTo(chartArea.x + chartArea.width, upperY);
     ctx.stroke();
 
-    // 绘制上限标签
+    // 绘制上限标签背景圆角矩形
     ctx.setLineDash([]);
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#FF5722';
-    ctx.font = '11px sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${upperLimit}`, chartArea.x - 5, upperY + 4);
+    const upperText = String(upperLimit);
+    const upperTextWidth = ctx.measureText(upperText).width;
+
+    // 上限标签背景
+    ctx.fillStyle = 'rgba(244, 67, 54, 0.1)';
+    this.roundRect(ctx, labelX - upperTextWidth/2 - labelPadding, upperY - labelHeight/2,
+                    upperTextWidth + labelPadding * 2, labelHeight, 8);
+    ctx.fill();
+
+    // 上限标签边框
+    ctx.strokeStyle = 'rgba(244, 67, 54, 0.3)';
+    ctx.lineWidth = 1;
+    this.roundRect(ctx, labelX - upperTextWidth/2 - labelPadding, upperY - labelHeight/2,
+                    upperTextWidth + labelPadding * 2, labelHeight, 8);
+    ctx.stroke();
+
+    // 上限标签文字
+    ctx.fillStyle = '#F44336';
+    ctx.fillText(upperText, labelX, upperY + 4);
 
     ctx.restore();
   }
