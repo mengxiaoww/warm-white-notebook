@@ -13,9 +13,6 @@ Page({
     // 费用记录列表
     expenseRecords: [],
     totalAmount: 0,
-    medicalInsurance: 0,
-    selfPay: 0,
-    commercialInsurance: 0,
 
     // 费用记录弹窗
     showExpenseDialog: false,
@@ -28,7 +25,6 @@ Page({
       projectName: '',
       hospital: '',
       expenseType: '',
-      paymentMethod: '',
       notes: ''
     },
 
@@ -40,13 +36,6 @@ Page({
       { label: '住院费', value: '住院费' },
       { label: '手术费', value: '手术费' },
       { label: '护理费', value: '护理费' },
-      { label: '其他', value: '其他' }
-    ],
-
-    paymentMethodOptions: [
-      { label: '医保', value: '医保' },
-      { label: '自费', value: '自费' },
-      { label: '商保', value: '商保' },
       { label: '其他', value: '其他' }
     ],
 
@@ -117,24 +106,12 @@ Page({
         .get();
 
       let totalAmount = 0;
-      let medicalInsurance = 0;
-      let selfPay = 0;
-      let commercialInsurance = 0;
 
       // 处理费用记录数据
       const records = res.data.map(record => {
         // 累计总金额
         const amount = parseFloat(record.amount) || 0;
         totalAmount += amount;
-
-        // 按支付方式分类统计
-        if (record.paymentMethod === '医保') {
-          medicalInsurance += amount;
-        } else if (record.paymentMethod === '自费') {
-          selfPay += amount;
-        } else if (record.paymentMethod === '商保') {
-          commercialInsurance += amount;
-        }
 
         return {
           ...record,
@@ -146,10 +123,7 @@ Page({
 
       this.setData({
         expenseRecords: records,
-        totalAmount: totalAmount.toFixed(2),
-        medicalInsurance: medicalInsurance.toFixed(2),
-        selfPay: selfPay.toFixed(2),
-        commercialInsurance: commercialInsurance.toFixed(2)
+        totalAmount: totalAmount.toFixed(2)
       });
 
     } catch (err) {
@@ -220,7 +194,6 @@ Page({
         projectName: '',
         hospital: '',
         expenseType: '检查费',
-        paymentMethod: '医保',
         notes: ''
       }
     });
@@ -242,7 +215,6 @@ Page({
         projectName: record.projectName || '',
         hospital: record.hospital || '',
         expenseType: record.expenseType || '',
-        paymentMethod: record.paymentMethod || '',
         notes: record.notes || ''
       }
     });
@@ -333,14 +305,6 @@ Page({
     });
   },
 
-  // 支付方式选择
-  onPaymentMethodSelect(e) {
-    const { value } = e.currentTarget.dataset;
-    this.setData({
-      'expenseForm.paymentMethod': value
-    });
-  },
-
   // 设置弹窗输入框焦点
   setPopupFocus(e) {
     const { index } = e.currentTarget.dataset;
@@ -409,14 +373,6 @@ Page({
       return;
     }
 
-    if (!expenseForm.paymentMethod) {
-      wx.showToast({
-        title: '请选择支付方式',
-        icon: 'none'
-      });
-      return;
-    }
-
     wx.showLoading({
       title: isEditMode ? '保存中...' : '添加中...',
       mask: true
@@ -438,7 +394,6 @@ Page({
         projectName: expenseForm.projectName,
         hospital: expenseForm.hospital,
         expenseType: expenseForm.expenseType,
-        paymentMethod: expenseForm.paymentMethod,
         notes: expenseForm.notes,
         updateTime: db.serverDate()
       };

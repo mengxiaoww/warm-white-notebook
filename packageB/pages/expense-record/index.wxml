@@ -33,20 +33,6 @@
               <text class="total-amount">￥{{totalAmount}}</text>
             </view>
           </view>
-          <view class="expense-breakdown">
-            <view class="breakdown-item" wx:if="{{medicalInsurance > 0}}">
-              <text class="breakdown-label">医保支付</text>
-              <text class="breakdown-value">￥{{medicalInsurance}}</text>
-            </view>
-            <view class="breakdown-item" wx:if="{{selfPay > 0}}">
-              <text class="breakdown-label">自费支付</text>
-              <text class="breakdown-value">￥{{selfPay}}</text>
-            </view>
-            <view class="breakdown-item" wx:if="{{commercialInsurance > 0}}">
-              <text class="breakdown-label">商保支付</text>
-              <text class="breakdown-value">￥{{commercialInsurance}}</text>
-            </view>
-          </view>
         </view>
         <!-- 费用记录列表 -->
         <view class="expense-records-list" wx:if="{{expenseRecords.length > 0}}">
@@ -71,11 +57,6 @@
                   <t-icon name="location" size="24rpx" color="#FF9800" />
                   <text class="detail-label">医院：</text>
                   <text class="detail-value">{{item.hospital}}</text>
-                </view>
-                <view class="detail-row">
-                  <t-icon name="wallet" size="24rpx" color="#FF9800" />
-                  <text class="detail-label">支付：</text>
-                  <text class="detail-value">{{item.paymentMethod}}</text>
                 </view>
                 <view class="detail-row" wx:if="{{item.time}}">
                   <t-icon name="time" size="24rpx" color="#FF9800" />
@@ -102,7 +83,6 @@
         </view>
         <!-- 空状态 -->
         <view class="empty-state" wx:if="{{expenseRecords.length === 0}}">
-          <t-icon name="wallet" size="120rpx" color="#ddd" />
           <text class="empty-text">暂无费用记录</text>
           <text class="empty-hint">点击右上角添加费用记录</text>
         </view>
@@ -144,16 +124,6 @@
                 <view class="option-card {{expenseForm.expenseType === item.value ? 'option-card-active' : ''}}" wx:for="{{expenseTypeOptions}}" wx:key="value" bindtap="onExpenseTypeSelect" data-value="{{item.value}}">
                   <text class="option-card-text">{{item.label}}</text>
                   <t-icon wx:if="{{expenseForm.expenseType === item.value}}" name="check-circle-filled" size="32rpx" color="#FF9800" class="option-check-icon" />
-                </view>
-              </view>
-            </view>
-            <!-- 支付方式 - 卡片选择 -->
-            <view class="form-item">
-              <text class="form-label">支付方式</text>
-              <view class="option-cards">
-                <view class="option-card {{expenseForm.paymentMethod === item.value ? 'option-card-active' : ''}}" wx:for="{{paymentMethodOptions}}" wx:key="value" bindtap="onPaymentMethodSelect" data-value="{{item.value}}">
-                  <text class="option-card-text">{{item.label}}</text>
-                  <t-icon wx:if="{{expenseForm.paymentMethod === item.value}}" name="check-circle-filled" size="32rpx" color="#FF9800" class="option-check-icon" />
                 </view>
               </view>
             </view>
