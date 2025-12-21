@@ -18,6 +18,39 @@
   box-shadow: 0 2rpx 16rpx rgba(255, 184, 77, 0.2);
 }
 
+/* 修复导航栏样式 */
+.t-navbar__placeholder {
+  visibility: hidden;
+}
+
+.t-navbar {
+  --td-navbar-bg-color: transparent;
+}
+
+/* 强制设置导航栏标题样式 - 使用更具体的选择器 */
+.navbar .t-navbar__title,
+.navbar .t-navbar__center,
+.navbar .t-navbar__center text,
+.navbar .t-navbar__center .t-navbar__title {
+  color: white !important;
+  font-size: 34rpx !important;
+  font-weight: 500 !important;
+}
+
+/* 导航栏所有图标颜色 */
+.navbar .t-icon,
+.navbar .t-navbar__left .t-icon,
+.navbar .t-navbar__right .t-icon {
+  color: white !important;
+}
+
+/* 更强的选择器确保样式生效 */
+.page-container .navbar .t-navbar__title {
+  color: white !important;
+  font-size: 34rpx !important;
+  font-weight: 500 !important;
+}
+
 /* 自定义返回按钮 */
 .custom-back-btn {
   width: 64rpx;
