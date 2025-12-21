@@ -566,9 +566,9 @@ Page({
             const successMsg = foundIndicators.size > 1 ?
               `识别成功，共${foundIndicators.size}个指标` : '识别成功';
             wx.showToast({
-//               title: successMsg,
-//               icon: 'success'
-//             });
+              title: successMsg,
+              icon: 'success'
+            });
           }
         });
       } else {
@@ -577,15 +577,15 @@ Page({
         const successMsg = foundIndicators.size > 1 ?
           `识别成功，共${foundIndicators.size}个指标` : '识别成功';
         wx.showToast({
-//           title: successMsg,
-//           icon: 'success'
-//         });
+          title: successMsg,
+          icon: 'success'
+        });
       }
     } else {
       wx.showToast({
-//         title: '未识别到血常规数据',
-//         icon: 'none',
-//         duration: 2000
+        title: '未识别到血常规数据',
+        icon: 'none',
+        duration: 2000
       });
     }
   },
