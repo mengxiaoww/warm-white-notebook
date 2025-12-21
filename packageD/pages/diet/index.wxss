@@ -521,6 +521,7 @@
 
 .form-textarea {
   width: 100%;
+  box-sizing: border-box;
   min-height: 160rpx;
   padding: 24rpx;
   background: #f8f8f8;

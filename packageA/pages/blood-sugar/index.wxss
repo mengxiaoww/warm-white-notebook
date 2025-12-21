@@ -581,6 +581,7 @@
 
 .form-textarea {
   width: 100%;
+  box-sizing: border-box;
   background: #f8f8f8;
   border-radius: 12rpx;
   border: 2rpx solid transparent;
@@ -1199,6 +1200,7 @@ page .t-picker__confirm {
 /* 文本域 */
 .form-textarea {
   width: 100%;
+  box-sizing: border-box;
   padding: 24rpx;
   background: #f8f8f8;
   border-radius: 12rpx;

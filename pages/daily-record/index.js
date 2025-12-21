@@ -8968,6 +8968,7 @@ Page({
 
       const res = await db.collection('bloodSugars')
         .where(queryCondition)
+        .orderBy('createTime', 'desc')
         .limit(1)
         .get()
 
@@ -9012,6 +9013,7 @@ Page({
 
       const res = await db.collection('bloodOxygens')
         .where(queryCondition)
+        .orderBy('createTime', 'desc')
         .limit(1)
         .get()
 
@@ -9052,6 +9054,7 @@ Page({
 
       const res = await db.collection('bloodPressures')
         .where(queryCondition)
+        .orderBy('createTime', 'desc')
         .limit(1)
         .get()
 
@@ -9124,6 +9127,7 @@ Page({
 
       const res = await db.collection('waterIntakes')
         .where(queryCondition)
+        .orderBy('createTime', 'desc')
         .limit(1)
         .get()
 
@@ -9164,6 +9168,7 @@ Page({
 
       const res = await db.collection('diets')
         .where(queryCondition)
+        .orderBy('createTime', 'desc')
         .limit(1)
         .get()
 
