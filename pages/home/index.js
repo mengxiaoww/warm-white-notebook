@@ -578,9 +578,6 @@ Page({
       chart.clear && chart.clear();
       chart.setOption(option, true);
 
-      // 手动绘制阈值线
-      this.drawThresholdLines(groupIndex, dataType, chartData);
-
       // 🍎 iOS兼容性：强制刷新渲染
       // iOS WebView 有时会缓存Canvas状态，需要通过resize触发重绘
       setTimeout(() => {
@@ -590,6 +587,9 @@ Page({
           // 第二次resize确保iOS正确渲染（仅在iOS上需要）
           setTimeout(() => {
             chart.resize && chart.resize();
+
+            // 在图表渲染完成后绘制阈值线
+            this.drawThresholdLines(chart, dataType, chartData);
           }, 50);
         } catch (e) {
           console.warn(`图表${groupIndex}resize失败:`, e);
@@ -1534,87 +1534,98 @@ Page({
   },
 
   // 手动绘制阈值线
-  drawThresholdLines(groupIndex, dataType, chartData) {
+  drawThresholdLines(chart, dataType, chartData) {
     if (!dataType.normalRange || dataType.normalRange[0] === dataType.normalRange[1]) {
       return;
     }
 
-    const query = wx.createSelectorQuery().in(this);
-    query.select(`#chart-group-${groupIndex}`)
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        if (!res || !res[0]) return;
+    try {
+      // 从 ECharts 实例获取 Canvas
+      const canvas = chart.getDom && chart.getDom();
+      if (!canvas) {
+        console.warn('无法获取Canvas');
+        return;
+      }
 
-        const canvas = res[0].node;
-        if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.warn('无法获取Canvas 2D上下文');
+        return;
+      }
 
-        const ctx = canvas.getContext('2d');
-        const dpr = wx.getSystemInfoSync().pixelRatio;
-        const { width, height } = res[0];
+      const dpr = wx.getSystemInfoSync().pixelRatio || 2;
+      const width = chart.getWidth();
+      const height = chart.getHeight();
 
-        // 计算图表区域（排除padding和坐标轴区域）
-        const chartLeft = 50 * dpr;
-        const chartRight = width * dpr - 20 * dpr;
-        const chartTop = 30 * dpr;
-        const chartBottom = height * dpr - 80 * dpr;
-        const chartHeight = chartBottom - chartTop;
+      // 计算图表区域（根据 grid 配置）
+      const chartLeft = width * 0.1;
+      const chartRight = width * 0.94;
+      const chartTop = height * 0.08;
+      const chartBottom = height * 0.88;
+      const chartHeight = chartBottom - chartTop;
 
-        // 计算数据值范围
-        const dataValues = chartData.map(item => item.value);
-        const dataMin = Math.min(...dataValues);
-        const dataMax = Math.max(...dataValues);
+      // 计算数据值范围
+      const dataValues = chartData.map(item => item.value);
+      const dataMin = Math.min(...dataValues);
+      const dataMax = Math.max(...dataValues);
 
-        // 确保Y轴范围包含阈值
-        const yMin = Math.min(dataMin, dataType.normalRange[0]) * 0.9;
-        const yMax = Math.max(dataMax, dataType.normalRange[1]) * 1.1;
-        const yRange = yMax - yMin;
+      // 确保Y轴范围包含阈值
+      const yMin = Math.min(dataMin, dataType.normalRange[0]) * 0.9;
+      const yMax = Math.max(dataMax, dataType.normalRange[1]) * 1.1;
+      const yRange = yMax - yMin;
 
-        // 计算阈值线的Y坐标
-        const lowerY = chartBottom - ((dataType.normalRange[0] - yMin) / yRange) * chartHeight;
-        const upperY = chartBottom - ((dataType.normalRange[1] - yMin) / yRange) * chartHeight;
+      // 计算阈值线的Y坐标
+      const lowerY = chartBottom - ((dataType.normalRange[0] - yMin) / yRange) * chartHeight;
+      const upperY = chartBottom - ((dataType.normalRange[1] - yMin) / yRange) * chartHeight;
 
-        // 绘制下限线（蓝色虚线）
-        ctx.save();
-        ctx.strokeStyle = '#2196F3';
-        ctx.lineWidth = 2 * dpr;
-        ctx.setLineDash([5 * dpr, 5 * dpr]);
-        ctx.globalAlpha = 0.8;
-        ctx.beginPath();
-        ctx.moveTo(chartLeft, lowerY);
-        ctx.lineTo(chartRight, lowerY);
-        ctx.stroke();
+      // 绘制安全范围背景
+      ctx.save();
+      ctx.fillStyle = 'rgba(76, 175, 80, 0.08)';
+      ctx.fillRect(chartLeft, upperY, chartRight - chartLeft, lowerY - upperY);
+      ctx.restore();
 
-        // 绘制下限标签
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#2196F3';
-        ctx.font = `${11 * dpr}px sans-serif`;
-        ctx.fillText('下限', chartRight + 5 * dpr, lowerY + 4 * dpr);
-        ctx.restore();
+      // 绘制下限线（蓝色虚线）
+      ctx.save();
+      ctx.strokeStyle = '#2196F3';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(chartLeft, lowerY);
+      ctx.lineTo(chartRight, lowerY);
+      ctx.stroke();
 
-        // 绘制上限线（红色虚线）
-        ctx.save();
-        ctx.strokeStyle = '#FF5722';
-        ctx.lineWidth = 2 * dpr;
-        ctx.setLineDash([5 * dpr, 5 * dpr]);
-        ctx.globalAlpha = 0.8;
-        ctx.beginPath();
-        ctx.moveTo(chartLeft, upperY);
-        ctx.lineTo(chartRight, upperY);
-        ctx.stroke();
+      // 绘制下限标签
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#2196F3';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`下限${dataType.normalRange[0]}`, chartRight + 5, lowerY + 4);
+      ctx.restore();
 
-        // 绘制上限标签
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = '#FF5722';
-        ctx.font = `${11 * dpr}px sans-serif`;
-        ctx.fillText('上限', chartRight + 5 * dpr, upperY + 4 * dpr);
-        ctx.restore();
+      // 绘制上限线（红色虚线）
+      ctx.save();
+      ctx.strokeStyle = '#FF5722';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(chartLeft, upperY);
+      ctx.lineTo(chartRight, upperY);
+      ctx.stroke();
 
-        // 绘制安全范围背景
-        ctx.save();
-        ctx.fillStyle = 'rgba(76, 175, 80, 0.08)';
-        ctx.fillRect(chartLeft, upperY, chartRight - chartLeft, lowerY - upperY);
-        ctx.restore();
-      });
+      // 绘制上限标签
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#FF5722';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`上限${dataType.normalRange[1]}`, chartRight + 5, upperY + 4);
+      ctx.restore();
+
+      console.log('✅ 阈值线绘制完成');
+    } catch (error) {
+      console.error('绘制阈值线失败:', error);
+    }
   },
 
   // 分享功能
