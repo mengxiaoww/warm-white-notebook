@@ -1,108 +1,179 @@
 <view class="page-container">
   <!-- 自定义导航栏 -->
-  <t-navbar title="饮食" class="navbar" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
-    <view slot="left" class="custom-back-btn" bindtap="goBack">
+  <t-navbar title="饮食记录" class="navbar" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+    <view slot="left" class="custom-back-btn" bindtap="navigateBack">
       <t-icon name="chevron-left" size="48rpx" color="white" />
     </view>
-    <view slot="right" class="navbar-right">
-      <t-icon name="ellipsis" size="48rpx" color="white" bindtap="showMoreMenu" />
-    </view>
   </t-navbar>
+
   <!-- 内容区域 -->
   <view class="content">
-    <!-- 临时配置预览提示 -->
-    <view class="temp-config-hint" wx:if="{{isTemporaryConfig}}">
-      <t-icon name="info-circle" size="28rpx" color="#ff6b35" />
-      <text class="temp-config-text">📋 正在预览配置效果，点击"保存配置"后生效</text>
-    </view>
-    <!-- 日期选择 -->
+    <!-- 日期选择区域 -->
     <view class="date-section">
       <view class="date-selector" bindtap="showDatePicker">
         <text class="date-text">{{selectedDate}}</text>
-        <t-icon name="caret-down" size="24rpx" color="#666" />
+        <t-icon name="calendar" size="32rpx" color="#666" />
       </view>
-      <!-- 快捷输入按钮 -->
-      <!-- <view class="quick-input-btns">
-        <view class="quick-btn" bindtap="scanOCR">
-          <t-icon name="scan" size="36rpx" color="#666" />
-          <text>扫描录入</text>
-        </view>
-      </view> -->
+      <view class="quick-input-btns">
+        <t-button theme="primary" size="small" icon="add" bindtap="addRecord" class="add-record-btn">
+          添加记录
+        </t-button>
+      </view>
     </view>
-    <!-- 饮食指标列表 -->
-    <scroll-view class="scroll-container" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+
+    <!-- 滚动容器 -->
+    <scroll-view class="scroll-container" scroll-y>
       <view class="form-container">
-        <!-- 基础指标 -->
-        <view class="indicators-list" wx:if="{{(displayedBasicIndicators && displayedBasicIndicators.length > 0) || (customIndicators && customIndicators.length > 0)}}">
-          <!-- 动态显示基础指标 -->
-          <view class="indicator-item {{item.type === 'text' ? 'indicator-item-textarea' : ''}}" wx:for="{{displayedBasicIndicators}}" wx:key="id">
-            <text class="indicator-name">{{item.name}}</text>
-            <view class="indicator-input">
-              <!-- 备注字段使用textarea -->
-              <textarea wx:if="{{item.type === 'text'}}"
-                id="input-{{index}}"
-                value="{{formData[item.id]}}"
-                bindinput="onInputChange"
-                data-field="{{item.id}}"
-                placeholder="记录今日饮食内容..."
-                class="textarea-field"
-                maxlength="200"
-                auto-height="{{true}}"
-              />
-              <!-- 数值字段使用input -->
-              <input wx:else
-                id="input-{{index}}"
-                type="digit"
-                value="{{formData[item.id]}}"
-                focus="{{focusIndex === index}}"
-                bindinput="onInputChange"
-                bindfocus="onInputFocus"
-                bindblur="onInputBlur"
-                data-field="{{item.id}}"
-                data-index="{{index}}"
-                data-total="{{displayedBasicIndicators.length + customIndicators.length}}"
-                placeholder="请输入"
-                class="input-field"
-              />
-              <text class="unit" wx:if="{{item.unit}}">{{item.unit}}</text>
+        <!-- 今日饮水统计 -->
+        <view class="diet-summary" wx:if="{{dietRecords.length > 0}}">
+          <view class="summary-header">
+            <view class="summary-info">
+              <text class="summary-title">今日饮水</text>
+              <text class="summary-count">{{dietRecords.length}} 次</text>
             </view>
-          </view>
-          <!-- 自定义指标 -->
-          <view class="indicator-item" wx:for="{{customIndicators}}" wx:key="id" wx:for-index="customIndex">
-            <text class="indicator-name">{{item.name}}</text>
-            <view class="indicator-input">
-              <input id="input-{{displayedBasicIndicators.length + customIndex}}" type="digit" value="{{formData[item.id]}}" focus="{{focusIndex === displayedBasicIndicators.length + customIndex}}" bindinput="onInputChange" bindfocus="onInputFocus" bindblur="onInputBlur" data-field="{{item.id}}" data-index="{{displayedBasicIndicators.length + customIndex}}" data-total="{{displayedBasicIndicators.length + customIndicators.length}}" placeholder="请输入" class="input-field" />
-              <text class="unit">{{item.unit}}</text>
+            <view class="summary-stats">
+              <view class="stat-item">
+                <text class="stat-label">总量</text>
+                <text class="stat-value">{{totalWater}}</text>
+                <text class="stat-unit">ml</text>
+              </view>
+              <view class="stat-item">
+                <text class="stat-label">平均</text>
+                <text class="stat-value">{{avgWater}}</text>
+                <text class="stat-unit">ml</text>
+              </view>
             </view>
           </view>
         </view>
-        <!-- 空状态提示 -->
-        <view class="empty-indicators" wx:if="{{(!displayedBasicIndicators || displayedBasicIndicators.length === 0) && (!customIndicators || customIndicators.length === 0)}}">
-          <medical-icon name="glucose" size="120" color="#ccc" />
-          <text class="empty-text">暂无录入项</text>
-          <text class="empty-hint">点击下方按钮添加录入项</text>
+
+        <!-- 饮食记录列表 -->
+        <view class="diet-records-list" wx:if="{{dietRecords.length > 0}}">
+          <view class="diet-record-item" wx:for="{{dietRecords}}" wx:key="_id">
+            <view class="record-content" bindtap="showRecordDetail" data-id="{{item._id}}">
+              <view class="record-header">
+                <view class="time-info">
+                  <t-icon name="time" size="28rpx" color="#FFB84D" />
+                  <text class="record-time">{{item.time}}</text>
+                </view>
+                <view class="value-badge">
+                  <text class="main-value">{{item.mealType}}</text>
+                </view>
+              </view>
+              <view class="record-details">
+                <view class="detail-item" wx:if="{{item.content}}">
+                  <text class="detail-label">内容：</text>
+                  <text class="detail-value">{{item.content}}</text>
+                </view>
+              </view>
+              <!-- 备注预览 -->
+              <view class="notes-preview" wx:if="{{item.notes}}">
+                <t-icon name="chat" size="24rpx" color="#FFB84D" />
+                <text class="notes-text">{{item.notes}}</text>
+              </view>
+              <!-- 操作按钮 -->
+              <view class="temp-actions">
+                <view class="temp-btn edit-temp-btn" catchtap="editRecord" data-id="{{item._id}}">
+                  编辑
+                </view>
+                <view class="temp-btn delete-temp-btn" catchtap="deleteRecord" data-id="{{item._id}}">
+                  删除
+                </view>
+              </view>
+            </view>
+          </view>
         </view>
-        <!-- 添加更多录入项 -->
-        <view class="add-more-btn" bindtap="configIndicators">
-          <text>编辑录入项</text>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{dietRecords.length === 0}}">
+          <t-icon name="chart-bubble" size="120rpx" color="#ddd" />
+          <text class="empty-text">暂无饮食记录</text>
+          <text class="empty-hint">点击右上角添加饮食记录</text>
         </view>
       </view>
     </scroll-view>
-    <!-- 底部操作按钮 -->
-    <view class="bottom-actions">
-      <view class="delete-btn" bindtap="deleteRecord">
-        <t-icon name="delete" size="32rpx" color="white" />
-        <text>删除</text>
-      </view>
-      <t-button theme="primary" size="large" class="save-btn" bindtap="saveData">保存配置</t-button>
-    </view>
   </view>
+
   <!-- 日期选择器 -->
-  <t-date-time-picker title="选择日期" visible="{{datePickerVisible}}" mode="date" value="{{selectedDate}}" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" confirm-btn="确定" cancel-btn="取消" class="custom-date-picker" />
-  <!-- Toast -->
-  <t-toast id="t-toast" />
-  <!-- 浮动的下一项/完成按钮 -->
-  <view wx:if="{{focusIndex >= 0}}" class="floating-next-btn" catchtap="{{focusIndex === displayedBasicIndicators.length + customIndicators.length - 1 ? 'completeInput' : 'goToNextInput'}}" data-index="{{focusIndex}}">
-    <t-icon name="{{focusIndex === displayedBasicIndicators.length + customIndicators.length - 1 ? 'check' : 'chevron-down'}}" size="48rpx" color="white" />
-  </view>
+  <t-date-time-picker
+    visible="{{datePickerVisible}}"
+    value="{{selectedDateTimestamp}}"
+    mode="date"
+    title="选择日期"
+    confirm-btn="确定"
+    cancel-btn="取消"
+    bind:confirm="onDateConfirm"
+    bind:cancel="onDateCancel"
+    bind:visible-change="onDateVisibleChange"
+  />
+
+  <!-- 饮食记录弹窗 -->
+  <t-popup visible="{{showRecordDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+    <view class="record-popup-content">
+      <view class="record-popup-header">
+        <text class="record-popup-title">{{isEditMode ? '编辑饮食记录' : '添加饮食记录'}}</text>
+        <view class="record-popup-close" bindtap="closeRecordDialog">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+
+      <scroll-view class="record-form-container" scroll-y>
+        <view class="record-form-content">
+          <!-- 时间选择 -->
+          <view class="form-group">
+            <view class="form-label">
+              <text class="label-text">记录时间</text>
+              <text class="required">*</text>
+            </view>
+            <picker mode="time" value="{{recordForm.time}}" bindchange="onTimePickerChange">
+              <view class="form-input-wrapper time-picker">
+                <t-icon name="time" size="32rpx" color="#FFB84D" />
+                <text class="time-value">{{recordForm.time || '请选择时间'}}</text>
+                <t-icon name="chevron-right" size="32rpx" color="#999" />
+              </view>
+            </picker>
+          </view>
+
+          <!-- 餐次选择 -->
+          <view class="form-group">
+            <view class="form-label">
+              <text class="label-text">餐次</text>
+              <text class="required">*</text>
+            </view>
+            <picker mode="selector" range="{{mealTypes}}" range-key="label" value="{{mealTypeIndex}}" bindchange="onMealTypeChange">
+              <view class="form-input-wrapper time-picker">
+                <t-icon name="fork-spoon" size="32rpx" color="#FFB84D" />
+                <text class="time-value">{{recordForm.mealType || '请选择餐次'}}</text>
+                <t-icon name="chevron-right" size="32rpx" color="#999" />
+              </view>
+            </picker>
+          </view>
+
+          <!-- 饮食内容 -->
+          <view class="form-group">
+            <view class="form-label">
+              <text class="label-text">饮食内容</text>
+            </view>
+            <textarea
+              class="form-textarea"
+              placeholder="选填，可记录吃了什么"
+              value="{{recordForm.content}}"
+              data-field="content"
+              bindinput="onFormInput"
+              maxlength="200"
+            />
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 操作按钮 -->
+      <view class="record-form-actions">
+        <t-button theme="default" size="large" bindtap="closeRecordDialog" class="cancel-btn">
+          取消
+        </t-button>
+        <t-button theme="primary" size="large" bindtap="saveRecord" class="save-btn">
+          保存
+        </t-button>
+      </view>
+    </view>
+  </t-popup>
 </view>
