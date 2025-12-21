@@ -190,9 +190,9 @@ Page({
     } catch (err) {
 
       wx.showToast({
-        title: '加载失败，请重试',
-        icon: 'error'
-      });
+//         title: '加载失败，请重试',
+//         icon: 'error'
+//       });
     } finally {
       wx.hideLoading();
     }
@@ -310,9 +310,9 @@ Page({
           await db.collection('urineRecords').doc(id).remove();
 
           wx.showToast({
-            title: '删除成功',
-            icon: 'success'
-          });
+//             title: '删除成功',
+//             icon: 'success'
+//           });
 
           // 重新加载数据
           this.loadUrineRecords();
@@ -327,9 +327,9 @@ Page({
         } catch (err) {
 
           wx.showToast({
-            title: '删除失败，请重试',
-            icon: 'error'
-          });
+//             title: '删除失败，请重试',
+//             icon: 'error'
+//           });
         } finally {
           wx.hideLoading();
         }
@@ -406,17 +406,17 @@ Page({
     // 验证必填字段
     if (!urineForm.time.trim()) {
       wx.showToast({
-        title: '请输入记录时间',
-        icon: 'none'
-      });
+//         title: '请输入记录时间',
+//         icon: 'none'
+//       });
       return;
     }
 
     if (!urineForm.volume || urineForm.volume < 0) {
       wx.showToast({
-        title: '尿量不能为负数',
-        icon: 'none'
-      });
+//         title: '尿量不能为负数',
+//         icon: 'none'
+//       });
       return;
     }
 
@@ -471,9 +471,9 @@ Page({
       }
 
       wx.showToast({
-        title: isEditMode ? '保存成功' : '添加成功',
-        icon: 'success'
-      });
+//         title: isEditMode ? '保存成功' : '添加成功',
+//         icon: 'success'
+//       });
 
       // 关闭弹窗
       this.setData({
@@ -493,9 +493,9 @@ Page({
     } catch (err) {
 
       wx.showToast({
-        title: '保存失败，请重试',
-        icon: 'error'
-      });
+//         title: '保存失败，请重试',
+//         icon: 'error'
+//       });
     } finally {
       wx.hideLoading();
     }
@@ -584,11 +584,7 @@ Page({
     this.setData({
       popupFocusIndex: -1
     });
-    wx.showToast({
-      title: '输入完成',
-      icon: 'success',
-      duration: 1000
-    });
+    // 输入完成提示已移除
   },
 
   // 格式化日期

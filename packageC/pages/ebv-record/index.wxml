@@ -13,7 +13,7 @@
     <!-- 临时配置预览提示 -->
     <view class="temp-config-hint" wx:if="{{isTemporaryConfig}}">
       <t-icon name="info-circle" size="28rpx" color="#ff6b35" />
-      <text class="temp-config-text">📋 正在预览配置效果，点击"保存配置"后生效</text>
+      <text class="temp-config-text">📋 正在预览配置效果，点击"保存记录"后生效</text>
     </view>
     <!-- 日期选择 -->
     <view class="date-section">
@@ -73,7 +73,7 @@
         <t-icon name="delete" size="32rpx" color="white" />
         <text>删除</text>
       </view>
-      <t-button theme="primary" size="large" class="save-btn" bindtap="saveData">保存配置</t-button>
+      <t-button theme="primary" size="large" class="save-btn" bindtap="saveData">保存记录</t-button>
     </view>
   </view>
   <!-- 日期选择器 -->

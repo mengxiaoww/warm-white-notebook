@@ -164,9 +164,9 @@ Page({
     } catch (err) {
       console.error('门诊记录 - 加载失败:', err);
       wx.showToast({
-        title: '加载失败，请重试',
-        icon: 'error'
-      });
+//         title: '加载失败，请重试',
+//         icon: 'error'
+//       });
     } finally {
       wx.hideLoading();
     }
@@ -312,9 +312,9 @@ Page({
           await db.collection('clinicRecords').doc(id).remove();
 
           wx.showToast({
-            title: '删除成功',
-            icon: 'success'
-          });
+//             title: '删除成功',
+//             icon: 'success'
+//           });
 
           // 重新加载数据
           this.loadClinicRecords();
@@ -328,9 +328,9 @@ Page({
         } catch (err) {
 
           wx.showToast({
-            title: '删除失败，请重试',
-            icon: 'error'
-          });
+//             title: '删除失败，请重试',
+//             icon: 'error'
+//           });
         } finally {
           wx.hideLoading();
         }
@@ -403,9 +403,9 @@ Page({
     // 验证必填字段 - 只有医院是必填的
     if (!clinicForm.hospital.trim()) {
       wx.showToast({
-        title: '请输入医院名称',
-        icon: 'none'
-      });
+//         title: '请输入医院名称',
+//         icon: 'none'
+//       });
       return;
     }
 
@@ -454,9 +454,9 @@ Page({
       }
 
       wx.showToast({
-        title: isEditMode ? '保存成功' : '添加成功',
-        icon: 'success'
-      });
+//         title: isEditMode ? '保存成功' : '添加成功',
+//         icon: 'success'
+//       });
 
       // 关闭弹窗
       this.setData({
@@ -476,9 +476,9 @@ Page({
     } catch (err) {
 
       wx.showToast({
-        title: '保存失败，请重试',
-        icon: 'error'
-      });
+//         title: '保存失败，请重试',
+//         icon: 'error'
+//       });
     } finally {
       wx.hideLoading();
     }
@@ -535,11 +535,7 @@ Page({
     this.setData({
       popupFocusIndex: -1
     });
-    wx.showToast({
-      title: '输入完成',
-      icon: 'success',
-      duration: 1000
-    });
+    // 输入完成提示已移除
   },
 
   // 选择图片
@@ -574,17 +570,17 @@ Page({
 
         wx.hideLoading();
         wx.showToast({
-          title: '上传成功',
-          icon: 'success'
-        });
+//           title: '上传成功',
+//           icon: 'success'
+//         });
       }
     } catch (err) {
       console.error('选择图片失败:', err);
       wx.hideLoading();
       wx.showToast({
-        title: '上传失败',
-        icon: 'error'
-      });
+//         title: '上传失败',
+//         icon: 'error'
+//       });
     }
   },
 
