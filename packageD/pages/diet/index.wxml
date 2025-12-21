@@ -24,24 +24,12 @@
     <!-- 滚动容器 -->
     <scroll-view class="scroll-container" scroll-y>
       <view class="form-container">
-        <!-- 今日饮水统计 -->
+        <!-- 今日饮食统计 -->
         <view class="diet-summary" wx:if="{{dietRecords.length > 0}}">
           <view class="summary-header">
             <view class="summary-info">
-              <text class="summary-title">今日饮水</text>
+              <text class="summary-title">今日饮食</text>
               <text class="summary-count">{{dietRecords.length}} 次</text>
-            </view>
-            <view class="summary-stats">
-              <view class="stat-item">
-                <text class="stat-label">总量</text>
-                <text class="stat-value">{{totalWater}}</text>
-                <text class="stat-unit">ml</text>
-              </view>
-              <view class="stat-item">
-                <text class="stat-label">平均</text>
-                <text class="stat-value">{{avgWater}}</text>
-                <text class="stat-unit">ml</text>
-              </view>
             </view>
           </view>
         </view>
@@ -85,7 +73,6 @@
 
         <!-- 空状态 -->
         <view class="empty-state" wx:if="{{dietRecords.length === 0}}">
-          <t-icon name="food" size="120rpx" color="#ddd" />
           <text class="empty-text">暂无饮食记录</text>
           <text class="empty-hint">点击右上角添加饮食记录</text>
         </view>

@@ -91,7 +91,6 @@
 
         <!-- 空状态 -->
         <view class="empty-state" wx:if="{{bloodSugarRecords.length === 0}}">
-          <t-icon name="chart" size="120rpx" color="#ddd" />
           <text class="empty-text">暂无血糖记录</text>
           <text class="empty-hint">点击右上角添加血糖记录</text>
         </view>
