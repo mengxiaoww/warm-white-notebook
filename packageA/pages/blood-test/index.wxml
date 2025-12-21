@@ -197,17 +197,10 @@
         <view class="ai-result-item" wx:for="{{aiRecognizedData}}" wx:key="field" wx:if="{{item.value}}">
           <view class="ai-item-header">
             <text class="ai-item-name">{{item.label}}</text>
-            <view class="ai-confidence-badge" wx:if="{{item.confidence}}">
-              <text class="confidence-text">{{item.confidence}}%</text>
-            </view>
           </view>
           <view class="ai-item-value">
             <text class="value-number">{{item.value}}</text>
             <text class="value-unit">{{item.unit}}</text>
-          </view>
-          <!-- 置信度进度条 -->
-          <view class="ai-confidence-bar" wx:if="{{item.confidence}}">
-            <view class="confidence-fill" style="width: {{item.confidence}}%; background: {{item.confidenceColor}};"></view>
           </view>
         </view>
 
