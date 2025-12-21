@@ -79,7 +79,7 @@ const dataTypes = [
   { key: 'temperature', name: '体温', unit: '°C', icon: 'T', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [36.0, 37.3], collection: 'temperatures', desc: '体温监测' },
   { key: 'weight', name: '体重', unit: 'kg', icon: 'W', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [40, 100], collection: 'bodyMeasurements', desc: '体重管理' },
   { key: 'height', name: '身高', unit: 'cm', icon: 'H', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [140, 200], collection: 'bodyMeasurements', desc: '身高记录' },
-  { key: 'calories', name: '饮食', unit: 'kcal', icon: 'D', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [1200, 2500], collection: 'diets', desc: '每日饮食' }
+  { key: 'mealCount', name: '饮食', unit: '次', icon: 'D', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [2, 4], collection: 'diets', desc: '每日饮食记录次数' }
 ];
 
 const timeRanges = [
