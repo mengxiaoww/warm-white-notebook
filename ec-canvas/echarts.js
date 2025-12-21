@@ -212,9 +212,19 @@ class SimpleChart {
 
     if (data.length === 0) return;
 
-    // 计算数据范围
-    const min = Math.min(...data);
-    const max = Math.max(...data);
+    // 计算数据范围 - 需要考虑阈值线
+    let min = Math.min(...data);
+    let max = Math.max(...data);
+
+    // 如果有阈值配置，扩展Y轴范围以包含阈值
+    const markLine = series.markLine;
+    if (markLine && markLine.data && markLine.data.length === 2) {
+      const lowerLimit = markLine.data[0].yAxis;
+      const upperLimit = markLine.data[1].yAxis;
+      min = Math.min(min, lowerLimit);
+      max = Math.max(max, upperLimit);
+    }
+
     const range = max - min || 1;
 
     // 根据dataZoom配置计算可见数据
@@ -718,91 +728,64 @@ class SimpleChart {
       return;
     }
 
-    // 计算Y轴范围
-    const dataValues = series.data;
-    const dataMin = Math.min(...dataValues);
-    const dataMax = Math.max(...dataValues);
-    const yMin = Math.min(dataMin, lowerLimit) * 0.9;
-    const yMax = Math.max(dataMax, upperLimit) * 1.1;
-    const yRange = yMax - yMin;
+    // 使用与drawLine相同的Y轴范围计算
+    let dataMin = Math.min(...series.data);
+    let dataMax = Math.max(...series.data);
+    const min = Math.min(dataMin, lowerLimit);
+    const max = Math.max(dataMax, upperLimit);
+    const range = max - min || 1;
 
-    // 计算阈值线的Y坐标
-    const lowerY = chartArea.y + chartArea.height - ((lowerLimit - yMin) / yRange) * chartArea.height;
-    const upperY = chartArea.y + chartArea.height - ((upperLimit - yMin) / yRange) * chartArea.height;
+    // 计算阈值线的Y坐标（与drawLine中的Y坐标计算方式一致）
+    const lowerY = chartArea.y + chartArea.height - ((lowerLimit - min) / range) * chartArea.height;
+    const upperY = chartArea.y + chartArea.height - ((upperLimit - min) / range) * chartArea.height;
 
     const ctx = this.ctx;
     ctx.save();
 
-    // 绘制安全范围背景（淡绿色半透明）
-    ctx.fillStyle = 'rgba(139, 195, 74, 0.06)';
+    // 绘制安全范围背景
+    ctx.fillStyle = 'rgba(139, 195, 74, 0.05)';
     ctx.fillRect(chartArea.x, upperY, chartArea.width, lowerY - upperY);
 
-    // 绘制下限线（细虚线，柔和的蓝色）
-    ctx.strokeStyle = 'rgba(33, 150, 243, 0.6)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4, 4]);
+    // 绘制下限线（细虚线）
+    ctx.strokeStyle = 'rgba(33, 150, 243, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
     ctx.beginPath();
     ctx.moveTo(chartArea.x, lowerY);
     ctx.lineTo(chartArea.x + chartArea.width, lowerY);
     ctx.stroke();
 
-    // 绘制下限标签背景圆角矩形
-    ctx.setLineDash([]);
-    const lowerText = String(lowerLimit);
-    ctx.font = '10px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    const lowerTextWidth = ctx.measureText(lowerText).width;
-    const labelPadding = 6;
-    const labelHeight = 16;
-    const labelX = chartArea.x + chartArea.width + 15;
-
-    // 下限标签背景
-    ctx.fillStyle = 'rgba(33, 150, 243, 0.1)';
-    this.roundRect(ctx, labelX - lowerTextWidth/2 - labelPadding, lowerY - labelHeight/2,
-                    lowerTextWidth + labelPadding * 2, labelHeight, 8);
-    ctx.fill();
-
-    // 下限标签边框
-    ctx.strokeStyle = 'rgba(33, 150, 243, 0.3)';
+    // 绘制上限线（细虚线）
+    ctx.strokeStyle = 'rgba(244, 67, 54, 0.5)';
     ctx.lineWidth = 1;
-    this.roundRect(ctx, labelX - lowerTextWidth/2 - labelPadding, lowerY - labelHeight/2,
-                    lowerTextWidth + labelPadding * 2, labelHeight, 8);
-    ctx.stroke();
-
-    // 下限标签文字
-    ctx.fillStyle = '#2196F3';
-    ctx.fillText(lowerText, labelX, lowerY + 4);
-
-    // 绘制上限线（细虚线，柔和的红色）
-    ctx.strokeStyle = 'rgba(244, 67, 54, 0.6)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4, 4]);
+    ctx.setLineDash([3, 3]);
     ctx.beginPath();
     ctx.moveTo(chartArea.x, upperY);
     ctx.lineTo(chartArea.x + chartArea.width, upperY);
     ctx.stroke();
 
-    // 绘制上限标签背景圆角矩形
+    // 绘制标签
     ctx.setLineDash([]);
-    const upperText = String(upperLimit);
-    const upperTextWidth = ctx.measureText(upperText).width;
+    ctx.font = '9px -apple-system, sans-serif';
+    ctx.textAlign = 'left';
 
-    // 上限标签背景
-    ctx.fillStyle = 'rgba(244, 67, 54, 0.1)';
-    this.roundRect(ctx, labelX - upperTextWidth/2 - labelPadding, upperY - labelHeight/2,
-                    upperTextWidth + labelPadding * 2, labelHeight, 8);
+    // 下限标签
+    ctx.fillStyle = 'rgba(33, 150, 243, 0.15)';
+    const lowerText = String(lowerLimit);
+    const lowerWidth = ctx.measureText(lowerText).width + 8;
+    this.roundRect(ctx, chartArea.x + chartArea.width + 3, lowerY - 8, lowerWidth, 16, 8);
     ctx.fill();
+    ctx.fillStyle = '#2196F3';
+    ctx.fillText(lowerText, chartArea.x + chartArea.width + 7, lowerY + 2);
 
-    // 上限标签边框
-    ctx.strokeStyle = 'rgba(244, 67, 54, 0.3)';
-    ctx.lineWidth = 1;
-    this.roundRect(ctx, labelX - upperTextWidth/2 - labelPadding, upperY - labelHeight/2,
-                    upperTextWidth + labelPadding * 2, labelHeight, 8);
-    ctx.stroke();
-
-    // 上限标签文字
+    // 上限标签
+    ctx.fillStyle = 'rgba(244, 67, 54, 0.15)';
+    const upperText = String(upperLimit);
+    const upperWidth = ctx.measureText(upperText).width + 8;
+    this.roundRect(ctx, chartArea.x + chartArea.width + 3, upperY - 8, upperWidth, 16, 8);
+    ctx.fill();
     ctx.fillStyle = '#F44336';
-    ctx.fillText(upperText, labelX, upperY + 4);
+    ctx.fillText(upperText, chartArea.x + chartArea.width + 7, upperY + 2);
 
     ctx.restore();
   }
