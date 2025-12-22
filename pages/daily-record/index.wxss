@@ -9624,6 +9624,26 @@
   line-height: 1.4;
 }
 
+/* 饮食内容预览样式 */
+.diet-content-preview {
+  width: 100%;
+  padding: 16rpx 20rpx;
+  background: rgba(255, 152, 0, 0.05);
+  border-radius: 12rpx;
+  margin-top: 8rpx;
+}
+
+.diet-content-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .ldh-range-hint {
   font-size: 20rpx;
   color: #BFBFBF;
