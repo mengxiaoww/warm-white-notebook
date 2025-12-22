@@ -60,13 +60,6 @@
                   <text class="detail-label">体温：</text>
                   <text class="detail-value">{{item.temperature}} °C</text>
                 </view>
-                <!-- 显示其他自定义指标 -->
-                <block wx:if="{{item.customValues}}">
-                  <view class="detail-item" wx:for="{{item.customValuesList}}" wx:key="key" wx:for-item="customItem">
-                    <text class="detail-label">{{customItem.name}}：</text>
-                    <text class="detail-value">{{customItem.value}} {{customItem.unit}}</text>
-                  </view>
-                </block>
               </view>
               <!-- 备注预览 -->
               <view class="notes-preview" wx:if="{{item.notes}}">
@@ -151,24 +144,6 @@
                 bindinput="onFormInput"
               />
               <text class="input-unit">°C</text>
-            </view>
-          </view>
-
-          <!-- 自定义指标 -->
-          <view class="form-group" wx:for="{{customIndicators}}" wx:key="id">
-            <view class="form-label">
-              <text class="label-text">{{item.name}}</text>
-            </view>
-            <view class="form-input-wrapper">
-              <input
-                class="form-input"
-                type="digit"
-                placeholder="请输入"
-                value="{{recordForm.customValues[item.id]}}"
-                data-field="{{item.id}}"
-                bindinput="onCustomInput"
-              />
-              <text class="input-unit">{{item.unit}}</text>
             </view>
           </view>
 

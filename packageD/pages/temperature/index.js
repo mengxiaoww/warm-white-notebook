@@ -17,10 +17,8 @@ Page({
     recordForm: {
       time: '',
       temperature: '',
-      customValues: {},
       notes: ''
-    },
-    customIndicators: []
+    }
   },
 
   onLoad(options) {
@@ -32,7 +30,6 @@ Page({
     });
     setTimeout(() => {
       this.getUserInfo();
-      this.loadCustomIndicators();
       this.loadTemperatureRecords();
     }, 300);
   },
@@ -44,12 +41,7 @@ Page({
     const app = getApp();
     if (app.globalData && app.globalData.needRefreshData) {
       app.globalData.needRefreshData = false;
-      this.loadCustomIndicators();
       this.loadTemperatureRecords();
-    }
-    if (app.globalData && app.globalData.needRefreshTemperatureConfig) {
-      app.globalData.needRefreshTemperatureConfig = false;
-      this.loadCustomIndicators();
     }
   },
 
@@ -74,23 +66,8 @@ Page({
     this.setData({ openid, currentProfileId });
   },
 
-  async loadCustomIndicators() {
-    const { openid, currentProfileId } = this.data;
-    if (!openid || !currentProfileId) return;
-    try {
-      const db = wx.cloud.database();
-      const res = await db.collection('temperatureIndicatorSettings')
-        .where({ openid, profileId: currentProfileId })
-        .orderBy('customOrder', 'asc')
-        .get();
-      this.setData({ customIndicators: res.data || [] });
-    } catch (err) {
-      console.error('加载自定义指标失败:', err);
-    }
-  },
-
   async loadTemperatureRecords() {
-    const { openid, currentProfileId, selectedDate, customIndicators } = this.data;
+    const { openid, currentProfileId, selectedDate } = this.data;
     if (!openid || !currentProfileId) return;
     wx.showLoading({ title: '加载中...', mask: true });
     try {
@@ -102,36 +79,16 @@ Page({
 
       let totalTemp = 0;
       let count = 0;
-      const processedRecords = res.data.map(item => {
+      res.data.forEach(item => {
         if (item.temperature) {
           totalTemp += Number(item.temperature);
           count++;
         }
-
-        const customValuesList = [];
-        if (item.customValues) {
-          customIndicators.forEach(indicator => {
-            const value = item.customValues[indicator.id];
-            if (value !== undefined && value !== null && value !== '') {
-              customValuesList.push({
-                key: indicator.id,
-                name: indicator.name,
-                value: value,
-                unit: indicator.unit
-              });
-            }
-          });
-        }
-
-        return {
-          ...item,
-          customValuesList
-        };
       });
 
       const avgTemperature = count > 0 ? (totalTemp / count).toFixed(1) : 0;
       this.setData({
-        temperatureRecords: processedRecords,
+        temperatureRecords: res.data,
         avgTemperature
       });
     } catch (err) {
@@ -172,7 +129,7 @@ Page({
       showRecordDialog: true,
       isEditMode: false,
       editingRecordId: '',
-      recordForm: { time: timeStr, temperature: '', customValues: {}, notes: '' }
+      recordForm: { time: timeStr, temperature: '', notes: '' }
     });
   },
 
@@ -187,7 +144,6 @@ Page({
       recordForm: {
         time: record.time || '',
         temperature: record.temperature || '',
-        customValues: record.customValues || {},
         notes: record.notes || ''
       }
     });
@@ -229,13 +185,6 @@ Page({
     });
   },
 
-  onCustomInput(e) {
-    const { field } = e.currentTarget.dataset;
-    this.setData({
-      [`recordForm.customValues.${field}`]: e.detail.value
-    });
-  },
-
   onTimePickerChange(e) {
     this.setData({
       'recordForm.time': e.detail.value
@@ -264,7 +213,6 @@ Page({
         date: selectedDate,
         time: recordForm.time,
         temperature: Number(recordForm.temperature),
-        customValues: recordForm.customValues,
         notes: recordForm.notes,
         updateTime: db.serverDate()
       };
