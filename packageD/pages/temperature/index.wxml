@@ -55,12 +55,6 @@
                   <text class="unit">°C</text>
                 </view>
               </view>
-              <view class="record-details">
-                <view class="detail-item" wx:if="{{item.temperature}}">
-                  <text class="detail-label">体温：</text>
-                  <text class="detail-value">{{item.temperature}} °C</text>
-                </view>
-              </view>
               <!-- 备注预览 -->
               <view class="notes-preview" wx:if="{{item.notes}}">
                 <t-icon name="chat" size="24rpx" color="#FFB84D" />
