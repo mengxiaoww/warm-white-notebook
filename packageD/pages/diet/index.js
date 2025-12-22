@@ -185,6 +185,10 @@ Page({
       wx.showToast({ title: '请选择记录时间', icon: 'none' });
       return;
     }
+    if (!recordForm.content || !recordForm.content.trim()) {
+      wx.showToast({ title: '请输入饮食内容', icon: 'none' });
+      return;
+    }
     wx.showLoading({ title: isEditMode ? '更新中...' : '保存中...', mask: true });
     try {
       const db = wx.cloud.database();
