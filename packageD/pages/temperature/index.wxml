@@ -27,16 +27,14 @@
         <!-- 今日体温统计 -->
         <view class="temperature-summary" wx:if="{{temperatureRecords.length > 0}}">
           <view class="summary-header">
-            <view class="summary-info">
+            <view class="summary-left">
               <text class="summary-title">今日体温</text>
-              <text class="summary-count">{{temperatureRecords.length}} 次</text>
+              <text class="summary-count">{{temperatureRecords.length}} 次记录</text>
             </view>
-            <view class="summary-stats">
-              <view class="stat-item">
-                <text class="stat-label">平均</text>
-                <text class="stat-value">{{avgTemperature}}</text>
-                <text class="stat-unit">°C</text>
-              </view>
+            <view class="summary-right">
+              <text class="avg-label">平均</text>
+              <text class="avg-value">{{avgTemperature}}</text>
+              <text class="avg-unit">°C</text>
             </view>
           </view>
         </view>

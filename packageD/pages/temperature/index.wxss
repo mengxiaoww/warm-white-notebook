@@ -130,93 +130,82 @@
 }
 
 .form-container {
-  padding: 20rpx;
-  padding-bottom: 40rpx;
+  padding: 16rpx;
+  padding-bottom: 32rpx;
 }
 
 /* 体温统计卡片 */
 .temperature-summary {
   background: linear-gradient(135deg, #FFF8F0 0%, #FFF5EB 100%);
-  border-radius: 24rpx;
-  padding: 32rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 8rpx 24rpx rgba(255, 184, 77, 0.15);
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 184, 77, 0.12);
   border: 1rpx solid rgba(255, 184, 77, 0.2);
 }
 
 .summary-header {
   display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-}
-
-.summary-info {
-  display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.summary-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
 .summary-title {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 600;
   color: #333;
 }
 
 .summary-count {
-  font-size: 28rpx;
+  font-size: 24rpx;
   color: #FFB84D;
   font-weight: 500;
 }
 
-.summary-stats {
+.summary-right {
   display: flex;
-  gap: 24rpx;
-  margin-top: 20rpx;
-  padding-top: 20rpx;
-  border-top: 1rpx solid rgba(255, 184, 77, 0.15);
-}
-
-.stat-item {
-  flex: 1;
-  text-align: center;
-  padding: 16rpx;
+  align-items: baseline;
+  gap: 6rpx;
+  padding: 8rpx 20rpx;
   background: white;
-  border-radius: 12rpx;
+  border-radius: 30rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
-.stat-label {
+.avg-label {
   font-size: 24rpx;
   color: #999;
-  margin-bottom: 8rpx;
-  display: block;
 }
 
-.stat-value {
+.avg-value {
   font-size: 32rpx;
   font-weight: 600;
   color: #FFB84D;
-  display: block;
 }
 
-.stat-unit {
+.avg-unit {
   font-size: 24rpx;
   color: #666;
-  margin-left: 4rpx;
 }
 
 /* 体温记录列表 */
 .temperature-records-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .temperature-record-item {
   background: white;
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
 }
 
@@ -226,20 +215,20 @@
 }
 
 .record-content {
-  padding: 28rpx;
+  padding: 24rpx;
 }
 
 .record-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
 }
 
 .time-info {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 
 .record-time {
@@ -251,20 +240,20 @@
 .value-badge {
   display: flex;
   align-items: baseline;
-  padding: 12rpx 24rpx;
+  padding: 10rpx 20rpx;
   background: linear-gradient(135deg, #FFF8F0 0%, #FFF5EB 100%);
   border-radius: 30rpx;
   border: 1rpx solid rgba(255, 184, 77, 0.2);
 }
 
 .main-value {
-  font-size: 36rpx;
+  font-size: 34rpx;
   font-weight: 600;
   color: #FFB84D;
 }
 
 .unit {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #666;
   margin-left: 4rpx;
 }
@@ -272,9 +261,9 @@
 .record-details {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  margin-bottom: 20rpx;
-  padding-bottom: 20rpx;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  padding-bottom: 16rpx;
   border-bottom: 1rpx solid #f0f0f0;
 }
 
@@ -297,30 +286,30 @@
 .notes-preview {
   display: flex;
   align-items: flex-start;
-  gap: 12rpx;
-  padding: 20rpx;
+  gap: 10rpx;
+  padding: 16rpx;
   background: #f8f8f8;
   border-radius: 12rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
 }
 
 .notes-text {
   flex: 1;
   font-size: 26rpx;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .temp-actions {
   display: flex;
-  gap: 16rpx;
+  gap: 12rpx;
   justify-content: flex-end;
 }
 
 .temp-btn {
-  padding: 12rpx 28rpx;
+  padding: 10rpx 24rpx;
   border-radius: 30rpx;
-  font-size: 26rpx;
+  font-size: 24rpx;
   font-weight: 500;
   transition: all 0.3s;
 }
@@ -328,12 +317,12 @@
 .edit-temp-btn {
   background: linear-gradient(135deg, #FFB84D 0%, #FF9F2E 100%);
   color: white;
-  box-shadow: 0 2rpx 8rpx rgba(255, 184, 77, 0.3);
+  box-shadow: 0 2rpx 8rpx rgba(255, 184, 77, 0.25);
 }
 
 .edit-temp-btn:active {
   transform: scale(0.95);
-  box-shadow: 0 1rpx 4rpx rgba(255, 184, 77, 0.4);
+  box-shadow: 0 1rpx 4rpx rgba(255, 184, 77, 0.35);
 }
 
 .delete-temp-btn {
