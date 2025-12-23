@@ -14,7 +14,7 @@
         <t-icon name="calendar" size="32rpx" color="#666" />
       </view>
       <view class="quick-input-btns">
-        <t-button theme="primary" size="small" icon="add" bindtap="addRecord" class="add-record-btn">
+        <t-button theme="primary" size="small" icon="add" bindtap="addUrineRecord" class="add-record-btn">
           添加记录
         </t-button>
       </view>
