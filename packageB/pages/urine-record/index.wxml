@@ -87,11 +87,11 @@
   <!-- 日期选择器 -->
   <t-date-time-picker visible="{{datePickerVisible}}" value="{{selectedDateTimestamp}}" mode="date" title="选择日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" bind:visible-change="onDateVisibleChange" />
   <!-- 尿量记录弹窗 -->
-  <t-popup visible="{{showRecordDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+  <t-popup visible="{{showUrineDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
     <view class="urine-popup-content">
       <view class="urine-popup-header">
         <text class="urine-popup-title">{{isEditMode ? '编辑尿量记录' : '添加尿量记录'}}</text>
-        <view class="urine-popup-close" bindtap="closeRecordDialog">
+        <view class="urine-popup-close" bindtap="closeUrineDialog">
           <t-icon name="close" size="32rpx" color="#999" />
         </view>
       </view>
@@ -139,15 +139,15 @@
         </view>
       </scroll-view>
       <view class="urine-popup-buttons">
-        <view class="urine-btn urine-cancel-btn" bindtap="closeRecordDialog">取消</view>
-        <view class="urine-btn urine-confirm-btn" bindtap="saveRecord">
+        <view class="urine-btn urine-cancel-btn" bindtap="closeUrineDialog">取消</view>
+        <view class="urine-btn urine-confirm-btn" bindtap="saveUrineRecord">
           {{isEditMode ? '保存' : '添加'}}
         </view>
       </view>
     </view>
   </t-popup>
   <!-- 浮动的下一项/完成按钮（弹窗中） - 移到弹窗外以正确fixed定位 -->
-  <view wx:if="{{popupFocusIndex >= 0 && showRecordDialog}}" class="floating-next-btn" catchtap="{{popupFocusIndex === 1 ? 'completePopupInput' : 'goToNextPopupInput'}}" data-index="{{popupFocusIndex}}">
+  <view wx:if="{{popupFocusIndex >= 0 && showUrineDialog}}" class="floating-next-btn" catchtap="{{popupFocusIndex === 1 ? 'completePopupInput' : 'goToNextPopupInput'}}" data-index="{{popupFocusIndex}}">
     <t-icon name="{{popupFocusIndex === 1 ? 'check' : 'chevron-down'}}" size="48rpx" color="white" />
   </view>
   <!-- 尿量记录详情弹窗 -->
