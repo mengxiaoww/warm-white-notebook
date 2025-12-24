@@ -3372,21 +3372,33 @@ ${indicatorDesc}
         this.setData({ currentImagePath: imagePath });
 
         wx.showLoading({
-          title: 'AI识别中...',
+          title: '识别中...',
           mask: true
         });
 
         try {
-          // 直接使用AI识别图片（不用OCR）
-          const parsedData = await this.recognizeImageWithAI(imagePath);
+          let parsedData = null;
+
+          // 🚀 优先使用OCR+AI方式（更快）
+          try {
+            console.log('🎯 尝试OCR识别...');
+            const ocrData = await this.ocrRecognizeImage(imagePath);
+            parsedData = await this.parseBloodTestWithAI(ocrData);
+            console.log('✅ OCR识别成功');
+          } catch (ocrError) {
+            console.warn('⚠️ OCR识别失败，尝试AI直接识别:', ocrError);
+            // OCR失败，降级使用AI直接识别图片
+            parsedData = await this.recognizeImageWithAI(imagePath);
+          }
 
           wx.hideLoading();
 
           if (!parsedData || parsedData.length === 0) {
             wx.showToast({
-      title: '未识别到血常规数据',
-      icon: 'none'
-    });
+              title: '未识别到血常规数据',
+              icon: 'none',
+              duration: 2000
+            });
             return;
           }
 
@@ -3398,11 +3410,12 @@ ${indicatorDesc}
 
         } catch (error) {
           wx.hideLoading();
-          console.error('AI识别失败:', error);
+          console.error('❌ 识别失败:', error);
           wx.showToast({
-      title: 'AI识别失败，请重试',
-      icon: 'none'
-    });
+            title: error.message || '识别失败，请重试',
+            icon: 'none',
+            duration: 2000
+          });
         }
       }
     });
@@ -3702,24 +3715,7 @@ ${indicatorDesc}
           messages: [
             {
               role: 'system',
-              content: `你是一个专业的医疗数据解析助手。你的任务是从血常规检验报告的OCR文本中提取关键指标数据。
-
-**识别规则**：
-1. 只提取以下血常规指标（如果存在）：
-   - WBC/白细胞（单位：×10⁹/L）
-   - NEUT#/中性粒细胞数（单位：×10⁹/L，注意不是百分比NEUT%）
-   - HGB/血红蛋白（单位：g/L）
-   - PLT/血小板（单位：×10⁹/L）
-   - RBC/红细胞（单位：×10¹²/L）
-   - LYMPH#/淋巴细胞绝对值（单位：×10⁹/L）
-   - MONO#/单核细胞绝对值（单位：×10⁹/L）
-   - CRP/C反应蛋白（单位：mg/L）
-
-2. 跳过百分比指标（如NEUT%、LYMPH%等）
-
-3. 对于每个识别的指标，评估识别置信度（0-100分）
-
-4. 返回JSON格式：
+              content: `从血常规报告OCR文本提取指标。只提取：WBC、NEUT#(不是NEUT%)、HGB、PLT、RBC、LYMPH#、MONO#、CRP。返回JSON：
 {
   "indicators": [
     {
@@ -3731,52 +3727,61 @@ ${indicatorDesc}
     }
   ]
 }
-
-**重要**：
-- 只返回JSON，不要任何其他说明文字
-- value必须是纯数字字符串
-- confidence必须是0-100的整数
-- 如果某个指标无法识别或不存在，不要包含在结果中`
+只返回JSON，value为纯数字，confidence为0-100整数。`
             },
             {
               role: 'user',
-              content: `请从以下血常规报告OCR文本中提取数据：\n\n${ocrText}`
+              content: ocrText
             }
-          ]
+          ],
+          mode: 'unified'
+        },
+        config: {
+          timeout: 15000  // 15秒超时（从默认的更长时间优化）
         }
       });
 
       console.log('🤖 AI解析响应:', res.result);
 
-      if (!res.result || !res.result.reply) {
-        throw new Error('AI响应格式错误');
+      if (!res.result || (!res.result.reply && !res.result.content)) {
+        throw new Error('AI响应为空');
       }
 
-      // 解析AI返回的JSON
-      let aiResponse = res.result.reply;
+      // 解析AI返回的JSON - 兼容reply和content
+      let aiResponse = res.result.reply || res.result.content;
 
-      // 清理可能的markdown代码块标记
+      // 清理markdown代码块标记
       aiResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
       const parsed = JSON.parse(aiResponse);
 
       if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
-        throw new Error('AI返回数据格式错误');
+        throw new Error('识别结果格式错误');
+      }
+
+      if (parsed.indicators.length === 0) {
+        throw new Error('未识别到任何指标数据');
       }
 
       console.log('✅ AI解析结果:', parsed.indicators);
 
-      // 根据置信度给进度条上色
+      // 根据置信度上色（使用暖色调）
       const result = parsed.indicators.map(item => ({
         ...item,
-        confidenceColor: item.confidence >= 80 ? '#10b981' :
-                        item.confidence >= 60 ? '#f59e0b' : '#ef4444'
+        confidenceColor: item.confidence >= 80 ? '#FF9800' :
+                        item.confidence >= 60 ? '#FFB84D' : '#FFA726'
       }));
 
       return result;
 
     } catch (error) {
-      console.error('AI解析失败:', error);
+      console.error('❌ AI解析失败:', error);
+      // 提供更友好的错误信息
+      if (error.message && error.message.includes('timeout')) {
+        throw new Error('识别超时，请重试');
+      } else if (error.message && error.message.includes('JSON')) {
+        throw new Error('数据解析失败，请重试');
+      }
       throw error;
     }
   },
