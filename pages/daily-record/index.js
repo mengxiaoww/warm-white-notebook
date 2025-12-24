@@ -75,6 +75,7 @@ Page({
     // 页面加载状态
     isPageLoading: true,
     hasLoadedBefore: false, // 标记页面是否已加载过数据
+    isFirstShow: true, // 🔧 标记是否是首次onShow（用于避免启动时设置TabBar）
 
     // 轮播图数据
     bannerList: [],
@@ -839,16 +840,22 @@ Page({
       this.setData({ isPageLoading: false })
     }
 
-    // 🔧 修复：只在页面栈顶部且是用户主动切换Tab时才设置TabBar，避免启动时覆盖首页的TabBar设置
+    // 🔧 修复：只在非首次onShow时才设置TabBar，避免启动时覆盖首页的TabBar设置
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
-    // 只有当页面栈中只有一个页面（即TabBar页面）且确实是当前页面时才设置TabBar
-    if (pages.length === 1 && currentPage && currentPage.route === 'pages/daily-record/index') {
-      // 设置tabBar选中状态（主包中使用 getTabBar）
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 1
-        });
+
+    // 如果是首次onShow，跳过TabBar设置
+    if (this.data.isFirstShow) {
+      this.setData({ isFirstShow: false });
+    } else {
+      // 只有当页面栈中只有一个页面（即TabBar页面）且确实是当前页面时才设置TabBar
+      if (pages.length === 1 && currentPage && currentPage.route === 'pages/daily-record/index') {
+        // 设置tabBar选中状态（主包中使用 getTabBar）
+        if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+          this.getTabBar().setData({
+            selected: 1
+          });
+        }
       }
     }
 
