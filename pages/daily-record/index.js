@@ -334,9 +334,12 @@ Page({
     showFunctionCustomPopup: false, // 功能项自定义弹窗
 
     // 主页面显示的功能项配置（按用户排序）
-    // 🔧 未登录时显示默认功能项（至少有血常规），避免空白页面
+    // 🔧 初始化显示默认功能项，避免未登录时空白页面
     mainPageFunctions: [
-      { id: 'blood', name: '血常规', icon: 'blood-drop', visible: true, order: 2, navigate: 'navigateToBloodTest', dataKey: 'bloodData' }
+      { id: 'medication', name: '用药记录', icon: 'candy', visible: true, order: 1, navigate: 'navigateToMedicine', dataKey: 'medicationData' },
+      { id: 'blood', name: '血常规', icon: 'blood-drop', visible: true, order: 2, navigate: 'navigateToBloodTest', dataKey: 'bloodData' },
+      { id: 'clinic', name: '门诊记录', icon: 'hospital', visible: true, order: 3, navigate: 'navigateToClinic', dataKey: 'clinicData' },
+      { id: 'checkReport', name: '检查报告', icon: 'assignment', visible: true, order: 4, navigate: 'navigateToCheckReport', dataKey: 'checkReportData' }
     ],
 
     // iOS风格拖拽状态
