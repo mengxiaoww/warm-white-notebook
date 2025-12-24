@@ -82,6 +82,7 @@ Page({
   },
 
   onLoad() {
+    console.log('📍 首页 onLoad 被调用');
     this.isDataReady = false;
 
     // 初始化图表实例数组（存储在页面实例上，不放在data中）
