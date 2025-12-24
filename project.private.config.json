@@ -20,5 +20,18 @@
     "ignoreDevUnusedFiles": true
   },
   "libVersion": "3.9.3",
-  "condition": {}
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "首页",
+          "pathName": "pages/home/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ],
+      "current": 0
+    }
+  }
 }
