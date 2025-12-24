@@ -840,22 +840,27 @@ Page({
       this.setData({ isPageLoading: false })
     }
 
-    // 🔧 修复：只在非首次onShow时才设置TabBar，避免启动时覆盖首页的TabBar设置
+    // 🔧 修复TabBar设置逻辑
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
 
-    // 如果是首次onShow，跳过TabBar设置
+    // 检查是否是从首页启动直接进入此页面（页面栈长度为1且是首次显示）
+    const isDirectLaunch = pages.length === 1 && this.data.isFirstShow;
+
     if (this.data.isFirstShow) {
       this.setData({ isFirstShow: false });
-    } else {
-      // 只有当页面栈中只有一个页面（即TabBar页面）且确实是当前页面时才设置TabBar
-      if (pages.length === 1 && currentPage && currentPage.route === 'pages/daily-record/index') {
-        // 设置tabBar选中状态（主包中使用 getTabBar）
-        if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-          this.getTabBar().setData({
-            selected: 1
-          });
-        }
+    }
+
+    // 只要当前页面是 daily-record 页面且不是从首页直接启动，就设置TabBar
+    // 这样可以保证：
+    // 1. 从其他TabBar页面切换过来时，TabBar会正确激活
+    // 2. 从首页启动时，不会覆盖首页的TabBar设置
+    if (!isDirectLaunch && currentPage && currentPage.route === 'pages/daily-record/index') {
+      // 设置tabBar选中状态（主包中使用 getTabBar）
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setData({
+          selected: 1
+        });
       }
     }
 

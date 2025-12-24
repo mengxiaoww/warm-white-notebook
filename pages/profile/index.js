@@ -8,6 +8,7 @@ Page({
     isLoggedIn: false,
     isPageLoading: true, // 页面加载状态
     hasLoadedBefore: false, // 标记页面是否已加载过数据
+    isFirstShow: true, // 标记是否是首次onShow
     loginBtnText: '微信登录',
     userInfo: null,
     profiles: [],
@@ -69,11 +70,24 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 设置tabBar选中状态
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-        selected: 4
-      });
+    // 🔧 修复TabBar设置逻辑
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+
+    // 检查是否是从首页启动直接进入此页面
+    const isDirectLaunch = pages.length === 1 && this.data.isFirstShow;
+
+    if (this.data.isFirstShow) {
+      this.setData({ isFirstShow: false });
+    }
+
+    // 只要不是直接启动，就设置TabBar
+    if (!isDirectLaunch && currentPage && currentPage.route === 'pages/profile/index') {
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setData({
+          selected: 4
+        });
+      }
     }
 
     // 只在首次加载时显示骨架屏
