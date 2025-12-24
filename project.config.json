@@ -80,7 +80,20 @@
     "disableUseStrict": false,
     "useCompilerPlugins": false
   },
-  "condition": {},
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "默认启动-首页",
+          "pathName": "pages/home/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ],
+      "current": 0
+    }
+  },
   "editorSetting": {
     "tabIndent": "auto",
     "tabSize": 2
