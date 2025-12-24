@@ -3379,17 +3379,10 @@ ${indicatorDesc}
         try {
           let parsedData = null;
 
-          // 🚀 优先使用OCR+AI方式（更快）
-          try {
-            console.log('🎯 尝试OCR识别...');
-            const ocrData = await this.ocrRecognizeImage(imagePath);
-            parsedData = await this.parseBloodTestWithAI(ocrData);
-            console.log('✅ OCR识别成功');
-          } catch (ocrError) {
-            console.warn('⚠️ OCR识别失败，尝试AI直接识别:', ocrError);
-            // OCR失败，降级使用AI直接识别图片
-            parsedData = await this.recognizeImageWithAI(imagePath);
-          }
+          // 直接使用AI识别图片
+          console.log('🎯 开始AI图片识别...');
+          parsedData = await this.recognizeImageWithAI(imagePath);
+          console.log('✅ AI识别成功');
 
           wx.hideLoading();
 
