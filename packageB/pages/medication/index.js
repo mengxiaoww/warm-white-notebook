@@ -1017,9 +1017,9 @@ Page({
       });
 
       wx.showToast({
-//         title: taken ? '已标记为已服用' : '已标记为未服用',
-//         icon: 'success'
-//       });
+        title: taken ? '已标记为已服用' : '已标记为未服用',
+        icon: 'success'
+      });
 
       // 通知首页刷新用药数据
       const app = getApp();
@@ -1028,11 +1028,11 @@ Page({
       }
 
     } catch (err) {
-
+      console.error('切换服药状态失败:', err);
       wx.showToast({
-//         title: '更新失败，请重试',
-//         icon: 'error'
-//       });
+        title: '更新失败，请重试',
+        icon: 'error'
+      });
     } finally {
       wx.hideLoading();
     }
@@ -1120,9 +1120,9 @@ Page({
     // 只有在结束日期存在时才检查开始日期不能晚于结束日期
     if (this.data.medicineForm.endDate && dateStr > this.data.medicineForm.endDate) {
       wx.showToast({
-//         title: '开始日期不能晚于结束日期',
-//         icon: 'error'
-//       });
+title: '开始日期不能晚于结束日期',
+icon: 'error'
+});
       return;
     }
 
@@ -1157,9 +1157,9 @@ Page({
     // 只有在开始日期存在时才检查结束日期不能早于开始日期
     if (this.data.medicineForm.startDate && dateStr < this.data.medicineForm.startDate) {
       wx.showToast({
-//         title: '结束日期不能早于开始日期',
-//         icon: 'error'
-//       });
+title: '结束日期不能早于开始日期',
+icon: 'error'
+});
       return;
     }
 
@@ -1206,9 +1206,9 @@ Page({
       });
 
       wx.showToast({
-//         title: '已设置为长期服用',
-//         icon: 'success'
-//       });
+title: '已设置为长期服用',
+icon: 'success'
+});
     } else {
       // 根据天数计算结束日期
       const numDays = parseInt(days);
@@ -1222,9 +1222,9 @@ Page({
       });
 
       wx.showToast({
-//         title: `已设置${days}天疗程`,
-//         icon: 'success'
-//       });
+title: `已设置${days}天疗程`,
+icon: 'success'
+});
     }
   },
 
@@ -1255,41 +1255,41 @@ Page({
 
     if (!medicineForm.name.trim()) {
       wx.showToast({
-//         title: '请填写完整信息',
-//         icon: 'error'
-//       });
+title: '请填写完整信息',
+icon: 'error'
+});
       return;
     }
 
     if (!medicineForm.dosage.trim()) {
       wx.showToast({
-//         title: '请填写完整信息',
-//         icon: 'error'
-//       });
+title: '请填写完整信息',
+icon: 'error'
+});
       return;
     }
 
     if (!medicineForm.timesPerDay || medicineForm.timesPerDay.length === 0) {
       wx.showToast({
-//         title: '请填写完整信息',
-//         icon: 'error'
-//       });
+title: '请填写完整信息',
+icon: 'error'
+});
       return;
     }
 
     if (!medicineForm.startDate) {
       wx.showToast({
-//         title: '请填写完整信息',
-//         icon: 'error'
-//       });
+title: '请填写完整信息',
+icon: 'error'
+});
       return;
     }
 
     if (!medicineForm.endDate) {
       wx.showToast({
-//         title: '请选择结束日期',
-//         icon: 'error'
-//       });
+title: '请选择结束日期',
+icon: 'error'
+});
       return;
     }
 
@@ -1355,9 +1355,9 @@ Page({
       }
 
       wx.showToast({
-//         title: isEditMode ? '编辑成功' : '添加成功',
-//         icon: 'success'
-//       });
+title: isEditMode ? '编辑成功' : '添加成功',
+icon: 'success'
+});
 
       // 关闭弹窗
       this.setData({
@@ -1376,9 +1376,9 @@ Page({
     } catch (err) {
       console.error('保存用药记录失败:', err);
       wx.showToast({
-//         title: '保存失败，请重试',
-//         icon: 'error'
-//       });
+title: '保存失败，请重试',
+icon: 'error'
+});
     } finally {
       wx.hideLoading();
     }
