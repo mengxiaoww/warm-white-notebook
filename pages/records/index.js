@@ -9,6 +9,7 @@ Page({
     isPageLoading: true, // 页面加载状态
     activeTab: 'health', // 'health' | 'medication' | 'checkReport' | 'expense'
     isFirstLoad: true, // 标记是否首次加载
+    isFirstShow: true, // 标记是否是首次onShow（用于避免启动时设置TabBar）
     hasShownLoginTip: false, // 控制未登录提示只展示一次
 
     // 追踪每个Tab是否已加载过
@@ -216,10 +217,22 @@ Page({
   onShow() {
     console.log('健康档案页面 - onShow');
 
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-        selected: 3
-      });
+    // 🔧 修复：只在非首次onShow时才设置TabBar，避免启动时覆盖首页的TabBar设置
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+
+    // 如果是首次onShow，跳过TabBar设置
+    if (this.data.isFirstShow) {
+      this.setData({ isFirstShow: false });
+    } else {
+      // 只有当确实是当前页面时才设置TabBar
+      if (currentPage && currentPage.route === 'pages/records/index') {
+        if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+          this.getTabBar().setData({
+            selected: 3
+          });
+        }
+      }
     }
 
     // 每次页面显示时都检查登录状态
