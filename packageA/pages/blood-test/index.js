@@ -3235,14 +3235,14 @@ ${indicatorDesc}
             },
             {
               role: 'user',
-              content: `请从以下语音识别的文字中提取血常规数据：\n\n${voiceText}`
+              content: voiceText
             }
           ],
           mode: 'unified',
           stream: false
         },
         config: {
-          timeout: 30000  // 30秒超时
+          timeout: 10000  // 10秒超时（语音解析很快）
         }
       });
 
@@ -3452,66 +3452,16 @@ ${indicatorDesc}
       console.log('📋 当前页面配置的指标:', allIndicators);
       console.log('📸 图片URL:', imageUrl);
 
-      // 调用AI云函数，直接识别图片
+      // 调用AI云函数，使用Qwen3-VL视觉模型识别图片
       const res = await wx.cloud.callFunction({
         name: 'callSiliconFlowAI',
         data: {
           messages: [
             {
               role: 'system',
-              content: `你是一个专业的医疗数据识别助手。你的任务是从血常规检验报告图片中识别并提取关键指标数据。
-
-**当前页面需要识别的指标**：
-${indicatorDesc}
-
-**识别规则**：
-1. **仔细区分指标类型**：
-   - 绝对值指标：白细胞(WBC)、血红蛋白(HGB)、血小板(PLT)、红细胞(RBC)
-   - 绝对计数：中性粒细胞#(NEUT#)、淋巴细胞#(LYMPH#)、单核细胞#(MONO#)
-   - **百分比指标（不要提取）**：中性粒细胞%(NEUT%)、淋巴细胞%(LYMPH%)、单核细胞%(MONO%)
-
-2. **严格匹配规则**：
-   - 白细胞(WBC): 单位必须是 ×10⁹/L，数值范围通常 1-20
-   - 血红蛋白(HGB/Hb): 单位必须是 g/L，数值范围通常 90-180
-   - 血小板(PLT): 单位必须是 ×10⁹/L，数值范围通常 100-400
-   - 中性粒细胞数(NEUT#): 单位是 ×10⁹/L，不要和中性粒细胞%(NEUT%)混淆
-   - 淋巴细胞数(LYMPH#): 单位是 ×10⁹/L，不要和淋巴细胞%(LYMPH%)混淆
-   - 单核细胞数(MONO#): 单位是 ×10⁹/L，不要和单核细胞%(MONO%)混淆
-
-3. **关键判断依据**：
-   - 如果单位是 % 或数值在0-100之间，很可能是百分比，跳过
-   - 如果指标名称包含"百分比"、"%"、"占比"字样，跳过
-   - 血小板数值如果小于50，很可能误识别了其他指标，需要重新确认
-   - 血红蛋白数值如果小于50或大于200，很可能误识别了其他指标
-
-4. **智能匹配指标名称**：
-   - 白细胞 = WBC = 白细胞计数 = 白血球
-   - 血红蛋白 = HGB = Hb = HB = 血色素
-   - 血小板 = PLT = 血小板计数
-   - 红细胞 = RBC = 红细胞计数
-   - C反应蛋白 = CRP = C-反应蛋白 = 超敏C反应蛋白
-
-**返回格式**（必须严格遵守）：
-{
-  "indicators": [
-    {
-      "id": "wbc",
-      "label": "白细胞",
-      "value": "5.2",
-      "unit": "×10⁹/L"
-    }
-  ]
-}
-
-**重要要求**：
-- 只返回JSON，不要任何其他说明文字
-- id必须使用上述列表中的id（准确匹配）
-- label是指标的中文名称
-- value必须是纯数字字符串（不要包含单位）
-- unit是单位
-- 不要添加confidence字段
-- 如果某个指标无法识别或图片中不存在，不要包含在结果中
-- 如果图片不是血常规报告，返回空数组：{"indicators": []}`
+              content: `识别血常规报告图片中的指标。提取：WBC、PLT、HGB、NEUT#(不是NEUT%)、RBC、LYMPH#、MONO#、CRP。
+返回JSON格式：{"indicators": [{"id": "wbc", "label": "白细胞", "value": "5.2", "unit": "×10⁹/L"}]}
+只返回JSON，value为纯数字。`
             },
             {
               role: 'user',
@@ -3519,13 +3469,13 @@ ${indicatorDesc}
                 {
                   type: 'image_url',
                   image_url: {
-                    url: imageUrl,  // 使用云存储HTTPS URL
-                    detail: 'auto'
+                    url: imageUrl,
+                    detail: 'high'  // 使用high提高识别精度
                   }
                 },
                 {
                   type: 'text',
-                  text: '请识别这张血常规检验报告，提取所有可识别的指标数据。'
+                  text: '提取血常规指标'
                 }
               ]
             }
@@ -3534,7 +3484,7 @@ ${indicatorDesc}
           stream: false
         },
         config: {
-          timeout: 60000  // 60秒超时
+          timeout: 30000  // 30秒超时（Qwen3-VL速度快）
         }
       });
 
