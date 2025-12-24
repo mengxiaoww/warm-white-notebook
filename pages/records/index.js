@@ -217,21 +217,26 @@ Page({
   onShow() {
     console.log('健康档案页面 - onShow');
 
-    // 🔧 修复：只在非首次onShow时才设置TabBar，避免启动时覆盖首页的TabBar设置
+    // 🔧 修复TabBar设置逻辑
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
 
-    // 如果是首次onShow，跳过TabBar设置
+    // 检查是否是从首页启动直接进入此页面（页面栈长度为1且是首次显示）
+    const isDirectLaunch = pages.length === 1 && this.data.isFirstShow;
+
     if (this.data.isFirstShow) {
       this.setData({ isFirstShow: false });
-    } else {
-      // 只有当确实是当前页面时才设置TabBar
-      if (currentPage && currentPage.route === 'pages/records/index') {
-        if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-          this.getTabBar().setData({
-            selected: 3
-          });
-        }
+    }
+
+    // 只要当前页面是 records 页面且不是从首页直接启动，就设置TabBar
+    // 这样可以保证：
+    // 1. 从其他TabBar页面切换过来时，TabBar会正确激活
+    // 2. 从首页启动时，不会覆盖首页的TabBar设置
+    if (!isDirectLaunch && currentPage && currentPage.route === 'pages/records/index') {
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setData({
+          selected: 3
+        });
       }
     }
 
