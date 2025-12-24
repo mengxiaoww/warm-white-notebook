@@ -206,11 +206,11 @@ Page({
       });
 
     } catch (err) {
-
+      console.error('加载用药记录失败:', err);
       wx.showToast({
-//         title: '加载失败，请重试',
-//         icon: 'error'
-//       });
+        title: '加载失败，请重试',
+        icon: 'error'
+      });
     } finally {
       wx.hideLoading();
     }
@@ -402,9 +402,9 @@ Page({
           frequencyText = `吃${customTakeDays}天停${customStopDays}天`;
         } else {
           wx.showToast({
-//             title: '请输入吃药和停药天数',
-//             icon: 'none'
-//           });
+            title: '请输入吃药和停药天数',
+            icon: 'none'
+          });
           return;
         }
         break;
@@ -557,19 +557,19 @@ Page({
       }
 
       wx.showToast({
-//         title: '操作成功',
-//         icon: 'success'
-//       });
+        title: '操作成功',
+        icon: 'success'
+      });
 
       this.loadMedicines();
       this.notifyCalendarRefresh();
 
     } catch (err) {
-
+      console.error('删除用药记录失败:', err);
       wx.showToast({
-//         title: '操作失败，请重试',
-//         icon: 'error'
-//       });
+        title: '操作失败，请重试',
+        icon: 'error'
+      });
     } finally {
       wx.hideLoading();
     }
@@ -624,19 +624,19 @@ Page({
       await Promise.all(operations);
 
       wx.showToast({
-//         title: '停止成功',
-//         icon: 'success'
-//       });
+        title: '停止成功',
+        icon: 'success'
+      });
 
       this.loadMedicines();
       this.notifyCalendarRefresh();
 
     } catch (err) {
-
+      console.error('停止用药失败:', err);
       wx.showToast({
-//         title: '操作失败，请重试',
-//         icon: 'error'
-//       });
+        title: '操作失败，请重试',
+        icon: 'error'
+      });
     } finally {
       wx.hideLoading();
     }
@@ -910,9 +910,9 @@ Page({
       });
 
       wx.showToast({
-//         title: taken ? `已标记${timeSlot}已服用` : `已标记${timeSlot}未服用`,
-//         icon: 'success'
-//       });
+        title: taken ? `已标记${timeSlot}已服用` : `已标记${timeSlot}未服用`,
+        icon: 'success'
+      });
 
       // 通知首页刷新用药数据
       const app = getApp();
@@ -921,11 +921,11 @@ Page({
       }
 
     } catch (err) {
-
+      console.error('更新服药状态失败:', err);
       wx.showToast({
-//         title: '更新失败，请重试',
-//         icon: 'error'
-//       });
+        title: '更新失败，请重试',
+        icon: 'error'
+      });
     } finally {
       wx.hideLoading();
     }
