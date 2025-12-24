@@ -833,11 +833,16 @@ Page({
       this.setData({ isPageLoading: false })
     }
 
-    // 设置tabBar选中状态（主包中使用 getTabBar）
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-        selected: 1
-      });
+    // 🔧 修复：只在页面栈顶部时才设置TabBar，避免启动时覆盖首页的TabBar设置
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    if (currentPage && currentPage.route === 'pages/daily-record/index') {
+      // 设置tabBar选中状态（主包中使用 getTabBar）
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setData({
+          selected: 1
+        });
+      }
     }
 
     const app = getApp()
