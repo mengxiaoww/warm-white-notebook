@@ -55,22 +55,9 @@ Page({
   },
 
   onShow() {
-    // 🔧 修复TabBar设置逻辑
-    const pages = getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-
-    // 检查是否是从首页启动直接进入此页面
-    const isDirectLaunch = pages.length === 1 && this.data.isFirstShow;
-
-    if (this.data.isFirstShow) {
-      this.setData({ isFirstShow: false });
-    }
-
-    // 只要不是直接启动，就设置TabBar
-    if (!isDirectLaunch && currentPage && currentPage.route === 'pages/ai-assistant/index') {
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({ selected: 2 });
-      }
+    // 设置TabBar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 2 });
     }
 
     // 添加右上角菜单

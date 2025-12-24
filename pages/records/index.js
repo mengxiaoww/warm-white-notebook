@@ -217,27 +217,11 @@ Page({
   onShow() {
     console.log('健康档案页面 - onShow');
 
-    // 🔧 修复TabBar设置逻辑
-    const pages = getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-
-    // 检查是否是从首页启动直接进入此页面（页面栈长度为1且是首次显示）
-    const isDirectLaunch = pages.length === 1 && this.data.isFirstShow;
-
-    if (this.data.isFirstShow) {
-      this.setData({ isFirstShow: false });
-    }
-
-    // 只要当前页面是 records 页面且不是从首页直接启动，就设置TabBar
-    // 这样可以保证：
-    // 1. 从其他TabBar页面切换过来时，TabBar会正确激活
-    // 2. 从首页启动时，不会覆盖首页的TabBar设置
-    if (!isDirectLaunch && currentPage && currentPage.route === 'pages/records/index') {
-      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-        this.getTabBar().setData({
-          selected: 3
-        });
-      }
+    // 设置TabBar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 3
+      });
     }
 
     // 每次页面显示时都检查登录状态
