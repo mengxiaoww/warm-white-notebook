@@ -334,7 +334,10 @@ Page({
     showFunctionCustomPopup: false, // 功能项自定义弹窗
 
     // 主页面显示的功能项配置（按用户排序）
-    mainPageFunctions: [],
+    // 🔧 未登录时显示默认功能项（至少有血常规），避免空白页面
+    mainPageFunctions: [
+      { id: 'blood', name: '血常规', icon: 'blood-drop', visible: true, order: 2, navigate: 'navigateToBloodTest', dataKey: 'bloodData' }
+    ],
 
     // iOS风格拖拽状态
 
@@ -833,10 +836,11 @@ Page({
       this.setData({ isPageLoading: false })
     }
 
-    // 🔧 修复：只在页面栈顶部时才设置TabBar，避免启动时覆盖首页的TabBar设置
+    // 🔧 修复：只在页面栈顶部且是用户主动切换Tab时才设置TabBar，避免启动时覆盖首页的TabBar设置
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
-    if (currentPage && currentPage.route === 'pages/daily-record/index') {
+    // 只有当页面栈中只有一个页面（即TabBar页面）且确实是当前页面时才设置TabBar
+    if (pages.length === 1 && currentPage && currentPage.route === 'pages/daily-record/index') {
       // 设置tabBar选中状态（主包中使用 getTabBar）
       if (typeof this.getTabBar === 'function' && this.getTabBar()) {
         this.getTabBar().setData({
