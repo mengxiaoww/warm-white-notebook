@@ -379,6 +379,7 @@ Page({
   // 颜色选择 - 直接在表单中选择
   onColorSelect(e) {
     const { value } = e.currentTarget.dataset;
+    console.log('选择尿液颜色:', value);
     this.setData({
       'urineForm.color': value
     });
@@ -387,6 +388,7 @@ Page({
   // 清澈度选择 - 直接在表单中选择
   onClaritySelect(e) {
     const { value } = e.currentTarget.dataset;
+    console.log('选择清澈度:', value);
     this.setData({
       'urineForm.clarity': value
     });
