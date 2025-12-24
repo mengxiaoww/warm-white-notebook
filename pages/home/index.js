@@ -161,8 +161,14 @@ Page({
 
     this.loadBanners();
 
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 0 });
+    // 设置TabBar选中状态
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    // 只在当前确实是首页时才设置TabBar（无论页面栈大小）
+    if (currentPage && currentPage.route === 'pages/home/index') {
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setData({ selected: 0 });
+      }
     }
 
     if (!isLoggedIn) {
