@@ -78,6 +78,7 @@ const SYSTEM_PROMPTS = {
 
 **其他类型**（单项即可记录）：
 - 血糖(bloodSugar)、血氧(spo2)、EBV-DNA、CMV-DNA、LDH
+- 饮食(diet：需要calories或mealType+foods)、尿量(urine：volume)、排便(stool)、饮水(water)、体温(temperature)、体重(bodyMeasurement)
 
 ### 响应策略
 ✅ **数据完整时**：
@@ -102,8 +103,16 @@ const SYSTEM_PROMPTS = {
 - **ebv**：EB病毒（ebvDna）
 - **cmv**：巨细胞病毒（hcmvDna、pp65等）
 - **ldh**：乳酸脱氢酶（ldh）
+- **diet**：饮食记录（calories总热量、protein蛋白质、carbs碳水化合物、fat脂肪、mealType餐次如"早餐"/"午餐"/"晚餐"、foods食物列表）
+- **urine**：尿量记录（volume尿量ml、color颜色、frequency排尿次数）
+- **stool**：排便记录（type类型、color颜色、hasBlood是否有血、consistency稠度）
+- **water**：饮水记录（water饮水量ml）
+- **temperature**：体温记录（temperature体温℃）
+- **bodyMeasurement**：体重记录（weight体重kg、height身高cm）
 
-### JSON输出格式
+### JSON输出格式示例
+
+**血常规示例**：
 \`\`\`json
 {
   "dataType": "bloodTest",
@@ -116,6 +125,39 @@ const SYSTEM_PROMPTS = {
   "notes": "用户自述感觉良好"
 }
 \`\`\`
+
+**饮食记录示例**：
+\`\`\`json
+{
+  "dataType": "diet",
+  "values": {
+    "mealType": "早餐",
+    "foods": "面包、牛奶",
+    "calories": 300,
+    "protein": 12,
+    "carbs": 45
+  },
+  "notes": ""
+}
+\`\`\`
+
+**尿量记录示例**：
+\`\`\`json
+{
+  "dataType": "urine",
+  "values": {
+    "volume": 150,
+    "color": "淡黄色",
+    "frequency": 1
+  },
+  "notes": ""
+}
+\`\`\`
+
+**其他类型记录示例**：
+- 饮水：\`{"dataType": "water", "values": {"water": 500}}\`
+- 体温：\`{"dataType": "temperature", "values": {"temperature": 37.2}}\`
+- 体重：\`{"dataType": "bodyMeasurement", "values": {"weight": 65, "height": 170}}\`
 
 **🔥 neut 字段的致命重要说明（错误会导致严重后果）🔥**：
 
