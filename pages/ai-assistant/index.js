@@ -539,10 +539,17 @@ Page({
         return;
       }
 
-      // 🔍 调试日志3: 打印解析后的values对象
-      console.log('🔍 解析后的values对象:', JSON.stringify(healthData.values, null, 2));
+      // 🔍 调试日志3: 打印解析后的完整对象
+      console.log('🔍 解析后的完整healthData对象:', JSON.stringify(healthData, null, 2));
+      console.log('🔍 dataType:', healthData.dataType);
+      console.log('🔍 values:', healthData.values);
 
-      if (!healthData.dataType || !healthData.values) return;
+      if (!healthData.dataType || !healthData.values) {
+        console.error('❌ 数据不完整: dataType或values缺失');
+        console.error('   - dataType:', healthData.dataType);
+        console.error('   - values:', healthData.values);
+        return;
+      }
 
       const app = getApp();
       const profileId = app.getCurrentProfileId();
@@ -572,9 +579,18 @@ Page({
 
       const collection = collectionMap[healthData.dataType];
       if (!collection) {
-        console.warn('未识别的数据类型:', healthData.dataType);
+        console.error('❌ 未识别的数据类型:', healthData.dataType);
+        console.error('❌ 完整的healthData对象:', JSON.stringify(healthData, null, 2));
+        console.error('❌ 支持的数据类型列表:', Object.keys(collectionMap));
+        wx.showToast({
+          title: `不支持的数据类型: ${healthData.dataType}`,
+          icon: 'none',
+          duration: 3000
+        });
         return;
       }
+
+      console.log('✅ 数据类型识别成功:', healthData.dataType, '→ 集合:', collection);
 
       // 数据类型的中文名称映射
       const dataTypeNames = {
@@ -655,7 +671,10 @@ Page({
       if (existingRecords.data.length > 0) {
         // 已有记录，更新
         recordId = existingRecords.data[0]._id;
-        console.log('⚠️ 当天已有记录，执行更新操作，recordId:', recordId);
+        console.log('⚠️ 当天已有记录，执行更新操作');
+        console.log('   - 集合:', collection);
+        console.log('   - recordId:', recordId);
+        console.log('   - 要更新的数据:', processedValues);
 
         await db.collection(collection).doc(recordId).update({
           data: {
@@ -675,6 +694,11 @@ Page({
       } else {
         // 没有记录，新增
         console.log('📝 当天无记录，执行新增操作');
+        console.log('   - 集合:', collection);
+        console.log('   - 日期:', finalDate);
+        console.log('   - openid:', openid);
+        console.log('   - profileId:', profileId);
+        console.log('   - 要保存的数据:', processedValues);
 
         const saveResult = await db.collection(collection).add({
           data: {
