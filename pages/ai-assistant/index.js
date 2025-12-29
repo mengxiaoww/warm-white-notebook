@@ -561,7 +561,13 @@ Page({
         'bloodPressure': 'bloodPressures',
         'ebv': 'ebvRecords',
         'cmv': 'cmvRecords',
-        'ldh': 'ldhRecords'
+        'ldh': 'ldhRecords',
+        'urine': 'urineRecords',
+        'stool': 'stoolRecords',
+        'water': 'waterIntakes',
+        'temperature': 'temperatures',
+        'bodyMeasurement': 'bodyMeasurements',
+        'diet': 'diets'
       };
 
       const collection = collectionMap[healthData.dataType];
@@ -580,7 +586,13 @@ Page({
         'bloodPressure': '血压',
         'ebv': 'EB病毒',
         'cmv': '巨细胞病毒',
-        'ldh': 'LDH'
+        'ldh': 'LDH',
+        'urine': '尿量',
+        'stool': '排便',
+        'water': '饮水',
+        'temperature': '体温',
+        'bodyMeasurement': '体重',
+        'diet': '饮食'
       };
 
       // 🔍 调试日志4: 保存前检查数值类型
