@@ -1819,7 +1819,7 @@ Page({
       };
     });
 
-    // 处理饮食数据
+    // 处理饮食数据 - 按天聚合
     records.dietRecords.forEach(record => {
       const dateKey = this.formatDateKey(record.date);
       if (!dateKey) return;
@@ -1832,13 +1832,27 @@ Page({
         });
       }
 
-      dateMap.get(dateKey).dietData = {
-        ...record, // 保留所有字段，包括 customValues
+      const dayData = dateMap.get(dateKey);
+      if (!dayData.dietData) {
+        dayData.dietData = {
+          count: 0,
+          meals: [],
+          hasData: true
+        };
+      }
+
+      // 累加记录次数
+      dayData.dietData.count++;
+
+      // 保存每一餐的信息
+      dayData.dietData.meals.push({
+        mealType: record.mealType || '未知',
+        content: record.content || '',
+        time: record.time || '',
         calories: record.calories,
         protein: record.protein,
-        carbs: record.carbs,
-        hasData: true
-      };
+        carbs: record.carbs
+      });
     });
 
     // 转换为数组并排序
@@ -2164,14 +2178,17 @@ Page({
         break;
 
       case 'diet':
-        if (data.calories !== undefined && data.calories !== null && data.calories !== '') {
-          items.push({ label: '热量', value: data.calories });
+        // 显示记录次数
+        if (data.count !== undefined) {
+          items.push({ label: '记录次数', value: `${data.count}次` });
         }
-        if (data.protein !== undefined && data.protein !== null && data.protein !== '') {
-          items.push({ label: '蛋白质', value: data.protein });
-        }
-        if (data.carbs !== undefined && data.carbs !== null && data.carbs !== '') {
-          items.push({ label: '碳水化合物', value: data.carbs });
+        // 显示每一餐的内容
+        if (data.meals && data.meals.length > 0) {
+          data.meals.forEach((meal, index) => {
+            const mealLabel = meal.mealType || `第${index + 1}餐`;
+            const mealContent = meal.content || '未填写';
+            items.push({ label: mealLabel, value: mealContent });
+          });
         }
         break;
     }
