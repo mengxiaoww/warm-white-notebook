@@ -144,10 +144,11 @@
           <view class="form-group">
             <view class="form-label">
               <text class="label-text">饮食内容</text>
+              <text class="required">*</text>
             </view>
             <textarea
               class="form-textarea"
-              placeholder="选填，可记录吃了什么"
+              placeholder="必填，请记录吃了什么"
               value="{{recordForm.content}}"
               data-field="content"
               bindinput="onFormInput"
