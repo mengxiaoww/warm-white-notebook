@@ -2178,40 +2178,36 @@ Page({
         break;
 
       case 'diet':
-        // 时间线视图：显示每餐的餐次和内容
+        // 时间线视图：固定显示早餐、午餐、晚餐
+        // 定义固定显示的餐次
+        const fixedMeals = ['早餐', '午餐', '晚餐'];
+
+        // 按餐次分组，收集内容
+        const mealMap = new Map();
+        fixedMeals.forEach(mealType => {
+          mealMap.set(mealType, []);
+        });
+
+        // 如果有记录，将内容添加到对应餐次
         if (data.meals && data.meals.length > 0) {
-          // 定义餐次顺序
-          const mealOrder = ['早餐', '午餐', '晚餐', '加餐'];
-
-          // 按餐次分组，合并同餐次的内容
-          const mealMap = new Map();
           data.meals.forEach(meal => {
-            const mealType = meal.mealType || '未知';
-            if (!mealMap.has(mealType)) {
-              mealMap.set(mealType, []);
+            const mealType = meal.mealType;
+            // 只处理早餐、午餐、晚餐，忽略加餐等其他类型
+            if (fixedMeals.includes(mealType)) {
+              const content = meal.content ? meal.content.trim() : '';
+              if (content) {
+                mealMap.get(mealType).push(content);
+              }
             }
-            // 始终添加内容，即使为空
-            const content = meal.content ? meal.content.trim() : '';
-            mealMap.get(mealType).push(content);
-          });
-
-          // 按顺序排序并显示
-          const sortedMealTypes = Array.from(mealMap.keys()).sort((a, b) => {
-            const indexA = mealOrder.indexOf(a);
-            const indexB = mealOrder.indexOf(b);
-            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-            if (indexA !== -1) return -1;
-            if (indexB !== -1) return 1;
-            return 0;
-          });
-
-          // 为每个餐次创建一个显示项
-          sortedMealTypes.forEach(mealType => {
-            const contents = mealMap.get(mealType).filter(c => c); // 过滤空字符串
-            const contentStr = contents.length > 0 ? contents.join('、') : '未填写';
-            items.push({ label: mealType, value: contentStr });
           });
         }
+
+        // 固定显示三个餐次
+        fixedMeals.forEach(mealType => {
+          const contents = mealMap.get(mealType);
+          const contentStr = contents.length > 0 ? contents.join('、') : '未填写';
+          items.push({ label: mealType, value: contentStr });
+        });
         break;
     }
 
