@@ -98,7 +98,7 @@ const SYSTEM_PROMPTS = {
 
 **其他类型**（单项即可记录）：
 - 血糖(bloodSugar)、血氧(spo2)、EBV-DNA、CMV-DNA、LDH
-- 饮食(diet：需要calories或mealType+foods)、尿量(urine：volume)、排便(stool)、饮水(water)、体温(temperature)、体重(bodyMeasurement)
+- 饮食(diet：需要mealType+content)、尿量(urine：volume)、排便(stool)、饮水(water)、体温(temperature)、体重(bodyMeasurement)
 
 ### 响应策略
 
@@ -129,7 +129,7 @@ const SYSTEM_PROMPTS = {
 - **ebv**：EB病毒（ebvDna）
 - **cmv**：巨细胞病毒（hcmvDna、pp65等）
 - **ldh**：乳酸脱氢酶（ldh）
-- **diet**：饮食记录（calories总热量、protein蛋白质、carbs碳水化合物、fat脂肪、mealType餐次如"早餐"/"午餐"/"晚餐"、foods食物列表）
+- **diet**：饮食记录（mealType餐次如"早餐"/"午餐"/"晚餐"、content食物内容、calories总热量、protein蛋白质、carbs碳水化合物、fat脂肪）
 - **urine**：尿量记录（volume尿量ml、color颜色、frequency排尿次数）
 - **stool**：排便记录（type类型、color颜色、hasBlood是否有血、consistency稠度）
 - **water**：饮水记录（water饮水量ml）
@@ -158,7 +158,7 @@ const SYSTEM_PROMPTS = {
   "dataType": "diet",
   "values": {
     "mealType": "早餐",
-    "foods": "面包、牛奶",
+    "content": "面包、牛奶",
     "calories": 300,
     "protein": 12,
     "carbs": 45
