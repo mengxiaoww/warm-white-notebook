@@ -2178,11 +2178,33 @@ Page({
         break;
 
       case 'diet':
-        // 时间线视图：只显示餐次列表，简洁呈现
+        // 时间线视图：显示去重后的餐次，按固定顺序排列
         if (data.meals && data.meals.length > 0) {
-          // 提取所有餐次，用空格分隔
-          const mealTypes = data.meals.map(meal => meal.mealType || '未知').join(' ');
-          items.push({ label: '', value: mealTypes });
+          // 提取所有餐次并去重
+          const uniqueMealTypes = [...new Set(data.meals.map(meal => meal.mealType || '未知'))];
+
+          // 定义餐次顺序
+          const mealOrder = ['早餐', '午餐', '晚餐', '加餐'];
+
+          // 按顺序排序
+          uniqueMealTypes.sort((a, b) => {
+            const indexA = mealOrder.indexOf(a);
+            const indexB = mealOrder.indexOf(b);
+            // 如果都在顺序表中，按顺序排序
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+            // 如果只有一个在顺序表中，在顺序表中的排前面
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+            // 都不在顺序表中，保持原顺序
+            return 0;
+          });
+
+          // 显示记录次数和餐次列表
+          const mealTypesStr = uniqueMealTypes.join(' ');
+          const countStr = data.count > uniqueMealTypes.length ? `${data.count}次` : '';
+          const displayValue = countStr ? `${countStr} ${mealTypesStr}` : mealTypesStr;
+
+          items.push({ label: '', value: displayValue });
         }
         break;
     }
