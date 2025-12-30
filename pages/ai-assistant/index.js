@@ -628,6 +628,15 @@ Page({
         }
       });
 
+      // 🔥 兼容性修复：饮食记录字段名映射（foods → content）
+      if (healthData.dataType === 'diet') {
+        if (processedValues.foods && !processedValues.content) {
+          processedValues.content = processedValues.foods;
+          delete processedValues.foods;
+          console.log('🔧 兼容性处理：将 foods 字段映射为 content');
+        }
+      }
+
       console.log('🔍 转换后的数值:', processedValues);
       Object.keys(processedValues).forEach(key => {
         console.log(`  ${key}: 值=${processedValues[key]}, 类型=${typeof processedValues[key]}`);
