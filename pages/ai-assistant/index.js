@@ -633,7 +633,6 @@ Page({
         console.log(`  ${key}: 值=${processedValues[key]}, 类型=${typeof processedValues[key]}`);
       });
 
-      // 🔍 调试日志：打印最终保存的日期
       // 🔥 修复时区问题：使用本地日期而不是UTC日期
       const getTodayLocalDate = () => {
         const now = new Date();
@@ -652,64 +651,38 @@ Page({
         '本地时间': new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
       });
 
-      // 🔥 关键修复：检查当天是否已有记录，如果有则更新，没有则新增
-      const existingRecords = await db.collection(collection)
-        .where({
-          openid: openid,
-          profileId: profileId,
-          date: finalDate
-        })
-        .get();
-
-      console.log('🔍 检查现有记录:', {
-        collection: collection,
-        date: finalDate,
-        existingCount: existingRecords.data.length
-      });
+      // 🔥 关键修复：区分多记录类型和单记录类型
+      // 多记录类型（每天可以多条）：饮食、尿量、排便、饮水
+      const multiRecordTypes = ['diet', 'urine', 'stool', 'water'];
+      const isMultiRecord = multiRecordTypes.includes(healthData.dataType);
 
       let recordId;
-      if (existingRecords.data.length > 0) {
-        // 已有记录，更新
-        recordId = existingRecords.data[0]._id;
-        console.log('⚠️ 当天已有记录，执行更新操作');
-        console.log('   - 集合:', collection);
-        console.log('   - recordId:', recordId);
-        console.log('   - 要更新的数据:', processedValues);
-
-        await db.collection(collection).doc(recordId).update({
-          data: {
-            ...processedValues,  // 使用处理后的数值
-            notes: healthData.notes || '',
-            source: 'ai_assistant',
-            updateTime: new Date()
-          }
-        });
-
-        console.log('✅ 健康数据已更新（覆盖）:', {
-          dataType: healthData.dataType,
-          collection: collection,
-          recordId: recordId,
-          values: processedValues
-        });
-      } else {
-        // 没有记录，新增
-        console.log('📝 当天无记录，执行新增操作');
+      if (isMultiRecord) {
+        // 多记录类型：直接新增，不检查覆盖
+        console.log('📝 多记录类型，直接新增');
         console.log('   - 集合:', collection);
         console.log('   - 日期:', finalDate);
-        console.log('   - openid:', openid);
-        console.log('   - profileId:', profileId);
         console.log('   - 要保存的数据:', processedValues);
 
+        // 🔥 饮食记录需要添加time字段
+        const recordData = {
+          openid: openid,
+          profileId: profileId,
+          date: finalDate,
+          ...processedValues,
+          notes: healthData.notes || '',
+          source: 'ai_assistant',
+          createTime: new Date()
+        };
+
+        // 如果是饮食记录且没有time字段，添加当前时间
+        if (healthData.dataType === 'diet' && !recordData.time) {
+          const now = new Date();
+          recordData.time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+
         const saveResult = await db.collection(collection).add({
-          data: {
-            openid: openid,
-            profileId: profileId,
-            date: finalDate,  // 使用计算后的日期
-            ...processedValues,  // 使用处理后的数值
-            notes: healthData.notes || '',
-            source: 'ai_assistant',
-            createTime: new Date()
-          }
+          data: recordData
         });
 
         recordId = saveResult._id;
@@ -720,6 +693,73 @@ Page({
           recordId: recordId,
           values: processedValues
         });
+      } else {
+        // 单记录类型（每天只能一条）：检查是否已有记录，有则更新，没有则新增
+        const existingRecords = await db.collection(collection)
+          .where({
+            openid: openid,
+            profileId: profileId,
+            date: finalDate
+          })
+          .get();
+
+        console.log('🔍 检查现有记录:', {
+          collection: collection,
+          date: finalDate,
+          existingCount: existingRecords.data.length
+        });
+
+        if (existingRecords.data.length > 0) {
+          // 已有记录，更新
+          recordId = existingRecords.data[0]._id;
+          console.log('⚠️ 当天已有记录，执行更新操作');
+          console.log('   - 集合:', collection);
+          console.log('   - recordId:', recordId);
+          console.log('   - 要更新的数据:', processedValues);
+
+          await db.collection(collection).doc(recordId).update({
+            data: {
+              ...processedValues,
+              notes: healthData.notes || '',
+              source: 'ai_assistant',
+              updateTime: new Date()
+            }
+          });
+
+          console.log('✅ 健康数据已更新（覆盖）:', {
+            dataType: healthData.dataType,
+            collection: collection,
+            recordId: recordId,
+            values: processedValues
+          });
+        } else {
+          // 没有记录，新增
+          console.log('📝 当天无记录，执行新增操作');
+          console.log('   - 集合:', collection);
+          console.log('   - 日期:', finalDate);
+          console.log('   - 要保存的数据:', processedValues);
+
+          const saveResult = await db.collection(collection).add({
+            data: {
+              openid: openid,
+              profileId: profileId,
+              date: finalDate,
+              ...processedValues,
+              notes: healthData.notes || '',
+              source: 'ai_assistant',
+              createTime: new Date()
+            }
+          });
+
+          recordId = saveResult._id;
+
+          console.log('✅ 健康数据已保存（新增）:', {
+            dataType: healthData.dataType,
+            collection: collection,
+            recordId: recordId,
+            values: processedValues
+          });
+        }
       }
 
       // 显示成功提示
