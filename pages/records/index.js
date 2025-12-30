@@ -2178,17 +2178,11 @@ Page({
         break;
 
       case 'diet':
-        // 显示记录次数
-        if (data.count !== undefined) {
-          items.push({ label: '记录次数', value: `${data.count}次` });
-        }
-        // 显示每一餐的内容
+        // 时间线视图：只显示餐次列表，简洁呈现
         if (data.meals && data.meals.length > 0) {
-          data.meals.forEach((meal, index) => {
-            const mealLabel = meal.mealType || `第${index + 1}餐`;
-            const mealContent = meal.content || '未填写';
-            items.push({ label: mealLabel, value: mealContent });
-          });
+          // 提取所有餐次，用空格分隔
+          const mealTypes = data.meals.map(meal => meal.mealType || '未知').join(' ');
+          items.push({ label: '', value: mealTypes });
         }
         break;
     }
