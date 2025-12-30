@@ -2178,33 +2178,39 @@ Page({
         break;
 
       case 'diet':
-        // 时间线视图：显示去重后的餐次，按固定顺序排列
+        // 时间线视图：显示每餐的餐次和内容
         if (data.meals && data.meals.length > 0) {
-          // 提取所有餐次并去重
-          const uniqueMealTypes = [...new Set(data.meals.map(meal => meal.mealType || '未知'))];
-
           // 定义餐次顺序
           const mealOrder = ['早餐', '午餐', '晚餐', '加餐'];
 
-          // 按顺序排序
-          uniqueMealTypes.sort((a, b) => {
+          // 按餐次分组，合并同餐次的内容
+          const mealMap = new Map();
+          data.meals.forEach(meal => {
+            const mealType = meal.mealType || '未知';
+            if (!mealMap.has(mealType)) {
+              mealMap.set(mealType, []);
+            }
+            if (meal.content) {
+              mealMap.get(mealType).push(meal.content);
+            }
+          });
+
+          // 按顺序排序并显示
+          const sortedMealTypes = Array.from(mealMap.keys()).sort((a, b) => {
             const indexA = mealOrder.indexOf(a);
             const indexB = mealOrder.indexOf(b);
-            // 如果都在顺序表中，按顺序排序
             if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-            // 如果只有一个在顺序表中，在顺序表中的排前面
             if (indexA !== -1) return -1;
             if (indexB !== -1) return 1;
-            // 都不在顺序表中，保持原顺序
             return 0;
           });
 
-          // 显示记录次数和餐次列表
-          const mealTypesStr = uniqueMealTypes.join(' ');
-          const countStr = data.count > uniqueMealTypes.length ? `${data.count}次` : '';
-          const displayValue = countStr ? `${countStr} ${mealTypesStr}` : mealTypesStr;
-
-          items.push({ label: '', value: displayValue });
+          // 为每个餐次创建一个显示项
+          sortedMealTypes.forEach(mealType => {
+            const contents = mealMap.get(mealType);
+            const contentStr = contents.length > 0 ? contents.join('、') : '未填写';
+            items.push({ label: mealType, value: contentStr });
+          });
         }
         break;
     }
