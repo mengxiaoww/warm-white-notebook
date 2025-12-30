@@ -2190,9 +2190,9 @@ Page({
             if (!mealMap.has(mealType)) {
               mealMap.set(mealType, []);
             }
-            if (meal.content) {
-              mealMap.get(mealType).push(meal.content);
-            }
+            // 始终添加内容，即使为空
+            const content = meal.content ? meal.content.trim() : '';
+            mealMap.get(mealType).push(content);
           });
 
           // 按顺序排序并显示
@@ -2207,7 +2207,7 @@ Page({
 
           // 为每个餐次创建一个显示项
           sortedMealTypes.forEach(mealType => {
-            const contents = mealMap.get(mealType);
+            const contents = mealMap.get(mealType).filter(c => c); // 过滤空字符串
             const contentStr = contents.length > 0 ? contents.join('、') : '未填写';
             items.push({ label: mealType, value: contentStr });
           });
