@@ -1976,7 +1976,13 @@ Page({
   },
 
   // 关闭AI识别结果弹窗
-  onAIResultClose() {
+  onAIResultClose(e) {
+    // 处理t-popup的visible-change事件
+    if (e && e.detail && e.detail.hasOwnProperty('visible') && e.detail.visible === true) {
+      // 弹窗打开事件，不处理
+      return;
+    }
+    // 其他情况都关闭弹窗
     this.setData({
       aiResultVisible: false
     });

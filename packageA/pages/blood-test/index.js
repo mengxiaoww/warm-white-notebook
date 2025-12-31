@@ -3882,13 +3882,14 @@ ${indicatorDesc}
   // 关闭AI结果弹窗
   onAIResultClose(e) {
     // 处理t-popup的visible-change事件
-    if (e && e.detail && e.detail.visible === false) {
+    if (e && e.detail && e.detail.hasOwnProperty('visible') && e.detail.visible === false) {
+      // 弹窗关闭事件
       this.setData({
         aiResultVisible: false,
         aiRecognizedData: []
       });
-    } else if (!e || !e.detail) {
-      // 直接调用关闭
+    } else {
+      // 点击关闭按钮或其他情况，直接关闭
       this.setData({
         aiResultVisible: false,
         aiRecognizedData: []
