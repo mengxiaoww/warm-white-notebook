@@ -148,8 +148,8 @@ Page({
 
   // 页面隐藏
   onHide() {
-    // 清理临时配置（如果未保存）
-    this.cleanupTemporaryConfigIfNotSaved();
+    // 🔧 修复：不在这里清理临时配置，因为选择图片、拍照等系统操作也会触发onHide
+    // 临时配置应该在真正退出页面（onUnload）或用户主动保存时才清理
   },
 
   // 加载临时配置预览
