@@ -1,0 +1,1292 @@
+/* 用药记录页面样式 */
+.medication-container {
+  min-height: 100vh;
+  padding-bottom: 3rpx;
+  background-color: #f5f5f5;
+}
+
+
+/* 自定义导航栏 - 橙色主题 */
+.navbar {
+  background: linear-gradient(135deg, var(--color-orange-500), var(--color-orange-700));
+  border-bottom: none;
+  padding-top: 44px;
+  padding-top: env(safe-area-inset-top);
+  box-shadow: 0 2rpx 16rpx var(--primary-alpha-20);
+}
+
+/* 自定义返回按钮样式 */
+.custom-back-btn {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
+}
+
+.custom-back-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
+}
+
+
+/* 修复导航栏样式 */
+.t-navbar__placeholder {
+  visibility: hidden;
+}
+
+.t-navbar {
+  --td-navbar-bg-color: transparent;
+}
+
+/* 强制设置导航栏标题样式 */
+.navbar .t-navbar__title,
+.navbar .t-navbar__center,
+.navbar .t-navbar__center text,
+.navbar .t-navbar__center .t-navbar__title {
+  color: white !important;
+  font-size: 34rpx !important;
+  font-weight: 500 !important;
+}
+
+/* 导航栏所有图标颜色 */
+.navbar .t-icon,
+.navbar .t-navbar__left .t-icon,
+.navbar .t-navbar__right .t-icon {
+  color: white !important;
+}
+
+.navbar-right {
+  padding-right: 30rpx;
+}
+
+/* 顶部操作栏 */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background-color: var(--color-white-pure);
+  border-bottom: 1rpx solid #f0f0f0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.date-section {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 18rpx 28rpx;
+  background: linear-gradient(135deg, var(--color-white-pure) 0%, #f8f8f8 100%);
+  border: 1rpx solid var(--primary-alpha-20);
+  border-radius: 30rpx;
+  min-width: 200rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.date-section:active {
+  background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+  transform: scale(0.98);
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.08);
+}
+
+.date-text {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+}
+
+/* 添加药品按钮 */
+.action-buttons .t-button {
+  box-shadow:
+    0 8rpx 24rpx var(--primary-alpha-40),
+    0 4rpx 12rpx rgba(245, 124, 0, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3) !important;
+  border-radius: 30rpx !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+.action-buttons .t-button:active {
+  transform: scale(0.96) translateY(2rpx) !important;
+  box-shadow:
+    0 4rpx 12rpx var(--primary-alpha-50),
+    0 2rpx 6rpx rgba(245, 124, 0, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 今日用药状态 */
+.today-status {
+  margin: 20rpx;
+}
+
+.status-card {
+  background: linear-gradient(135deg, var(--color-white-pure) 0%, #fdfcff 100%);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  border: 1rpx solid var(--primary-alpha-10);
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.status-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.status-count {
+  font-size: 36rpx;
+  color: var(--color-orange-500);
+  font-weight: 600;
+}
+
+.status-summary {
+  display: flex;
+  gap: 30rpx;
+  font-size: 28rpx;
+}
+
+/* 统一今日用药统计文字颜色 */
+.taken-count {
+  color: #666;
+  font-weight: 500;
+}
+
+.pending-count {
+  color: #666;
+  font-weight: 500;
+}
+
+/* 药品列表 */
+.medicine-list {
+  margin: 20rpx;
+  margin-bottom: 160rpx;
+}
+
+.medicine-card {
+  background: linear-gradient(135deg, var(--color-white-pure) 0%, #fdfcff 100%);
+  padding: 30rpx;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  border: 1rpx solid var(--primary-alpha-10);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.medicine-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 统一所有药品卡片背景样式 - 移除状态背景色差异 */
+.medicine-card {
+  /* 所有状态统一使用相同的白色背景 */
+}
+
+/* 未服用历史记录仅保留文字装饰效果 */
+.medicine-card.status-missed .medicine-name {
+  color: #666;
+  text-decoration: line-through;
+  text-decoration-color: #999;
+}
+
+.medicine-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.medicine-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.medicine-actions {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+/* 用药状态显示 - 参考门诊记录样式 */
+.medicine-status {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-right: 16rpx;
+}
+
+/* 状态标签样式 - 参考门诊记录的visit-time样式 */
+.status-text {
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 8rpx 14rpx;
+  border-radius: 12rpx;
+  line-height: 1.2;
+  color: #666;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+  margin-top: 4rpx;
+}
+
+/* 不同状态的颜色区分 - 只应用到状态文字标签 */
+.status-text.status-completed {
+  color: #28a745;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 1rpx solid rgba(40, 167, 69, 0.2);
+}
+
+.status-text.status-partial {
+  color: #fd7e14;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 1rpx solid rgba(253, 126, 20, 0.2);
+}
+
+.status-text.status-missed {
+  color: #dc3545;
+  background: linear-gradient(135deg, #f8d7da 0%, #f1c2c7 100%);
+  border: 1rpx solid rgba(220, 53, 69, 0.2);
+}
+
+.status-text.status-pending {
+  color: #6c757d;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.status-text.status-planned {
+  color: #007bff;
+  background: linear-gradient(135deg, #cce5ff 0%, #b3d7ff 100%);
+  border: 1rpx solid rgba(0, 123, 255, 0.2);
+}
+
+/* 操作按钮 - 参考门诊记录样式 */
+.action-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 10rpx 16rpx;
+  background: #f5f5f5;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 20rpx;
+  transition: all 0.3s;
+  margin-right: 12rpx;
+  min-width: 80rpx;
+}
+
+.action-btn:active {
+  background: #e0e0e0;
+  transform: scale(0.96);
+}
+
+.action-text {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 开关容器 */
+.switch-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.switch-label {
+  font-size: 22rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 删除按钮 - 统一灰色系样式 */
+.delete-medicine-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1rpx solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.delete-medicine-btn:active {
+  background: rgba(0, 0, 0, 0.08);
+  transform: scale(0.9);
+}
+
+.medicine-name {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.medicine-dosage {
+  font-size: 26rpx;
+  color: var(--color-orange-500);
+  background: linear-gradient(135deg, var(--primary-alpha-08) 0%, rgba(255, 167, 38, 0.12) 100%);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid var(--primary-alpha-20);
+  font-weight: 500;
+  margin-left: 12rpx;
+}
+
+.medicine-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.detail-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.medicine-notes {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.notes-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 分时段服药状态 */
+.medicine-time-slots {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--primary-alpha-10);
+}
+
+.time-slot-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.time-slot-item:last-child {
+  border-bottom: none;
+}
+
+.time-slot-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.time-slot-label {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.slot-status-text {
+  font-size: 22rpx;
+  color: #999;
+  font-weight: 400;
+}
+
+/* 分时段开关样式 */
+.time-slot-item .t-switch {
+  --td-switch-checked-color: var(--color-orange-500) !important;
+  --td-switch-checked-disabled-color: var(--color-orange-200) !important;
+  --td-switch-unchecked-color: #E0E0E0 !important;
+}
+
+/* 服药开关样式 */
+.medicine-header .t-switch {
+  --td-switch-checked-color: var(--color-orange-500) !important;
+  --td-switch-checked-disabled-color: var(--color-orange-200) !important;
+  --td-switch-unchecked-color: #E0E0E0 !important;
+}
+
+/* 滑动操作按钮 */
+.swipe-actions {
+  display: flex;
+  height: 100%;
+}
+
+.swipe-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 120rpx;
+  color: var(--color-white-pure);
+  font-size: 24rpx;
+  gap: 8rpx;
+  transition: all 0.3s;
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, #FFB84D 0%, var(--color-orange-700) 100%);
+}
+
+.edit-btn:active {
+  background: linear-gradient(135deg, var(--color-orange-700) 0%, #FF9800 100%);
+}
+
+/* 滑动删除按钮 - 统一灰色系样式 */
+.delete-btn {
+  background: linear-gradient(135deg, #999 0%, #777 100%);
+}
+
+.delete-btn:active {
+  background: linear-gradient(135deg, #777 0%, #666 100%);
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+  background: white;
+  border-radius: 20rpx;
+  margin: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  border: 1rpx solid var(--primary-alpha-10);
+}
+
+.empty-state .t-icon {
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+  margin-top: 24rpx;
+}
+
+.empty-hint {
+  font-size: 28rpx;
+  color: #ccc;
+}
+
+/* 药品弹窗 */
+.medicine-dialog {
+  background-color: var(--color-white-pure);
+  border-radius: 24rpx 24rpx 0 0;
+  overflow: hidden;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
+  box-shadow: 0 2rpx 16rpx var(--primary-alpha-20);
+}
+
+.dialog-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: white;
+}
+
+.dialog-header .t-icon {
+  color: white !important;
+}
+
+/* 立体关闭按钮 */
+.close-btn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: linear-gradient(145deg,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(10rpx);
+  -webkit-backdrop-filter: blur(10rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1000;
+  box-shadow:
+    0 8rpx 32rpx rgba(0, 0, 0, 0.15),
+    0 4rpx 16rpx var(--primary-alpha-20),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.4),
+    inset 0 -2rpx 4rpx rgba(245, 124, 0, 0.3);
+}
+
+.close-btn::before {
+  content: '';
+  position: absolute;
+  top: -12rpx;
+  left: -12rpx;
+  right: -12rpx;
+  bottom: -12rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at center,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 70%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.close-btn:hover::before {
+  opacity: 1;
+}
+
+.close-btn:active {
+  background: linear-gradient(145deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.1) 100%);
+  transform: scale(0.92) translateY(2rpx);
+  box-shadow:
+    0 4rpx 16rpx rgba(0, 0, 0, 0.2),
+    0 2rpx 8rpx var(--primary-alpha-30),
+    inset 0 4rpx 8rpx rgba(255, 255, 255, 0.3),
+    inset 0 -1rpx 2rpx rgba(245, 124, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.dialog-content {
+  max-height: 60vh;
+  padding: 20rpx 0;
+}
+
+.dialog-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid #f0f0f0;
+  background: white;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.dialog-footer .t-button {
+  flex: 1;
+  height: 88rpx !important;
+  font-size: 30rpx !important;
+  font-weight: 500 !important;
+  border-radius: 12rpx !important;
+}
+
+/* 取消按钮 */
+.cancel-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 30rpx;
+  font-weight: 500;
+  border-radius: 12rpx;
+  transition: all 0.3s;
+}
+
+.cancel-btn:active {
+  background: #e0e0e0;
+  transform: scale(0.96);
+}
+
+/* 保存按钮 */
+.save-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
+  box-shadow:
+    0 8rpx 24rpx var(--primary-alpha-40),
+    0 4rpx 12rpx rgba(245, 124, 0, 0.3),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  color: white;
+  font-size: 30rpx;
+  font-weight: 500;
+  border-radius: 12rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.save-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rpx;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.8) 50%,
+      transparent 100%);
+  border-radius: 12rpx 12rpx 0 0;
+}
+
+.save-btn:active {
+  background: linear-gradient(135deg, var(--color-orange-700) 0%, #FF9800 100%);
+  transform: scale(0.96) translateY(2rpx);
+  box-shadow:
+    0 4rpx 12rpx var(--primary-alpha-50),
+    0 2rpx 6rpx rgba(245, 124, 0, 0.4),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+
+/* 时间选择器 */
+.time-selector {
+  background-color: var(--color-white-pure);
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 30rpx;
+}
+
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.selector-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.confirm-time-btn {
+  padding: 12rpx 32rpx;
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%);
+  box-shadow:
+    0 4rpx 12rpx var(--primary-alpha-30),
+    inset 0 2rpx 4rpx rgba(255, 255, 255, 0.3);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  color: white;
+  font-size: 28rpx;
+  font-weight: 500;
+  border-radius: 30rpx;
+  transition: all 0.3s;
+}
+
+.confirm-time-btn:active {
+  background: linear-gradient(135deg, var(--color-orange-700) 0%, #FF9800 100%);
+  transform: scale(0.96);
+  box-shadow:
+    0 2rpx 8rpx var(--primary-alpha-40),
+    inset 0 3rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+
+.time-options {
+  padding: 20rpx 0;
+}
+
+.time-selector .t-checkbox-group {
+  display: block;
+}
+
+.time-option-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 20rpx;
+  margin-bottom: 12rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, var(--color-white-pure)fff 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.time-option-item:active {
+  background: linear-gradient(135deg, var(--primary-alpha-08) 0%, rgba(156, 39, 176, 0.04) 100%);
+  border-color: var(--primary-alpha-30);
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx var(--primary-alpha-10);
+}
+
+/* 确保复选框在左侧 */
+.time-option-item .t-checkbox {
+  flex-shrink: 0;
+  margin-right: 0;
+}
+
+/* 时间图标在右侧 */
+.time-icon {
+  font-size: 32rpx;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* 时间显示 */
+.time-display {
+  font-size: 28rpx;
+  min-width: 200rpx;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.time-display .selected-times {
+  background: linear-gradient(135deg, var(--primary-alpha-10) 0%, rgba(255, 152, 0, 0.05) 100%);
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  border: 1rpx solid var(--primary-alpha-20);
+  color: var(--color-orange-500);
+  font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.time-display .placeholder {
+  color: #999;
+  background: transparent !important;
+  border: none !important;
+  font-weight: normal;
+  padding: 8rpx 16rpx;
+}
+
+/* 修复TDesign组件样式 */
+.t-cell-group {
+  margin: 0 !important;
+}
+
+.t-cell {
+  padding-left: 30rpx !important;
+  padding-right: 30rpx !important;
+  min-height: 96rpx !important;
+}
+
+.t-cell__note {
+  max-width: none !important;
+  flex-shrink: 0 !important;
+}
+
+.t-input__wrapper {
+  padding: 0 !important;
+}
+
+.t-input__label {
+  min-width: 160rpx !important;
+}
+
+/* 确保复选框组件正常显示 */
+.time-selector .t-checkbox__wrapper {
+  width: 100% !important;
+  flex: 1 !important;
+}
+
+.time-selector .t-checkbox__content {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.time-selector .t-checkbox__icon {
+  margin-right: 16rpx !important;
+  flex-shrink: 0 !important;
+}
+
+/* 自定义日期选择器样式 */
+.t-date-time-picker__confirm {
+  color: white !important;
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%) !important;
+  border-radius: 12rpx !important;
+  padding: 12rpx 24rpx !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4rpx 12rpx var(--primary-alpha-30) !important;
+  border: 2rpx solid rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s !important;
+}
+
+.t-date-time-picker__confirm:active {
+  background: linear-gradient(135deg, var(--color-orange-700) 0%, #FF9800 100%) !important;
+  transform: scale(0.96) !important;
+  box-shadow: 0 2rpx 8rpx var(--primary-alpha-40) !important;
+}
+
+/* 增强日期选择器确定按钮样式 */
+.t-picker__confirm {
+  color: white !important;
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%) !important;
+  border-radius: 12rpx !important;
+  padding: 12rpx 24rpx !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4rpx 12rpx var(--primary-alpha-30) !important;
+  border: 2rpx solid rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s !important;
+  min-width: 120rpx !important;
+  text-align: center !important;
+}
+
+.t-picker__confirm:active {
+  background: linear-gradient(135deg, var(--color-orange-700) 0%, #FF9800 100%) !important;
+  transform: scale(0.96) !important;
+  box-shadow: 0 2rpx 8rpx var(--primary-alpha-40) !important;
+}
+
+/* 确保所有确定按钮都应用紫色主题 */
+button[type="primary"] {
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%) !important;
+  border-color: rgba(255, 152, 0, 0.8) !important;
+}
+
+/* TDesign picker 内部确定按钮 */
+.t-picker .t-button--primary {
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%) !important;
+  border-color: rgba(255, 152, 0, 0.8) !important;
+  box-shadow: 0 4rpx 12rpx var(--primary-alpha-30) !important;
+}
+
+.t-date-time-picker__cancel {
+  color: #666 !important;
+  background: #f5f5f5 !important;
+  border-radius: 12rpx !important;
+  padding: 12rpx 24rpx !important;
+  font-weight: 500 !important;
+  transition: all 0.3s !important;
+}
+
+.t-date-time-picker__cancel:active {
+  background: #e0e0e0 !important;
+  transform: scale(0.96) !important;
+}
+
+.t-date-time-picker .t-popup__content {
+  border-radius: 24rpx 24rpx 0 0 !important;
+}
+
+.t-date-time-picker .t-picker__toolbar {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.05) 0%, rgba(255, 167, 38, 0.08) 50%, rgba(255, 255, 255, 0.95) 100%) !important;
+  border-bottom: 1rpx solid var(--primary-alpha-15) !important;
+  padding: 20rpx 30rpx !important;
+  box-shadow: 0 2rpx 8rpx var(--primary-alpha-08) !important;
+}
+
+.t-date-time-picker .t-picker-item--selected {
+  color: var(--color-orange-500) !important;
+  font-weight: 500 !important;
+}
+
+/* 优化日期选择器标题 */
+.t-date-time-picker .t-picker__title {
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  color: var(--color-orange-500) !important;
+  text-shadow: 0 1rpx 3rpx var(--primary-alpha-10) !important;
+}
+
+/* 复选框主题色 */
+.t-checkbox {
+  --td-checkbox-icon-checked-color: var(--color-orange-500) !important;
+  --td-checkbox-icon-color: var(--color-orange-500) !important;
+  --td-checkbox-border-color: var(--primary-alpha-40) !important;
+}
+
+/* 时间选择器内的复选框特殊样式 */
+.time-selector .t-checkbox {
+  --td-checkbox-icon-checked-color: var(--color-orange-500) !important;
+  --td-checkbox-checked-color: var(--color-orange-500) !important;
+  --td-checkbox-default-color: var(--primary-alpha-40) !important;
+}
+
+/* 步进器主题色 */
+.t-stepper {
+  --td-stepper-active-color: var(--color-orange-500) !important;
+  --td-stepper-input-border-color: var(--primary-alpha-30) !important;
+}
+
+/* 输入框聚焦颜色 */
+.t-input.t-is-focused {
+  --td-input-border-color: var(--color-orange-500) !important;
+}
+
+/* 单元格hover效果 */
+.t-cell[hover-class] {
+  background-color: rgba(255, 152, 0, 0.05) !important;
+}
+
+/* 自定义Toast样式 */
+.t-toast {
+  --td-toast-bg-color: rgba(0, 0, 0, 0.8) !important;
+  border-radius: 12rpx !important;
+}
+
+/* 自定义Dialog样式 */
+.t-dialog__confirm {
+  color: var(--color-orange-500) !important;
+}
+
+/* 全局覆盖所有日期选择器确定按钮样式 */
+page .t-date-time-picker .t-picker__toolbar .t-button--primary,
+page .t-picker .t-button--primary,
+page .t-date-time-picker__confirm,
+page .t-picker__confirm {
+  color: white !important;
+  background: linear-gradient(135deg, var(--color-orange-500) 0%, var(--color-orange-700) 100%) !important;
+  border-radius: 12rpx !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4rpx 12rpx var(--primary-alpha-30) !important;
+  border: 2rpx solid rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s !important;
+  height: 80rpx !important;
+  min-height: 80rpx !important;
+  max-height: 80rpx !important;
+  padding: 12rpx 32rpx !important;
+  font-size: 30rpx !important;
+}
+
+page .t-date-time-picker .t-picker__toolbar .t-button--primary:active,
+page .t-picker .t-button--primary:active,
+page .t-date-time-picker__confirm:active,
+page .t-picker__confirm:active {
+  background: linear-gradient(135deg, var(--color-orange-700) 0%, #FF9800 100%) !important;
+  transform: scale(0.96) !important;
+  box-shadow: 0 2rpx 8rpx var(--primary-alpha-40) !important;
+}
+
+/* 针对具体的按钮文字 */
+page .t-picker .t-button__content,
+page .t-date-time-picker .t-button__content {
+  color: white !important;
+}
+
+/* 确保选择器按钮文字显示正确 */
+.t-picker .t-button--primary .t-button__content {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* 统一暖色主题关闭按钮 */
+.milestone-close-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg,
+      rgba(255, 184, 77, 0.08) 0%,
+      rgba(255, 167, 38, 0.12) 100%);
+  border: 2rpx solid rgba(255, 184, 77, 0.15);
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3rpx 12rpx rgba(255, 184, 77, 0.1);
+  position: relative;
+}
+
+.milestone-close-btn::before {
+  content: '';
+  position: absolute;
+  top: -2rpx;
+  left: -2rpx;
+  right: -2rpx;
+  bottom: -2rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg,
+      rgba(255, 184, 77, 0.15) 0%,
+      rgba(255, 167, 38, 0.08) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.milestone-close-btn:hover::before {
+  opacity: 1;
+}
+
+.milestone-close-btn:active {
+  background: linear-gradient(135deg,
+      rgba(255, 184, 77, 0.15) 0%,
+      rgba(255, 167, 38, 0.18) 100%);
+  border-color: rgba(255, 184, 77, 0.25);
+  transform: scale(0.94);
+  box-shadow: 0 2rpx 8rpx rgba(255, 184, 77, 0.2);
+}
+
+/* 浮动的下一项/完成按钮 - 固定在键盘上方右侧 */
+.floating-next-btn {
+  position: fixed;
+  right: 40rpx;
+  bottom: calc(env(safe-area-inset-bottom) + 580rpx);
+  width: 100rpx;
+  height: 100rpx;
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9F2E 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 184, 77, 0.5);
+  z-index: 99999;
+  animation: bounceIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation-fill-mode: both;
+  will-change: transform;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ==================== 服药时间标题提示样式 ==================== */
+.cell-title-with-tip {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.tip-badge {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(245, 124, 0, 0.15) 100%);
+  color: #FF9800;
+  font-size: 22rpx;
+  font-weight: 500;
+  border-radius: 8rpx;
+  border: 1rpx solid rgba(255, 152, 0, 0.2);
+}
+
+/* ==================== 快速选择结束日期样式 ==================== */
+.quick-end-date-selector {
+  padding: 24rpx 32rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.5) 0%, rgba(254, 245, 235, 0.3) 100%);
+  border-radius: 16rpx;
+  margin: 0 32rpx 24rpx;
+}
+
+.quick-selector-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.quick-date-buttons {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.quick-date-btn {
+  flex: 1;
+  min-width: 120rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 252, 248, 0.95) 100%);
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #FF9800;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+}
+
+.quick-date-btn:active {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  color: white;
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
+}
+
+.quick-date-btn.pending {
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.95) 0%, rgba(254, 245, 235, 0.98) 100%);
+  border-color: rgba(255, 152, 0, 0.4);
+  border-style: dashed;
+}
+
+.quick-date-btn.pending:active {
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9F2E 100%);
+}
+
+/* ==================== 最近使用药品样式 ==================== */
+.recent-medicines {
+  padding: 24rpx 32rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.3) 0%, rgba(254, 245, 235, 0.2) 100%);
+  border-radius: 16rpx;
+  margin: 0 32rpx 24rpx;
+}
+
+.quick-medicine-buttons {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.quick-medicine-btn {
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 252, 248, 0.95) 100%);
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #FF9800;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+}
+
+.quick-medicine-btn:active {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  color: white;
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
+}
+
+/* ==================== 常用剂量选择样式 ==================== */
+.dosage-selector {
+  padding: 24rpx 32rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.3) 0%, rgba(254, 245, 235, 0.2) 100%);
+  border-radius: 16rpx;
+  margin: 0 32rpx 24rpx;
+}
+
+.quick-dosage-buttons {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.quick-dosage-btn {
+  flex: 0 0 calc(33.333% - 11rpx);
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 252, 248, 0.95) 100%);
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #FF9800;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2rpx 8rpx rgba(255, 152, 0, 0.1);
+}
+
+.quick-dosage-btn:active {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  color: white;
+  transform: scale(0.95);
+  box-shadow: 0 4rpx 12rpx rgba(255, 152, 0, 0.3);
+}
+
+/* ==================== 服药频率选择样式 ==================== */
+.frequency-selector {
+  background-color: var(--color-white-pure);
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 30rpx;
+}
+
+.frequency-options {
+  padding: 20rpx 0;
+}
+
+.frequency-option-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.frequency-option-item:last-child {
+  border-bottom: none;
+}
+
+/* 微信小程序不支持 >>> 深度选择器，移除这些样式覆盖 */
+
+
+/* 自定义频率输入 */
+.custom-frequency-input {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.5) 0%, rgba(254, 245, 235, 0.3) 100%);
+  border-radius: 16rpx;
+}
+
+.custom-input-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.custom-input-row:last-of-type {
+  margin-bottom: 16rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.frequency-input {
+  flex: 1;
+  height: 64rpx;
+  padding: 0 20rpx;
+  background: white;
+  border: 2rpx solid rgba(255, 152, 0, 0.3);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.frequency-example {
+  padding: 16rpx 20rpx;
+  background: rgba(255, 152, 0, 0.05);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #FF9800;
+}
+
+.example-text {
+  font-size: 24rpx;
+  color: #999;
+  font-style: italic;
+}

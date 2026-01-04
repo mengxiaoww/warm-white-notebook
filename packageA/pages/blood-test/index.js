@@ -3316,7 +3316,6 @@ ${indicatorDesc}
       }
 
       console.log('✅ AI识别结果:', indicators);
-      console.log('📊 AI识别到的指标名称:', indicators.map(i => i.label).join(', '));
 
       // 已经在函数开头获取了 displayedBasicIndicators 和 customIndicators
       const allConfiguredIndicators = [
@@ -3325,7 +3324,6 @@ ${indicatorDesc}
       ];
 
       console.log('📋 当前配置的指标:', allConfiguredIndicators);
-      console.log('📋 配置的指标名称:', allConfiguredIndicators.map(i => i.name).join(', '));
 
       // 只保留能匹配到当前配置项的指标，并补充正确的中文label
       const matchedIndicators = indicators.map(aiItem => {
@@ -3335,7 +3333,7 @@ ${indicatorDesc}
         );
 
         if (matchedIndicator) {
-          console.log(`✅ 匹配成功: AI识别"${aiItem.label}" -> 配置项"${matchedIndicator.name}"`);
+          console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
           // 返回数据时，使用配置的中文名称作为label
           return {
             ...aiItem,
@@ -3344,13 +3342,7 @@ ${indicatorDesc}
             unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位，否则使用配置的单位
           };
         } else {
-          console.log(`❌ 未匹配: AI识别"${aiItem.label}"未找到对应配置项`);
-          // 尝试与所有配置项进行模糊匹配，输出调试信息
-          console.log(`  尝试匹配调试信息:`);
-          allConfiguredIndicators.forEach(configItem => {
-            const isMatch = this.fuzzyMatch(aiItem.label, configItem.name);
-            console.log(`    - 与"${configItem.name}"匹配? ${isMatch}`);
-          });
+          console.log(`❌ 未匹配: ${aiItem.label}`);
           return null;
         }
       }).filter(item => item !== null);  // 过滤掉未匹配的项
@@ -3463,27 +3455,23 @@ ${indicatorDesc}
               content: `你是专业的医疗报告识别助手。请识别血常规报告图片中的以下指标：
 
 **要识别的指标（请严格按照这些定义）**：
-1. WBC (白细胞计数) - 可能显示为：白细胞、WBC、白细胞计数、White Blood Cell
-2. PLT (血小板计数) - 可能显示为：血小板、PLT、Plt、血小板计数、Platelet
-3. HGB (血红蛋白) - 可能显示为：血红蛋白、HGB、Hb、HB、Hemoglobin
-4. NEUT# (中性粒细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)**
-   可能显示为：中性粒细胞数、NEUT#、Neu#、中性粒细胞绝对值、Neutrophil#、NEUT、Neu
-5. RBC (红细胞计数) - 可能显示为：红细胞、RBC、红细胞计数、Red Blood Cell、红细胞(RBC)、★红细胞
-6. LYMPH# (淋巴细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)**
-   可能显示为：淋巴细胞数、LYMPH#、Lym#、淋巴细胞绝对值、Lymphocyte#、LYMPH、Lym、淋巴细胞(LYMPH)
-7. MONO# (单核细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)**
-   可能显示为：单核细胞数、MONO#、Mon#、单核细胞绝对值、Monocyte#、MONO、Mon
-8. CRP (C反应蛋白) - 可能显示为：C反应蛋白、CRP、C-反应蛋白、hs-CRP、超敏C反应蛋白
+1. WBC (白细胞计数) - 中文可能显示为：白细胞、WBC、白细胞计数
+2. PLT (血小板计数) - 中文可能显示为：血小板、PLT、Plt、血小板计数
+3. HGB (血红蛋白) - 中文可能显示为：血红蛋白、HGB、Hb、HB
+4. NEUT# (中性粒细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)** - 中文可能显示为：中性粒细胞数、NEUT#、Neu#、中性粒细胞绝对值
+5. RBC (红细胞计数) - 中文可能显示为：红细胞、RBC、红细胞计数
+6. LYMPH# (淋巴细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)** - 中文可能显示为：淋巴细胞数、LYMPH#、Lym#、淋巴细胞绝对值
+7. MONO# (单核细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)** - 中文可能显示为：单核细胞数、MONO#、Mon#、单核细胞绝对值
+8. CRP (C反应蛋白) - 中文可能显示为：C反应蛋白、CRP
 
 **识别规则**：
-- 对于细胞计数类指标（NEUT、LYMPH、MONO、RBC），优先识别单位为×10⁹/L或×10¹²/L的绝对值
-- 如果报告中同时显示了绝对值和百分比，**只提取绝对值**，忽略百分比
-- value必须是纯数字（可以是小数），不包含单位
+- 对于细胞计数类指标（NEUT、LYMPH、MONO），必须提取绝对值（单位：×10⁹/L），不要提取百分比（单位：%）
+- 如果报告中同时显示了绝对值和百分比，优先选择绝对值
+- value必须是纯数字，不包含单位
 - 如果某个指标在图片中未找到，则不要包含在结果中
-- 仔细查看报告中所有指标，不要遗漏
 
 **输出格式**：
-{"indicators": [{"id": "wbc", "label": "白细胞", "value": "5.2", "unit": "×10⁹/L"}, {"id": "rbc", "label": "红细胞", "value": "3.5", "unit": "×10¹²/L"}, ...]}
+{"indicators": [{"id": "wbc", "label": "白细胞", "value": "5.2", "unit": "×10⁹/L"}, ...]}
 
 只返回JSON，不要有其他说明文字。`
             },
@@ -3583,7 +3571,6 @@ ${indicatorDesc}
       }
 
       console.log('✅ AI识别结果:', indicators);
-      console.log('📊 AI识别到的指标名称:', indicators.map(i => i.label).join(', '));
 
       // 已经在函数开头获取了 displayedBasicIndicators 和 customIndicators
       const allConfiguredIndicators = [
@@ -3592,7 +3579,6 @@ ${indicatorDesc}
       ];
 
       console.log('📋 当前配置的指标:', allConfiguredIndicators);
-      console.log('📋 配置的指标名称:', allConfiguredIndicators.map(i => i.name).join(', '));
 
       // 只保留能匹配到当前配置项的指标，并补充正确的中文label
       const matchedIndicators = indicators.map(aiItem => {
@@ -3602,7 +3588,7 @@ ${indicatorDesc}
         );
 
         if (matchedIndicator) {
-          console.log(`✅ 匹配成功: AI识别"${aiItem.label}" -> 配置项"${matchedIndicator.name}"`);
+          console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
           // 返回数据时，使用配置的中文名称作为label
           return {
             ...aiItem,
@@ -3611,13 +3597,7 @@ ${indicatorDesc}
             unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位，否则使用配置的单位
           };
         } else {
-          console.log(`❌ 未匹配: AI识别"${aiItem.label}"未找到对应配置项`);
-          // 尝试与所有配置项进行模糊匹配，输出调试信息
-          console.log(`  尝试匹配调试信息:`);
-          allConfiguredIndicators.forEach(configItem => {
-            const isMatch = this.fuzzyMatch(aiItem.label, configItem.name);
-            console.log(`    - 与"${configItem.name}"匹配? ${isMatch}`);
-          });
+          console.log(`❌ 未匹配: ${aiItem.label}`);
           return null;
         }
       }).filter(item => item !== null);  // 过滤掉未匹配的项

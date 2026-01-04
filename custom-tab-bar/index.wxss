@@ -1,0 +1,158 @@
+/* TabBar容器 */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120rpx;
+  background: linear-gradient(to top, #FFFFFF 0%, #FAFAFA 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 普通TabBar项 */
+.tab-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-bar-text {
+  font-size: 20rpx;
+  margin-top: 8rpx;
+  transition: all 0.3s ease;
+}
+
+/* 中心按钮容器 - 突出显示 */
+.tab-bar-center {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* 中心按钮 - 悬浮圆形按钮 */
+.center-button {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0rpx;
+}
+
+/* 中心按钮发光效果 */
+.center-button-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 184, 77, 0.4) 0%,
+    rgba(255, 184, 77, 0.2) 50%,
+    transparent 70%
+  );
+  animation: pulse-glow 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* 中心按钮内部 */
+.center-button-inner {
+  position: relative;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFB84D 0%, #FF9800 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 8rpx 24rpx rgba(255, 184, 77, 0.4),
+    0 4rpx 8rpx rgba(255, 152, 0, 0.3),
+    inset 0 -2rpx 4rpx rgba(0, 0, 0, 0.1);
+  border: 4rpx solid #FFFFFF;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.center-button-inner:active {
+  transform: scale(0.92);
+  box-shadow:
+    0 4rpx 12rpx rgba(255, 184, 77, 0.3),
+    0 2rpx 4rpx rgba(255, 152, 0, 0.2);
+}
+
+/* 选中状态的中心按钮 */
+.center-button-inner.active {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  box-shadow:
+    0 12rpx 32rpx rgba(255, 152, 0, 0.5),
+    0 6rpx 12rpx rgba(245, 124, 0, 0.4),
+    inset 0 2rpx 8rpx rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* 添加涟漪效果 */
+.center-button-inner::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2rpx solid rgba(255, 184, 77, 0.5);
+  animation: ripple 2s ease-out infinite;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* 微小的呼吸动画 */
+.center-button {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6rpx);
+  }
+}
+
+/* 点击反馈 */
+.tab-bar-item:active {
+  opacity: 0.7;
+}

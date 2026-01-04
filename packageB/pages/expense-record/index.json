@@ -1,0 +1,12 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-textarea": "tdesign-miniprogram/textarea/textarea",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker"
+  },
+  "navigationStyle": "custom"
+}

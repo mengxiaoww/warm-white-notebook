@@ -1,0 +1,188 @@
+<view class="page-container">
+  <!-- 自定义导航栏 -->
+  <t-navbar title="血糖记录" class="navbar" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+    <view slot="left" class="custom-back-btn" bindtap="navigateBack">
+      <t-icon name="chevron-left" size="48rpx" color="white" />
+    </view>
+  </t-navbar>
+
+  <!-- 内容区域 -->
+  <view class="content">
+    <!-- 日期选择区域 -->
+    <view class="date-section">
+      <view class="date-selector" bindtap="showDatePicker">
+        <text class="date-text">{{selectedDate}}</text>
+        <t-icon name="calendar" size="32rpx" color="#666" />
+      </view>
+      <view class="quick-input-btns">
+        <t-button theme="primary" size="small" icon="add" bindtap="addRecord" class="add-record-btn">
+          添加记录
+        </t-button>
+      </view>
+    </view>
+
+    <!-- 滚动容器 -->
+    <scroll-view class="scroll-container" scroll-y>
+      <view class="form-container">
+        <!-- 今日血糖统计 -->
+        <view class="blood-sugar-summary" wx:if="{{bloodSugarRecords.length > 0}}">
+          <view class="summary-header">
+            <view class="summary-info">
+              <text class="summary-title">今日血糖</text>
+              <text class="summary-count">{{bloodSugarRecords.length}} 次</text>
+            </view>
+            <view class="summary-stats">
+              <view class="stat-item">
+                <text class="stat-label">平均</text>
+                <text class="stat-value">{{avgBloodSugar}}</text>
+                <text class="stat-unit">mmol/L</text>
+              </view>
+              <view class="stat-item">
+                <text class="stat-label">最高</text>
+                <text class="stat-value high">{{maxBloodSugar}}</text>
+                <text class="stat-unit">mmol/L</text>
+              </view>
+              <view class="stat-item">
+                <text class="stat-label">最低</text>
+                <text class="stat-value low">{{minBloodSugar}}</text>
+                <text class="stat-unit">mmol/L</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 血糖记录列表 -->
+        <view class="blood-sugar-records-list" wx:if="{{bloodSugarRecords.length > 0}}">
+          <view class="blood-sugar-record-item" wx:for="{{bloodSugarRecords}}" wx:key="_id">
+            <view class="record-content" bindtap="showRecordDetail" data-id="{{item._id}}">
+              <view class="record-header">
+                <view class="time-info">
+                  <t-icon name="time" size="28rpx" color="#FFB84D" />
+                  <text class="record-time">{{item.time}}</text>
+                </view>
+                <view class="value-badge">
+                  <text class="main-value">{{item.fbg}}</text>
+                  <text class="unit">mmol/L</text>
+                </view>
+              </view>
+              <view class="record-details">
+                <view class="detail-item">
+                  <text class="detail-label">空腹血糖：</text>
+                  <text class="detail-value">{{item.fbg}} mmol/L</text>
+                </view>
+              </view>
+              <!-- 备注预览 -->
+              <view class="notes-preview" wx:if="{{item.notes}}">
+                <t-icon name="chat" size="24rpx" color="#FFB84D" />
+                <text class="notes-text">{{item.notes}}</text>
+              </view>
+              <!-- 操作按钮 -->
+              <view class="temp-actions">
+                <view class="temp-btn edit-temp-btn" catchtap="editRecord" data-id="{{item._id}}">
+                  编辑
+                </view>
+                <view class="temp-btn delete-temp-btn" catchtap="deleteRecord" data-id="{{item._id}}">
+                  删除
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{bloodSugarRecords.length === 0}}">
+          <text class="empty-text">暂无血糖记录</text>
+          <text class="empty-hint">点击右上角添加血糖记录</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 日期选择器 -->
+  <t-date-time-picker 
+    visible="{{datePickerVisible}}" 
+    value="{{selectedDateTimestamp}}" 
+    mode="date" 
+    title="选择日期" 
+    confirm-btn="确定" 
+    cancel-btn="取消" 
+    bind:confirm="onDateConfirm" 
+    bind:cancel="onDateCancel" 
+    bind:visible-change="onDateVisibleChange" 
+  />
+
+  <!-- 血糖记录弹窗 -->
+  <t-popup visible="{{showRecordDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+    <view class="record-popup-content">
+      <view class="record-popup-header">
+        <text class="record-popup-title">{{isEditMode ? '编辑血糖记录' : '添加血糖记录'}}</text>
+        <view class="record-popup-close" bindtap="closeRecordDialog">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+
+      <scroll-view class="record-form-container" scroll-y>
+        <view class="record-form-content">
+          <!-- 时间选择 -->
+          <view class="form-group">
+            <view class="form-label">
+              <text class="label-text">记录时间</text>
+              <text class="required">*</text>
+            </view>
+            <picker mode="time" value="{{recordForm.time}}" bindchange="onTimePickerChange">
+              <view class="form-input-wrapper time-picker">
+                <t-icon name="time" size="32rpx" color="#FFB84D" />
+                <text class="time-value">{{recordForm.time || '请选择时间'}}</text>
+                <t-icon name="chevron-right" size="32rpx" color="#999" />
+              </view>
+            </picker>
+          </view>
+
+          <!-- 空腹血糖 -->
+          <view class="form-group">
+            <view class="form-label">
+              <text class="label-text">空腹血糖</text>
+              <text class="required">*</text>
+            </view>
+            <view class="form-input-wrapper">
+              <input
+                class="form-input"
+                type="digit"
+                placeholder="请输入"
+                value="{{recordForm.fbg}}"
+                data-field="fbg"
+                bindinput="onFormInput"
+              />
+              <text class="input-unit">mmol/L</text>
+            </view>
+          </view>
+
+          <!-- 备注 -->
+          <view class="form-group">
+            <view class="form-label">
+              <text class="label-text">备注</text>
+            </view>
+            <textarea 
+              class="form-textarea" 
+              placeholder="选填，可记录饮食、运动等情况" 
+              value="{{recordForm.notes}}"
+              data-field="notes"
+              bindinput="onFormInput"
+              maxlength="200"
+            />
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 操作按钮 -->
+      <view class="record-form-actions">
+        <t-button theme="default" size="large" bindtap="closeRecordDialog" class="cancel-btn">
+          取消
+        </t-button>
+        <t-button theme="primary" size="large" bindtap="saveRecord" class="save-btn">
+          保存
+        </t-button>
+      </view>
+    </view>
+  </t-popup>
+</view>

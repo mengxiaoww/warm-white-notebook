@@ -1,0 +1,252 @@
+<view class="page-container">
+  <!-- 自定义导航栏 -->
+  <view class="navbar">
+    <t-navbar title="门诊记录" bind:left-click="navigateBack" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+      <view slot="left" class="custom-back-btn" bindtap="navigateBack">
+        <t-icon name="chevron-left" size="48rpx" color="white" />
+      </view>
+      <view slot="right" class="navbar-right">
+        <t-icon name="ellipsis" size="48rpx" color="white" bindtap="showMoreMenu" />
+      </view>
+    </t-navbar>
+  </view>
+  <!-- 内容区域 -->
+  <view class="content">
+    <!-- 日期选择区域 -->
+    <view class="date-section">
+      <view class="date-selector" bindtap="showDatePicker">
+        <text class="date-text">{{selectedDate}}</text>
+        <t-icon name="calendar" size="32rpx" color="#666" />
+      </view>
+      <view class="quick-input-btns">
+        <t-button theme="primary" size="small" icon="add" bindtap="addClinicRecord" class="add-record-btn">
+          添加记录
+        </t-button>
+      </view>
+    </view>
+    <!-- 滚动容器 -->
+    <scroll-view class="scroll-container" scroll-y>
+      <view class="form-container">
+        <!-- 门诊记录统计 -->
+        <view class="clinic-summary" wx:if="{{clinicRecords.length > 0}}">
+          <view class="summary-header">
+            <view class="summary-left">
+              <view class="summary-text-group">
+                <text class="summary-title">就诊日期</text>
+                <text class="summary-date">{{selectedDate}}</text>
+              </view>
+            </view>
+            <view class="summary-badge">
+              <view class="badge-inner">
+                <text class="badge-number">{{clinicRecords.length}}</text>
+              </view>
+              <text class="badge-label">次记录</text>
+            </view>
+          </view>
+        </view>
+        <!-- 门诊记录列表 -->
+        <view class="clinic-records-list" wx:if="{{clinicRecords.length > 0}}">
+          <view class="clinic-record-item" wx:for="{{clinicRecords}}" wx:key="_id">
+            <!-- 优化布局的信息展示卡片 -->
+            <view class="record-content">
+              <!-- 顶部信息行：医院、科室、时间 -->
+              <view class="record-header">
+                <view class="hospital-info">
+                  <text class="hospital-name">{{item.hospital}}</text>
+                  <text class="department-name">{{item.department}}</text>
+                </view>
+                <view class="visit-time" wx:if="{{item.visitTime}}">{{item.visitTime}}</view>
+              </view>
+              <!-- 医生信息行 -->
+              <view class="doctor-row">
+                <view class="doctor-info">
+                  <t-icon name="user" size="28rpx" color="#666" />
+                  <text class="doctor-name">门诊医生：{{item.doctor}}</text>
+                </view>
+              </view>
+              <!-- 门诊病历照片展示 -->
+              <view class="record-images" wx:if="{{item.images && item.images.length > 0}}">
+                <view class="images-label">
+                  <t-icon name="image" size="28rpx" color="var(--color-orange-500)" />
+                  <text>病历照片</text>
+                </view>
+                <view class="images-grid">
+                  <view class="image-item" wx:for="{{item.images}}" wx:key="index" wx:for-item="imageUrl">
+                    <image src="{{imageUrl}}" mode="aspectFill" bindtap="previewRecordImage" data-url="{{imageUrl}}" data-images="{{item.images}}" />
+                  </view>
+                </view>
+              </view>
+              <!-- 诊疗信息区域 - 优化空内容显示 -->
+              <view class="medical-info" wx:if="{{item.diagnosis || item.prescription || item.advice}}">
+                <!-- 诊断 -->
+                <view class="info-item">
+                  <text class="info-label">诊断</text>
+                  <view class="info-content {{!item.diagnosis ? 'empty-content' : ''}}">
+                    {{item.diagnosis || '暂无诊断信息'}}
+                  </view>
+                </view>
+                <!-- 处方 -->
+                <view class="info-item">
+                  <text class="info-label">处方</text>
+                  <view class="info-content {{!item.prescription ? 'empty-content' : ''}}">
+                    {{item.prescription || '暂无处方用药'}}
+                  </view>
+                </view>
+                <!-- 医嘱 -->
+                <view class="info-item">
+                  <text class="info-label">医嘱</text>
+                  <view class="info-content {{!item.advice ? 'empty-content' : ''}}">
+                    {{item.advice || '暂无医嘱建议'}}
+                  </view>
+                </view>
+              </view>
+              <!-- 诊疗信息全部为空时的提示 -->
+              <view class="medical-info-empty" wx:if="{{!item.diagnosis && !item.prescription && !item.advice}}">
+                <text class="empty-tips">暂无诊疗详细信息</text>
+              </view>
+              <!-- 底部信息行：费用、复诊、备注 - 有内容时才显示 -->
+              <view class="record-bottom" wx:if="{{item.cost || item.followUpDate || item.notes}}">
+                <!-- 费用和复诊信息 -->
+                <view class="bottom-info" wx:if="{{item.cost || item.followUpDate}}">
+                  <view class="cost-text" wx:if="{{item.cost}}">¥{{item.cost}}</view>
+                  <view class="follow-up-text" wx:if="{{item.followUpDate}}">
+                    复诊 {{item.followUpDate}}
+                  </view>
+                </view>
+                <!-- 备注信息 -->
+                <view class="notes-info" wx:if="{{item.notes}}">
+                  <text class="notes-text">备注：{{item.notes}}</text>
+                </view>
+              </view>
+              <!-- 操作按钮 -->
+              <view class="record-actions">
+                <view class="action-btn edit-btn" catchtap="editRecord" data-id="{{item._id}}">
+                  编辑
+                </view>
+                <view class="action-btn delete-btn" catchtap="deleteRecord" data-id="{{item._id}}">
+                  删除
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{clinicRecords.length === 0}}">
+          <t-icon name="hospital" size="120rpx" color="#ddd" />
+          <text class="empty-text">暂无门诊记录</text>
+          <text class="empty-hint">点击右上角添加门诊记录</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  <!-- 门诊记录弹窗 -->
+  <t-popup visible="{{showClinicDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+    <view class="clinic-popup-content">
+      <view class="clinic-popup-header">
+        <text class="clinic-popup-title">{{isEditMode ? '编辑门诊记录' : '添加门诊记录'}}</text>
+        <view class="clinic-popup-close" bindtap="closeClinicDialog">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+      <scroll-view class="clinic-form-container" scroll-y>
+        <view class="clinic-form-content">
+          <!-- 就诊医院 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="0">
+            <text class="form-label required">就诊医院</text>
+            <t-input value="{{clinicForm.hospital}}" placeholder="请输入医院名称" bind:change="onFormInput" data-field="hospital" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="0" data-total="9" />
+          </view>
+
+          <!-- 科室 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="1">
+            <text class="form-label">科室（可选）</text>
+            <t-input value="{{clinicForm.department}}" placeholder="请输入科室名称" bind:change="onFormInput" data-field="department" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="1" data-total="9" />
+          </view>
+
+          <!-- 门诊医生 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="2">
+            <text class="form-label">门诊医生（可选）</text>
+            <t-input value="{{clinicForm.doctor}}" placeholder="请输入医生姓名" bind:change="onFormInput" data-field="doctor" class="form-input" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="2" data-total="9" />
+          </view>
+
+          <!-- 病情描述 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="3">
+            <text class="form-label">病情描述（可选）</text>
+            <t-textarea value="{{clinicForm.condition}}" placeholder="请描述当前病情状况" bind:change="onFormInput" data-field="condition" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="3" data-total="9" />
+          </view>
+
+          <!-- 门诊病历照片 -->
+          <view class="form-item">
+            <text class="form-label">门诊病历照片</text>
+            <view class="image-upload-area">
+              <view class="upload-btn" bindtap="chooseImage">
+                <t-icon name="add" size="48rpx" color="#999" />
+                <text class="upload-text">点击上传门诊病历照片</text>
+              </view>
+              <view class="image-preview-list" wx:if="{{clinicForm.images && clinicForm.images.length > 0}}">
+                <view class="image-preview-item" wx:for="{{clinicForm.images}}" wx:key="index">
+                  <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" />
+                  <view class="image-delete-btn" catchtap="deleteImage" data-index="{{index}}">
+                    <t-icon name="close" size="24rpx" color="white" />
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 诊断结果 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="4">
+            <text class="form-label">诊断结果</text>
+            <t-textarea value="{{clinicForm.diagnosis}}" placeholder="请输入医生的诊断结果" bind:change="onFormInput" data-field="diagnosis" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="4" data-total="9" />
+          </view>
+
+          <!-- 处方用药 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="5">
+            <text class="form-label">处方用药</text>
+            <t-textarea value="{{clinicForm.prescription}}" placeholder="请输入医生开具的处方和用药建议" bind:change="onFormInput" data-field="prescription" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="5" data-total="9" />
+          </view>
+
+          <!-- 医嘱建议 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="6">
+            <text class="form-label">医嘱建议</text>
+            <t-textarea value="{{clinicForm.advice}}" placeholder="请输入医生的医嘱和建议" bind:change="onFormInput" data-field="advice" class="form-textarea" maxlength="500" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="6" data-total="9" />
+          </view>
+
+          <!-- 费用金额 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="7">
+            <text class="form-label">费用金额</text>
+            <t-input value="{{clinicForm.cost}}" placeholder="请输入费用金额（元）" bind:change="onFormInput" data-field="cost" class="form-input" type="digit" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="7" data-total="9" />
+          </view>
+
+          <!-- 复诊时间 -->
+          <view class="form-item">
+            <text class="form-label">复诊时间</text>
+            <view class="follow-up-input" bindtap="showFollowUpDatePicker">
+              <text class="follow-up-text">{{clinicForm.followUpDate || '点击选择复诊时间'}}</text>
+              <t-icon name="calendar" size="32rpx" color="#999" />
+            </view>
+          </view>
+
+          <!-- 备注 -->
+          <view class="form-item" bindtap="setPopupFocus" data-index="8">
+            <text class="form-label">备注</text>
+            <t-textarea value="{{clinicForm.notes}}" placeholder="其他需要记录的信息" bind:change="onFormInput" data-field="notes" class="form-textarea" maxlength="300" indicator autosize="{{true}}" bind:focus="onPopupInputFocus" bind:blur="onPopupInputBlur" data-index="8" data-total="9" />
+          </view>
+        </view>
+      </scroll-view>
+      <view class="clinic-popup-buttons">
+        <view class="clinic-btn clinic-cancel-btn" bindtap="closeClinicDialog">取消</view>
+        <view class="clinic-btn clinic-confirm-btn" bindtap="saveClinicRecord">
+          {{isEditMode ? '保存' : '添加'}}
+        </view>
+      </view>
+    </view>
+  </t-popup>
+  <!-- 浮动的下一项/完成按钮（弹窗中） - 移到弹窗外以正确fixed定位 -->
+  <view wx:if="{{popupFocusIndex >= 0 && showClinicDialog}}" class="floating-next-btn" catchtap="{{popupFocusIndex === 8 ? 'completePopupInput' : 'goToNextPopupInput'}}" data-index="{{popupFocusIndex}}">
+    <t-icon name="{{popupFocusIndex === 8 ? 'check' : 'chevron-down'}}" size="48rpx" color="white" />
+  </view>
+  <!-- 页面就诊日期选择器 -->
+  <t-date-time-picker visible="{{datePickerVisible}}" value="{{selectedDateTimestamp}}" mode="date" title="选择就诊日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" bind:visible-change="onDateVisibleChange" />
+  <!-- 复诊日期选择器 -->
+  <t-date-time-picker visible="{{followUpDatePickerVisible}}" value="{{followUpDateTimestamp}}" mode="date" title="选择复诊时间" confirm-btn="确定" cancel-btn="取消" bind:confirm="onFollowUpDateConfirm" bind:cancel="onFollowUpDateCancel" bind:visible-change="onFollowUpDateVisibleChange" />
+</view>
