@@ -1,9 +1,0 @@
-{
-  "usingComponents": {
-    "t-navbar": "tdesign-miniprogram/navbar/navbar",
-    "t-checkbox": "tdesign-miniprogram/checkbox/checkbox",
-    "t-popup": "tdesign-miniprogram/popup/popup",
-    "t-icon": "tdesign-miniprogram/icon/icon"
-  },
-  "navigationStyle": "custom"
-}

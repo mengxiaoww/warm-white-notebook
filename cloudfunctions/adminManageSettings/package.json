@@ -1,9 +1,0 @@
-{
-  "name": "adminManageSettings",
-  "version": "1.0.0",
-  "description": "管理员后台设置管理",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}

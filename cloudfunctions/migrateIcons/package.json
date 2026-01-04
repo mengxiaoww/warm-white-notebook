@@ -1,9 +1,0 @@
-{
-  "name": "migrateIcons",
-  "version": "1.0.0",
-  "description": "迁移数据库中的功能项图标配置",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}

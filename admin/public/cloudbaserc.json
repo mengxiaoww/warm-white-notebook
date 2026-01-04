@@ -1,9 +1,0 @@
-{
-  "version": "2.0",
-  "routes": [
-    {
-      "path": "/*",
-      "target": "/index.html"
-    }
-  ]
-}

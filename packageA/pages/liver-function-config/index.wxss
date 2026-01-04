@@ -1,2 +1,0 @@
-/* 引用血常规配置页面的样式 */
-@import "../blood-test-config/index.wxss";
