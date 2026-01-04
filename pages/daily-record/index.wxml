@@ -1,0 +1,1255 @@
+<wxs module="numFmt" src="../../utils/number-format.wxs"></wxs>
+
+<view class="container">
+  <!-- 实际内容 -->
+  <view class="content-wrapper">
+
+
+    <!-- ✅ 今日事项卡片 -->
+    <view class="today-tasks-card">
+      <view class="tasks-header">
+        <view class="tasks-title-group">
+          <t-icon name="bulletpoint" size="32rpx" color="#FF9800" />
+          <text class="tasks-title">今日事项</text>
+          <text class="tasks-count" wx:if="{{todayTasks.length > 0}}">{{todayTasks.length}}</text>
+        </view>
+        <view class="tasks-add-btn" bindtap="showAddTaskDialog">
+          <t-icon name="add" size="32rpx" color="#FFFFFF" />
+        </view>
+      </view>
+
+      <!-- 事项列表 -->
+      <view class="tasks-list" wx:if="{{todayTasks.length > 0}}">
+        <view class="task-item {{item.completed ? 'task-completed' : ''}}"
+          wx:for="{{todayTasks}}" wx:key="_id">
+          <view class="task-checkbox" bindtap="toggleTaskComplete" data-id="{{item._id}}">
+            <view class="checkbox-inner {{item.completed ? 'checked' : ''}}">
+              <t-icon name="check" size="20rpx" color="#FFFFFF" wx:if="{{item.completed}}" />
+            </view>
+          </view>
+          <text class="task-text">{{item.title}}</text>
+          <view class="task-delete-btn" bindtap="confirmDeleteTask" data-id="{{item._id}}">
+            <t-icon name="delete" size="24rpx" color="#FF6B6B" />
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="tasks-empty" wx:else bindtap="showAddTaskDialog">
+        <text class="tasks-empty-text">暂无事项，点击 + 添加</text>
+      </view>
+    </view>
+
+    <!-- 日历组件 -->
+    <view class="calendar-section">
+      <!-- 未展开状态：直接显示日期条在顶部 -->
+      <view class="calendar-compact" wx:if="{{!calendarExpanded}}">
+        <view class="calendar-week-strip">
+          <view class="calendar-day calendar-day-compact {{item.isSelected ? 'selected' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}}" wx:for="{{weekDays}}"
+            wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
+            <text class="day-number">{{item.day}}</text>
+            <text class="day-name">{{item.dayName}}</text>
+            <view wx:if="{{item.hasRecord}}" class="record-indicator"></view>
+          </view>
+        </view>
+        <view class="calendar-expand-btn" bindtap="toggleCalendarExpanded">
+          <t-icon name="chevron-down" size="32rpx" color="#FF9800" />
+        </view>
+      </view>
+      <!-- 展开状态：完整月视图 -->
+      <view class="calendar-expanded" wx:if="{{calendarExpanded}}">
+        <!-- 月份导航 -->
+        <view class="calendar-month-nav">
+          <view class="calendar-nav-btn" bindtap="prevMonth">
+            <t-icon name="chevron-left" size="28rpx" color="#FF9800" />
+          </view>
+          <text class="calendar-month-title">{{currentYear}}年{{currentMonth}}月</text>
+          <view class="calendar-nav-btn" bindtap="nextMonth">
+            <t-icon name="chevron-right" size="28rpx" color="#FF9800" />
+          </view>
+          <view class="calendar-expand-btn" bindtap="toggleCalendarExpanded">
+            <t-icon name="chevron-up" size="32rpx" color="#FF9800" />
+          </view>
+        </view>
+        <!-- 星期标题 -->
+        <view class="calendar-weekday-header">
+          <text class="calendar-weekday-title" wx:for="{{weekdayTitles}}" wx:key="*this">
+            {{item}}
+          </text>
+        </view>
+        <!-- 日期网格 -->
+        <view class="calendar-month-grid">
+          <view class="calendar-day {{item.isSelected ? 'selected' : ''}} {{item.isEmpty ? 'empty' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}}"
+            wx:for="{{monthDays}}" wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
+            {{item.day}}
+            <view wx:if="{{item.hasRecord && !item.isEmpty}}" class="record-indicator"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!-- 📅 日期指示横幅 - 连接日历和记录区域 -->
+    <view class="selected-date-banner {{dateChanged ? 'date-changed-animation' : ''}}">
+      <view class="banner-icon-wrapper">
+        <t-icon name="calendar" size="40rpx" color="#FFFFFF" />
+      </view>
+      <view class="banner-text-wrapper">
+        <text class="banner-date">{{selectedDateText}}</text>
+        <text class="banner-hint">为这一天添加健康记录</text>
+      </view>
+    </view>
+
+
+    <!-- 功能项网格 - 动态渲染 -->
+    <view class="functions-grid {{dateChanged ? 'records-highlight-animation' : ''}}">
+      <!-- 骨架屏加载 -->
+      <block wx:if="{{isPageLoading}}">
+        <view class="function-card-skeleton" wx:for="{{[1, 2, 3, 4, 5, 6]}}" wx:key="*this">
+          <view class="skeleton-header-wrapper">
+            <view class="skeleton-icon-circle"></view>
+            <view class="skeleton-title-line"></view>
+          </view>
+          <view class="skeleton-content-wrapper">
+            <view class="skeleton-data-line"></view>
+            <view class="skeleton-data-line short"></view>
+          </view>
+          <view class="skeleton-shimmer-effect"></view>
+        </view>
+      </block>
+      <!-- 动态功能项 -->
+      <block wx:else>
+        <view wx:for="{{mainPageFunctions}}" wx:key="id"
+        class="function-card function-card--{{item.id}} {{selectedDateData[item.dataKey] ? 'has-data' : 'no-data'}}"
+        bindtap="handleFunctionTap" data-navigate="{{item.navigate}}" data-function-id="{{item.id}}">
+        <view class="function-card-status" wx:if="{{selectedDateData[item.dataKey]}}"></view>
+        <view class="function-card-header">
+          <view class="function-card-icon">
+            <medical-icon name="{{item.icon}}" size="40" color="var(--primary-color)" />
+          </view>
+          <text class="function-card-title">{{item.name}}</text>
+        </view>
+        <view class="function-card-content">
+          <view class="function-card-empty" wx:if="{{!selectedDateData[item.dataKey]}}">
+            <view class="empty-state-premium">
+              <view class="empty-icon-wrapper">
+                <view class="empty-icon-pulse"></view>
+                <t-icon name="add" size="28rpx" color="#999" />
+              </view>
+              <text class="empty-text">轻触记录</text>
+            </view>
+          </view>
+          <view class="function-card-data" wx:else>
+            <!-- 血常规数据展示 - 极简设计 -->
+            <block wx:if="{{item.id === 'blood' && selectedDateData.bloodData}}">
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodData.wbc || selectedDateData.bloodData.wbc === 0}}">
+                <text class="bs-label">白细胞</text>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{numFmt.formatValue(selectedDateData.bloodData.wbc)}}</view>
+                  <view class="bs-unit">10⁹/L</view>
+                </view>
+              </view>
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodData.neut || selectedDateData.bloodData.neut === 0}}">
+                <view class="bs-label">中性粒细胞</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{numFmt.formatValue(selectedDateData.bloodData.neut)}}</view>
+                  <view class="bs-unit">10⁹/L</view>
+                </view>
+              </view>
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodData.hgb || selectedDateData.bloodData.hgb === 0}}">
+                <view class="bs-label">血红蛋白</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{numFmt.formatValue(selectedDateData.bloodData.hgb)}}</view>
+                  <view class="bs-unit">g/L</view>
+                </view>
+              </view>
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodData.plt || selectedDateData.bloodData.plt === 0}}">
+                <view class="bs-label">血小板</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{numFmt.formatValue(selectedDateData.bloodData.plt)}}</view>
+                  <view class="bs-unit">10⁹/L</view>
+                </view>
+              </view>
+            </block>
+            <!-- 血糖数据展示 - 统一单值显示样式 -->
+            <block wx:elif="{{item.id === 'bloodSugar' && selectedDateData.bloodSugarData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">数值</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.bloodSugarData.bloodSugar || selectedDateData.bloodSugarData.fbg || selectedDateData.bloodSugarData.pbg || '0'}}</text>
+                  <text class="ldh-unit">mmol/L</text>
+                </view>
+                <view class="ldh-range-hint">参考范围: 3.9-6.1 (空腹)</view>
+              </view>
+            </block>
+            <!-- 血氧数据展示 - 统一单值显示样式 -->
+            <block wx:elif="{{item.id === 'bloodOxygen' && selectedDateData.bloodOxygenData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">数值</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.bloodOxygenData.spo2 || '0'}}</text>
+                  <text class="ldh-unit">%</text>
+                </view>
+                <view class="ldh-range-hint">参考范围: 95-100%</view>
+              </view>
+            </block>
+            <!-- 血压数据展示 - 简洁专业设计 -->
+            <block wx:elif="{{item.id === 'bloodPressure' && selectedDateData.bloodPressureData}}">
+              <view class="bp-display-container">
+                <view class="bp-reading-card">
+                  <view class="bp-systolic-section">
+                    <text class="bp-label">高压</text>
+                    <text class="bp-value-large">{{selectedDateData.bloodPressureData.systolic || '--'}}</text>
+                  </view>
+                  <view class="bp-divider"></view>
+                  <view class="bp-diastolic-section">
+                    <text class="bp-label">低压</text>
+                    <text class="bp-value-large">{{selectedDateData.bloodPressureData.diastolic || '--'}}</text>
+                  </view>
+                </view>
+                <view class="bp-reference-hint">参考: 90-140 / 60-90</view>
+              </view>
+            </block>
+            <!-- 身高体重数据展示 - 简洁专业设计 -->
+            <block wx:elif="{{item.id === 'bodyMeasurement' && selectedDateData.bodyMeasurementData}}">
+              <view class="bp-display-container">
+                <view class="bp-reading-card">
+                  <view class="bp-systolic-section">
+                    <text class="bp-label">身高</text>
+                    <text class="bp-value-large">{{selectedDateData.bodyMeasurementData.height || '--'}}</text>
+                  </view>
+                  <view class="bp-divider"></view>
+                  <view class="bp-diastolic-section">
+                    <text class="bp-label">体重</text>
+                    <text class="bp-value-large">{{selectedDateData.bodyMeasurementData.weight || '--'}}</text>
+                  </view>
+                </view>
+                <view class="bp-reference-hint">身高(cm) / 体重(kg)</view>
+              </view>
+            </block>
+            <!-- 饮水数据展示 - 统一单值显示样式 -->
+            <block wx:elif="{{(item.id === 'water' || item.id === 'waterIntake') && selectedDateData.waterData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">饮水量</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.waterData.water || '0'}}</text>
+                  <text class="ldh-unit">ml</text>
+                </view>
+                <view class="ldh-range-hint">参考: 1500-2000 ml/天</view>
+              </view>
+            </block>
+            <!-- 饮食数据展示 - 显示饮食内容 -->
+            <block wx:elif="{{item.id === 'diet' && selectedDateData.dietData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">饮食记录</view>
+                </view>
+                <view class="diet-content-preview">
+                  <text class="diet-content-text">{{selectedDateData.dietData.content || '已记录'}}</text>
+                </view>
+              </view>
+            </block>
+            <!-- 体温数据展示 - 统一单值显示样式 -->
+            <block wx:elif="{{item.id === 'temperature' && selectedDateData.temperatureData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">体温</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.temperatureData.temperature || '0'}}</text>
+                  <text class="ldh-unit">℃</text>
+                </view>
+                <view class="ldh-range-hint">正常范围: 36.0-37.3 ℃</view>
+              </view>
+            </block>
+            <!-- EB病毒 - 使用血常规相同高度布局 -->
+            <!-- EB病毒：与乳酸脱氢酶统一，显示「数值」 -->
+            <block wx:elif="{{item.id === 'ebv' && selectedDateData.ebvData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">数值</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.ebvData.ebvDna || '0'}}</text>
+                  <text class="ldh-unit">IU/mL</text>
+                </view>
+                <view class="ebv-status-row">
+                  <view
+                    class="ebv-status-text {{(selectedDateData.ebvData && (selectedDateData.ebvData.ebvDna == '0' || selectedDateData.ebvData.ebvDna === 0 || selectedDateData.ebvData.ebvDna === '' || !selectedDateData.ebvData.ebvDna || selectedDateData.ebvData.result === '阴性')) ? 'negative' : 'positive'}}">
+                    {{(selectedDateData.ebvData && (selectedDateData.ebvData.ebvDna == '0' ||
+                    selectedDateData.ebvData.ebvDna === 0 || selectedDateData.ebvData.ebvDna === '' ||
+                    !selectedDateData.ebvData.ebvDna || selectedDateData.ebvData.result === '阴性')) ? '阴性' : '阳性'}}
+                  </view>
+                </view>
+              </view>
+            </block>
+            <!-- 巨细胞病毒：与乳酸脱氢酶统一，显示「数值」 -->
+            <block wx:elif="{{item.id === 'cmv' && selectedDateData.cmvData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">数值</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.cmvData.hcmvDna || '0'}}</text>
+                  <text class="ldh-unit">IU/mL</text>
+                </view>
+                <view class="ebv-status-row">
+                  <view
+                    class="ebv-status-text {{(selectedDateData.cmvData && (selectedDateData.cmvData.hcmvDna == '0' || selectedDateData.cmvData.hcmvDna === 0 || selectedDateData.cmvData.hcmvDna === '' || !selectedDateData.cmvData.hcmvDna || selectedDateData.cmvData.result === '阴性')) ? 'negative' : 'positive'}}">
+                    {{(selectedDateData.cmvData && (selectedDateData.cmvData.hcmvDna == '0' ||
+                    selectedDateData.cmvData.hcmvDna === 0 || selectedDateData.cmvData.hcmvDna === '' ||
+                    !selectedDateData.cmvData.hcmvDna || selectedDateData.cmvData.result === '阴性')) ? '阴性' : '阳性'}}
+                  </view>
+                </view>
+              </view>
+            </block>
+            <!-- 乳酸脱氢酶：无阴阳性，优化展示样式 -->
+            <block wx:elif="{{item.id === 'ldh' && selectedDateData.ldhData}}">
+              <view class="ldh-single-data">
+                <view class="ldh-header">
+                  <view class="ldh-label">数值</view>
+                </view>
+                <view class="ldh-value-container">
+                  <text class="ldh-big-value">{{selectedDateData.ldhData.ldh}}</text>
+                  <text class="ldh-unit">U/L</text>
+                </view>
+                <view class="ldh-range-hint">参考范围: 100-300</view>
+              </view>
+            </block>
+            <!-- 肝功能数据展示 - 紧凑4指标网格布局 -->
+            <block wx:elif="{{item.id === 'liver' && selectedDateData.liverData}}">
+              <view class="liver-indicator-item"
+                wx:if="{{selectedDateData.liverData.alt || selectedDateData.liverData.alt === 0}}">
+                <view class="bs-label">ALT</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.liverData.alt}}</view>
+                  <view class="bs-unit">U/L</view>
+                </view>
+              </view>
+              <view class="liver-indicator-item"
+                wx:if="{{selectedDateData.liverData.ast || selectedDateData.liverData.ast === 0}}">
+                <view class="bs-label">AST</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{selectedDateData.liverData.ast}}</view>
+                  <view class="bs-unit">U/L</view>
+                </view>
+              </view>
+              <view class="liver-indicator-item"
+                wx:if="{{selectedDateData.liverData.tbil || selectedDateData.liverData.tbil === 0 || selectedDateData.liverData.totalBilirubin || selectedDateData.liverData.totalBilirubin === 0 || selectedDateData.liverData.bilirubin || selectedDateData.liverData.bilirubin === 0}}">
+                <text class="bs-label">总胆红素</text>
+                <view class="bs-value-group">
+                  <view class="bs-value">
+                    {{selectedDateData.liverData.tbil || selectedDateData.liverData.totalBilirubin ||
+                    selectedDateData.liverData.bilirubin}}
+                  </view>
+                  <view class="bs-unit">μmol/L</view>
+                </view>
+              </view>
+              <view class="liver-indicator-item"
+                wx:if="{{selectedDateData.liverData.dbil || selectedDateData.liverData.dbil === 0 || selectedDateData.liverData.directBilirubin || selectedDateData.liverData.directBilirubin === 0}}">
+                <text class="bs-label">直接胆红素</text>
+                <view class="bs-value-group">
+                  <view class="bs-value">
+                    {{selectedDateData.liverData.dbil || selectedDateData.liverData.directBilirubin}}
+                  </view>
+                  <view class="bs-unit">μmol/L</view>
+                </view>
+              </view>
+            </block>
+            <!-- 肾功能数据展示 - 紧凑4指标网格布局 -->
+            <block wx:elif="{{item.id === 'kidney' && selectedDateData.kidneyData}}">
+              <view class="kidney-indicator-item"
+                wx:if="{{selectedDateData.kidneyData.cr || selectedDateData.kidneyData.cr === 0 || selectedDateData.kidneyData.creatinine || selectedDateData.kidneyData.creatinine === 0}}">
+                <view class="bs-label">肌酐</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">
+                    {{selectedDateData.kidneyData.cr || selectedDateData.kidneyData.creatinine}}
+                  </view>
+                  <view class="bs-unit">μmol/L</view>
+                </view>
+              </view>
+              <view class="kidney-indicator-item"
+                wx:if="{{selectedDateData.kidneyData.bun || selectedDateData.kidneyData.bun === 0 || selectedDateData.kidneyData.urea || selectedDateData.kidneyData.urea === 0}}">
+                <view class="bs-label">尿素氮</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">
+                    {{selectedDateData.kidneyData.bun || selectedDateData.kidneyData.urea}}
+                  </view>
+                  <text class="bs-unit">mmol/L</text>
+                </view>
+              </view>
+              <view class="kidney-indicator-item"
+                wx:if="{{selectedDateData.kidneyData.ua || selectedDateData.kidneyData.ua === 0 || selectedDateData.kidneyData.uricAcid || selectedDateData.kidneyData.uricAcid === 0}}">
+                <view class="bs-label">尿酸</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">
+                    {{selectedDateData.kidneyData.ua || selectedDateData.kidneyData.uricAcid}}
+                  </view>
+                  <view class="bs-unit">μmol/L</view>
+                </view>
+              </view>
+              <view class="kidney-indicator-item"
+                wx:if="{{selectedDateData.kidneyData.egfr || selectedDateData.kidneyData.egfr === 0 || selectedDateData.kidneyData.gfr || selectedDateData.kidneyData.gfr === 0}}">
+                <view class="bs-label">eGFR</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">
+                    {{selectedDateData.kidneyData.egfr || selectedDateData.kidneyData.gfr}}
+                  </view>
+                  <view class="bs-unit">ml/min</view>
+                </view>
+              </view>
+            </block>
+            <!-- 用药记录数据展示 - 两行布局 -->
+            <block wx:elif="{{item.id === 'medication' && selectedDateData.medicationData}}">
+              <!-- 第一行：用药进度+进度条 -->
+              <view class="med-progress-row-full">
+                <view class="med-progress-info">
+                  <view class="bs-label">用药进度</view>
+                  <view class="bs-value-group">
+                    <view class="bs-value">{{selectedDateData.medicationData.progress}}</view>
+                    <view class="bs-unit">%</view>
+                  </view>
+                </view>
+                <view class="med-progress-bar">
+                  <view
+                    class="med-progress-fill {{selectedDateData.medicationData.progress >= 100 ? 'med-progress-completed' : ''}}"
+                    style="width: {{selectedDateData.medicationData.progress}}%;"></view>
+                </view>
+              </view>
+              <!-- 第二行：今日用药统计 -->
+              <view class="med-stats-row-full">
+                <text class="bs-label">今日用药</text>
+                <view class="bs-value-group">
+                  <view class="bs-value">
+                    {{selectedDateData.medicationData.takenMedicines}}/{{selectedDateData.medicationData.totalMedicines}}
+                  </view>
+                  <view class="bs-unit">种</view>
+                </view>
+              </view>
+            </block>
+            <!-- 门诊记录数据展示 - 对称均衡设计 -->
+            <block wx:elif="{{item.id === 'clinic' && selectedDateData.clinicData}}">
+              <!-- 第一行：医院 + 科室（左右对称） -->
+              <view class="clinic-symmetric-row">
+                <view class="clinic-left-text">{{selectedDateData.clinicData.hospital}}</view>
+                <view class="clinic-right-text">{{selectedDateData.clinicData.department}}</view>
+              </view>
+              <!-- 第二行：费用 + 时间（左右对称） -->
+              <view class="clinic-symmetric-row">
+                <view class="clinic-left-text clinic-cost-color" wx:if="{{selectedDateData.clinicData.cost}}">
+                  ￥{{selectedDateData.clinicData.cost}}
+                </view>
+                <view class="clinic-right-text clinic-date-color">{{selectedDateShort}}</view>
+              </view>
+            </block>
+            <!-- 尿量记录数据展示 - 左右对称布局 -->
+            <block wx:elif="{{item.id === 'urine' && selectedDateData.urineData}}">
+              <!-- 总尿量 - 最重要指标 -->
+              <view class="urine-symmetric-row">
+                <view class="urine-label">总尿量</view>
+                <view class="urine-value-group">
+                  <view class="urine-value">{{selectedDateData.urineData.total || 0}}</view>
+                  <view class="urine-unit">ml</view>
+                </view>
+              </view>
+              <!-- 排尿次数 - 频率指标 -->
+              <view class="urine-symmetric-row">
+                <view class="urine-label">排尿次数</view>
+                <view class="urine-value-group">
+                  <view class="urine-value">{{selectedDateData.urineData.times || 0}}</view>
+                  <view class="urine-unit">次</view>
+                </view>
+              </view>
+            </block>
+            <!-- 排便记录数据展示 - 左右对称布局 -->
+            <block
+              wx:elif="{{item.id === 'stool' && selectedDateData.stoolData && selectedDateData.stoolData.count > 0}}">
+              <!-- 排便记录 - 显示记录数量和状态 -->
+              <view class="stool-symmetric-row">
+                <view class="stool-label">记录数量</view>
+                <view class="stool-value-group">
+                  <view class="stool-value">{{selectedDateData.stoolData.count}}</view>
+                  <view class="stool-unit">次</view>
+                </view>
+              </view>
+              <!-- 异常状态 - 健康状态指标 -->
+              <view class="stool-symmetric-row">
+                <view class="stool-label">健康状态</view>
+                <view class="stool-type {{selectedDateData.stoolData.hasAbnormal ? 'stool-abnormal' : 'stool-normal'}}">
+                  {{selectedDateData.stoolData.hasAbnormal ? '异常' : '正常'}}
+                </view>
+              </view>
+            </block>
+            <!-- 费用记录数据展示 - 左右对称布局 -->
+            <block wx:elif="{{item.id === 'expense' && selectedDateData.expenseData}}">
+              <!-- 费用总额 - 最重要指标 -->
+              <view class="expense-symmetric-row">
+                <view class="expense-label">费用总额</view>
+                <view class="expense-value-group">
+                  <view class="expense-value">￥{{selectedDateData.expenseData.total || 0}}</view>
+                </view>
+              </view>
+              <!-- 记录数量 - 次数指标 -->
+              <view class="expense-symmetric-row">
+                <view class="expense-label">记录数量</view>
+                <view class="expense-value-group">
+                  <view class="expense-count">{{selectedDateData.expenseData.count || 0}}</view>
+                  <view class="expense-unit">笔</view>
+                </view>
+              </view>
+            </block>
+            <!-- 检查报告数据展示 - 门诊记录样式 -->
+            <block wx:elif="{{item.id === 'checkReport' && selectedDateData.checkReportData}}">
+              <!-- 第一行：检查项目名称 + 检查结果（左右对称） -->
+              <view class="clinic-symmetric-row">
+                <view class="clinic-left-text">
+                  {{selectedDateData.checkReportData.projectName || '检查报告'}}
+                </view>
+                <view class="clinic-right-text">
+                  {{selectedDateData.checkReportData.resultTypeLabel || '未知'}}
+                </view>
+              </view>
+              <!-- 第二行：详细结果状态 + 记录日期（左右对称） -->
+              <view class="clinic-symmetric-row">
+                <view class="clinic-left-text checkReport-result-color">
+                  {{selectedDateData.checkReportData.detailedResultsDisplay}}
+                </view>
+                <view class="clinic-right-text clinic-date-color">
+                  {{selectedDateData.checkReportData.recordDateShort || selectedDateShort}}
+                </view>
+              </view>
+              <!-- 如果有多条记录，显示总数量 -->
+              <view wx:if="{{selectedDateData.checkReportData.totalCount > 1}}" class="check-report-count-badge">
+                今日检查报告 {{selectedDateData.checkReportData.totalCount}} 份
+              </view>
+            </block>
+            <!-- 空状态 -->
+            <block wx:else>
+              <view class="data-empty">
+                <text class="empty-text">点击记录数据</text>
+              </view>
+            </block>
+          </view>
+        </view>
+      </view>
+      </block>
+    </view>
+    <!-- 编辑按钮 - 独立在功能项下方 -->
+    <view class="edit-btn-bottom" bindtap="toggleFunctionEditMode">
+      <view class="edit-btn-circle">
+        <t-icon name="setting" size="40rpx" color="#FFFFFF" />
+      </view>
+    </view>
+    <!-- 功能项自定义弹窗 -->
+    <t-popup visible="{{showFunctionCustomPopup}}" bind:visible-change="onFunctionCustomPopupClose" placement="bottom"
+      show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+      <view class="function-custom-popup">
+        <!-- 拖拽指示条 -->
+        <view class="popup-drag-indicator">
+          <view class="drag-bar"></view>
+        </view>
+        <!-- 关闭按钮 -->
+        <view class="popup-close-btn" bindtap="closeFunctionCustomPopup">
+          <t-icon name="close" size="26rpx" color="#8E8E93" />
+        </view>
+        <view class="function-custom-content">
+          <view class="custom-hint-card">
+            <view class="hint-text-wrapper">
+              <text class="hint-title">操作说明</text>
+              <text class="hint-subtitle">长按拖拽调整顺序，右侧开关控制显示</text>
+            </view>
+          </view>
+          <!-- iOS风格拖拽列表 -->
+          <scroll-view class="ios-drag-container" scroll-y="{{!isDragging}}" enhanced="true" show-scrollbar="false">
+            <view
+              class="ios-drag-item {{item.visible ? 'item-visible' : 'item-hidden'}} {{item.isDragging ? 'item-dragging' : ''}}"
+              wx:for="{{customFunctionList}}" wx:key="id" data-index="{{index}}" bindlongpress="onItemLongPress"
+              bindtouchstart="onItemTouchStart" bindtouchmove="onItemTouchMove" bindtouchend="onItemTouchEnd"
+              style="{{item.isDragging ? 'transform: translateY(' + (item.translateY || 0) + 'rpx); z-index: 999;' : ''}}">
+              <!-- 拖拽手柄 -->
+              <view class="ios-drag-handle">
+                <view class="drag-lines">
+                  <view class="drag-line"></view>
+                  <view class="drag-line"></view>
+                  <view class="drag-line"></view>
+                  <view class="drag-line"></view>
+                  <view class="drag-line"></view>
+                  <view class="drag-line"></view>
+                </view>
+              </view>
+              <!-- 功能项内容 -->
+              <view class="ios-item-content">
+                <view class="ios-item-icon">
+                  <medical-icon name="{{item.icon}}" size="44" color="{{item.visible ? '#FF9800' : '#999'}}" />
+                </view>
+                <view class="ios-item-info">
+                  <text class="ios-item-name">{{item.name}}</text>
+                  <text class="ios-item-status">{{item.visible ? '显示' : '隐藏'}}</text>
+                </view>
+              </view>
+              <!-- iOS风格开关 -->
+              <view class="ios-switch" catchtap="onFunctionToggle" data-id="{{item.id}}">
+                <view class="ios-switch-bg {{item.visible ? 'switch-on' : 'switch-off'}}">
+                  <view class="ios-switch-circle"></view>
+                </view>
+              </view>
+            </view>
+            <!-- 拖拽引导线 -->
+            <view class="drop-line" wx:if="{{isDragging && dropLineIndex >= 0}}"
+              style="top: {{dropLineIndex * 120 - 2}}rpx;"></view>
+          </scroll-view>
+          <view class="action-buttons">
+            <view class="action-btn secondary" bindtap="resetFunctionOrder">
+              <text class="btn-text">恢复默认</text>
+            </view>
+            <view class="action-btn primary" bindtap="saveFunctionCustom">
+              <text class="btn-text">保存设置</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </t-popup>
+    <!-- 关键日期设置弹窗 -->
+    <t-popup visible="{{showKeyDatePopup}}" bind:visible-change="closeKeyDatePopup" placement="bottom"
+      show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+      <view class="popup-content">
+        <view class="popup-header">
+          <text class="popup-title">编辑</text>
+          <view class="milestone-close-btn" bindtap="closeKeyDatePopup">
+            <t-icon name="close" size="28rpx" />
+          </view>
+        </view>
+        <view class="key-date-list">
+          <view class="key-date-item" wx:for="{{keyDates}}" wx:key="id">
+            <view class="date-info" bindtap="editKeyDate" data-id="{{item.id}}">
+              <text class="date-label">{{item.title}}</text>
+              <text class="date-value">{{item.dateFormatted || item.date}}</text>
+            </view>
+            <view class="key-date-actions">
+              <view class="key-date-action-btn key-date-edit-btn" catchtap="editKeyDate" data-id="{{item.id}}">
+                <t-icon name="edit" size="26rpx" color="white" />
+              </view>
+              <view class="key-date-action-btn key-date-delete-btn" catchtap="deleteKeyDate" data-id="{{item.id}}">
+                <t-icon name="delete" size="26rpx" color="white" />
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="add-key-date" bindtap="showKeyDateEditPopup">
+          <text>添加</text>
+        </view>
+      </view>
+    </t-popup>
+    <!-- 添加/编辑关键日弹窗 -->
+    <t-popup visible="{{showKeyDateEditPopup}}" bind:visible-change="closeKeyDateEditPopup" placement="bottom"
+      show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+      <view class="popup-content">
+        <view class="popup-header">
+          <text class="popup-title">
+            <text wx:if="{{editingKeyDate}}">编辑</text>
+            <text wx:else>添加</text>
+          </text>
+          <view class="milestone-close-btn" bindtap="closeKeyDateEditPopup">
+            <t-icon name="close" size="28rpx" />
+          </view>
+        </view>
+        <view class="milestone-edit-form">
+          <view class="milestone-form-item">
+            <text class="milestone-form-label">选择日期</text>
+            <picker mode="date" value="{{keyDateForm.date}}" bindchange="onKeyDateChange">
+              <view class="milestone-date-picker">
+                <text class="milestone-date-text">{{keyDateForm.date || '请选择日期'}}</text>
+                <t-icon name="caret-down" size="24rpx" color="#666" />
+              </view>
+            </picker>
+          </view>
+          <view class="milestone-form-item">
+            <text class="milestone-form-label">标题</text>
+            <input class="milestone-form-input" value="{{keyDateForm.title}}" bindinput="onKeyDateTitleInput"
+              placeholder="请输入标题" />
+          </view>
+        </view>
+        <view class="milestone-popup-footer">
+          <view class="milestone-cancel-btn" bindtap="backToKeyDateList">返回</view>
+          <view class="milestone-save-btn" bindtap="saveKeyDate">完成</view>
+        </view>
+      </view>
+    </t-popup>
+    <!-- 添加事项弹窗 -->
+    <t-popup visible="{{showAddTask}}" bind:visible-change="onPopupClose" placement="bottom"
+      show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+      <view class="popup-content">
+        <view class="popup-header">
+          <text class="popup-title">添加事项</text>
+          <view class="milestone-close-btn" bindtap="onPopupClose">
+            <t-icon name="close" size="28rpx" />
+          </view>
+        </view>
+        <view class="task-form">
+          <view class="task-form-item">
+            <t-input
+              value="{{newTaskText}}"
+              placeholder="例如：骨穿检查、PICC维护..."
+              bind:change="onTaskInput"
+              maxlength="30"
+              clearable
+            />
+          </view>
+        </view>
+        <view class="milestone-popup-footer">
+          <view class="milestone-cancel-btn" bindtap="onPopupClose">取消</view>
+          <view class="milestone-save-btn" bindtap="confirmAddTask">确定</view>
+        </view>
+      </view>
+    </t-popup>
+    <!-- 日期详情弹窗 -->
+    <t-popup visible="{{showDateDetailPopup}}" bind:visible-change="onDateDetailPopupClose" placement="center"
+      show-overlay="true">
+      <view class="date-detail-popup">
+        <view class="date-detail-header">
+          <text class="date-detail-title">{{currentDateDetail.date}}</text>
+          <view class="milestone-close-btn" catchtap="onDateDetailPopupClose">
+            <t-icon name="close" size="28rpx" />
+          </view>
+        </view>
+        <scroll-view class="date-detail-content" scroll-y="true" enhanced="true" show-scrollbar="false">
+          <!-- 关键日期 -->
+          <block wx:if="{{currentDateDetail.keyDates && currentDateDetail.keyDates.length > 0}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="time" size="24rpx" color="white" />
+                </view>
+                关键日期
+              </view>
+              <view class="keydate-detail-list">
+                <view class="date-detail-keydate" wx:for="{{currentDateDetail.keyDates}}" wx:key="id">
+                  <view class="keydate-content">
+                    <text class="keydate-title">{{item.title}}</text>
+                    <text class="keydate-status">重要日期</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 待办事项 -->
+          <block wx:if="{{currentDateDetail.tasks.length > 0}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="check-double" size="24rpx" color="white" />
+                </view>
+                待办事项
+              </view>
+              <view class="date-detail-task-list">
+                <view class="date-detail-task-item {{item.completed ? 'completed' : ''}}"
+                  wx:for="{{currentDateDetail.tasks}}" wx:key="id" bindtap="toggleTaskInPopup" data-id="{{item.id}}">
+                  <view class="date-detail-task-status {{item.completed ? 'completed' : 'pending'}}">
+                    <t-icon name="check" size="28rpx" color="#fff" wx:if="{{item.completed}}" />
+                  </view>
+                  <text class="date-detail-task-text">{{item.title}}</text>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 血常规数据 -->
+          <block wx:if="{{currentDateDetail.bloodData && currentDateDetail.bloodData.length > 0}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <medical-icon name="blood-drop" size="24" color="white" />
+                </view>
+                血常规数据
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.bloodData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- EB病毒检测 -->
+          <block wx:if="{{currentDateDetail.ebvData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="zoom-in" size="24rpx" color="white" />
+                </view>
+                EB病毒
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-summary">
+                  <view class="unified-status {{currentDateDetail.ebvData.hasAbnormal ? 'abnormal' : 'normal'}}">
+                    <t-icon name="{{currentDateDetail.ebvData.hasAbnormal ? 'error-circle' : 'check-circle'}}"
+                      size="20rpx" color="white" />
+                    <text>{{currentDateDetail.ebvData.hasAbnormal ? '有异常' : '正常'}}</text>
+                  </view>
+                </view>
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.ebvData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 巨细胞病毒检测 -->
+          <block wx:if="{{currentDateDetail.cmvData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="search" size="24rpx" color="white" />
+                </view>
+                巨细胞病毒
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-summary">
+                  <view class="unified-status {{currentDateDetail.cmvData.hasAbnormal ? 'abnormal' : 'normal'}}">
+                    <t-icon name="{{currentDateDetail.cmvData.hasAbnormal ? 'error-circle' : 'check-circle'}}"
+                      size="20rpx" color="white" />
+                    <text>{{currentDateDetail.cmvData.hasAbnormal ? '有异常' : '正常'}}</text>
+                  </view>
+                </view>
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.cmvData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 乳酸脱氢酶检测 -->
+          <block wx:if="{{currentDateDetail.ldhData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <medical-icon name="enzyme" size="24" color="white" />
+                </view>
+                乳酸脱氢酶
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-summary">
+                  <view class="unified-status {{currentDateDetail.ldhData.hasAbnormal ? 'abnormal' : 'normal'}}">
+                    <t-icon name="{{currentDateDetail.ldhData.hasAbnormal ? 'error-circle' : 'check-circle'}}"
+                      size="20rpx" color="white" />
+                    <text>{{currentDateDetail.ldhData.hasAbnormal ? '有异常' : '正常'}}</text>
+                  </view>
+                </view>
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.ldhData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 血糖数据 -->
+          <block wx:if="{{currentDateDetail.bloodSugarData && currentDateDetail.bloodSugarData.length > 0}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <medical-icon name="glucose" size="24" color="white" />
+                </view>
+                血糖数据
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.bloodSugarData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 肝功能检测 -->
+          <block wx:if="{{currentDateDetail.liverData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <medical-icon name="liver" size="24" color="white" />
+                </view>
+                肝功能检测
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-summary">
+                  <view class="unified-status {{currentDateDetail.liverData.hasAbnormal ? 'abnormal' : 'normal'}}">
+                    <t-icon name="{{currentDateDetail.liverData.hasAbnormal ? 'error-circle' : 'check-circle'}}"
+                      size="20rpx" color="white" />
+                    <text>{{currentDateDetail.liverData.hasAbnormal ? '有异常' : '正常'}}</text>
+                  </view>
+                </view>
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.liverData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 肾功能检测 -->
+          <block wx:if="{{currentDateDetail.kidneyData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="filter" size="24rpx" color="white" />
+                </view>
+                肾功能
+              </view>
+              <view class="unified-data-detail">
+                <view class="unified-summary">
+                  <view class="unified-status {{currentDateDetail.kidneyData.hasAbnormal ? 'abnormal' : 'normal'}}">
+                    <t-icon name="{{currentDateDetail.kidneyData.hasAbnormal ? 'error-circle' : 'check-circle'}}"
+                      size="20rpx" color="white" />
+                    <text>{{currentDateDetail.kidneyData.hasAbnormal ? '有异常' : '正常'}}</text>
+                  </view>
+                </view>
+                <view class="unified-data-grid">
+                  <view class="unified-data-item" wx:for="{{currentDateDetail.kidneyData}}" wx:key="id">
+                    <text class="unified-data-label">{{item.name}}</text>
+                    <text class="unified-data-value">{{item.value}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 肝肾功能记录 -->
+          <block wx:if="{{currentDateDetail.organData}}">
+            <view class="date-detail-section organ-section-enhanced">
+              <view class="date-detail-section-title organ-title-enhanced">
+                <view class="section-icon organ-icon-enhanced">
+                  <t-icon name="heart" size="24rpx" color="white" />
+                </view>
+                肝肾功能
+              </view>
+              <view class="organ-detail-enhanced">
+                <view class="organ-summary-enhanced">
+                  <view class="summary-stats-enhanced">
+                    <text class="stats-count-enhanced">
+                      共 {{currentDateDetail.organData.count}} 次检测
+                    </text>
+                    <view
+                      class="status-badge-enhanced {{currentDateDetail.organData.hasAbnormal ? 'status-abnormal' : 'status-normal'}}">
+                      <t-icon name="{{currentDateDetail.organData.hasAbnormal ? 'error-circle' : 'check-circle'}}"
+                        size="20rpx" color="white" />
+                      <text wx:if="{{currentDateDetail.organData.hasAbnormal}}">有异常</text>
+                      <text wx:else>正常</text>
+                    </view>
+                  </view>
+                </view>
+                <view class="organ-list-enhanced">
+                  <view class="organ-item-enhanced" wx:for="{{currentDateDetail.organData.records}}" wx:key="id">
+                    <view class="organ-header-enhanced">
+                      <view class="organ-time-enhanced">
+                        <t-icon name="time" size="20rpx" color="#FF8F00" />
+                        <text class="time-text-enhanced">{{item.time}}</text>
+                      </view>
+                      <view class="organ-meta-enhanced">
+                        <text class="organ-type-enhanced" wx:if="{{item.testType}}">
+                          {{item.testType}}
+                        </text>
+                        <text class="organ-hospital-enhanced" wx:if="{{item.hospital}}">
+                          {{item.hospital}}
+                        </text>
+                      </view>
+                    </view>
+                    <view class="organ-functions-container-enhanced">
+                      <!-- 肝功能指标 -->
+                      <view class="function-group-enhanced liver-function"
+                        wx:if="{{item.alt || item.ast || item.bilirubin || item.albumin}}">
+                        <view class="function-group-header-enhanced">
+                          <medical-icon name="liver" size="20" color="#FF8F00" />
+                          <text class="group-title-enhanced">肝功能指标</text>
+                        </view>
+                        <view class="indicators-grid-enhanced">
+                          <view class="indicator-item-enhanced" wx:if="{{item.alt}}">
+                            <text class="indicator-name-enhanced">ALT</text>
+                            <text class="indicator-value-enhanced">{{item.alt}} U/L</text>
+                            <view class="indicator-status-enhanced {{item.alt > 40 ? 'status-high' : 'status-normal'}}">
+                            </view>
+                          </view>
+                          <view class="indicator-item-enhanced" wx:if="{{item.ast}}">
+                            <text class="indicator-name-enhanced">AST</text>
+                            <text class="indicator-value-enhanced">{{item.ast}} U/L</text>
+                            <view class="indicator-status-enhanced {{item.ast > 40 ? 'status-high' : 'status-normal'}}">
+                            </view>
+                          </view>
+                          <view class="indicator-item-enhanced" wx:if="{{item.bilirubin}}">
+                            <text class="indicator-name-enhanced">胆红素</text>
+                            <text class="indicator-value-enhanced">{{item.bilirubin}} μmol/L</text>
+                            <view
+                              class="indicator-status-enhanced {{item.bilirubin > 17 ? 'status-high' : 'status-normal'}}">
+                            </view>
+                          </view>
+                          <view class="indicator-item-enhanced" wx:if="{{item.albumin}}">
+                            <text class="indicator-name-enhanced">白蛋白</text>
+                            <text class="indicator-value-enhanced">{{item.albumin}} g/L</text>
+                            <view
+                              class="indicator-status-enhanced {{item.albumin < 35 ? 'status-low' : 'status-normal'}}">
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                      <!-- 肾功能指标 -->
+                      <view class="function-group-enhanced kidney-function"
+                        wx:if="{{item.creatinine || item.urea || item.gfr}}">
+                        <view class="function-group-header-enhanced">
+                          <t-icon name="filter" size="20rpx" color="#FF8F00" />
+                          <text class="group-title-enhanced">肾功能指标</text>
+                        </view>
+                        <view class="indicators-grid-enhanced">
+                          <view class="indicator-item-enhanced" wx:if="{{item.creatinine}}">
+                            <text class="indicator-name-enhanced">肌酐</text>
+                            <text class="indicator-value-enhanced">{{item.creatinine}} μmol/L</text>
+                            <view
+                              class="indicator-status-enhanced {{item.creatinine > 104 ? 'status-high' : 'status-normal'}}">
+                            </view>
+                          </view>
+                          <view class="indicator-item-enhanced" wx:if="{{item.urea}}">
+                            <text class="indicator-name-enhanced">尿素</text>
+                            <text class="indicator-value-enhanced">{{item.urea}} mmol/L</text>
+                            <view
+                              class="indicator-status-enhanced {{item.urea > 8.2 ? 'status-high' : 'status-normal'}}">
+                            </view>
+                          </view>
+                          <view class="indicator-item-enhanced" wx:if="{{item.gfr}}">
+                            <text class="indicator-name-enhanced">GFR</text>
+                            <text class="indicator-value-enhanced">{{item.gfr}} ml/min/1.73m²</text>
+                            <view class="indicator-status-enhanced {{item.gfr < 90 ? 'status-low' : 'status-normal'}}">
+                            </view>
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                    <view class="organ-notes-enhanced" wx:if="{{item.notes}}">
+                      <t-icon name="chat" size="18rpx" color="#FF8F00" />
+                      <text class="notes-text-enhanced">{{item.notes}}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 用药记录 -->
+          <block wx:if="{{currentDateDetail.medicationData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="candy" size="24rpx" color="white" />
+                </view>
+                用药记录
+              </view>
+              <view class="unified-data-detail">
+                <view class="medication-summary">
+                  <text>共 {{currentDateDetail.medicationData.count}} 种药品</text>
+                  <text wx:if="{{currentDateDetail.medicationData.taken > 0}}">
+                    ，已服用 {{currentDateDetail.medicationData.taken}} 种
+                  </text>
+                </view>
+                <view class="medication-progress" wx:if="{{currentDateDetail.medicationData.totalTimeSlots > 0}}">
+                  <view class="progress-text">
+                    <text>
+                      服药进度：{{currentDateDetail.medicationData.completedTimeSlots}}/{{currentDateDetail.medicationData.totalTimeSlots}}
+                      次
+                    </text>
+                    <text class="progress-status"
+                      style="color: {{currentDateDetail.medicationData.isFullyCompleted ? '#FF8F00' : '#FFB74D'}};">
+                      <text wx:if="{{currentDateDetail.medicationData.isFullyCompleted}}">已完成</text>
+                      <text wx:else>未完成</text>
+                    </text>
+                  </view>
+                  <view class="progress-bar">
+                    <view
+                      class="progress-fill {{currentDateDetail.medicationData.isFullyCompleted ? 'progress-completed' : ''}}"
+                      style="width: {{animatedProgress}}%"></view>
+                  </view>
+                </view>
+                <view class="medication-list-detail">
+                  <view class="medication-item-detail" wx:for="{{currentDateDetail.medicationData.medicines}}"
+                    wx:key="id">
+                    <view class="medication-info-detail">
+                      <view class="medication-name-detail">
+                        <text class="medicine-name">{{item.name}}</text>
+                        <text class="medicine-dosage">{{item.dosage}}</text>
+                      </view>
+                      <view class="medication-notes-detail" wx:if="{{item.notes}}">
+                        <t-icon name="chat" size="20" color="#FF8F00" />
+                        <text>{{item.notes}}</text>
+                      </view>
+                    </view>
+                    <!-- 分时段服药状态显示 -->
+                    <view class="medication-time-slots-detail"
+                      wx:if="{{item.timesPerDay && item.timesPerDay.length > 0}}">
+                      <view
+                        class="time-slot-status {{item.timeSlotStatus && item.timeSlotStatus[timeSlot] ? 'taken' : 'pending'}}"
+                        wx:for="{{item.timesPerDay}}" wx:key="*this" wx:for-item="timeSlot"
+                        bindtap="toggleTimeSlotInPopup" data-medicine-id="{{item.id}}" data-time-slot="{{timeSlot}}">
+                        <text class="time-slot-name">{{timeSlot}}</text>
+                        <view
+                          class="time-slot-indicator {{item.timeSlotStatus && item.timeSlotStatus[timeSlot] ? 'taken' : 'pending'}}">
+                          <t-icon name="check" size="16" color="#fff"
+                            wx:if="{{item.timeSlotStatus && item.timeSlotStatus[timeSlot]}}" />
+                        </view>
+                      </view>
+                    </view>
+                    <!-- 没有分时段时显示总状态 -->
+                    <view class="medication-status {{item.taken ? 'taken' : 'pending'}}"
+                      wx:if="{{!item.timesPerDay || item.timesPerDay.length === 0}}">
+                      <text wx:if="{{item.taken}}">已服用</text>
+                      <text wx:else>待服用</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 门诊记录 -->
+          <block wx:if="{{currentDateDetail.clinicData && currentDateDetail.clinicData.length > 0}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="hospital" size="24rpx" color="white" />
+                </view>
+                门诊记录
+              </view>
+              <view class="clinic-detail">
+                <view class="clinic-item-detail" wx:for="{{currentDateDetail.clinicData}}" wx:key="id">
+                  <view class="clinic-header-detail">
+                    <view class="clinic-hospital-detail">
+                      <text class="hospital-name">{{item.hospital}}</text>
+                      <text class="department-name">{{item.department}}</text>
+                    </view>
+                    <view class="clinic-time-detail" wx:if="{{item.visitTime}}">
+                      <text>{{item.visitTime}}</text>
+                    </view>
+                  </view>
+                  <view class="clinic-doctor-detail">
+                    <t-icon name="user" size="20rpx" color="#FF8F00" />
+                    <text class="doctor-name">{{item.doctor}}</text>
+                    <text class="doctor-title" wx:if="{{item.doctorTitle}}">
+                      {{item.doctorTitle}}
+                    </text>
+                  </view>
+                  <view class="clinic-diagnosis-detail" wx:if="{{item.diagnosis}}">
+                    <view class="diagnosis-label">
+                      <t-icon name="precise-monitor" size="20rpx" color="#FF8F00" />
+                      <text>诊断：</text>
+                    </view>
+                    <text class="diagnosis-text">
+                      {{item.diagnosis.length > 40 ? item.diagnosis.substring(0, 40) + '...' : item.diagnosis}}
+                    </text>
+                  </view>
+                  <view class="clinic-extra-detail">
+                    <view class="clinic-cost-detail" wx:if="{{item.cost}}">
+                      <t-icon name="money-circle" size="20rpx" color="#FF8F00" />
+                      <text>¥{{item.cost}}</text>
+                    </view>
+                    <view class="clinic-followup-detail" wx:if="{{item.followUpDate}}">
+                      <t-icon name="time" size="20rpx" color="#FF8F00" />
+                      <text>复诊 {{item.followUpDate}}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 尿量记录 -->
+          <block wx:if="{{currentDateDetail.urineData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="fill-color-1" size="24rpx" color="white" />
+                </view>
+                尿量记录
+              </view>
+              <view class="urine-detail">
+                <view class="urine-summary-detail">
+                  <text>共 {{currentDateDetail.urineData.count}} 次记录</text>
+                  <text style="margin-left: 25rpx;" class="urine-total">
+                    总量 {{currentDateDetail.urineData.totalVolume}} ml
+                  </text>
+                </view>
+                <view class="urine-list-detail">
+                  <view class="urine-item-detail" wx:for="{{currentDateDetail.urineData.records}}" wx:key="id">
+                    <view class="urine-time-detail">
+                      <t-icon name="time" size="20rpx" color="#FF8F00" />
+                      <text>{{item.time}}</text>
+                    </view>
+                    <view class="urine-info-detail">
+                      <text class="urine-volume">{{item.volume}} ml</text>
+                      <text class="urine-color" wx:if="{{item.color}}">{{item.color}}</text>
+                      <text class="urine-clarity" wx:if="{{item.clarity}}">{{item.clarity}}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 排便记录 -->
+          <block wx:if="{{currentDateDetail.stoolData}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <t-icon name="layers" size="24rpx" color="white" />
+                </view>
+                排便记录
+              </view>
+              <view class="stool-detail">
+                <view class="stool-summary-detail">
+                  <text>共 {{currentDateDetail.stoolData.count}} 次记录</text>
+                  <text class="stool-warning" wx:if="{{currentDateDetail.stoolData.hasAbnormal}}">
+                    （有异常）
+                  </text>
+                </view>
+                <view class="stool-list-detail">
+                  <view class="stool-item-detail" wx:for="{{currentDateDetail.stoolData.records}}" wx:key="id">
+                    <view class="stool-time-detail">
+                      <t-icon name="time" size="20rpx" color="#FF8F00" />
+                      <text>{{item.time}}</text>
+                    </view>
+                    <view class="stool-info-detail">
+                      <text class="stool-type">{{item.type}}</text>
+                      <text class="stool-color" wx:if="{{item.color}}">{{item.color}}</text>
+                      <text class="stool-consistency" wx:if="{{item.consistency}}">
+                        {{item.consistency}}
+                      </text>
+                    </view>
+                    <view class="stool-abnormal-detail" wx:if="{{item.hasBlood || item.hasMucus}}">
+                      <text class="abnormal-tag" wx:if="{{item.hasBlood}}">有血液</text>
+                      <text class="abnormal-tag" wx:if="{{item.hasMucus}}">有粘液</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+          <!-- 空状态 -->
+          <block
+            wx:if="{{(!currentDateDetail.bloodData || currentDateDetail.bloodData.length === 0) && (!currentDateDetail.keyDates || currentDateDetail.keyDates.length === 0) && currentDateDetail.tasks.length === 0 && !currentDateDetail.medicationData && (!currentDateDetail.clinicData || currentDateDetail.clinicData.length === 0) && !currentDateDetail.urineData && !currentDateDetail.stoolData && !currentDateDetail.virusData && !currentDateDetail.organData}}">
+            <view class="date-detail-empty">
+              <t-icon name="calendar" size="80rpx" color="#ddd" />
+              <text>这一天暂无记录</text>
+              <text style="font-size: 24rpx; margin-top: 10rpx; color: #bbb;">点击功能项添加记录吧</text>
+            </view>
+          </block>
+        </scroll-view>
+      </view>
+    </t-popup>
+  </view>
+  <!-- 结束 content-wrapper -->
+</view>

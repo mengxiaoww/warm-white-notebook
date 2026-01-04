@@ -1,0 +1,237 @@
+<view class="health-chart-page">
+  <!-- 骨架屏加载 -->
+  <view class="skeleton-wrapper" wx:if="{{isPageLoading}}">
+    <!-- Banner 骨架屏 -->
+    <view class="skeleton-banner">
+      <view class="skeleton-banner-shimmer"></view>
+    </view>
+    <!-- 图表骨架屏 -->
+    <view class="skeleton-chart-section" wx:for="{{[1,2,3]}}" wx:key="*this">
+      <!-- 标题和时间选择骨架 -->
+      <view class="skeleton-header">
+        <view class="skeleton-text skeleton-text-title"></view>
+        <view class="skeleton-time-pills">
+          <view class="skeleton-pill" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+        </view>
+      </view>
+      <!-- 类型选择骨架 -->
+      <view class="skeleton-type-pills">
+        <view class="skeleton-pill-large" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+      </view>
+      <!-- 图表区域骨架 -->
+      <view class="skeleton-chart">
+        <view class="skeleton-shimmer"></view>
+      </view>
+    </view>
+  </view>
+  <!-- 实际内容 -->
+  <view class="content-wrapper {{isPageLoading ? 'content-hidden' : 'content-visible'}}">
+    <!-- 主要内容区域 -->
+    <scroll-view class="content" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}" enable-back-to-top="{{true}}">
+      <view class="home-top-section">
+        <view class="home-banner" wx:if="{{bannerList.length > 0}}">
+          <swiper class="banner-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="{{3000}}"
+            duration="{{500}}" circular="{{true}}"
+            indicator-color="rgba(255, 255, 255, 0.35)" indicator-active-color="#fff">
+            <swiper-item wx:for="{{bannerList}}" wx:key="index" bindtap="onBannerTap" data-link="{{item.link}}">
+              <view class="banner-item {{item.type === 'image' ? 'banner-item-image' : ''}}">
+                <text class="banner-text" wx:if="{{item.type === 'text'}}">{{item.text}}</text>
+                <image class="banner-image" wx:elif="{{item.type === 'image'}}" src="{{item.image}}" mode="aspectFill"
+                  data-index="{{index}}" binderror="onBannerImageError" />
+              </view>
+            </swiper-item>
+          </swiper>
+        </view>
+
+        <view class="milestone-section">
+          <view class="milestone-header">
+            <view class="milestone-title-wrap">
+              <t-icon name="sunny" size="54rpx" color="#FF9800" />
+              <view class="milestone-title-group">
+                <text class="milestone-title">暖白里程碑</text>
+                <text class="milestone-subtitle">记录治疗关键日</text>
+              </view>
+            </view>
+            <!-- 只有在有里程碑数据时才显示编辑按钮 -->
+            <view class="milestone-edit-btn" wx:if="{{keyDates && keyDates.length > 0}}" bindtap="showKeyDatePopup">
+              <t-icon name="edit" size="32rpx" color="#FF9800" />
+            </view>
+          </view>
+          <view class="milestone-content">
+            <block wx:if="{{keyDates && keyDates.length > 0}}">
+              <!-- 超过6个时使用滚动视图 -->
+              <scroll-view wx:if="{{keyDates && keyDates.length > 6}}" scroll-x class="milestone-scroll">
+                <view class="milestone-grid-scroll">
+                  <view class="milestone-card" wx:for="{{keyDates}}" wx:key="id" bindtap="editKeyDate" data-id="{{item.id}}">
+                    <view class="milestone-card-header">
+                      <view class="milestone-card-title">{{item.title}}</view>
+                      <view class="milestone-card-date">{{item.dateFormatted}}</view>
+                    </view>
+                    <view class="milestone-card-body">
+                      <view class="milestone-text-line">
+                        <block wx:if="{{item.statusObj.isToday}}">
+                          <text class="milestone-full-text">{{item.statusObj.fullText}}</text>
+                        </block>
+                        <block wx:else>
+                          <text class="milestone-prefix-text">{{item.statusObj.prefix}}</text>
+                          <text class="milestone-days-highlight">{{item.statusObj.daysNumber}}</text>
+                          <text class="milestone-unit-text">{{item.statusObj.suffix}}</text>
+                        </block>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </scroll-view>
+              <!-- 6个或以下时使用普通网格，整个区域可点击 -->
+              <view class="milestone-grid {{isSingleMilestone ? 'single-item' : ''}}" wx:else bindtap="showKeyDatePopup">
+                <view class="milestone-card {{isSingleMilestone ? 'single-card' : ''}}" wx:for="{{keyDates}}" wx:key="id" bindtap="editKeyDate" data-id="{{item.id}}">
+                  <view class="milestone-card-header">
+                    <view class="milestone-card-title">{{item.title}}</view>
+                    <view class="milestone-card-date">{{item.dateFormatted}}</view>
+                  </view>
+                  <view class="milestone-card-body">
+                    <view class="milestone-text-line">
+                      <block wx:if="{{item.statusObj.isToday}}">
+                        <text class="milestone-full-text">{{item.statusObj.fullText}}</text>
+                      </block>
+                      <block wx:else>
+                        <text class="milestone-prefix-text">{{item.statusObj.prefix}}</text>
+                        <text class="milestone-days-highlight">{{item.statusObj.daysNumber}}</text>
+                        <text class="milestone-unit-text">{{item.statusObj.suffix}}</text>
+                      </block>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </block>
+            <view class="milestone-empty" wx:else bindtap="showKeyDateEditPopup">
+              <view class="empty-state-premium">
+                <view class="empty-icon-wrapper">
+                  <view class="empty-icon-pulse"></view>
+                  <t-icon name="add" size="28rpx" color="#999" />
+                </view>
+                <text class="empty-text">轻触记录</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 所有分组的图表 -->
+      <view wx:for="{{dataTypeGroups}}" wx:for-index="groupIndex" wx:key="id" class="chart-section">
+        <!-- 分组标题和时间选择 -->
+        <view class="section-header">
+          <text class="section-title">{{item.name}}</text>
+          <view class="time-options">
+            <view wx:for="{{timeRanges}}" wx:key="id" class="time-option {{selectedTimeByGroup[groupIndex] === index ? 'active' : ''}}" bindtap="onChartTimeChange" data-group="{{groupIndex}}" data-time="{{index}}">
+              <text class="time-label">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+        <!-- 数据类型选择 -->
+        <view class="type-selector">
+          <view wx:for="{{item.types}}" wx:for-item="typeIndex" wx:key="*this" class="type-pill {{selectedTypeByGroup[groupIndex] === typeIndex ? 'active' : ''}}" bindtap="onGroupTypeChange" data-group="{{groupIndex}}" data-type="{{typeIndex}}">
+            <text class="type-label">{{dataTypes[typeIndex].name}}</text>
+          </view>
+        </view>
+        <!-- 图表区域 -->
+        <view class="chart-area">
+          <!-- 有数据时显示图表 -->
+          <view wx:if="{{chartDataByGroup[groupIndex] && chartDataByGroup[groupIndex].length > 0}}" class="chart-container">
+            <ec-canvas id="chart-group-{{groupIndex}}" canvasId="chart-group-{{groupIndex}}" ec="{{chartConfigByGroup[groupIndex]}}" class="chart-canvas"></ec-canvas>
+            <!-- 图表底部信息 -->
+            <!-- <view class="chart-footer">
+            <text class="record-count">{{chartDataByGroup[groupIndex].length}} 条记录</text>
+            <text class="latest-info">最新: {{latestValueByGroup[groupIndex] || '--'}}</text>
+          </view> -->
+          </view>
+          <!-- 无数据状态 - 优雅的渐变卡片设计 -->
+          <view wx:else class="empty-state-elegant">
+            <!-- 背景装饰曲线 - 3层椭圆（背景层） -->
+            <view class="empty-bg-decoration">
+              <view class="decoration-curve decoration-curve-1"></view>
+              <view class="decoration-curve decoration-curve-2"></view>
+              <view class="decoration-curve decoration-curve-3"></view>
+            </view>
+            <!-- 空状态内容（前景层） -->
+            <view class="empty-content">
+              <text class="empty-title">暂无数据</text>
+              <text class="empty-subtitle">记录数据后，这里将显示趋势图表</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <!-- 底部安全区域 -->
+      <view class="bottom-space"></view>
+    </scroll-view>
+  </view>
+  <!-- 结束 content-wrapper -->
+
+  <!-- 里程碑管理弹窗 -->
+  <t-popup visible="{{showKeyDatePopup}}" bind:visible-change="closeKeyDatePopup" placement="bottom"
+    show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">编辑</text>
+        <view class="milestone-close-btn" bindtap="closeKeyDatePopup">
+          <t-icon name="close" size="28rpx" />
+        </view>
+      </view>
+      <view class="key-date-list">
+        <view class="key-date-item" wx:for="{{keyDates}}" wx:key="id">
+          <view class="date-info" bindtap="editKeyDate" data-id="{{item.id}}">
+            <text class="date-label">{{item.title}}</text>
+            <text class="date-value">{{item.dateFormatted || item.date}}</text>
+          </view>
+          <view class="key-date-actions">
+            <view class="key-date-action-btn key-date-edit-btn" catchtap="editKeyDate" data-id="{{item.id}}">
+              <t-icon name="edit" size="26rpx" color="white" />
+            </view>
+            <view class="key-date-action-btn key-date-delete-btn" catchtap="deleteKeyDate" data-id="{{item.id}}">
+              <t-icon name="delete" size="26rpx" color="white" />
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="add-key-date" bindtap="showKeyDateEditPopup">
+        <text>添加</text>
+      </view>
+    </view>
+  </t-popup>
+
+  <!-- 添加/编辑里程碑弹窗 -->
+  <t-popup visible="{{showKeyDateEditPopup}}" bind:visible-change="closeKeyDateEditPopup" placement="bottom"
+    show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">
+          <text wx:if="{{editingKeyDate}}">编辑</text>
+          <text wx:else>添加</text>
+        </text>
+        <view class="milestone-close-btn" bindtap="closeKeyDateEditPopup">
+          <t-icon name="close" size="28rpx" />
+        </view>
+      </view>
+      <view class="milestone-edit-form">
+        <view class="milestone-form-item">
+          <text class="milestone-form-label">选择日期</text>
+          <picker mode="date" value="{{keyDateForm.date}}" bindchange="onKeyDateChange">
+            <view class="milestone-date-picker">
+              <text class="milestone-date-text">{{keyDateForm.date || '请选择日期'}}</text>
+              <t-icon name="caret-down" size="24rpx" color="#666" />
+            </view>
+          </picker>
+        </view>
+        <view class="milestone-form-item">
+          <text class="milestone-form-label">标题</text>
+          <input class="milestone-form-input" value="{{keyDateForm.title}}" bindinput="onKeyDateTitleInput"
+            placeholder="请输入标题" />
+        </view>
+      </view>
+      <view class="milestone-popup-footer">
+        <view class="milestone-cancel-btn" bindtap="backToKeyDateList">返回</view>
+        <view class="milestone-save-btn" bindtap="saveKeyDate">完成</view>
+      </view>
+    </view>
+  </t-popup>
+</view>
