@@ -585,18 +585,16 @@ Page({
     try {
       const db = wx.cloud.database();
 
-      // 查找所有包含该药品的记录
-      const allRecords = await db.collection('medications')
-        .where({
-          openid: this.data.openid,
-          profileId: this.data.currentProfileId,
-          'medicines.id': medicineId
-        })
-        .get();
+      // 查找所有包含该药品的记录（分页获取，避免默认20条限制）
+      const allRecordsData = await this.getAllMedicationRecords(db, {
+        openid: this.data.openid,
+        profileId: this.data.currentProfileId,
+        'medicines.id': medicineId
+      });
 
       const operations = [];
 
-      for (const doc of allRecords.data) {
+      for (const doc of allRecordsData) {
         const recordDate = doc.date;
 
         if (new Date(recordDate) >= new Date(stopDate)) {
@@ -675,17 +673,15 @@ Page({
   async deleteAllRecords(medicineId) {
     const db = wx.cloud.database();
 
-    const allRecords = await db.collection('medications')
-      .where({
-        openid: this.data.openid,
-        profileId: this.data.currentProfileId,
-        'medicines.id': medicineId
-      })
-      .get();
+    const allRecordsData = await this.getAllMedicationRecords(db, {
+      openid: this.data.openid,
+      profileId: this.data.currentProfileId,
+      'medicines.id': medicineId
+    });
 
     const operations = [];
 
-    for (const doc of allRecords.data) {
+    for (const doc of allRecordsData) {
       const updatedMedicines = doc.medicines.filter(m => m.id !== medicineId);
 
       if (updatedMedicines.length > 0) {
@@ -705,6 +701,20 @@ Page({
     }
 
     await Promise.all(operations);
+  },
+
+  // 分页查询所有匹配记录（绕过微信云数据库默认20条限制）
+  async getAllMedicationRecords(db, query) {
+    const pageSize = 100;
+    let allData = [];
+    let skip = 0;
+    while (true) {
+      const res = await db.collection('medications').where(query).limit(pageSize).skip(skip).get();
+      allData = allData.concat(res.data);
+      if (res.data.length < pageSize) break;
+      skip += pageSize;
+    }
+    return allData;
   },
 
   // 通知日历刷新
@@ -1195,13 +1205,14 @@ icon: 'error'
     }
 
     if (days === 'pending') {
-      // 待定：设置为99年后（表示长期服用）
+      // 待定：设置为99年后（表示长期服用），但实际只创建2年内记录
       const endDate = new Date(startDate);
       endDate.setFullYear(endDate.getFullYear() + 99);
       const endDateStr = this.formatDate(endDate);
 
       this.setData({
         'medicineForm.endDate': endDateStr,
+        'medicineForm.isPending': true,
         endDateTimestamp: endDate.getTime()
       });
 
@@ -1295,10 +1306,17 @@ icon: 'error'
 
     // 🔧 计算日期跨度，防止操作过多
     const startDate = new Date(medicineForm.startDate);
-    const endDate = new Date(medicineForm.endDate);
+    // 待定模式：实际只创建从开始日期到2年后的记录
+    let effectiveEndDate = new Date(medicineForm.endDate);
+    if (medicineForm.isPending) {
+      const twoYearsLater = new Date(startDate);
+      twoYearsLater.setFullYear(twoYearsLater.getFullYear() + 2);
+      effectiveEndDate = twoYearsLater;
+    }
+    const endDate = effectiveEndDate;
     const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
-    // 如果跨度超过2年（730天），给出警告
+    // 如果跨度超过2年（730天），给出警告（待定模式已限制，不会触发）
     if (daysDiff > 730) {
       const confirmResult = await new Promise((resolve) => {
         wx.showModal({
@@ -1334,6 +1352,8 @@ icon: 'error'
         timesPerDayText: medicineForm.timesPerDayText,
         startDate: medicineForm.startDate,
         endDate: medicineForm.endDate,
+        effectiveEndDate: this.formatDate(effectiveEndDate),
+        isPending: medicineForm.isPending || false,
         notes: medicineForm.notes.trim(),
         taken: false, // 新添加的药品默认未服用
         timeSlotStatus: {} // 分时段服药状态
@@ -1431,7 +1451,8 @@ icon: 'error'
   // 🔧 新增：分批创建药品记录
   async batchCreateMedicineRecords(db, medicineData, openid, currentProfileId) {
     const startDate = new Date(medicineData.startDate);
-    const endDate = new Date(medicineData.endDate);
+    // 待定模式用 effectiveEndDate（2年内），否则用原始 endDate
+    const endDate = new Date(medicineData.effectiveEndDate || medicineData.endDate);
     const today = this.formatDate(new Date());
 
     // 🔧 根据频率筛选需要创建记录的日期

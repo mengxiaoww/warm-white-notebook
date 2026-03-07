@@ -172,6 +172,14 @@
                   <view class="bs-unit">10⁹/L</view>
                 </view>
               </view>
+              <view class="blood-simple-item"
+                wx:if="{{selectedDateData.bloodData.crp || selectedDateData.bloodData.crp === 0}}">
+                <view class="bs-label">C反应蛋白</view>
+                <view class="bs-value-group">
+                  <view class="bs-value">{{numFmt.formatValue(selectedDateData.bloodData.crp)}}</view>
+                  <view class="bs-unit">mg/L</view>
+                </view>
+              </view>
             </block>
             <!-- 血糖数据展示 - 统一单值显示样式 -->
             <block wx:elif="{{item.id === 'bloodSugar' && selectedDateData.bloodSugarData}}">

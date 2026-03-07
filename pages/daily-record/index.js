@@ -1763,7 +1763,7 @@ Page({
 
           // 2. 从直接字段加载基础指标（不覆盖customValues）
 
-          const basicIndicators = ['wbc', 'neut', 'hgb', 'plt', 'rbc', 'hct', 'lymph', 'mono']
+          const basicIndicators = ['wbc', 'neut', 'hgb', 'plt', 'rbc', 'hct', 'lymph', 'mono', 'crp']
 
           basicIndicators.forEach(key => {
 
@@ -2942,6 +2942,8 @@ Page({
         lymph: item.lymph,
 
         mono: item.mono,
+
+        crp: item.crp,
 
       }
 

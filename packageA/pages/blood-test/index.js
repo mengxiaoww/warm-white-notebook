@@ -3369,6 +3369,11 @@ ${indicatorDesc}
       sourceType: [sourceType],
       success: async (res) => {
         const imagePath = res.tempFilePaths[0];
+        // 立即快照当前指标配置，防止 onShow 重新加载时覆盖
+        const snapshotIndicators = {
+          displayedBasicIndicators: this.data.displayedBasicIndicators,
+          customIndicators: this.data.customIndicators
+        };
         this.setData({ currentImagePath: imagePath });
 
         wx.showLoading({
@@ -3381,7 +3386,7 @@ ${indicatorDesc}
 
           // 直接使用AI识别图片
           console.log('🎯 开始AI图片识别...');
-          parsedData = await this.recognizeImageWithAI(imagePath);
+          parsedData = await this.recognizeImageWithAI(imagePath, snapshotIndicators);
           console.log('✅ AI识别成功');
 
           wx.hideLoading();
@@ -3415,31 +3420,23 @@ ${indicatorDesc}
   },
 
   // 使用AI直接识别图片中的血常规数据
-  async recognizeImageWithAI(imagePath) {
+  async recognizeImageWithAI(imagePath, snapshotIndicators) {
     try {
       // 先上传图片到云存储获取HTTPS URL
       const imageUrl = await this.uploadImageToCloud(imagePath);
 
-      // 获取当前页面配置的所有指标（基础+自定义）
-      const { displayedBasicIndicators, customIndicators } = this.data;
+      // 使用快照指标（防止 onShow 异步覆盖），fallback 到 this.data
+      const { displayedBasicIndicators, customIndicators } = snapshotIndicators || this.data;
 
       // 构建指标列表描述
       const allIndicators = [
-        ...displayedBasicIndicators.map(item => ({
-          id: item.id,
-          name: item.name,
-          unit: item.unit
-        })),
-        ...(customIndicators || []).map(item => ({
-          id: item.id,
-          name: item.name,
-          unit: item.unit
-        }))
+        ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
+        ...(customIndicators || []).map(item => ({ id: item.id, name: item.name, unit: item.unit }))
       ];
 
-      // 构建指标描述文本
-      const indicatorDesc = allIndicators.map(item =>
-        `   - ${item.name}（id: ${item.id}，单位：${item.unit}）`
+      // 动态生成指标描述，包含所有用户配置的指标
+      const indicatorDesc = allIndicators.map((item, i) =>
+        `${i + 1}. ${item.name}（id: ${item.id}，单位：${item.unit}）`
       ).join('\n');
 
       console.log('📋 当前页面配置的指标:', allIndicators);
@@ -3454,18 +3451,11 @@ ${indicatorDesc}
               role: 'system',
               content: `你是专业的医疗报告识别助手。请识别血常规报告图片中的以下指标：
 
-**要识别的指标（请严格按照这些定义）**：
-1. WBC (白细胞计数) - 中文可能显示为：白细胞、WBC、白细胞计数
-2. PLT (血小板计数) - 中文可能显示为：血小板、PLT、Plt、血小板计数
-3. HGB (血红蛋白) - 中文可能显示为：血红蛋白、HGB、Hb、HB
-4. NEUT# (中性粒细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)** - 中文可能显示为：中性粒细胞数、NEUT#、Neu#、中性粒细胞绝对值
-5. RBC (红细胞计数) - 中文可能显示为：红细胞、RBC、红细胞计数
-6. LYMPH# (淋巴细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)** - 中文可能显示为：淋巴细胞数、LYMPH#、Lym#、淋巴细胞绝对值
-7. MONO# (单核细胞绝对值) - **重要：必须是绝对值(#)，不是百分比(%)** - 中文可能显示为：单核细胞数、MONO#、Mon#、单核细胞绝对值
-8. CRP (C反应蛋白) - 中文可能显示为：C反应蛋白、CRP
+**要识别的指标**：
+${indicatorDesc}
 
 **识别规则**：
-- 对于细胞计数类指标（NEUT、LYMPH、MONO），必须提取绝对值（单位：×10⁹/L），不要提取百分比（单位：%）
+- 对于细胞计数类指标（中性粒细胞、淋巴细胞、单核细胞等），必须提取绝对值（单位：×10⁹/L），不要提取百分比（单位：%）
 - 如果报告中同时显示了绝对值和百分比，优先选择绝对值
 - value必须是纯数字，不包含单位
 - 如果某个指标在图片中未找到，则不要包含在结果中

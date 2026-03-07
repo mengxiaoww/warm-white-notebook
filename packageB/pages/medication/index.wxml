@@ -150,14 +150,14 @@
           </view>
 
           <!-- 服药频率选择 -->
-          <t-cell title="服药频率" clickable bindtap="showFrequencySelector">
+          <t-cell title="用药频率" clickable bindtap="showFrequencySelector">
             <text slot="note">{{medicineForm.frequencyText || '每天'}}</text>
           </t-cell>
 
           <!-- 服药时间选择 -->
           <t-cell clickable bindtap="showTimeSelector">
             <view slot="title" class="cell-title-with-tip">
-              <text>服药时间</text>
+              <text>用药时间</text>
               <text class="tip-badge">可多选</text>
             </view>
             <view slot="note" class="time-display">
@@ -165,7 +165,7 @@
                 <text class="selected-times">{{medicineForm.timesPerDayText}}</text>
               </block>
               <block wx:else>
-                <text class="placeholder">请选择服药时间</text>
+                <text class="placeholder">请选择用药时间</text>
               </block>
             </view>
           </t-cell>
@@ -207,7 +207,7 @@
   <t-popup visible="{{showFrequencySelector}}" placement="bottom" bind:visible-change="onFrequencySelectorVisibleChange">
     <view class="frequency-selector">
       <view class="selector-header">
-        <text class="selector-title">选择服药频率</text>
+        <text class="selector-title">选择用药频率</text>
         <view class="confirm-time-btn" bindtap="confirmFrequencySelection">确定</view>
       </view>
       <view class="frequency-options">
@@ -250,7 +250,7 @@
   <t-popup visible="{{showTimeSelector}}" placement="bottom" bind:visible-change="onTimeSelectorVisibleChange">
     <view class="time-selector">
       <view class="selector-header">
-        <text class="selector-title">选择服药时间</text>
+        <text class="selector-title">选择用药时间</text>
         <view class="confirm-time-btn" bindtap="confirmTimeSelection">确定</view>
       </view>
       <view class="time-options">

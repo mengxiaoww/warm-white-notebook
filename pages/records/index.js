@@ -531,6 +531,8 @@ Page({
       this.loadMedicationData();
     } else if (activeTab === 'checkReport') {
       this.loadCheckReportArchiveData();
+    } else if (activeTab === 'expense') {
+      this.loadExpenseData();
     }
   },
 
@@ -1490,21 +1492,23 @@ Page({
       // 🔥 修复：正确处理0值，不能用 || 运算符
       const getValueWithFallback = (...values) => {
         for (let val of values) {
-          if (val !== undefined && val !== null) return val;
+          if (val !== undefined && val !== null && val !== '-' && val !== '') return val;
         }
         return '-';
       };
 
       const processedData = {
-        ...record, // 保留原始记录的所有字段，包括customValues
-        type: 'blood-test', // 添加类型标识
+        ...record,
+        type: 'blood-test',
         wbc: getValueWithFallback(record.wbc, record.customValues?.wbc),
-        // rbc: getValueWithFallback(record.rbc, record.customValues?.rbc), // 不再显示红细胞
+        hgb: getValueWithFallback(record.hemoglobin, record.hgb, record.customValues?.hemoglobin, record.customValues?.hgb),
+        plt: getValueWithFallback(record.platelets, record.plt, record.customValues?.platelets, record.customValues?.plt),
+        neut: getValueWithFallback(record.neutrophil, record.neut, record.customValues?.neutrophil, record.customValues?.neut),
+        crp: getValueWithFallback(record.crp, record.customValues?.crp),
         hemoglobin: getValueWithFallback(record.hemoglobin, record.hgb, record.customValues?.hemoglobin, record.customValues?.hgb),
         platelets: getValueWithFallback(record.platelets, record.plt, record.customValues?.platelets, record.customValues?.plt),
         neutrophil: getValueWithFallback(record.neutrophil, record.neut, record.customValues?.neutrophil, record.customValues?.neut),
         hasAbnormal,
-        // 确保customValues被保留
         customValues: record.customValues || {}
       };
 
@@ -2040,14 +2044,20 @@ Page({
     switch (dataTypeId) {
       case 'blood':
         // 血常规：显示常用指标
-        if (data.wbc !== undefined && data.wbc !== null && data.wbc !== '-') {
+        if (data.wbc !== undefined && data.wbc !== null && data.wbc !== '-' && data.wbc !== '') {
           items.push({ label: '白细胞', value: data.wbc });
+        }
+        if (data.neut !== undefined && data.neut !== null && data.neut !== '-' && data.neut !== '') {
+          items.push({ label: '中性粒', value: data.neut });
         }
         if (data.hgb !== undefined && data.hgb !== null && data.hgb !== '-' && data.hgb !== '') {
           items.push({ label: '血红蛋白', value: data.hgb });
         }
-        if (data.plt !== undefined && data.plt !== null && data.plt !== '-') {
+        if (data.plt !== undefined && data.plt !== null && data.plt !== '-' && data.plt !== '') {
           items.push({ label: '血小板', value: data.plt });
+        }
+        if (data.crp !== undefined && data.crp !== null && data.crp !== '-' && data.crp !== '') {
+          items.push({ label: 'CRP', value: data.crp });
         }
         // 显示自定义指标
         if (data.customValues) {

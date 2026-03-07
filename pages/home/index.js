@@ -465,7 +465,7 @@ Page({
   },
 
   // 智能格式化数字：整数不显示小数点
-  formatNumber(value, decimals = 1) {
+  formatNumber(value, decimals = 2) {
     if (value == null || isNaN(value)) return '';
 
     const num = Number(value);
@@ -585,20 +585,17 @@ Page({
       chart.clear && chart.clear();
       chart.setOption(option, true);
 
-      // 🍎 iOS兼容性：强制刷新渲染
-      // iOS WebView 有时会缓存Canvas状态，需要通过resize触发重绘
+      // 强制刷新渲染，确保canvas尺寸正确
       setTimeout(() => {
         try {
           chart.resize && chart.resize();
-
-          // 第二次resize确保iOS正确渲染（仅在iOS上需要）
           setTimeout(() => {
             chart.resize && chart.resize();
-          }, 50);
+          }, 100);
         } catch (e) {
           console.warn(`图表${groupIndex}resize失败:`, e);
         }
-      }, 100);
+      }, 200);
 
     } catch (error) {
       console.error(`❌ 渲染图表${groupIndex}失败:`, error);
@@ -748,14 +745,17 @@ Page({
           shadowOffsetY: 3
         },
         label: {
-          show: data.length <= 15, // 数据点多时隐藏标签，保持清爽
+          show: true,
           position: 'top',
           distance: 8,
           fontSize: 11,
           color: dataType.color,
           fontWeight: '600',
           formatter: function (params) {
-            return params.value.toFixed(1);
+            // 数据多时隔一个显示一个
+            if (data.length > 15 && params.dataIndex % 2 !== 0) return '';
+            var v = params.value;
+            return v === null || v === undefined ? '' : v + '';
           },
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
           borderRadius: 4,

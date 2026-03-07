@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -l \"db.collection.*medication\")",
+      "Bash(xargs grep -l \"formatDate\\\\|getTodayLocalDate\")",
+      "Bash(xargs grep -l \"expenseRecords\\\\|费用统计\")"
+    ]
+  }
+}

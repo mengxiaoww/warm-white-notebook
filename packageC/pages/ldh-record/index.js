@@ -1811,154 +1811,129 @@ Page({
   },
 
   // 使用AI识别图片
-  async recognizeImageWithAI(tempFilePath) {
-    wx.showLoading({
-      title: 'AI识别中...',
-      mask: true
-    });
-
-    try {
-      // 读取图片文件为base64
-      const fileSystemManager = wx.getFileSystemManager();
-      const base64 = await new Promise((resolve, reject) => {
-        fileSystemManager.readFile({
-          filePath: tempFilePath,
-          encoding: 'base64',
-          success: (res) => resolve(res.data),
-          fail: reject
-        });
-      });
-
-      // 调用云函数进行OCR识别
-      const ocrRes = await wx.cloud.callFunction({
-        name: 'ocrFunction',
-        data: {
-          imgBase64: base64,
-          imgType: 'png'
-        }
-      });
-
-      console.log('OCR识别结果:', ocrRes);
-
-      if (ocrRes.result && ocrRes.result.items && ocrRes.result.items.length > 0) {
-        // 提取OCR文本
-        const ocrText = ocrRes.result.items.map(item => item.text).join('\n');
-        console.log('OCR文本:', ocrText);
-
-        // 使用AI解析OCR文本
-        const aiRes = await wx.cloud.callFunction({
-          name: 'callSiliconFlowAI',
-          data: {
-            messages: [
-              {
-                role: 'user',
-                content: `请从以下检验报告文本中提取LDH(乳酸脱氢酶)相关的数据：\n\n${ocrText}\n\n请返回JSON格式：{ "indicators": [{ "id": "ldh", "label": "乳酸脱氢酶", "value": "数值", "unit": "U/L", "confidence": 90 }] }`
-              }
-            ],
-            mode: 'unified'
-          }
-        });
-
-        console.log('AI解析结果:', aiRes);
-
-        if (aiRes.result && aiRes.result.success && aiRes.result.content) {
-          const content = aiRes.result.content;
-
-          // 尝试提取JSON
-          const jsonMatch = content.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const data = JSON.parse(jsonMatch[0]);
-
-            if (data.indicators && data.indicators.length > 0) {
-              // 匹配当前配置的指标
-              const { displayedBasicIndicators, customIndicators } = this.data;
-              const allConfiguredIndicators = []
-                .concat(displayedBasicIndicators)
-                .concat(customIndicators);
-
-              console.log('🔍 开始匹配AI识别的指标...');
-              console.log('AI识别到的指标:', data.indicators);
-              console.log('当前配置的指标:', allConfiguredIndicators);
-
-              // 只保留能匹配到当前配置项的指标,并补充正确的中文label
-              const matchedIndicators = data.indicators.map(aiItem => {
-                // 尝试匹配配置的指标
-                const matchedIndicator = allConfiguredIndicators.find(indicator =>
-                  aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
-                );
-
-                if (matchedIndicator) {
-                  console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
-                  // 返回数据时,使用配置的中文名称作为label
-                  return {
-                    ...aiItem,
-                    id: matchedIndicator.id,
-                    label: matchedIndicator.name,  // 使用配置的中文名称
-                    unit: aiItem.unit || matchedIndicator.unit,  // 优先使用AI识别的单位,否则使用配置的单位
-                    confidence: aiItem.confidence || 85,
-                    confidenceColor: this.getConfidenceColor(aiItem.confidence || 85)
-                  };
-                } else {
-                  console.log(`❌ 未匹配: ${aiItem.label}`);
-                  return null;
-                }
-              }).filter(item => item !== null);  // 过滤掉未匹配的项
-
-              console.log('🎯 最终匹配结果:', matchedIndicators);
-
-              if (matchedIndicators.length > 0) {
-                this.setData({
-                  aiRecognizedData: matchedIndicators
-                });
-
-                wx.hideLoading();
-
-                // 显示识别结果
-                this.setData({
-                  aiResultVisible: true
-                });
-              } else {
-                wx.hideLoading();
-                wx.showToast({
-      title: '未识别到有效数据',
-      icon: 'none'
-    });
-              }
+  // 上传图片到云存储并获取HTTPS URL
+  uploadImageToCloud(imagePath) {
+    return new Promise((resolve, reject) => {
+      const cloudPath = `ldh-images/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+      wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: imagePath,
+        success: async (uploadRes) => {
+          try {
+            const tempUrlRes = await wx.cloud.getTempFileURL({
+              fileList: [uploadRes.fileID]
+            });
+            if (tempUrlRes.fileList && tempUrlRes.fileList.length > 0) {
+              resolve(tempUrlRes.fileList[0].tempFileURL);
             } else {
-              wx.hideLoading();
-              wx.showToast({
-      title: '未识别到有效数据',
-      icon: 'none'
-    });
+              reject(new Error('获取临时URL失败'));
             }
-          } else {
-            wx.hideLoading();
-            wx.showToast({
-      title: 'AI解析格式错误',
-      icon: 'none'
-    });
+          } catch (error) {
+            reject(error);
           }
-        } else {
-          wx.hideLoading();
-          wx.showToast({
-      title: 'AI解析失败',
-      icon: 'none'
+        },
+        fail: (error) => reject(error)
+      });
     });
-        }
-      } else {
-        wx.hideLoading();
-        wx.showToast({
-      title: 'OCR识别失败',
-      icon: 'none'
-    });
+  },
+
+  async recognizeImageWithAI(imagePath) {
+    try {
+      const imageUrl = await this.uploadImageToCloud(imagePath);
+      const { displayedBasicIndicators, customIndicators } = this.data;
+      const allIndicators = [
+        ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
+        ...(customIndicators || []).map(item => ({ id: item.id, name: item.name, unit: item.unit }))
+      ];
+      const indicatorDesc = allIndicators.map(item =>
+        `   - ${item.name}（id: ${item.id}，单位：${item.unit}）`
+      ).join('\n');
+
+      console.log('📋 当前页面配置的指标:', allIndicators);
+      console.log('📸 图片URL:', imageUrl);
+
+      const res = await wx.cloud.callFunction({
+        name: 'callSiliconFlowAI',
+        data: {
+          messages: [
+            {
+              role: 'system',
+              content: `你是专业的医疗报告识别助手。请识别检验报告图片中的以下指标：\n\n**要识别的指标**：\n${indicatorDesc}\n\n**识别规则**：\n- value必须是纯数字，不包含单位\n- 如果某个指标在图片中未找到，则不要包含在结果中\n\n**输出格式**：\n{"indicators": [{"id": "ldh", "label": "乳酸脱氢酶", "value": "180", "unit": "U/L"}]}\n\n只返回JSON，不要有其他说明文字。`
+            },
+            {
+              role: 'user',
+              content: [
+                { type: 'image_url', image_url: { url: imageUrl, detail: 'high' } },
+                { type: 'text', text: '提取检验指标数据' }
+              ]
+            }
+          ],
+          mode: 'unified',
+          stream: false
+        },
+        config: { timeout: 30000 }
+      });
+
+      console.log('🤖 AI识别响应:', res.result);
+
+      if (!res.result || (!res.result.reply && !res.result.content)) {
+        throw new Error('AI响应格式错误');
       }
-    } catch (err) {
-      console.error('图片识别错误:', err);
-      wx.hideLoading();
-      wx.showToast({
-      title: '识别失败，请重试',
-      icon: 'none'
-    });
+
+      let aiResponse = res.result.reply || res.result.content;
+      console.log('📝 原始AI响应:', aiResponse);
+
+      let jsonStr = null;
+      const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1];
+      } else {
+        const jsonStart = aiResponse.indexOf('{');
+        const jsonEnd = aiResponse.lastIndexOf('}');
+        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+          jsonStr = aiResponse.substring(jsonStart, jsonEnd + 1);
+        }
+      }
+
+      if (!jsonStr) throw new Error('AI返回数据格式错误');
+
+      jsonStr = jsonStr.trim();
+      if (jsonStr.charCodeAt(0) === 0xFEFF) jsonStr = jsonStr.substring(1);
+
+      const parsed = JSON.parse(jsonStr);
+      console.log('📦 解析后的数据:', parsed);
+
+      if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
+        throw new Error('AI返回数据格式不支持');
+      }
+
+      const allConfiguredIndicators = [...displayedBasicIndicators, ...(customIndicators || [])];
+      const matchedIndicators = parsed.indicators.map(aiItem => {
+        const matchedIndicator = allConfiguredIndicators.find(indicator =>
+          aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
+        );
+        if (matchedIndicator) {
+          return {
+            ...aiItem,
+            id: matchedIndicator.id,
+            label: matchedIndicator.name,
+            unit: aiItem.unit || matchedIndicator.unit,
+            confidence: aiItem.confidence || 85,
+            confidenceColor: this.getConfidenceColor(aiItem.confidence || 85)
+          };
+        }
+        return null;
+      }).filter(item => item !== null);
+
+      console.log('🎯 最终匹配结果:', matchedIndicators);
+
+      if (matchedIndicators.length === 0) throw new Error('未识别到当前配置项的数据');
+
+      return matchedIndicators;
+
+    } catch (error) {
+      console.error('AI识别失败:', error);
+      throw error;
     }
   },
 
