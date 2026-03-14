@@ -600,6 +600,24 @@
   text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
 }
 
+.privacy-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20rpx;
+}
+
+.privacy-hint-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.privacy-hint-link {
+  font-size: 24rpx;
+  color: #fff;
+  text-decoration: underline;
+}
+
 .login-features {
   display: flex;
   justify-content: space-between;

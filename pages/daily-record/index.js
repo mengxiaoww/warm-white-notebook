@@ -1495,6 +1495,22 @@ Page({
 
           .get(),
 
+        // 查询治疗记录
+
+        db.collection('treatmentRecords')
+
+          .where({
+
+            openid: openid,
+
+            profileId: currentProfileId,
+
+            date: db.command.gte(startDate).and(db.command.lte(endDate))
+
+          })
+
+          .get(),
+
         // 查询尿量记录
 
         db.collection('urineRecords')
@@ -1737,7 +1753,7 @@ Page({
 
       ]).then(results => {
 
-        const [bloodTestRes, medicationRes, clinicRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, bloodOxygenRes, checkReportRes, waterRes, dietRes, temperatureRes, bodyMeasurementRes] = results;
+        const [bloodTestRes, medicationRes, clinicRes, treatmentRes, urineRes, stoolRes, expenseRes, ebvRes, cmvRes, ldhRes, liverRes, kidneyRes, bloodSugarRes, bloodOxygenRes, checkReportRes, waterRes, dietRes, temperatureRes, bodyMeasurementRes] = results;
 
         // 创建血常规数据映射 - 只显示当前配置中的指标
 
@@ -1962,6 +1978,38 @@ Page({
             followUpDate: item.followUpDate,
 
             notes: item.notes
+
+          });
+
+        });
+
+        // 创建治疗记录映射
+
+        const treatmentMap = {}
+
+        treatmentRes.data.forEach(item => {
+
+          if (!treatmentMap[item.date]) {
+
+            treatmentMap[item.date] = [];
+
+          }
+
+          treatmentMap[item.date].push({
+
+            id: item._id,
+
+            recordType: item.recordType,
+
+            treatmentPlan: item.treatmentPlan,
+
+            medicationName: item.medicationName,
+
+            dischargeDiagnosis: item.dischargeDiagnosis,
+
+            isHospitalized: item.isHospitalized,
+
+            isInWard: item.isInWard
 
           });
 
@@ -2583,7 +2631,7 @@ Page({
 
         // 更新日历（包含所有记录数据）
 
-        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap, bloodOxygenMap, waterMap, dietMap, temperatureMap, bodyMeasurementMap)
+        this.updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap, treatmentMap, urineMap, stoolMap, ebvMap, cmvMap, liverMap, kidneyMap, ldhMap, bloodSugarMap, bloodOxygenMap, waterMap, dietMap, temperatureMap, bodyMeasurementMap)
 
       })
 
@@ -2721,7 +2769,7 @@ Page({
 
   // 更新日历（包含所有数据）
 
-  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}, bloodSugarMap = {}, bloodOxygenMap = {}, waterMap = {}, dietMap = {}, temperatureMap = {}, bodyMeasurementMap = {}) {
+  updateCalendarWithAllData(bloodTestMap, medicationMap, clinicMap = {}, treatmentMap = {}, urineMap = {}, stoolMap = {}, ebvMap = {}, cmvMap = {}, liverMap = {}, kidneyMap = {}, ldhMap = {}, bloodSugarMap = {}, bloodOxygenMap = {}, waterMap = {}, dietMap = {}, temperatureMap = {}, bodyMeasurementMap = {}) {
 
     const days = this.data.days.map(day => {
 
@@ -2746,6 +2794,10 @@ Page({
       // 获取门诊数据
 
       const clinicData = clinicMap[day.date] || null;
+
+      // 获取治疗记录数据
+
+      const treatmentData = treatmentMap[day.date] || null;
 
       // 获取检查报告数据
 
@@ -2828,6 +2880,8 @@ Page({
         medicationData: medicationData,
 
         clinicData: clinicData,
+
+        treatmentData: treatmentData,
 
         checkReportData: checkReportData,
 
@@ -8746,6 +8800,8 @@ Page({
 
         clinicData,
 
+        treatmentData,
+
         urineData,
 
         stoolData,
@@ -10225,6 +10281,8 @@ Page({
       medicationData: selectedDateData.medicationData,
 
       clinicData: selectedDateData.clinicData,
+
+      treatmentData: selectedDateData.treatmentData,
 
       urineData: selectedDateData.urineData,
 

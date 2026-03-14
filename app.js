@@ -1,6 +1,36 @@
 // app.js
 App({
   onLaunch: function () {
+    // 处理隐私授权
+    if (wx.onNeedPrivacyAuthorization) {
+      wx.onNeedPrivacyAuthorization(resolve => {
+        wx.showModal({
+          title: '隐私保护提示',
+          content: '在使用暖白记事本前，请您阅读《隐私政策》和《用户协议》，了解我们如何收集和使用您的个人信息。',
+          confirmText: '同意',
+          cancelText: '查看详情',
+          success: (res) => {
+            if (res.confirm) {
+              resolve({ buttonId: 'agree', event: 'agree' })
+            } else {
+              // 跳转到隐私政策页面
+              wx.navigateTo({
+                url: '/packageB/pages/privacy-policy/index',
+                fail: () => {
+                  // 如果跳转失败，仍然同意
+                  resolve({ buttonId: 'agree', event: 'agree' })
+                }
+              })
+              // 延迟同意，给用户时间查看
+              setTimeout(() => {
+                resolve({ buttonId: 'agree', event: 'agree' })
+              }, 500)
+            }
+          }
+        })
+      })
+    }
+
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {

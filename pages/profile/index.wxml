@@ -63,6 +63,12 @@
               <t-icon name="wechat" size="32rpx" color="white" />
               <text class="login-btn-text">{{loginBtnText}}</text>
             </view>
+            <view class="privacy-hint">
+              <text class="privacy-hint-text">登录即表示同意</text>
+              <text class="privacy-hint-link" catchtap="showUserAgreement">《用户协议》</text>
+              <text class="privacy-hint-text">和</text>
+              <text class="privacy-hint-link" catchtap="showPrivacyPolicy">《隐私政策》</text>
+            </view>
           </view>
         </view>
       </view>
@@ -137,6 +143,30 @@
             <t-icon name="chevron-right" size="28rpx" color="#999" />
           </view>
         </button>
+        <view class="function-item" bindtap="showUserAgreement">
+          <view class="function-icon">
+            <t-icon name="file-paste" size="40rpx" color="#FF8F00" />
+          </view>
+          <view class="function-info">
+            <text class="function-title">用户协议</text>
+            <text class="function-desc">了解您的权利与义务</text>
+          </view>
+          <view class="function-arrow">
+            <t-icon name="chevron-right" size="28rpx" color="#999" />
+          </view>
+        </view>
+        <view class="function-item" bindtap="showPrivacyPolicy">
+          <view class="function-icon">
+            <t-icon name="secured" size="40rpx" color="#FF8F00" />
+          </view>
+          <view class="function-info">
+            <text class="function-title">隐私政策</text>
+            <text class="function-desc">了解我们如何保护您的信息</text>
+          </view>
+          <view class="function-arrow">
+            <t-icon name="chevron-right" size="28rpx" color="#999" />
+          </view>
+        </view>
         <view class="function-item" bindtap="logout">
           <view class="function-icon">
             <t-icon name="logout" size="40rpx" color="#FF8F00" />

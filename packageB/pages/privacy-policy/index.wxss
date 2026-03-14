@@ -1,0 +1,33 @@
+.container {
+  padding: 32rpx;
+  background: #fff;
+  min-height: 100vh;
+}
+.update-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 32rpx;
+}
+.section {
+  margin-bottom: 40rpx;
+}
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+  display: block;
+}
+.section-content {
+  font-size: 28rpx;
+  color: #555;
+  line-height: 1.8;
+  display: block;
+}
+.bold {
+  font-weight: bold;
+  color: #333;
+}
+.indent {
+  padding-left: 32rpx;
+}

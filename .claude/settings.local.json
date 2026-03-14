@@ -7,7 +7,8 @@
       "Bash(xargs grep -l \"chart\\\\|Chart\")",
       "Bash(xargs grep -l \"白细胞.*血小板.*血红蛋白.*中性粒细胞\")",
       "Bash(xargs grep -l \"ec-canvas\\\\|echarts\")",
-      "Bash(xargs grep -l \"medications\\\\|collection.*medication\")"
+      "Bash(xargs grep -l \"medications\\\\|collection.*medication\")",
+      "Bash(grep -rn \"//.*住院\\\\|//.*治疗\\\\|/\\\\*.*住院\\\\|/\\\\*.*治疗\" --include=\"*.js\")"
     ]
   }
 }

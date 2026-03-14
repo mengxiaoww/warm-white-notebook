@@ -7,6 +7,7 @@ const ROUTE_MAP = {
   // 用药与记录（packageB）
   medication: '/packageB/pages/medication/index',
   clinic: '/packageB/pages/clinic-record/index',
+  treatment: '/packageB/pages/treatment-record/index',
   checkReport: '/packageB/pages/check-report/index',
   urine: '/packageB/pages/urine-record/index',
   stool: '/packageB/pages/stool-record/index',

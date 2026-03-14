@@ -458,6 +458,13 @@
                 <view class="clinic-right-text clinic-date-color">{{selectedDateShort}}</view>
               </view>
             </block>
+            <!-- 治疗记录数据展示 -->
+            <block wx:elif="{{item.id === 'treatment' && selectedDateData.treatmentData && selectedDateData.treatmentData.length > 0}}">
+              <view class="clinic-symmetric-row">
+                <view class="clinic-left-text">{{selectedDateData.treatmentData[0].recordType === 'medication' ? (selectedDateData.treatmentData[0].treatmentPlan || selectedDateData.treatmentData[0].medicationName) : selectedDateData.treatmentData[0].dischargeDiagnosis}}</view>
+                <view class="clinic-right-text clinic-date-color">共{{selectedDateData.treatmentData.length}}条</view>
+              </view>
+            </block>
             <!-- 尿量记录数据展示 - 左右对称布局 -->
             <block wx:elif="{{item.id === 'urine' && selectedDateData.urineData}}">
               <!-- 总尿量 - 最重要指标 -->
@@ -1246,9 +1253,38 @@
               </view>
             </view>
           </block>
+          <!-- 治疗记录 -->
+          <block wx:if="{{currentDateDetail.treatmentData && currentDateDetail.treatmentData.length > 0}}">
+            <view class="date-detail-section unified-section">
+              <view class="date-detail-section-title unified-title">
+                <view class="section-icon unified-icon">
+                  <medical-icon name="treatment" size="24" color="white" />
+                </view>
+                治疗记录
+              </view>
+              <view class="clinic-detail">
+                <view class="clinic-item-detail" wx:for="{{currentDateDetail.treatmentData}}" wx:key="id">
+                  <view class="clinic-header-detail">
+                    <view class="clinic-hospital-detail">
+                      <text class="hospital-name">{{item.recordType === 'medication' ? (item.treatmentPlan ? item.treatmentPlan : item.medicationName) : item.dischargeDiagnosis}}</text>
+                    </view>
+                    <view class="type-badge type-{{item.recordType}}">{{item.recordType === 'medication' ? '用药' : '出院小结'}}</view>
+                  </view>
+                  <view class="clinic-info-detail" wx:if="{{item.recordType === 'medication' && item.medicationName && item.treatmentPlan}}">
+                    <text class="clinic-info-label">用药名称</text>
+                    <text class="clinic-info-value">{{item.medicationName}}</text>
+                  </view>
+                  <view class="flag-row" wx:if="{{item.isHospitalized || item.isInWard}}">
+                    <view class="flag-tag flag-hospital" wx:if="{{item.isHospitalized}}">入院</view>
+                    <view class="flag-tag flag-ward" wx:if="{{item.isInWard}}">入仓</view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
           <!-- 空状态 -->
           <block
-            wx:if="{{(!currentDateDetail.bloodData || currentDateDetail.bloodData.length === 0) && (!currentDateDetail.keyDates || currentDateDetail.keyDates.length === 0) && currentDateDetail.tasks.length === 0 && !currentDateDetail.medicationData && (!currentDateDetail.clinicData || currentDateDetail.clinicData.length === 0) && !currentDateDetail.urineData && !currentDateDetail.stoolData && !currentDateDetail.virusData && !currentDateDetail.organData}}">
+            wx:if="{{(!currentDateDetail.bloodData || currentDateDetail.bloodData.length === 0) && (!currentDateDetail.keyDates || currentDateDetail.keyDates.length === 0) && currentDateDetail.tasks.length === 0 && !currentDateDetail.medicationData && (!currentDateDetail.clinicData || currentDateDetail.clinicData.length === 0) && (!currentDateDetail.treatmentData || currentDateDetail.treatmentData.length === 0) && !currentDateDetail.urineData && !currentDateDetail.stoolData && !currentDateDetail.virusData && !currentDateDetail.organData}}">
             <view class="date-detail-empty">
               <t-icon name="calendar" size="80rpx" color="#ddd" />
               <text>这一天暂无记录</text>

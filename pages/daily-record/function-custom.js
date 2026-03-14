@@ -10,7 +10,8 @@ const functionCustomModule = {
     return [
       { id: 'medication', name: '用药记录', icon: 'candy', visible: true, order: 1 },
       { id: 'blood', name: '血常规', icon: 'blood-drop', visible: true, order: 2 },
-      { id: 'clinic', name: '门诊记录', icon: 'hospital', visible: true, order: 3 },
+      { id: 'treatment', name: '治疗记录', icon: 'treatment', visible: true, order: 3 },
+      { id: 'clinic', name: '门诊记录', icon: 'hospital', visible: true, order: 4 },
       { id: 'checkReport', name: '检查报告', icon: 'assignment', visible: true, order: 4 },
       { id: 'liver', name: '肝功能', icon: 'liver', visible: true, order: 5 },
       { id: 'kidney', name: '肾功能', icon: 'filter', visible: true, order: 6 },

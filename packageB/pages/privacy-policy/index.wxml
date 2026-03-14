@@ -1,0 +1,143 @@
+<scroll-view scroll-y class="container">
+  <text class="update-time">更新时间：2026年1月12日　生效时间：2026年1月12日</text>
+
+  <view class="section">
+    <text class="section-content">作为暖白记事本小程序的开发者"荷小朵(北京)健康管理有限公司"（以下简称"我们/开发者"），深知个人信息对您的重要性，我们将按照法律法规的规定，保护您的个人信息及隐私安全。鉴于此，我们制定本《隐私政策》（下称"本政策/本隐私政策"）并特别提示：希望您在使用暖白记事本小程序及相关服务前仔细阅读并理解本隐私政策，以便作出适当的选择。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">概要</text>
+    <text class="section-content">我们将通过本隐私政策向你介绍不同场景下我们如何处理你的个人信息。当你开启或使用暖白记事本小程序时，为实现你选择使用的功能、服务，或为遵守法律法规的要求，我们会处理相关信息。除实现暖白记事本小程序基本功能、服务所需的信息，和根据法律法规要求所必需的信息之外，你可以拒绝我们处理其他信息，但这可能导致我们无法提供对应功能、服务。我们将在隐私政策中逐项说明相关情况，有关你个人信息权益的重要条款已用加粗形式提示，请特别关注。</text>
+    <text class="section-content">除本隐私政策外，在特定场景下，我们还会同时及时告知（含弹窗、页面提示）、功能更新说明，向你说明对应的信息收集目的、范围及使用方式，这些及时告知及功能更新说明构成本隐私政策的一部分，并与本隐私政策具有相同效力。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">目录</text>
+    <text class="section-content">1、我们收集的个人信息</text>
+    <text class="section-content">2、我们如何使用您的个人信息</text>
+    <text class="section-content">3、我们会如何使用 Cookie 和同类技术</text>
+    <text class="section-content">4、我们会如何共享、转让、公开披露您的个人信息</text>
+    <text class="section-content">5、个人信息管理</text>
+    <text class="section-content">6、信息存储和安全</text>
+    <text class="section-content">7、第三方提供商及其服务</text>
+    <text class="section-content">8、未成年人条款</text>
+    <text class="section-content">9、本政策如何更新及适用范围</text>
+    <text class="section-content">10、隐私政策历史版本</text>
+    <text class="section-content">11、联系我们</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">1　我们收集的个人信息</text>
+    <text class="section-content">个人信息是指以电子或者其他方式记录的能够单独或者与其他信息结合识别自然人个人身份的各种信息，包括自然人的姓名、出生日期、身份证件号码、住址等。此类信息会在您注册和使用我们的服务时被收集，暖白记事本小程序仅会出于本政策所述以下目的收集和使用您的个人信息。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">1.1　您直接提供和我们自动采集的个人信息</text>
+    <text class="section-content">为了在本指引下收集你的信息，或者向你提供服务、优化我们的服务以及保障你的帐号安全，我们将需要向你索取相关的权限；其中的敏感权限：精确地理位置、摄像头、麦克风、相册均不会默认开启，只有在你明确同意后才会向我们授权。</text>
+    <text class="section-content">注册信息：您使用暖白记事本小程序提供的服务，可以注册并登录经注册的暖白记事本小程序帐号。此时，您需要向我们提供以下信息：账号名称、头像（如有）、性别、密码、手机号码及短信验证码。</text>
+    <text class="section-content">获取剪贴板信息：打开小程序时，会获取剪贴板内容，以判断是否存在分享口令。剪贴板内容仅在设备端处理，不会上传服务器，不会泄露用户隐私。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">1.2　我们获取的权限</text>
+    <text class="section-content">存储权限：用于保存图片/文件、录入信息时上传图片/文件、智能导入数据时上传/拍摄图片，上传头像时选择图片。(仅安卓)</text>
+    <text class="section-content">相册权限：用于保存图片、录入信息时上传图片、智能导入数据时上传/拍摄图片，上传头像时选择图片。(仅iOS)</text>
+    <text class="section-content">网络权限：与接口进行数据交互，下载图片元素。</text>
+    <text class="section-content">手机信息：保护账号安全，该权限不会记录用户的个人信息。</text>
+    <text class="section-content">弹窗权限：申请悬浮窗权限，由于某些机型，比如魅族，小米部分机型Toast无法显示，必须要有悬浮窗权限才会显示Toast。</text>
+    <text class="section-content">录音权限：如果选择通过录音导入数据，需要获取录音权限。</text>
+    <text class="section-content">摄像头权限：用于在发布时，录制视频和拍照。</text>
+    <text class="section-content">闪光灯权限：用于在发布录制视频和拍照时，提高黑暗环境的亮度。</text>
+    <text class="section-content">自动对焦权限：用于在发布录制视频和拍照时，实现自动对焦功能。</text>
+  
+    <text class="section-content">用户可以拒绝授予以上权限，但部分权限可能会导致应用使用异常。即使经过您的授权，我们获得了这些敏感权限，也不会在相关功能或服务不需要时而收集您的信息。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">1.3　我们可能从第三方获取您个人信息的情形</text>
+    <text class="section-content">您也可以使用第三方帐号（微信）登录暖白记事本小程序。此时您可选择授权我们在符合相关法律和法规规定的前提下读取您在该第三方平台上登记、公布、记录的公开信息。我们可能从第三方获取您的上述信息的目的是为了记住您作为暖白记事本小程序用户的登录身份，以便于我们向您提供更优质的产品服务。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">1.4　征得授权同意的例外</text>
+    <text class="section-content">根据相关法律法规的规定，以下情形中收集您的个人信息无需征得您的授权同意：</text>
+    <text class="section-content">（1）涉及国家安全与利益、社会公共利益；</text>
+    <text class="section-content">（2）与犯罪侦查有关的相关活动；</text>
+    <text class="section-content">（3）出于维护您或他人的生命财产安全但在特殊情况下无法获得您的及时授权；</text>
+    <text class="section-content">（4）从其他合法公开的渠道中收集您的个人信息；</text>
+    <text class="section-content">（5）法律法规规定的其他情形。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">2　我们如何使用您的个人信息</text>
+    <text class="section-content">我们会将您的个人信息用于以下目的：</text>
+    <text class="section-content">· 帮助我们设计新服务，提升现有服务体验。</text>
+    <text class="section-content">· 在我们提供服务时，用于身份验证、客户服务、安全防范、诈骗监测、存档和备份用途，确保我们向您提供的产品和服务的安全性。</text>
+    <text class="section-content">· 邀请您参与我们的活动和市场调查。</text>
+    <text class="section-content">· 开展内部审计、数据分析和研究，以更好地改善我们的产品、服务及与用户之间的沟通。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">3　我们会如何使用 Cookie 和同类技术</text>
+    <text class="section-content">Cookie 和设备信息标识等同类技术是互联网中普遍使用的技术。当你使用我们的小程序及相关服务时，我们可能会使用相关技术向你的设备发送一个或多个 Cookie 或匿名标识符，以收集、标识和存储你访问、使用本产品时的信息。我们承诺，不会将 Cookie 用于本隐私政策所述目的之外的任何其他用途。</text>
+    <text class="section-content">3.1 保障产品与服务的安全、高效运转：我们可能会设置认证与保障安全性的 Cookie 或匿名标识符，来确认你是否安全登录服务，或者是否遇到盗用、欺诈及其他不法行为。</text>
+    <text class="section-content">3.2 帮助你获得更轻松的访问体验：使用此类技术可以帮助你省去重复填写个人信息、输入搜索内容的步骤和流程。</text>
+    <text class="section-content">3.3 Cookie 的清除：大多数浏览器均为用户提供了清除浏览器缓存数据的功能，你可以在浏览器设置功能中进行相应的数据清除操作。如你进行清除，你可能无法使用依赖于 Cookie 由公司提供的服务或相应功能。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">4　我们会如何共享、转移、公开披露您的个人信息</text>
+    <text class="section-content">4.1 共享：暖白记事本小程序不会在未经您同意或授权的情况下将您的个人信息提供给第三方。但经您确认同意，暖白记事本小程序可在以下情况下共享您的个人信息：获得您的明确同意后；与关联公司共享（仅共享必要信息）；与授权合作伙伴共享以提供更好的服务；在法定情形下依法共享。</text>
+    <text class="section-content">4.2 转移：我们不会将您的个人信息转移给任何公司、组织和个人，但获得您明确同意或涉及合并、收购、破产清算等情况除外。</text>
+    <text class="section-content">4.3 公开披露：我们仅会在获得您的明确同意，或基于法律法规、法律程序、诉讼或政府主管部门强制性要求的情况下，才会公开披露您的个人信息。</text>
+    <text class="section-content">4.4 反馈与投诉：有任何建议或者投诉，可以联系我们进行反馈，我们会尽快处理。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">5　个人信息管理</text>
+    <text class="section-content">我们非常重视您对个人信息的关注，并尽全力保护您对于自己个人信息访问、更正、删除以及撤回同意的权利。</text>
+    <text class="section-content">5.1 访问和更正：您可通过【我的 → 个人档案】，查询、访问、更正您的头像、用户名、性别、年龄、疾病类型、就诊医院。</text>
+    <text class="section-content">5.2 删除个人信息：</text>
+    <text class="section-content">（1）您可以与开发者联系，申请注销您在小程序中使用的账号。</text>
+    <text class="section-content">（2）您的注销申请，我们会在15个工作日内完成核查与处理。</text>
+    <text class="section-content">（3）关于收集您的手机号、图片、文件，您可以通过以下路径：【小程序主页右上角"..." — "设置" — "小程序已获取的信息" — 点击特定信息 — 点击"通知开发者删除"】，我们将在收到通知后删除信息。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">6　信息存储和安全</text>
+    <text class="section-content">6.1 安全保护措施：我们努力为用户的信息安全提供保障，以防止信息的泄露、丢失、不当使用、未经授权访问和披露。我们使用多方位的安全保护措施，包括技术保护手段（防火墙、加密SSL/SHA256、去标识化处理、访问控制、数据加密等）、管理制度控制、安全体系保障。</text>
+    <text class="section-content">6.2 安全事件处置：若发生个人信息泄露、损毁、丢失或者其他安全事件，我们会启动应急预案，阻止安全事件扩大，并及时以推送通知、邮件形式告知您相关情况及应对建议。</text>
+    <text class="section-content">6.3 超期信息处理：一般情况下，对于超期信息，我们将对你的个人信息进行删除或匿名化处理，但遵从法律法规有关信息留存要求的情况除外。</text>
+    <text class="section-content">6.4 存储位置和期限：我们收集和产生的个人信息将存储在中华人民共和国境内，用户产生的信息会永久存储，日志信息会存储最近三个月的请求日志。我们不会向境外机构传输境内收集的相关个人信息。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">7　第三方提供商及其服务</text>
+    <text class="section-content">为确保流畅的浏览体验，您可能会收到来自暖白记事本小程序及其合作伙伴外部的第三方提供的内容或网络链接。暖白记事本小程序对此类第三方无控制权，此类第三方不受到本政策的约束。您在向第三方提交个人信息之前，请确保您阅读并认可这些第三方的隐私保护政策。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">8　未成年人条款</text>
+    <text class="section-content">我们不向未成年人提供服务，不存在采集未成年人信息情况。我们将不满16周岁的任何人均视为儿童。如果没有父母或监护人的同意，儿童不得创建自己的用户账户。</text>
+    <text class="section-content">如果我们发现自己在未事先获得可证实的父母同意的情况下收集了儿童的个人信息，则会设法尽快删除相关数据。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">9　本政策如何更新及适用范围</text>
+    <text class="section-content">我们保留不时更新或修改本政策的权利。如果该修改造成您在本政策下权利的实质减少，我们会通过首页轮播图、私信的方式向您发送变更通知。请您注意，只有在您点击弹窗中的同意按钮后，我们才会按照更新后的指引收集、使用、存储您的个人信息。</text>
+    <text class="section-content">我们的所有服务均适用本政策。但某些服务有其特定的隐私政策，如本政策与特定服务的隐私政策有不一致之处，请以该特定隐私政策为准。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">10　隐私政策历史版本</text>
+    <text class="section-content">如您对本隐私政策的内容或使用我们的服务时遇到的与隐私保护相关的事宜有任何疑问或进行咨询或投诉时，您均可以通过如下任一方式与我们取得联系：</text>
+    <text class="section-content">· 您可找到我们平台上产品功能页面中在线提交反馈意见；</text>
+    <text class="section-content">我们会在收到您的意见及建议后，并在验证您的用户身份后的15个工作日内尽快向您回复。此外，在与个人信息有关的如下情形下，我们将无法回复您的请求：与国家安全、国防安全有关的；与公共安全、公共卫生、重大公共利益有关的；与犯罪侦查、起诉和审判有关的；有充分证据表明您存在主观恶意或滥用权利的；涉及商业秘密的；法律法规规定的其他情形。</text>
+    <text class="section-content">您对我们内容的举报，我们会在2-15个工作日内给您答复并做相应的处理。</text>
+  </view>
+
+  <view class="section">
+    <text class="section-title">11　联系我们</text>
+    <text class="section-content">本政策由荷小朵（北京）健康管理有限公司依据《中华人民共和国网络安全法》、《信息安全技术个人信息安全规范》以及其他相关法律法规制定。公司办公地址位于北京市朝阳区，如您有疑问，可通过邮件联系我们：develop@hexiaoduo.com，我们会在5个工作日内受理并处理。</text>
+  </view>
+</scroll-view>

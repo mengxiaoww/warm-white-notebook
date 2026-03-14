@@ -1,0 +1,244 @@
+<view class="page-container">
+  <!-- 导航栏 -->
+  <view class="navbar">
+    <t-navbar title="治疗记录" bind:left-click="navigateBack" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+      <view slot="left" class="custom-back-btn" bindtap="navigateBack">
+        <t-icon name="chevron-left" size="48rpx" color="white" />
+      </view>
+    </t-navbar>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content">
+    <!-- 日期选择 -->
+    <view class="date-section">
+      <view class="date-selector" bindtap="showDatePicker">
+        <text class="date-text">{{selectedDate}}</text>
+        <t-icon name="calendar" size="32rpx" color="#666" />
+      </view>
+      <view class="quick-input-btns">
+        <t-button theme="primary" size="small" icon="add" bindtap="addRecord" class="add-record-btn">添加记录</t-button>
+      </view>
+    </view>
+
+    <!-- 列表 -->
+    <scroll-view class="scroll-container" scroll-y>
+      <view class="form-container">
+        <!-- 统计 -->
+        <view class="clinic-summary" wx:if="{{treatmentRecords.length > 0}}">
+          <view class="summary-header">
+            <text class="summary-title">今日治疗记录</text>
+            <text class="summary-count">{{treatmentRecords.length}} 条</text>
+          </view>
+        </view>
+
+        <!-- 记录列表 -->
+        <view class="clinic-records-list" wx:if="{{treatmentRecords.length > 0}}">
+          <view class="clinic-record-item" wx:for="{{treatmentRecords}}" wx:key="_id">
+            <view class="record-content">
+              <!-- 头部：类型标签 + 日期 -->
+              <view class="record-header">
+                <view class="project-info">
+                  <view class="type-badge type-{{item.recordType}}">
+                    {{item.recordType === 'medication' ? '用药' : '出院小结'}}
+                  </view>
+                  <text class="project-name" wx:if="{{item.recordType === 'medication'}}">
+                    {{item.treatmentPlan ? item.treatmentPlan : ''}}{{item.treatmentPlan && item.medicationName ? '：' : ''}}{{item.medicationName ? item.medicationName : ''}}
+                  </text>
+                  <text class="project-name" wx:if="{{item.recordType === 'discharge'}}">{{item.dischargeDiagnosis}}</text>
+                </view>
+                <view class="record-date" wx:if="{{item.recordDate}}">{{item.recordDate}}</view>
+              </view>
+
+              <!-- 用药信息 -->
+              <view class="medical-info" wx:if="{{item.recordType === 'medication'}}">
+                <view class="info-item" wx:if="{{item.dosage}}">
+                  <text class="info-label">药品用量</text>
+                  <view class="info-content">{{item.dosage}}</view>
+                </view>
+                <view class="info-item" wx:if="{{item.medicationTime}}">
+                  <text class="info-label">用药时间</text>
+                  <view class="info-content">{{item.medicationTime}}</view>
+                </view>
+                <view class="flag-row" wx:if="{{item.isHospitalized || item.isInWard}}">
+                  <view class="flag-tag flag-hospital" wx:if="{{item.isHospitalized}}">入院</view>
+                  <view class="flag-tag flag-ward" wx:if="{{item.isInWard}}">入仓</view>
+                </view>
+              </view>
+
+              <!-- 出院小结信息 -->
+              <view class="medical-info" wx:if="{{item.recordType === 'discharge'}}">
+                <view class="info-item" wx:if="{{item.admissionInfo}}">
+                  <text class="info-label">入院情况</text>
+                  <view class="info-content">{{item.admissionInfo}}</view>
+                </view>
+                <view class="info-item" wx:if="{{item.dischargeSummary}}">
+                  <text class="info-label">出院小结</text>
+                  <view class="info-content">{{item.dischargeSummary}}</view>
+                </view>
+              </view>
+
+              <!-- 备注 -->
+              <view class="record-bottom" wx:if="{{item.notes}}">
+                <view class="notes-text">备注：{{item.notes}}</view>
+              </view>
+
+              <!-- 更新时间 -->
+              <view class="update-time" wx:if="{{item.updateTime}}">
+                更新于 {{item.updateTime}}
+              </view>
+
+              <!-- 操作按钮 -->
+              <view class="record-actions">
+                <view class="action-btn edit-btn" catchtap="editRecord" data-id="{{item._id}}">编辑</view>
+                <view class="action-btn delete-btn" catchtap="deleteRecord" data-id="{{item._id}}">删除</view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{treatmentRecords.length === 0}}">
+          <text class="empty-text">暂无治疗记录</text>
+          <text class="empty-hint">点击右上角添加治疗记录</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 日期选择器 -->
+  <t-date-time-picker visible="{{datePickerVisible}}" value="{{selectedDateTimestamp}}" mode="date" title="选择日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onDateConfirm" bind:cancel="onDateCancel" bind:visible-change="onDateVisibleChange" />
+
+  <!-- 添加/编辑弹窗 -->
+  <t-popup visible="{{showDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+    <view class="clinic-popup-content">
+      <view class="clinic-popup-header">
+        <text class="clinic-popup-title">{{isEditMode ? '编辑治疗记录' : '添加治疗记录'}}</text>
+        <view class="clinic-popup-close" bindtap="closeDialog">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+
+      <scroll-view class="clinic-form-container" scroll-y>
+        <view class="clinic-form-content">
+
+          <!-- 记录日期 -->
+          <view class="form-section">
+            <view class="form-item">
+              <text class="form-label required-label">记录日期</text>
+              <view class="visit-time-input" bindtap="showRecordDatePicker">
+                <text class="visit-time-text">{{form.recordDate || '点击选择日期'}}</text>
+                <t-icon name="calendar" size="32rpx" color="#999" />
+              </view>
+            </view>
+          </view>
+
+          <!-- 记录内容类型 -->
+          <view class="form-section">
+            <view class="form-item">
+              <text class="form-label required-label">记录内容</text>
+              <view class="type-selector">
+                <view class="type-option {{form.recordType === 'medication' ? 'type-option-active' : ''}}" bindtap="selectRecordType" data-value="medication">
+                  <t-icon wx:if="{{form.recordType === 'medication'}}" name="check-circle-filled" size="32rpx" color="#FF9800" />
+                  <text>用药</text>
+                </view>
+                <view class="type-option {{form.recordType === 'discharge' ? 'type-option-active' : ''}}" bindtap="selectRecordType" data-value="discharge">
+                  <t-icon wx:if="{{form.recordType === 'discharge'}}" name="check-circle-filled" size="32rpx" color="#FF9800" />
+                  <text>出院小结</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 用药信息 -->
+          <view wx:if="{{form.recordType === 'medication'}}">
+            <view class="section-divider">
+              <text class="section-label">用药信息</text>
+            </view>
+            <view class="form-section">
+              <view class="form-item">
+                <text class="form-label">治疗方案</text>
+                <t-input value="{{form.treatmentPlan}}" placeholder="请输入治疗方案" bind:change="onFormInput" data-field="treatmentPlan" class="form-input" />
+                <view class="suggestion-buttons">
+                  <view class="suggestion-btn" wx:for="{{treatmentPlanSuggestions}}" wx:key="index" bindtap="selectSuggestion" data-field="treatmentPlan" data-value="{{item}}">{{item}}</view>
+                </view>
+              </view>
+              <view class="form-item">
+                <text class="form-label required-label">用药名称</text>
+                <t-input value="{{form.medicationName}}" placeholder="请输入用药名称" bind:change="onFormInput" data-field="medicationName" class="form-input" />
+                <view class="suggestion-buttons">
+                  <view class="suggestion-btn" wx:for="{{medicationNameSuggestions}}" wx:key="index" bindtap="selectSuggestion" data-field="medicationName" data-value="{{item}}">{{item}}</view>
+                </view>
+              </view>
+              <view class="form-item">
+                <text class="form-label">药品用量</text>
+                <t-input value="{{form.dosage}}" placeholder="选填，如：100mg 每日一次" bind:change="onFormInput" data-field="dosage" class="form-input" />
+              </view>
+              <view class="form-item">
+                <text class="form-label">用药时间</text>
+                <t-input value="{{form.medicationTime}}" placeholder="选填，如：08:00" bind:change="onFormInput" data-field="medicationTime" class="form-input" />
+              </view>
+              <!-- 入院/入仓 -->
+              <view class="form-item">
+                <text class="form-label">状态标记</text>
+                <view class="toggle-row">
+                  <view class="toggle-item" bindtap="toggleBool" data-field="isHospitalized">
+                    <view class="toggle-box {{form.isHospitalized ? 'toggle-active' : ''}}">
+                      <t-icon wx:if="{{form.isHospitalized}}" name="check" size="28rpx" color="white" />
+                    </view>
+                    <text class="toggle-label">入院</text>
+                  </view>
+                  <view class="toggle-item" bindtap="toggleBool" data-field="isInWard">
+                    <view class="toggle-box {{form.isInWard ? 'toggle-active' : ''}}">
+                      <t-icon wx:if="{{form.isInWard}}" name="check" size="28rpx" color="white" />
+                    </view>
+                    <text class="toggle-label">入仓</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 出院小结信息 -->
+          <view wx:if="{{form.recordType === 'discharge'}}">
+            <view class="section-divider">
+              <text class="section-label">出院小结信息</text>
+            </view>
+            <view class="form-section">
+              <view class="form-item">
+                <text class="form-label">入院情况</text>
+                <t-textarea value="{{form.admissionInfo}}" placeholder="选填，可描述入院情况" bind:change="onFormInput" data-field="admissionInfo" class="form-textarea" maxlength="500" />
+              </view>
+              <view class="form-item">
+                <text class="form-label required-label">出院诊断</text>
+                <t-input value="{{form.dischargeDiagnosis}}" placeholder="请输入出院诊断" bind:change="onFormInput" data-field="dischargeDiagnosis" class="form-input" />
+              </view>
+              <view class="form-item">
+                <text class="form-label">出院小结</text>
+                <t-textarea value="{{form.dischargeSummary}}" placeholder="选填，可输入出院小结内容" bind:change="onFormInput" data-field="dischargeSummary" class="form-textarea" maxlength="800" />
+              </view>
+            </view>
+          </view>
+
+          <!-- 注意事项 & 备注 -->
+          <view class="form-section">
+            <view class="form-item">
+              <text class="form-label">备注</text>
+              <t-textarea value="{{form.notes}}" placeholder="选填，其他需要记录的信息" bind:change="onFormInput" data-field="notes" class="form-textarea" maxlength="300" />
+            </view>
+          </view>
+
+        </view>
+      </scroll-view>
+
+      <view class="clinic-popup-buttons">
+        <view class="clinic-btn clinic-cancel-btn" bindtap="closeDialog">取消</view>
+        <view class="clinic-btn clinic-confirm-btn" bindtap="saveRecord">{{isEditMode ? '保存' : '添加'}}</view>
+      </view>
+    </view>
+  </t-popup>
+
+  <!-- 记录日期选择器 -->
+  <t-date-time-picker visible="{{recordDatePickerVisible}}" value="{{recordDateTimestamp}}" mode="date" title="选择记录日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onRecordDateConfirm" bind:cancel="onRecordDateCancel" bind:visible-change="onRecordDateVisibleChange" />
+
+</view>

@@ -41,7 +41,10 @@
         "pages/complete-profile/index",
         "pages/add-profile/index",
         "pages/webview/index",
-        "pages/health-profile/index"
+        "pages/health-profile/index",
+        "pages/privacy-policy/index",
+        "pages/user-agreement/index",
+        "pages/treatment-record/index"
       ]
     },
     {

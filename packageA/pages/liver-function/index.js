@@ -2178,7 +2178,6 @@ Page({
       throw error;
     }
   },
-  },
 
   // 根据置信度获取颜色
   getConfidenceColor(confidence) {

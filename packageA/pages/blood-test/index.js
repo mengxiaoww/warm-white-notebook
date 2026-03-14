@@ -3334,12 +3334,21 @@ ${indicatorDesc}
 
         if (matchedIndicator) {
           console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
-          // 返回数据时，使用配置的中文名称作为label
+          let value = aiItem.value;
+          // 血红蛋白单位换算：如果值在10-18范围内，可能是g/dL，需乘以10转为g/L
+          if (matchedIndicator.id === 'hgb') {
+            const numVal = parseFloat(value);
+            if (!isNaN(numVal) && numVal >= 10 && numVal <= 18) {
+              value = String(Math.round(numVal * 10));
+              console.log(`🔄 血红蛋白单位换算: ${aiItem.value} g/dL -> ${value} g/L`);
+            }
+          }
           return {
             ...aiItem,
             id: matchedIndicator.id,
-            label: matchedIndicator.name,  // 使用配置的中文名称
-            unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位，否则使用配置的单位
+            label: matchedIndicator.name,
+            value: value,
+            unit: aiItem.unit || matchedIndicator.unit
           };
         } else {
           console.log(`❌ 未匹配: ${aiItem.label}`);
@@ -3449,14 +3458,18 @@ ${indicatorDesc}
           messages: [
             {
               role: 'system',
-              content: `你是专业的医疗报告识别助手。请识别血常规报告图片中的以下指标：
+              content: `你是专业的医疗报告识别助手。请仔细扫描整张血常规报告图片，识别以下所有指标：
 
 **要识别的指标**：
 ${indicatorDesc}
 
 **识别规则**：
+- 必须扫描报告的每一行，包括表格底部、炎症指标区、附加检测区等所有区域
+- C反应蛋白（CRP）可能单独列在报告末尾或炎症指标区，务必查找
+- 单核细胞（MONO）可能标注为"单核细胞#"、"MONO#"或"单核细胞绝对值"
 - 对于细胞计数类指标（中性粒细胞、淋巴细胞、单核细胞等），必须提取绝对值（单位：×10⁹/L），不要提取百分比（单位：%）
 - 如果报告中同时显示了绝对值和百分比，优先选择绝对值
+- 血红蛋白（HGB）单位为g/L，正常范围110-180，如识别到的值在10-18之间可能是g/dL需乘以10
 - value必须是纯数字，不包含单位
 - 如果某个指标在图片中未找到，则不要包含在结果中
 
@@ -3579,12 +3592,21 @@ ${indicatorDesc}
 
         if (matchedIndicator) {
           console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
-          // 返回数据时，使用配置的中文名称作为label
+          let value = aiItem.value;
+          // 血红蛋白单位换算：如果值在10-18范围内，可能是g/dL，需乘以10转为g/L
+          if (matchedIndicator.id === 'hgb') {
+            const numVal = parseFloat(value);
+            if (!isNaN(numVal) && numVal >= 10 && numVal <= 18) {
+              value = String(Math.round(numVal * 10));
+              console.log(`🔄 血红蛋白单位换算: ${aiItem.value} g/dL -> ${value} g/L`);
+            }
+          }
           return {
             ...aiItem,
             id: matchedIndicator.id,
-            label: matchedIndicator.name,  // 使用配置的中文名称
-            unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位，否则使用配置的单位
+            label: matchedIndicator.name,
+            value: value,
+            unit: aiItem.unit || matchedIndicator.unit
           };
         } else {
           console.log(`❌ 未匹配: ${aiItem.label}`);
@@ -3865,9 +3887,12 @@ ${indicatorDesc}
     // 检查是否在同一个术语组中
     for (const [key, terms] of Object.entries(termMap)) {
       const keyLower = key.toLowerCase().replace(/\s+/g, '');
-      const termsLower = terms.map(t => t.toLowerCase().replace(/\s+/g, ''));
+      const allTerms = [keyLower, ...terms.map(t => t.toLowerCase().replace(/\s+/g, ''))];
 
-      if (termsLower.includes(cleanS1) && termsLower.includes(cleanS2)) {
+      const s1Match = allTerms.includes(cleanS1) || allTerms.includes(s1);
+      const s2Match = allTerms.includes(cleanS2) || allTerms.includes(s2);
+
+      if (s1Match && s2Match) {
         return true;
       }
     }

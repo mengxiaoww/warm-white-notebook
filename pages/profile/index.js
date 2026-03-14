@@ -1318,6 +1318,20 @@ Page({
     }
   },
 
+  // 显示用户协议
+  showUserAgreement() {
+    wx.navigateTo({
+      url: '/packageB/pages/user-agreement/index'
+    })
+  },
+
+  // 显示隐私政策
+  showPrivacyPolicy() {
+    wx.navigateTo({
+      url: '/packageB/pages/privacy-policy/index'
+    })
+  },
+
   // 显示反馈弹窗
   showFeedbackPopup() {
     this.setData({
