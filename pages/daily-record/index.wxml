@@ -45,7 +45,7 @@
       <!-- 未展开状态：直接显示日期条在顶部 -->
       <view class="calendar-compact" wx:if="{{!calendarExpanded}}">
         <view class="calendar-week-strip">
-          <view class="calendar-day calendar-day-compact {{item.isSelected ? 'selected' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}}" wx:for="{{weekDays}}"
+          <view class="calendar-day calendar-day-compact {{item.isSelected ? 'selected' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}} {{item.isHospitalized ? 'hospitalized' : ''}}" wx:for="{{weekDays}}"
             wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
             <text class="day-number">{{item.day}}</text>
             <text class="day-name">{{item.dayName}}</text>
@@ -79,7 +79,7 @@
         </view>
         <!-- 日期网格 -->
         <view class="calendar-month-grid">
-          <view class="calendar-day {{item.isSelected ? 'selected' : ''}} {{item.isEmpty ? 'empty' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}}"
+          <view class="calendar-day {{item.isSelected ? 'selected' : ''}} {{item.isEmpty ? 'empty' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}} {{item.isHospitalized ? 'hospitalized' : ''}}"
             wx:for="{{monthDays}}" wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
             {{item.day}}
             <view wx:if="{{item.hasRecord && !item.isEmpty}}" class="record-indicator"></view>
@@ -460,9 +460,23 @@
             </block>
             <!-- 治疗记录数据展示 -->
             <block wx:elif="{{item.id === 'treatment' && selectedDateData.treatmentData && selectedDateData.treatmentData.length > 0}}">
+              <view class="clinic-symmetric-row" wx:for="{{selectedDateData.treatmentData}}" wx:key="_id" wx:if="{{index < 2}}">
+                <view class="clinic-left-text">{{item.medicationName || item.treatmentPlan || '-'}}</view>
+                <view class="clinic-right-text" wx:if="{{item.dosage}}">{{item.dosage}}</view>
+              </view>
               <view class="clinic-symmetric-row">
-                <view class="clinic-left-text">{{selectedDateData.treatmentData[0].recordType === 'medication' ? (selectedDateData.treatmentData[0].treatmentPlan || selectedDateData.treatmentData[0].medicationName) : selectedDateData.treatmentData[0].dischargeDiagnosis}}</view>
-                <view class="clinic-right-text clinic-date-color">共{{selectedDateData.treatmentData.length}}条</view>
+                <view class="clinic-left-text" style="color:#ccc;font-size:22rpx;">共 {{selectedDateData.treatmentData.length}} 条用药记录</view>
+              </view>
+            </block>
+            <!-- 住院记录数据展示 -->
+            <block wx:elif="{{item.id === 'hospitalization' && selectedDateData.hospitalizationData && selectedDateData.hospitalizationData.length > 0}}">
+              <view class="clinic-symmetric-row">
+                <view class="clinic-left-text">{{selectedDateData.hospitalizationData[0].hospital}}</view>
+                <view class="clinic-right-text clinic-date-color">{{selectedDateData.hospitalizationData[0].dischargeDate ? '已出院' : '住院中'}}</view>
+              </view>
+              <view class="clinic-symmetric-row" wx:if="{{selectedDateData.hospitalizationData[0].department}}">
+                <view class="clinic-left-text" style="color:#999;font-size:24rpx;">{{selectedDateData.hospitalizationData[0].department}}</view>
+                <view class="clinic-right-text" style="color:#999;font-size:24rpx;">{{selectedDateData.hospitalizationData[0].recordType === 'ward' ? '入仓治疗' : '普通住院'}}</view>
               </view>
             </block>
             <!-- 尿量记录数据展示 - 左右对称布局 -->

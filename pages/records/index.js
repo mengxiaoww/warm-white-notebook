@@ -67,7 +67,9 @@ Page({
       { label: '饮水', value: 'water' },
       { label: '体温', value: 'temperature' },
       { label: '体重', value: 'bodyMeasurement' },
-      { label: '饮食', value: 'diet' }
+      { label: '饮食', value: 'diet' },
+      { label: '治疗记录', value: 'treatment' },
+      { label: '住院记录', value: 'hospitalization' }
     ],
 
     // 健康统计
@@ -104,7 +106,9 @@ Page({
       'water': 'tea',
       'temperature': 'thermometer',
       'bodyMeasurement': 'dashboard',
-      'diet': 'bread'
+      'diet': 'bread',
+      'treatment': 'treatment',
+      'hospitalization': 'hospitalization'
     },
 
     // 数据类型标题配置
@@ -124,7 +128,9 @@ Page({
       'water': '饮水',
       'temperature': '体温',
       'bodyMeasurement': '身高体重',
-      'diet': '饮食'
+      'diet': '饮食',
+      'treatment': '治疗记录',
+      'hospitalization': '住院记录'
     },
 
     // 用药统计 - 新结构
@@ -192,12 +198,6 @@ Page({
   
   onLoad(options) {
     console.log('健康档案页面 - onLoad');
-    const canLoadData = this.checkLoginAndRedirect();
-
-    // 首次加载数据
-    if (canLoadData) {
-      this.refreshAllData();
-    }
 
     // 🛡️ Android兼容性：5秒后强制隐藏骨架屏
     setTimeout(() => {
@@ -227,20 +227,21 @@ Page({
     // 每次页面显示时都检查登录状态
     const canLoadData = this.checkLoginAndRedirect();
 
-    // 如果是首次加载，跳过（onLoad已经加载过了）
-    if (this.data.isFirstLoad) {
-      this.setData({ isFirstLoad: false });
-      if (canLoadData) {
-        this.refreshAllData();
-      }
+    if (!canLoadData) return;
+
+    // 确保 isLoggedIn 同步更新，避免 refreshAllData 中的守卫提前返回
+    this.data.isLoggedIn = true;
+
+    // 如果数据正在加载中，跳过（避免重复触发）
+    if (this._loadingData) {
+      console.log('onShow - 数据加载中，跳过');
       return;
     }
 
-    // 非首次显示时刷新数据，确保数据是最新的
-    if (canLoadData) {
-      console.log('onShow - 刷新数据');
-      this.refreshAllData();
-    }
+    this._loadingData = true;
+    this.refreshAllData();
+    // 3秒后重置标志，防止异常情况下永久锁定
+    setTimeout(() => { this._loadingData = false; }, 3000);
   },
 
   // 未登录时重置页面数据，避免展示旧内容
@@ -807,7 +808,9 @@ Page({
         waterIntakeRecords,
         temperatureRecords,
         bodyMeasurementRecords,
-        dietRecords
+        dietRecords,
+        treatmentRecords,
+        hospitalizationRecords
       ] = await Promise.race([
         Promise.all([
           this.loadBloodData(openid, timeRange),
@@ -825,10 +828,12 @@ Page({
           this.loadWaterIntakeData(openid, timeRange),
           this.loadTemperatureData(openid, timeRange),
           this.loadBodyMeasurementData(openid, timeRange),
-          this.loadDietData(openid, timeRange)
+          this.loadDietData(openid, timeRange),
+          this.loadTreatmentData(openid, timeRange),
+          this.loadHospitalizationData(openid, timeRange)
         ]),
         new Promise((resolve) =>
-          setTimeout(() => resolve([[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]), 3000)
+          setTimeout(() => resolve([[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]), 3000)
         )
       ]);
 
@@ -879,7 +884,9 @@ Page({
         waterIntakeRecords,
         temperatureRecords,
         bodyMeasurementRecords,
-        dietRecords
+        dietRecords,
+        treatmentRecords,
+        hospitalizationRecords
       });
 
       // 🔍 调试：打印合并后的数据
@@ -906,20 +913,16 @@ Page({
       setTimeout(() => {
         this.setData({
           isPageLoading: false,
-          'tabLoadedStatus.health': true // 标记健康档案Tab已加载
+          'tabLoadedStatus.health': true
         });
+        this._loadingData = false;
       }, 300);
 
     } catch (error) {
       console.error('加载健康数据失败:', error);
-      wx.showToast({
-        title: '加载失败',
-        icon: 'error'
-      });
-      this.setData({
-        isPageLoading: false,
-        'tabLoadedStatus.health': true // 即使失败，也标记为已加载
-      });
+      wx.showToast({ title: '加载失败', icon: 'error' });
+      this.setData({ isPageLoading: false, 'tabLoadedStatus.health': true });
+      this._loadingData = false;
     }
   },
 
@@ -1469,6 +1472,38 @@ Page({
     });
   },
 
+  loadTreatmentData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+      if (!currentProfileId) { resolve([]); return; }
+      const db = wx.cloud.database();
+      const whereCondition = { openid, profileId: currentProfileId };
+      if (timeRange) {
+        whereCondition.date = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
+      }
+      db.collection('treatmentRecords').where(whereCondition).orderBy('date', 'desc').get()
+        .then(res => resolve(res.data || []))
+        .catch(() => resolve([]));
+    });
+  },
+
+  loadHospitalizationData(openid, timeRange) {
+    return new Promise((resolve) => {
+      const app = getApp();
+      const currentProfileId = app.getCurrentProfileId();
+      if (!currentProfileId) { resolve([]); return; }
+      const db = wx.cloud.database();
+      const whereCondition = { openid, profileId: currentProfileId };
+      if (timeRange) {
+        whereCondition.admissionDate = db.command.gte(timeRange.startTime).and(db.command.lte(timeRange.endTime));
+      }
+      db.collection('hospitalizationRecords').where(whereCondition).orderBy('admissionDate', 'desc').get()
+        .then(res => resolve(res.data || []))
+        .catch(() => resolve([]));
+    });
+  },
+
   // 合并健康记录
   mergeHealthRecords(records) {
     const dateMap = new Map();
@@ -1859,10 +1894,47 @@ Page({
       });
     });
 
+    // 处理治疗记录数据 - 按天聚合
+    (records.treatmentRecords || []).forEach(record => {
+      const dateKey = this.formatDateKey(record.date);
+      if (!dateKey) return;
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.date),
+          weekday: this.getWeekday(record.date),
+          originalDateKey: dateKey
+        });
+      }
+      const dayData = dateMap.get(dateKey);
+      if (!dayData.treatmentData) {
+        dayData.treatmentData = { count: 0, medicationCount: 0, records: [] };
+      }
+      dayData.treatmentData.count++;
+      if (record.recordType === 'medication') dayData.treatmentData.medicationCount++;
+      dayData.treatmentData.records.push(record);
+    });
+
+    // 处理住院记录数据 - 按入院日期聚合
+    (records.hospitalizationRecords || []).forEach(record => {
+      const dateKey = this.formatDateKey(record.admissionDate);
+      if (!dateKey) return;
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, {
+          date: this.formatDisplayDate(record.admissionDate),
+          weekday: this.getWeekday(record.admissionDate),
+          originalDateKey: dateKey
+        });
+      }
+      const dayData = dateMap.get(dateKey);
+      if (!dayData.hospitalizationData) {
+        dayData.hospitalizationData = { records: [] };
+      }
+      dayData.hospitalizationData.records.push(record);
+    });
+
     // 转换为数组并排序
     const results = Array.from(dateMap.values()).filter(item => {
-      // 确保每个记录都有有效的数据
-      return item.bloodData || item.ebvData || item.cmvData || item.ldhData || item.liverData || item.kidneyData || item.urineData || item.stoolData || item.bloodSugarData || item.bloodOxygenData || item.bloodPressureData || item.waterIntakeData || item.temperatureData || item.bodyMeasurementData || item.dietData;
+      return item.bloodData || item.ebvData || item.cmvData || item.ldhData || item.liverData || item.kidneyData || item.urineData || item.stoolData || item.bloodSugarData || item.bloodOxygenData || item.bloodPressureData || item.waterIntakeData || item.temperatureData || item.bodyMeasurementData || item.dietData || item.treatmentData || item.hospitalizationData;
     });
 
     // 按原始日期键排序（降序）
@@ -2019,6 +2091,24 @@ Page({
           icon: this.data.dataTypeIconMap['diet'],
           title: this.data.dataTypeTitleMap['diet'],
           navigateMethod: 'navigateToDiet'
+        });
+      }
+      if (item.treatmentData) {
+        dataTypes.push({
+          id: 'treatment',
+          dataKey: 'treatmentData',
+          icon: this.data.dataTypeIconMap['treatment'],
+          title: this.data.dataTypeTitleMap['treatment'],
+          navigateMethod: 'navigateToTreatment'
+        });
+      }
+      if (item.hospitalizationData) {
+        dataTypes.push({
+          id: 'hospitalization',
+          dataKey: 'hospitalizationData',
+          icon: this.data.dataTypeIconMap['hospitalization'],
+          title: this.data.dataTypeTitleMap['hospitalization'],
+          navigateMethod: 'navigateToHospitalization'
         });
       }
 
@@ -2218,6 +2308,19 @@ Page({
           const contentStr = contents.length > 0 ? contents.join('、') : '未填写';
           items.push({ label: mealType, value: contentStr });
         });
+        break;
+
+      case 'treatment':
+        items.push({ label: '记录数', value: (data.count || 0) + ' 条' });
+        items.push({ label: '用药记录', value: (data.medicationCount || 0) + ' 条' });
+        break;
+
+      case 'hospitalization':
+        if (data.records && data.records.length > 0) {
+          const r = data.records[0];
+          items.push({ label: '医院', value: r.hospital || '-' });
+          items.push({ label: '状态', value: r.dischargeDate ? '已出院' : '住院中' });
+        }
         break;
     }
 
@@ -2545,12 +2648,18 @@ Page({
         case 'diet':
           if (dayRecord.dietData) filteredRecord.dietData = dayRecord.dietData;
           break;
+        case 'treatment':
+          if (dayRecord.treatmentData) filteredRecord.treatmentData = dayRecord.treatmentData;
+          break;
+        case 'hospitalization':
+          if (dayRecord.hospitalizationData) filteredRecord.hospitalizationData = dayRecord.hospitalizationData;
+          break;
       }
 
       return filteredRecord;
     }).filter(record => {
       // 只保留有数据的记录
-      return record.bloodData || record.checkReportData || record.ebvData || record.cmvData || record.ldhData || record.liverData || record.kidneyData || record.urineData || record.stoolData || record.bloodSugarData || record.bloodOxygenData || record.bloodPressureData || record.waterIntakeData || record.temperatureData || record.bodyMeasurementData || record.dietData;
+      return record.bloodData || record.checkReportData || record.ebvData || record.cmvData || record.ldhData || record.liverData || record.kidneyData || record.urineData || record.stoolData || record.bloodSugarData || record.bloodOxygenData || record.bloodPressureData || record.waterIntakeData || record.temperatureData || record.bodyMeasurementData || record.dietData || record.treatmentData || record.hospitalizationData;
     });
 
     // 🔥 关键修复：为筛选后的记录重新构建dataTypes
@@ -2700,6 +2809,24 @@ Page({
           icon: this.data.dataTypeIconMap['diet'],
           title: this.data.dataTypeTitleMap['diet'],
           navigateMethod: 'navigateToDiet'
+        });
+      }
+      if (item.treatmentData) {
+        dataTypes.push({
+          id: 'treatment',
+          dataKey: 'treatmentData',
+          icon: this.data.dataTypeIconMap['treatment'],
+          title: this.data.dataTypeTitleMap['treatment'],
+          navigateMethod: 'navigateToTreatment'
+        });
+      }
+      if (item.hospitalizationData) {
+        dataTypes.push({
+          id: 'hospitalization',
+          dataKey: 'hospitalizationData',
+          icon: this.data.dataTypeIconMap['hospitalization'],
+          title: this.data.dataTypeTitleMap['hospitalization'],
+          navigateMethod: 'navigateToHospitalization'
         });
       }
 
@@ -4273,6 +4400,35 @@ Page({
     });
   },
 
+  // 时间轴数据类型点击统一处理（WeChat不支持动态bindtap）
+  handleDataTypeTap(e) {
+    const { navigateMethod, date } = e.currentTarget.dataset;
+    const urlMap = {
+      'navigateToBlood': `/packageA/pages/blood-test/index?date=${date}`,
+      'navigateToCheckReport': `/packageB/pages/check-report/index?date=${date}`,
+      'navigateToEbv': `/packageA/pages/ebv-test/index?date=${date}`,
+      'navigateToCmv': `/packageA/pages/cmv-test/index?date=${date}`,
+      'navigateToLdh': `/packageA/pages/ldh-test/index?date=${date}`,
+      'navigateToLiver': `/packageA/pages/liver-test/index?date=${date}`,
+      'navigateToKidney': `/packageA/pages/kidney-test/index?date=${date}`,
+      'navigateToUrine': `/packageB/pages/urine-record/index?date=${date}`,
+      'navigateToStool': `/packageB/pages/stool-record/index?date=${date}`,
+      'navigateToBloodSugar': `/packageA/pages/blood-sugar/index?date=${date}`,
+      'navigateToBloodOxygen': `/packageA/pages/blood-oxygen/index?date=${date}`,
+      'navigateToBloodPressure': `/packageA/pages/blood-pressure/index?date=${date}`,
+      'navigateToWaterIntake': `/packageB/pages/water-intake/index?date=${date}`,
+      'navigateToTemperature': `/packageA/pages/temperature/index?date=${date}`,
+      'navigateToBodyMeasurement': `/packageA/pages/body-measurement/index?date=${date}`,
+      'navigateToDiet': `/packageB/pages/diet-record/index?date=${date}`,
+      'navigateToTreatment': '/packageB/pages/treatment-record/index',
+      'navigateToHospitalization': '/packageB/pages/hospitalization-record/index',
+    };
+    const url = urlMap[navigateMethod];
+    if (url) {
+      wx.navigateTo({ url });
+    }
+  },
+
   // 跳转到用药记录页面
   navigateToMedication(e) {
     console.log('navigateToMedication called', e);
@@ -4687,6 +4843,24 @@ Page({
           { key: 'lunch', label: '午餐', unit: '' },
           { key: 'dinner', label: '晚餐', unit: '' }
         ]
+      },
+      'treatment': {
+        name: '治疗记录',
+        columns: [
+          { key: 'treatmentPlan', label: '治疗方案', unit: '' },
+          { key: 'medicationName', label: '用药名称', unit: '' },
+          { key: 'dosage', label: '药品用量', unit: '' },
+          { key: 'medicationTime', label: '用药时间', unit: '' }
+        ]
+      },
+      'hospitalization': {
+        name: '住院记录',
+        columns: [
+          { key: 'hospital', label: '医院科室', unit: '' },
+          { key: 'admissionDate', label: '入院日期', unit: '' },
+          { key: 'dischargeDate', label: '出院日期', unit: '' },
+          { key: 'recordType', label: '入仓', unit: '' }
+        ]
       }
     };
 
@@ -4921,13 +5095,26 @@ Page({
             const targetMealType = mealTypeMap[column.key];
             const mealsOfType = recordData.meals.filter(meal => meal.mealType === targetMealType);
             if (mealsOfType.length > 0) {
-              // 如果有多条同餐次记录，用顿号分隔
               value = mealsOfType.map(meal => meal.content || '').filter(c => c).join('、') || '未填写';
             } else {
               value = '未填写';
             }
           } else {
             value = '未填写';
+          }
+        } else if (testConfig.name === '治疗记录') {
+          // 治疗记录：从 records 数组取第一条
+          const r = recordData.records && recordData.records.length > 0 ? recordData.records[0] : recordData;
+          value = r[column.key] !== undefined && r[column.key] !== null ? r[column.key] : '';
+        } else if (testConfig.name === '住院记录') {
+          // 住院记录：从 records 数组取第一条
+          const r = recordData.records && recordData.records.length > 0 ? recordData.records[0] : recordData;
+          if (column.key === 'hospital') {
+            value = (r.hospital || '') + (r.department ? ' ' + r.department : '');
+          } else if (column.key === 'recordType') {
+            value = r.recordType === 'ward' ? '是' : '否';
+          } else {
+            value = r[column.key] !== undefined && r[column.key] !== null ? r[column.key] : '';
           }
         } else {
           // 默认情况，也要检查自定义值

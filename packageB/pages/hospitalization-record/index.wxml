@@ -1,0 +1,160 @@
+<view class="page-container">
+  <!-- 导航栏 -->
+  <view class="navbar">
+    <t-navbar title="住院记录" bind:left-click="navigateBack" style="--td-navbar-title-color: white; --td-navbar-title-font-size: 34rpx; --td-navbar-title-font-weight: 500;">
+      <view slot="left" class="custom-back-btn" bindtap="navigateBack">
+        <t-icon name="chevron-left" size="48rpx" color="white" />
+      </view>
+    </t-navbar>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content">
+    <view class="top-bar">
+      <t-button theme="primary" size="small" icon="add" bindtap="addRecord" class="add-record-btn">添加住院记录</t-button>
+    </view>
+
+    <scroll-view class="scroll-container" scroll-y>
+      <view class="list-container">
+        <!-- 统计 -->
+        <view class="summary-card" wx:if="{{records.length > 0}}">
+          <text class="summary-title">住院记录</text>
+          <text class="summary-sub">共 {{records.length}} 次住院</text>
+        </view>
+
+        <!-- 记录列表 -->
+        <view class="record-list" wx:if="{{records.length > 0}}">
+          <view class="record-item" wx:for="{{records}}" wx:key="_id">
+            <!-- 类型标签 -->
+            <view class="record-type-bar type-{{item.recordType}}"></view>
+            <view class="record-body">
+              <!-- 住院期间 -->
+              <view class="period-row">
+                <text class="period-label">{{item.recordType === 'ward' ? '入仓期间' : '住院期间'}}</text>
+                <view class="period-dates">
+                  <text class="period-date">{{item.admissionDate}}</text>
+                  <text class="period-sep">至</text>
+                  <text class="period-date">{{item.dischargeDate || '至今'}}</text>
+                </view>
+              </view>
+              <!-- 医院 -->
+              <text class="hospital-name">{{item.hospital}}</text>
+              <!-- 科室 -->
+              <view class="dept-tag" wx:if="{{item.department}}">
+                <text>{{item.department}}</text>
+              </view>
+              <!-- 费用 -->
+              <view class="cost-row" wx:if="{{item.cost}}">
+                <text class="cost-label">总费用</text>
+                <text class="cost-value">¥{{item.cost}}</text>
+              </view>
+              <!-- 备注 -->
+              <view class="notes-row" wx:if="{{item.notes}}">
+                <text class="notes-text">备注：{{item.notes}}</text>
+              </view>
+              <!-- 操作 -->
+              <view class="record-actions">
+                <view class="action-btn edit-btn" catchtap="editRecord" data-id="{{item._id}}">编辑</view>
+                <view class="action-btn delete-btn" catchtap="deleteRecord" data-id="{{item._id}}">删除</view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{records.length === 0}}">
+          <t-icon name="calendar" size="80rpx" color="#ddd" />
+          <text class="empty-text">暂无住院记录</text>
+          <text class="empty-hint">点击上方按钮添加住院记录</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 添加/编辑弹窗 -->
+  <t-popup visible="{{showDialog}}" placement="bottom" bind:visible-change="onDialogVisibleChange">
+    <view class="popup-content">
+      <view class="popup-header">
+        <text class="popup-title">{{isEditMode ? '编辑住院记录' : '添加住院记录'}}</text>
+        <view class="popup-close" bindtap="closeDialog">
+          <t-icon name="close" size="32rpx" color="#999" />
+        </view>
+      </view>
+
+      <scroll-view class="form-scroll" scroll-y>
+        <view class="form-content">
+
+          <!-- 记录类型 -->
+          <view class="form-item">
+            <text class="form-label required-label">记录类型</text>
+            <view class="type-selector">
+              <view class="type-option {{form.recordType === 'normal' ? 'type-option-active' : ''}}" bindtap="selectType" data-value="normal">
+                <t-icon wx:if="{{form.recordType === 'normal'}}" name="check-circle-filled" size="28rpx" color="#FF9800" />
+                <text>普通住院</text>
+              </view>
+              <view class="type-option {{form.recordType === 'ward' ? 'type-option-active' : ''}}" bindtap="selectType" data-value="ward">
+                <t-icon wx:if="{{form.recordType === 'ward'}}" name="check-circle-filled" size="28rpx" color="#FF9800" />
+                <text>入仓治疗</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- 住院日期 -->
+          <view class="form-item">
+            <text class="form-label required-label">{{form.recordType === 'ward' ? '入仓日期' : '住院日期'}}</text>
+            <view class="date-input" bindtap="showAdmissionPicker">
+              <text class="{{form.admissionDate ? 'date-text' : 'placeholder-text'}}">{{form.admissionDate || ('点击选择' + (form.recordType === 'ward' ? '入仓' : '住院') + '日期')}}</text>
+              <t-icon name="calendar" size="32rpx" color="#999" />
+            </view>
+          </view>
+
+          <!-- 出院日期 -->
+          <view class="form-item">
+            <text class="form-label">{{form.recordType === 'ward' ? '出仓日期（可选）' : '出院日期（可选）'}}</text>
+            <view class="date-input" bindtap="showDischargePicker">
+              <text class="{{form.dischargeDate ? 'date-text' : 'placeholder-text'}}">{{form.dischargeDate || ('点击选择' + (form.recordType === 'ward' ? '出仓' : '出院') + '日期')}}</text>
+              <t-icon name="calendar" size="32rpx" color="#999" />
+            </view>
+          </view>
+
+          <!-- 就诊医院 -->
+          <view class="form-item">
+            <text class="form-label required-label">就诊医院</text>
+            <t-input value="{{form.hospital}}" placeholder="请输入就诊医院" bind:change="onInput" data-field="hospital" class="form-input" />
+          </view>
+
+          <!-- 科室 -->
+          <view class="form-item">
+            <text class="form-label">科室（可选）</text>
+            <t-input value="{{form.department}}" placeholder="如：血液科" bind:change="onInput" data-field="department" class="form-input" />
+          </view>
+
+          <!-- 费用 -->
+          <view class="form-item">
+            <text class="form-label">费用金额（可选）</text>
+            <t-input value="{{form.cost}}" placeholder="如：6000" type="digit" bind:change="onInput" data-field="cost" class="form-input" />
+          </view>
+
+          <!-- 备注 -->
+          <view class="form-item">
+            <text class="form-label">备注（可选）</text>
+            <t-textarea value="{{form.notes}}" placeholder="其他需要记录的信息" bind:change="onInput" data-field="notes" class="form-textarea" maxlength="300" />
+          </view>
+
+        </view>
+      </scroll-view>
+
+      <view class="popup-buttons">
+        <view class="popup-btn cancel-btn" bindtap="closeDialog">取消</view>
+        <view class="popup-btn confirm-btn" bindtap="saveRecord">{{isEditMode ? '保存' : '添加'}}</view>
+      </view>
+    </view>
+  </t-popup>
+
+  <!-- 住院日期选择器 -->
+  <t-date-time-picker visible="{{admissionPickerVisible}}" value="{{admissionTimestamp}}" mode="date" title="选择住院日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onAdmissionConfirm" bind:cancel="onAdmissionCancel" bind:visible-change="onAdmissionVisibleChange" />
+
+  <!-- 出院日期选择器 -->
+  <t-date-time-picker visible="{{dischargePickerVisible}}" value="{{dischargeTimestamp}}" mode="date" title="选择出院日期" confirm-btn="确定" cancel-btn="取消" bind:confirm="onDischargeConfirm" bind:cancel="onDischargeCancel" bind:visible-change="onDischargeVisibleChange" />
+
+</view>

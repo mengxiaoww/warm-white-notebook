@@ -44,7 +44,8 @@
         "pages/health-profile/index",
         "pages/privacy-policy/index",
         "pages/user-agreement/index",
-        "pages/treatment-record/index"
+        "pages/treatment-record/index",
+        "pages/hospitalization-record/index"
       ]
     },
     {

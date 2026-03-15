@@ -216,7 +216,9 @@
                 <view class="health-records-list">
                   <view wx:for="{{item.dataTypes}}" wx:for-item="dataType" wx:key="id"
                     class="health-record-item"
-                    bindtap="{{dataType.navigateMethod}}"
+                    bindtap="handleDataTypeTap"
+                    data-navigate-method="{{dataType.navigateMethod}}"
+                    data-id="{{dataType.id}}"
                     data-date="{{item.originalDateKey}}">
                     <!-- 图标 -->
                     <view class="record-icon">

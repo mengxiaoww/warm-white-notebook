@@ -9834,8 +9834,7 @@
   line-height: 1.2;
   text-align: left;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
 }
 
 .clinic-right-text {
@@ -10410,11 +10409,31 @@
 }
 
 .calendar-day-compact.has-record-mark {
-  
+
 }
 
 .calendar-month-grid .calendar-day.has-record-mark {
   position: relative;
+}
+
+/* 住院期间日期标记 - 周视图 */
+.calendar-day-compact.hospitalized:not(.selected) {
+  background: rgba(156, 39, 176, 0.08) !important;
+  border: 2rpx solid rgba(156, 39, 176, 0.25) !important;
+}
+.calendar-day-compact.hospitalized:not(.selected) .day-number {
+  color: #9C27B0 !important;
+}
+.calendar-day-compact.hospitalized:not(.selected) .day-name {
+  color: #9C27B0 !important;
+  opacity: 0.8;
+}
+
+/* 住院期间日期标记 - 月视图 */
+.calendar-month-grid .calendar-day.hospitalized:not(.selected) {
+  background: rgba(156, 39, 176, 0.08) !important;
+  border: 2rpx solid rgba(156, 39, 176, 0.25) !important;
+  color: #9C27B0 !important;
 }
 
 .calendar-day-compact.selected .record-indicator {

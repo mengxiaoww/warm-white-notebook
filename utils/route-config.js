@@ -8,6 +8,7 @@ const ROUTE_MAP = {
   medication: '/packageB/pages/medication/index',
   clinic: '/packageB/pages/clinic-record/index',
   treatment: '/packageB/pages/treatment-record/index',
+  hospitalization: '/packageB/pages/hospitalization-record/index',
   checkReport: '/packageB/pages/check-report/index',
   urine: '/packageB/pages/urine-record/index',
   stool: '/packageB/pages/stool-record/index',

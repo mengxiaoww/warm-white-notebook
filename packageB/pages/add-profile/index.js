@@ -99,7 +99,8 @@ Page({
           { id: 'non_secretory', name: '非分泌型', code: 'NS' },
           { id: 'biclonal', name: '双克隆型', code: 'BC' },
           { id: 'plasmablastic', name: '浆白', code: 'PB' },
-          { id: 'blind_type', name: '盲烟型', code: 'BT' },
+          { id: 'blind_type', name: '冒烟型', code: 'SMM' },
+          { id: 'unclear_myeloma', name: '不清楚分型', code: 'UNCLEAR' },
           { id: 'other_myeloma', name: '其他分型骨髓瘤', code: 'OTHER' }
         ]
       },
@@ -111,6 +112,35 @@ Page({
           { id: 'et', name: '原发性血小板增多症', code: 'ET' },
           { id: 'pmf', name: '原发性骨髓纤维化', code: 'PMF' },
           { id: 'other_mpn', name: '其他MPN', code: 'OTHER-MPN' }
+        ]
+      },
+      {
+        id: 'aplastic',
+        name: '再障',
+        children: []
+      },
+      {
+        id: 'neuroblastoma',
+        name: '神母细胞瘤',
+        children: []
+      },
+      {
+        id: 'solid_tumor',
+        name: '实体瘤',
+        children: [
+          { id: 'breast', name: '乳腺癌', code: 'BC' },
+          { id: 'lung', name: '肺癌', code: 'LC' },
+          { id: 'gastric', name: '胃癌', code: 'GC' },
+          { id: 'colorectal', name: '结直肠癌', code: 'CRC' },
+          { id: 'liver', name: '肝癌', code: 'HCC' },
+          { id: 'osteosarcoma', name: '骨肉瘤', code: 'OS' },
+          { id: 'renal', name: '肾癌', code: 'RCC' },
+          { id: 'nasopharyngeal', name: '鼻咽癌', code: 'NPC' },
+          { id: 'melanoma', name: '黑色素瘤', code: 'MEL' },
+          { id: 'glioma', name: '胶质瘤', code: 'GBM' },
+          { id: 'bone_soft_tissue', name: '骨与软组织肿瘤', code: 'BST' },
+          { id: 'net', name: '神经内分泌肿瘤', code: 'NET' },
+          { id: 'other_solid', name: '其他实体瘤', code: 'OTHER' }
         ]
       }
     ],

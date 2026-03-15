@@ -18,37 +18,41 @@ function generateFunctionConfig(isLymphomaPatient = false, withDataKey = false) 
 
     { id: 'clinic', name: '门诊记录', icon: 'hospital', visible: true, order: 3, navigate: 'navigateToClinic' },
 
-    { id: 'checkReport', name: '检查报告', icon: 'assignment', visible: true, order: 4, navigate: 'navigateToCheckReport' },
+    { id: 'treatment', name: '治疗记录', icon: 'treatment', visible: true, order: 4, navigate: 'navigateToTreatment' },
 
-    { id: 'liver', name: '肝功能', icon: 'liver', visible: false, order: 5, navigate: 'navigateToLiverFunction' },
+    { id: 'hospitalization', name: '住院记录', icon: 'hospitalization', visible: true, order: 5, navigate: 'navigateToHospitalization' },
 
-    { id: 'kidney', name: '肾功能', icon: 'relativity', visible: false, order: 6, navigate: 'navigateToKidneyFunction' },
+    { id: 'checkReport', name: '检查报告', icon: 'assignment', visible: true, order: 6, navigate: 'navigateToCheckReport' },
 
-    { id: 'ldh', name: '乳酸脱氢酶', icon: 'enzyme', visible: isLymphomaPatient, order: 7, navigate: 'navigateToLdh' },
+    { id: 'liver', name: '肝功能', icon: 'liver', visible: false, order: 7, navigate: 'navigateToLiverFunction' },
 
-    { id: 'ebv', name: 'EB病毒', icon: 'zoom-in', visible: isLymphomaPatient, order: 8, navigate: 'navigateToEbv' },
+    { id: 'kidney', name: '肾功能', icon: 'relativity', visible: false, order: 8, navigate: 'navigateToKidneyFunction' },
 
-    { id: 'cmv', name: '巨细胞病毒', icon: 'search', visible: isLymphomaPatient, order: 9, navigate: 'navigateToCmv' },
+    { id: 'ldh', name: '乳酸脱氢酶', icon: 'enzyme', visible: isLymphomaPatient, order: 9, navigate: 'navigateToLdh' },
 
-    { id: 'bloodSugar', name: '血糖', icon: 'glucose', visible: isLymphomaPatient, order: 10, navigate: 'navigateToBloodSugar' },
+    { id: 'ebv', name: 'EB病毒', icon: 'zoom-in', visible: isLymphomaPatient, order: 10, navigate: 'navigateToEbv' },
 
-    { id: 'bloodOxygen', name: '血氧', icon: 'oxygen', visible: isLymphomaPatient, order: 11, navigate: 'navigateToBloodOxygen' },
+    { id: 'cmv', name: '巨细胞病毒', icon: 'search', visible: isLymphomaPatient, order: 11, navigate: 'navigateToCmv' },
 
-    { id: 'bloodPressure', name: '血压', icon: 'blood-pressure', visible: false, order: 12, navigate: 'navigateToBloodPressure' },
+    { id: 'bloodSugar', name: '血糖', icon: 'glucose', visible: isLymphomaPatient, order: 12, navigate: 'navigateToBloodSugar' },
 
-    { id: 'bodyMeasurement', name: '身高体重', icon: 'dashboard', visible: false, order: 13, navigate: 'navigateToBodyMeasurement' },
+    { id: 'bloodOxygen', name: '血氧', icon: 'oxygen', visible: isLymphomaPatient, order: 13, navigate: 'navigateToBloodOxygen' },
 
-    { id: 'water', name: '饮水', icon: 'tea', visible: false, order: 14, navigate: 'navigateToWaterIntake' },
+    { id: 'bloodPressure', name: '血压', icon: 'blood-pressure', visible: false, order: 14, navigate: 'navigateToBloodPressure' },
 
-    { id: 'diet', name: '饮食', icon: 'bread', visible: false, order: 15, navigate: 'navigateToDiet' },
+    { id: 'bodyMeasurement', name: '身高体重', icon: 'dashboard', visible: false, order: 15, navigate: 'navigateToBodyMeasurement' },
 
-    { id: 'temperature', name: '体温', icon: 'thermometer', visible: false, order: 16, navigate: 'navigateToTemperature' },
+    { id: 'water', name: '饮水', icon: 'tea', visible: false, order: 16, navigate: 'navigateToWaterIntake' },
 
-    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 17, navigate: 'navigateToUrine' },
+    { id: 'diet', name: '饮食', icon: 'bread', visible: false, order: 17, navigate: 'navigateToDiet' },
 
-    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 18, navigate: 'navigateToStool' },
+    { id: 'temperature', name: '体温', icon: 'thermometer', visible: false, order: 18, navigate: 'navigateToTemperature' },
 
-    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 19, navigate: 'navigateToExpense' }
+    { id: 'urine', name: '尿量记录', icon: 'fill-color-1', visible: false, order: 19, navigate: 'navigateToUrine' },
+
+    { id: 'stool', name: '排便记录', icon: 'layers', visible: false, order: 20, navigate: 'navigateToStool' },
+
+    { id: 'expense', name: '费用记录', icon: 'wallet', visible: false, order: 21, navigate: 'navigateToExpense' }
 
   ]
 
@@ -127,6 +131,7 @@ Page({
     monthDays: [], // 月视图数据（完整月份）
 
     markedDates: [], // 有记录标记的日期列表 (YYYY-MM-DD格式)
+    hospitalizationRanges: [], // 住院日期范围 [{start, end}]
 
     selectedDate: '', // 当前选中日期 YYYY-MM-DD
 
@@ -340,7 +345,9 @@ Page({
       { id: 'medication', name: '用药记录', icon: 'candy', visible: true, order: 1, navigate: 'navigateToMedicine', dataKey: 'medicationData' },
       { id: 'blood', name: '血常规', icon: 'blood-drop', visible: true, order: 2, navigate: 'navigateToBloodTest', dataKey: 'bloodData' },
       { id: 'clinic', name: '门诊记录', icon: 'hospital', visible: true, order: 3, navigate: 'navigateToClinic', dataKey: 'clinicData' },
-      { id: 'checkReport', name: '检查报告', icon: 'assignment', visible: true, order: 4, navigate: 'navigateToCheckReport', dataKey: 'checkReportData' }
+      { id: 'treatment', name: '治疗记录', icon: 'treatment', visible: true, order: 4, navigate: 'navigateToTreatment', dataKey: 'treatmentData' },
+      { id: 'hospitalization', name: '住院记录', icon: 'hospitalization', visible: true, order: 5, navigate: 'navigateToHospitalization', dataKey: 'hospitalizationData' },
+      { id: 'checkReport', name: '检查报告', icon: 'assignment', visible: true, order: 6, navigate: 'navigateToCheckReport', dataKey: 'checkReportData' }
     ],
 
     // iOS风格拖拽状态
@@ -8281,7 +8288,9 @@ Page({
 
         isSelected: dateStr === this.data.selectedDate,
 
-        hasRecord: this.data.markedDates.includes(dateStr) // 检查是否有记录
+        hasRecord: this.data.markedDates.includes(dateStr),
+
+        isHospitalized: (this.data.hospitalizationRanges || []).some(r => dateStr >= r.start && dateStr <= r.end)
 
       })
 
@@ -8345,7 +8354,9 @@ Page({
 
         isSelected: dateStr === this.data.selectedDate,
 
-        hasRecord: this.data.markedDates.includes(dateStr) // 检查是否有记录
+        hasRecord: this.data.markedDates.includes(dateStr),
+
+        isHospitalized: (this.data.hospitalizationRanges || []).some(r => dateStr >= r.start && dateStr <= r.end)
 
       })
 
@@ -8656,7 +8667,9 @@ Page({
           checkReportData: null,
           bloodSugarData: null,
           bloodOxygenData: null,
-      bloodPressureData: null
+          bloodPressureData: null,
+          treatmentData: null,
+          hospitalizationData: null
         }
       })
 
@@ -8800,8 +8813,6 @@ Page({
 
         clinicData,
 
-        treatmentData,
-
         urineData,
 
         stoolData,
@@ -8822,7 +8833,11 @@ Page({
 
         dietData,
 
-        temperatureData
+        temperatureData,
+
+        treatmentData,
+
+        hospitalizationData
 
       ] = await Promise.all([
 
@@ -8862,7 +8877,11 @@ Page({
 
         this.getDietDataForDate(dateStr),
 
-        this.getTemperatureDataForDate(dateStr)
+        this.getTemperatureDataForDate(dateStr),
+
+        this.getTreatmentDataForDate(dateStr),
+
+        this.getHospitalizationDataForDate(dateStr)
 
       ])
 
@@ -8884,9 +8903,11 @@ Page({
         bloodPressureData,
         bodyMeasurementData,
         waterData,
-        waterIntakeData: waterData, // 🔧 别名兼容旧ID
+        waterIntakeData: waterData,
         dietData,
-        temperatureData
+        temperatureData,
+        treatmentData,
+        hospitalizationData
       }
 
       this.setData({
@@ -9279,6 +9300,49 @@ Page({
       }
     } catch (error) {
       console.error('❌ 获取体温数据失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的治疗记录数据
+  async getTreatmentDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+      if (!app.globalData.currentProfile?.profileId) return null
+      console.log('🔍 查询治疗记录 - 日期:', dateStr, 'openid:', app.globalData.openid, 'profileId:', app.globalData.currentProfile.profileId)
+      const res = await db.collection('treatmentRecords')
+        .where({ openid: app.globalData.openid, profileId: app.globalData.currentProfile.profileId, date: dateStr })
+        .get()
+      console.log('✅ 治疗记录查询结果:', res.data.length, '条')
+      return res.data.length > 0 ? res.data : null
+    } catch (error) {
+      console.error('获取治疗记录失败:', error)
+      return null
+    }
+  },
+
+  // 获取指定日期的住院记录数据（住院期间包含该日期）
+  async getHospitalizationDataForDate(dateStr) {
+    try {
+      const app = getApp()
+      const db = wx.cloud.database()
+      if (!app.globalData.currentProfile?.profileId) return null
+      const _ = db.command
+      // 查询入院日期 <= dateStr 的记录，在客户端过滤出院日期
+      const res = await db.collection('hospitalizationRecords')
+        .where({
+          openid: app.globalData.openid,
+          profileId: app.globalData.currentProfile.profileId,
+          admissionDate: _.lte(dateStr)
+        })
+        .get()
+      const matched = res.data.filter(r =>
+        !r.dischargeDate || r.dischargeDate >= dateStr
+      )
+      return matched.length > 0 ? matched : null
+    } catch (error) {
+      console.error('获取住院记录失败:', error)
       return null
     }
   },
@@ -10120,8 +10184,14 @@ Page({
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
-          'expense': 'wallet'
+          'expense': 'wallet',
+          'treatment': 'treatment',
+          'hospitalization': 'hospitalization'
         };
+
+        // 🔧 从默认配置获取 navigate 的映射（修复数据库中 navigate 为空的情况）
+        const defaultNavMap = {};
+        generateFunctionConfig(false, false).forEach(d => { defaultNavMap[d.id] = d.navigate; });
 
         functionList = (config.functionList || []).map(item => {
           // 🔧 数据迁移：将旧的 LDH 名称更新为乳酸脱氢酶
@@ -10134,13 +10204,16 @@ Page({
           // 🎨 从代码中根据 id 获取图标，不再使用数据库中的图标
           const iconName = ICON_MAP[item.id] || 'help-circle';
 
+          // 🔧 修复 navigate 为空的情况
+          const navigate = item.navigate || defaultNavMap[item.id] || '';
+
           return {
             id: item.id,
             name: displayName,
-            icon: iconName, // 图标来自代码映射，不是数据库
-            visible: item.visible === true,  // 明确只有 true 才显示
+            icon: iconName,
+            visible: item.visible === true,
             order: item.order || 1,
-            navigate: item.navigate,
+            navigate,
             dataKey: `${item.id}Data`
           };
         })
@@ -10154,6 +10227,20 @@ Page({
           functionList = functionList.filter(item => item.id !== 'waterIntake')
           needsUpdate = true
         }
+
+        // 🔧 数据迁移：补充数据库中缺失的新功能项（如 treatment）
+        const allDefaults = generateFunctionConfig(false, true)
+        allDefaults.forEach(defaultItem => {
+          const exists = functionList.some(item => item.id === defaultItem.id)
+          if (!exists) {
+            functionList.push({
+              ...defaultItem,
+              icon: ICON_MAP[defaultItem.id] || 'help-circle'
+            })
+            needsUpdate = true
+            console.log('🆕 [主页面配置] 补充缺失功能项:', defaultItem.id)
+          }
+        })
 
         // 🔧 如果发现旧数据（名称需要更新），更新到数据库（不包含 icon 字段）
         if (needsUpdate) {
@@ -10376,27 +10463,36 @@ Page({
           'temperature': 'thermometer',
           'urine': 'fill-color-1',
           'stool': 'layers',
-          'expense': 'wallet'
+          'expense': 'wallet',
+          'treatment': 'treatment',
+          'hospitalization': 'hospitalization'
         };
+
+        // 🔧 从默认配置获取 navigate 的映射
+        const defaultNavMap2 = {};
+        generateFunctionConfig(false, false).forEach(d => { defaultNavMap2[d.id] = d.navigate; });
 
         functionList = (res.data[0].functionList || []).map(item => {
           // 🔧 数据迁移：将旧的 LDH 名称更新为乳酸脱氢酶
           let displayName = item.name;
           if (item.id === 'ldh' && item.name === 'LDH') {
             displayName = '乳酸脱氢酶';
-            needsUpdate = true; // 发现需要迁移的数据
+            needsUpdate = true;
           }
 
           // 🎨 从代码中根据 id 获取图标，不再使用数据库中的图标
           const iconName = ICON_MAP[item.id] || 'help-circle';
 
+          // 🔧 修复 navigate 为空的情况
+          const navigate = item.navigate || defaultNavMap2[item.id] || '';
+
           return {
             id: item.id,
             name: displayName,
-            icon: iconName, // 图标来自代码映射，不是数据库
+            icon: iconName,
             visible: item.visible !== undefined ? item.visible : true,
             order: item.order || 1,
-            navigate: item.navigate
+            navigate
           };
         })
 
@@ -10651,14 +10747,27 @@ Page({
       const db = wx.cloud.database()
 
       // 标准化配置数据（不再保存 icon 字段，icon 由代码根据 id 决定）
-      const functionListToSave = this.data.customFunctionList.map(item => ({
+      let functionListToSave = this.data.customFunctionList.map(item => ({
         id: item.id,
         name: item.name,
-        // 不再保存 icon 到数据库
         visible: item.visible !== undefined ? item.visible : true,
         order: item.order || 1,
         navigate: item.navigate
       }))
+
+      // 确保所有 generateFunctionConfig 里的功能项都存在（防止保存时丢失新增项）
+      const allDefaults = generateFunctionConfig(false, false)
+      allDefaults.forEach(defaultItem => {
+        if (!functionListToSave.some(item => item.id === defaultItem.id)) {
+          functionListToSave.push({
+            id: defaultItem.id,
+            name: defaultItem.name,
+            visible: defaultItem.visible,
+            order: defaultItem.order,
+            navigate: defaultItem.navigate
+          })
+        }
+      })
 
       // 查询是否已存在配置（功能项配置是全局配置，只根据 openid 查询）
       const existRes = await db.collection('functionCustomConfig')
@@ -11301,9 +11410,24 @@ Page({
 
       console.log('加载有记录的日期:', markedDates.length, '天');
 
-      this.setData({
-        markedDates
-      });
+      // 查询住院记录，生成住院日期范围
+      let hospitalizationRanges = [];
+      try {
+        const hospRes = await db.collection('hospitalizationRecords')
+          .where({ openid, profileId })
+          .field({ admissionDate: true, dischargeDate: true })
+          .get();
+        hospitalizationRanges = hospRes.data
+          .filter(r => r.admissionDate)
+          .map(r => ({
+            start: r.admissionDate,
+            end: r.dischargeDate || this.formatDate(new Date()) // 未出院则到今天
+          }));
+      } catch (err) {
+        console.error('查询住院记录失败:', err);
+      }
+
+      this.setData({ markedDates, hospitalizationRanges });
 
       // 重新生成日历视图以应用标记
       this.generateWeekView();

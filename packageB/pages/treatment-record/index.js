@@ -260,6 +260,11 @@ Page({
   onRecordDateCancel() { this.setData({ recordDatePickerVisible: false }); },
   onRecordDateVisibleChange(e) { this.setData({ recordDatePickerVisible: e.detail.visible }); },
 
+  // 用药时间选择器
+  onMedicationTimeChange(e) {
+    this.setData({ 'form.medicationTime': e.detail.value });
+  },
+
   async saveRecord() {
     const { form, isEditMode, editingRecordId, openid, currentProfileId } = this.data;
     if (!form.recordDate) {

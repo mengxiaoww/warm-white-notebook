@@ -42,9 +42,7 @@
                   <view class="type-badge type-{{item.recordType}}">
                     {{item.recordType === 'medication' ? '用药' : '出院小结'}}
                   </view>
-                  <text class="project-name" wx:if="{{item.recordType === 'medication'}}">
-                    {{item.treatmentPlan ? item.treatmentPlan : ''}}{{item.treatmentPlan && item.medicationName ? '：' : ''}}{{item.medicationName ? item.medicationName : ''}}
-                  </text>
+                  <text class="project-name" wx:if="{{item.recordType === 'medication'}}">{{item.treatmentPlan}}  {{item.treatmentPlan && item.medicationName ? ' ' : ''}}{{item.medicationName}}</text>
                   <text class="project-name" wx:if="{{item.recordType === 'discharge'}}">{{item.dischargeDiagnosis}}</text>
                 </view>
                 <view class="record-date" wx:if="{{item.recordDate}}">{{item.recordDate}}</view>
@@ -176,7 +174,12 @@
               </view>
               <view class="form-item">
                 <text class="form-label">用药时间</text>
-                <t-input value="{{form.medicationTime}}" placeholder="选填，如：08:00" bind:change="onFormInput" data-field="medicationTime" class="form-input" />
+                <picker mode="time" value="{{form.medicationTime}}" bindchange="onMedicationTimeChange">
+                  <view class="visit-time-input">
+                    <text class="visit-time-text {{form.medicationTime ? '' : 'placeholder-text'}}">{{form.medicationTime || '选填，点击选择时间'}}</text>
+                    <t-icon name="time" size="32rpx" color="#999" />
+                  </view>
+                </picker>
               </view>
               <!-- 入院/入仓 -->
               <view class="form-item">
