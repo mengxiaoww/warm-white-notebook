@@ -113,7 +113,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();
@@ -615,6 +615,27 @@ Page({
               db.collection('medications').doc(doc._id).remove()
             );
           }
+        } else {
+          // 停止日期之前的记录：更新该药品的 endDate 为停药前一天
+          const stopDateObj = new Date(stopDate);
+          stopDateObj.setDate(stopDateObj.getDate() - 1);
+          const newEndDate = this.formatDate(stopDateObj);
+
+          const updatedMedicines = doc.medicines.map(m => {
+            if (m.id === medicineId) {
+              return { ...m, endDate: newEndDate, effectiveEndDate: newEndDate, isPending: false };
+            }
+            return m;
+          });
+
+          operations.push(
+            db.collection('medications').doc(doc._id).update({
+              data: {
+                medicines: updatedMedicines,
+                updateTime: db.serverDate()
+              }
+            })
+          );
         }
         // 保留停止日期之前的记录不变
       }
@@ -1205,9 +1226,9 @@ icon: 'error'
     }
 
     if (days === 'pending') {
-      // 待定：设置为99年后（表示长期服用），但实际只创建2年内记录
+      // 待定：设置为1年后（表示长期服用）
       const endDate = new Date(startDate);
-      endDate.setFullYear(endDate.getFullYear() + 99);
+      endDate.setFullYear(endDate.getFullYear() + 1);
       const endDateStr = this.formatDate(endDate);
 
       this.setData({
@@ -1306,12 +1327,12 @@ icon: 'error'
 
     // 🔧 计算日期跨度，防止操作过多
     const startDate = new Date(medicineForm.startDate);
-    // 待定模式：实际只创建从开始日期到2年后的记录
+    // 待定模式：实际只创建从开始日期到1年后的记录
     let effectiveEndDate = new Date(medicineForm.endDate);
     if (medicineForm.isPending) {
-      const twoYearsLater = new Date(startDate);
-      twoYearsLater.setFullYear(twoYearsLater.getFullYear() + 2);
-      effectiveEndDate = twoYearsLater;
+      const oneYearLater = new Date(startDate);
+      oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+      effectiveEndDate = oneYearLater;
     }
     const endDate = effectiveEndDate;
     const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;

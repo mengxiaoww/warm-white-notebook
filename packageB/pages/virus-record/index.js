@@ -98,7 +98,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();

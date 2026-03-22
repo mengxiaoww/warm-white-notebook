@@ -163,7 +163,9 @@ Page({
     medicalRecordTypeFilterOptions: [
       { label: '全部类型', value: 'all' },
       { label: '检查报告', value: 'checkReport' },
-      { label: '门诊记录', value: 'clinic' }
+      { label: '门诊记录', value: 'clinic' },
+      { label: '住院记录', value: 'hospitalization' },
+      { label: '治疗记录', value: 'treatment' }
     ],
     allMedicalRecords: [], // 存储所有记录（未筛选）
 
@@ -764,10 +766,8 @@ Page({
 
     let filteredRecords = allMedicalRecords;
 
-    if (selectedMedicalRecordTypeFilter === 'checkReport') {
-      filteredRecords = allMedicalRecords.filter(r => r.recordType === 'checkReport');
-    } else if (selectedMedicalRecordTypeFilter === 'clinic') {
-      filteredRecords = allMedicalRecords.filter(r => r.recordType === 'clinic');
+    if (selectedMedicalRecordTypeFilter !== 'all') {
+      filteredRecords = allMedicalRecords.filter(r => r.recordType === selectedMedicalRecordTypeFilter);
     }
 
     this.setData({
@@ -4157,38 +4157,25 @@ Page({
     const { id, date, recordType } = e.currentTarget.dataset;
     console.log('navigateToMedicalRecordDetail:', { id, date, recordType });
 
+    let url;
     if (recordType === 'clinic') {
-      // 跳转到门诊记录页面
-      wx.navigateTo({
-        url: `/packageB/pages/clinic-record/index?date=${date}&editId=${id}`,
-        success: () => {
-          console.log('门诊记录详情页面跳转成功');
-        },
-        fail: (err) => {
-          console.error('门诊记录详情导航失败:', err);
-          wx.showToast({
-            title: '跳转失败',
-            icon: 'none'
-          });
-        }
-      });
+      url = `/packageB/pages/clinic-record/index?date=${date}&editId=${id}`;
+    } else if (recordType === 'hospitalization') {
+      url = `/packageB/pages/hospitalization-record/index`;
+    } else if (recordType === 'treatment') {
+      url = `/packageB/pages/treatment-record/index?date=${date}`;
     } else {
-      // 跳转到检查报告页面
+      // 检查报告
       const urlParam = id ? `id=${id}` : `date=${date}`;
-      wx.navigateTo({
-        url: `/packageB/pages/check-report/index?${urlParam}`,
-        success: () => {
-          console.log('检查报告详情页面跳转成功');
-        },
-        fail: (err) => {
-          console.error('检查报告详情导航失败:', err);
-          wx.showToast({
-            title: '跳转失败',
-            icon: 'none'
-          });
-        }
-      });
+      url = `/packageB/pages/check-report/index?${urlParam}`;
     }
+    wx.navigateTo({
+      url,
+      fail: (err) => {
+        console.error('详情导航失败:', err);
+        wx.showToast({ title: '跳转失败', icon: 'none' });
+      }
+    });
   },
 
   // 跳转到检查报告详情页面（从检查报告Tab）
@@ -4492,13 +4479,17 @@ Page({
       }
 
       // 并行查询
-      const [checkReportRes, clinicRecordRes] = await Promise.all([
+      const [checkReportRes, clinicRecordRes, hospitalizationRes, treatmentRes] = await Promise.all([
         checkReportQuery.orderBy('date', 'desc').orderBy('createTime', 'desc').get(),
-        clinicRecordQuery.orderBy('date', 'desc').orderBy('updateTime', 'desc').get()
+        clinicRecordQuery.orderBy('date', 'desc').orderBy('updateTime', 'desc').get(),
+        db.collection('hospitalizationRecords').where({ openid, profileId: currentProfileId }).orderBy('admissionDate', 'desc').get(),
+        db.collection('treatmentRecords').where({ openid, profileId: currentProfileId }).orderBy('date', 'desc').get()
       ]);
 
       const reports = checkReportRes.data || [];
       const clinicRecords = clinicRecordRes.data || [];
+      const hospitalizationRecords = hospitalizationRes.data || [];
+      const treatmentRecords = treatmentRes.data || [];
 
       // 处理检查报告数据
       const resultTypeMap = {
@@ -4534,8 +4525,35 @@ Page({
         detailedResults: `${record.doctorName ? '医生：' + record.doctorName : ''}`
       }));
 
+      // 处理住院记录数据
+      const processedHospitalizationRecords = hospitalizationRecords.map(record => ({
+        ...record,
+        date: record.admissionDate,
+        displayDate: this.formatDisplayDate(new Date(record.admissionDate)),
+        weekday: this.getWeekday(record.admissionDate),
+        relativeTime: this.getRelativeTime(record.admissionDate),
+        id: record._id,
+        recordType: 'hospitalization',
+        projectName: record.hospital || '住院记录',
+        resultTypeLabel: record.department || '',
+        detailedResults: record.dischargeDate ? `出院：${record.dischargeDate}` : '住院中'
+      }));
+
+      // 处理治疗记录数据
+      const processedTreatmentRecords = treatmentRecords.map(record => ({
+        ...record,
+        displayDate: this.formatDisplayDate(new Date(record.date)),
+        weekday: this.getWeekday(record.date),
+        relativeTime: this.getRelativeTime(record.date),
+        id: record._id,
+        recordType: 'treatment',
+        projectName: record.treatmentPlan || record.medicationName || '治疗记录',
+        resultTypeLabel: record.recordType === 'medication' ? '治疗' : '出院小结',
+        detailedResults: record.notes || ''
+      }));
+
       // 合并并按日期排序
-      const allRecords = [...processedReports, ...processedClinicRecords].sort((a, b) => {
+      const allRecords = [...processedReports, ...processedClinicRecords, ...processedHospitalizationRecords, ...processedTreatmentRecords].sort((a, b) => {
         const dateA = new Date(a.date).getTime();
         const dateB = new Date(b.date).getTime();
         if (dateA !== dateB) return dateB - dateA;
@@ -4549,6 +4567,8 @@ Page({
         totalReports: allRecords.length,
         checkReportCount: processedReports.length,
         clinicRecordCount: processedClinicRecords.length,
+        hospitalizationCount: processedHospitalizationRecords.length,
+        treatmentCount: processedTreatmentRecords.length,
         normalCount: processedReports.filter(r => r.resultType === 'normal').length,
         abnormalCount: processedReports.filter(r => r.resultType === 'abnormal').length
       };
@@ -4567,7 +4587,9 @@ Page({
       console.log('就医档案数据加载完成:', {
         总记录: stats.totalReports,
         检查报告: stats.checkReportCount,
-        门诊记录: stats.clinicRecordCount
+        门诊记录: stats.clinicRecordCount,
+        住院记录: stats.hospitalizationCount,
+        治疗记录: stats.treatmentCount
       });
 
     } catch (error) {

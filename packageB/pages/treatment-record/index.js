@@ -22,17 +22,12 @@ Page({
       recordType: 'medication', // medication | discharge
       // 用药字段
       treatmentPlan: '',
-      medicationName: '',
-      dosage: '',
-      medicationTime: '',
       // 出院小结字段
       admissionInfo: '',
       dischargeDiagnosis: '',
       dischargeSummary: '',
       // 通用字段
-      notes: '',
-      isHospitalized: false,
-      isInWard: false
+      notes: ''
     },
 
     // 日期/时间选择器
@@ -43,10 +38,6 @@ Page({
     treatmentPlanSuggestions: [
       'CCCG2020方案', 'CAR-T', '贝林妥欧单抗',
       '异基因移植', '自体移植'
-    ],
-    medicationNameSuggestions: [
-      '阿司匹林', '布洛芬', '头孢克肟', '阿莫西林',
-      '氨氯地平', '阿托伐他汀', '二甲双胍', '奥美拉唑'
     ]
   },
 
@@ -111,7 +102,7 @@ Page({
       currentProfileId = app.getCurrentProfileId();
     }
     if (!openid) {
-      wx.showModal({ title: '提示', content: '请先登录', showCancel: false, success: () => wx.navigateBack() });
+      wx.showModal({ title: '提示', content: '请先去【我的】登录', showCancel: false, success: () => wx.navigateBack() });
       return;
     }
     if (!currentProfileId) {
@@ -165,15 +156,10 @@ Page({
         recordDate: defaultDate,
         recordType: 'medication',
         treatmentPlan: '',
-        medicationName: '',
-        dosage: '',
-        medicationTime: '',
         admissionInfo: '',
         dischargeDiagnosis: '',
         dischargeSummary: '',
-        notes: '',
-        isHospitalized: false,
-        isInWard: false
+        notes: ''
       }
     });
   },
@@ -192,15 +178,10 @@ Page({
         recordDate: record.recordDate || '',
         recordType: record.recordType || 'medication',
         treatmentPlan: record.treatmentPlan || '',
-        medicationName: record.medicationName || '',
-        dosage: record.dosage || '',
-        medicationTime: record.medicationTime || '',
         admissionInfo: record.admissionInfo || '',
         dischargeDiagnosis: record.dischargeDiagnosis || '',
         dischargeSummary: record.dischargeSummary || '',
-        notes: record.notes || '',
-        isHospitalized: record.isHospitalized || false,
-        isInWard: record.isInWard || false
+        notes: record.notes || ''
       }
     });
   },
@@ -241,11 +222,6 @@ Page({
     this.setData({ 'form.recordType': e.currentTarget.dataset.value });
   },
 
-  toggleBool(e) {
-    const { field } = e.currentTarget.dataset;
-    this.setData({ [`form.${field}`]: !this.data.form[field] });
-  },
-
   selectSuggestion(e) {
     const { field, value } = e.currentTarget.dataset;
     this.setData({ [`form.${field}`]: value });
@@ -261,9 +237,6 @@ Page({
   onRecordDateVisibleChange(e) { this.setData({ recordDatePickerVisible: e.detail.visible }); },
 
   // 用药时间选择器
-  onMedicationTimeChange(e) {
-    this.setData({ 'form.medicationTime': e.detail.value });
-  },
 
   async saveRecord() {
     const { form, isEditMode, editingRecordId, openid, currentProfileId } = this.data;
@@ -271,8 +244,8 @@ Page({
       wx.showToast({ title: '请选择记录日期', icon: 'none' }); return;
     }
     if (form.recordType === 'medication') {
-      if (!form.treatmentPlan.trim() && !form.medicationName.trim()) {
-        wx.showToast({ title: '请填写治疗方案或用药名称', icon: 'none' }); return;
+      if (!form.treatmentPlan.trim()) {
+        wx.showToast({ title: '请填写治疗方案', icon: 'none' }); return;
       }
     } else {
       if (!form.dischargeDiagnosis.trim()) {
@@ -288,15 +261,10 @@ Page({
         recordDate: form.recordDate,
         recordType: form.recordType,
         treatmentPlan: form.treatmentPlan.trim(),
-        medicationName: form.medicationName.trim(),
-        dosage: form.dosage.trim(),
-        medicationTime: form.medicationTime,
         admissionInfo: form.admissionInfo.trim(),
         dischargeDiagnosis: form.dischargeDiagnosis.trim(),
         dischargeSummary: form.dischargeSummary.trim(),
         notes: form.notes.trim(),
-        isHospitalized: form.isHospitalized,
-        isInWard: form.isInWard,
         updateTime: db.serverDate()
       };
       if (isEditMode) {

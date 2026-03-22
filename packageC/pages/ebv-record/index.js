@@ -117,8 +117,7 @@ Page({
 
   // 页面隐藏
   onHide() {
-    // 清理临时配置（如果未保存）
-    this.cleanupTemporaryConfigIfNotSaved();
+    // 不清理临时配置，因为选相册/相机会触发onHide，回来后需要恢复配置
   },
 
   // 页面卸载
@@ -165,7 +164,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();
@@ -620,7 +619,7 @@ Page({
     const { openid, currentProfileId, selectedDate, formData } = this.data;
     if (!openid || !currentProfileId) {
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'none'
     });
       return;
@@ -910,7 +909,7 @@ Page({
     if (!openid || !currentProfileId) {
       wx.hideLoading();
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'error'
     });
       return;
@@ -1444,17 +1443,26 @@ Page({
       mediaType: ['image'],
       sourceType: ['camera'],
       camera: 'back',
-      success: (res) => {
+      success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
-        this.recognizeImageWithAI(tempFilePath);
+        wx.showLoading({ title: '识别中...', mask: true });
+        try {
+          const matchedIndicators = await this.recognizeImageWithAI(tempFilePath);
+          wx.hideLoading();
+          if (!matchedIndicators || matchedIndicators.length === 0) {
+            wx.showToast({ title: '未识别到相关指标', icon: 'none' });
+            return;
+          }
+          this.setData({ aiRecognizedData: matchedIndicators, aiResultVisible: true });
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({ title: error.message || '识别失败，请重试', icon: 'none', duration: 2000 });
+        }
       },
       fail: (err) => {
         console.error('拍照失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
-          wx.showToast({
-      title: '拍照失败',
-      icon: 'none'
-    });
+          wx.showToast({ title: '拍照失败', icon: 'none' });
         }
       }
     });
@@ -1471,17 +1479,26 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album'],
-      success: (res) => {
+      success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
-        this.recognizeImageWithAI(tempFilePath);
+        wx.showLoading({ title: '识别中...', mask: true });
+        try {
+          const matchedIndicators = await this.recognizeImageWithAI(tempFilePath);
+          wx.hideLoading();
+          if (!matchedIndicators || matchedIndicators.length === 0) {
+            wx.showToast({ title: '未识别到相关指标', icon: 'none' });
+            return;
+          }
+          this.setData({ aiRecognizedData: matchedIndicators, aiResultVisible: true });
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({ title: error.message || '识别失败，请重试', icon: 'none', duration: 2000 });
+        }
       },
       fail: (err) => {
         console.error('选择图片失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
-          wx.showToast({
-      title: '选择图片失败',
-      icon: 'none'
-    });
+          wx.showToast({ title: '选择图片失败', icon: 'none' });
         }
       }
     });

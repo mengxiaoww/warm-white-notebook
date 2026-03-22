@@ -37,6 +37,9 @@
           <view wx:for="{{exampleQuestions}}" wx:key="index" class="example-item" bindtap="onExampleClick" data-question="{{item}}">
             {{item}}
           </view>
+          <view class="example-item" bindtap="onExampleClick" data-question="记录今日晚餐小馄饨一碗">
+            记录今日晚餐小馄饨一碗
+          </view>
         </view>
       </view>
     </view>

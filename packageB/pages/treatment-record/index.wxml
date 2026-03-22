@@ -48,21 +48,6 @@
                 <view class="record-date" wx:if="{{item.recordDate}}">{{item.recordDate}}</view>
               </view>
 
-              <!-- 用药信息 -->
-              <view class="medical-info" wx:if="{{item.recordType === 'medication'}}">
-                <view class="info-item" wx:if="{{item.dosage}}">
-                  <text class="info-label">药品用量</text>
-                  <view class="info-content">{{item.dosage}}</view>
-                </view>
-                <view class="info-item" wx:if="{{item.medicationTime}}">
-                  <text class="info-label">用药时间</text>
-                  <view class="info-content">{{item.medicationTime}}</view>
-                </view>
-                <view class="flag-row" wx:if="{{item.isHospitalized || item.isInWard}}">
-                  <view class="flag-tag flag-hospital" wx:if="{{item.isHospitalized}}">入院</view>
-                  <view class="flag-tag flag-ward" wx:if="{{item.isInWard}}">入仓</view>
-                </view>
-              </view>
 
               <!-- 出院小结信息 -->
               <view class="medical-info" wx:if="{{item.recordType === 'discharge'}}">
@@ -138,7 +123,7 @@
               <view class="type-selector">
                 <view class="type-option {{form.recordType === 'medication' ? 'type-option-active' : ''}}" bindtap="selectRecordType" data-value="medication">
                   <t-icon wx:if="{{form.recordType === 'medication'}}" name="check-circle-filled" size="32rpx" color="#FF9800" />
-                  <text>用药</text>
+                  <text>治疗</text>
                 </view>
                 <view class="type-option {{form.recordType === 'discharge' ? 'type-option-active' : ''}}" bindtap="selectRecordType" data-value="discharge">
                   <t-icon wx:if="{{form.recordType === 'discharge'}}" name="check-circle-filled" size="32rpx" color="#FF9800" />
@@ -150,53 +135,12 @@
 
           <!-- 用药信息 -->
           <view wx:if="{{form.recordType === 'medication'}}">
-            <view class="section-divider">
-              <text class="section-label">用药信息</text>
-            </view>
             <view class="form-section">
               <view class="form-item">
                 <text class="form-label">治疗方案</text>
                 <t-input value="{{form.treatmentPlan}}" placeholder="请输入治疗方案" bind:change="onFormInput" data-field="treatmentPlan" class="form-input" />
                 <view class="suggestion-buttons">
                   <view class="suggestion-btn" wx:for="{{treatmentPlanSuggestions}}" wx:key="index" bindtap="selectSuggestion" data-field="treatmentPlan" data-value="{{item}}">{{item}}</view>
-                </view>
-              </view>
-              <view class="form-item">
-                <text class="form-label required-label">用药名称</text>
-                <t-input value="{{form.medicationName}}" placeholder="请输入用药名称" bind:change="onFormInput" data-field="medicationName" class="form-input" />
-                <view class="suggestion-buttons">
-                  <view class="suggestion-btn" wx:for="{{medicationNameSuggestions}}" wx:key="index" bindtap="selectSuggestion" data-field="medicationName" data-value="{{item}}">{{item}}</view>
-                </view>
-              </view>
-              <view class="form-item">
-                <text class="form-label">药品用量</text>
-                <t-input value="{{form.dosage}}" placeholder="选填，如：100mg 每日一次" bind:change="onFormInput" data-field="dosage" class="form-input" />
-              </view>
-              <view class="form-item">
-                <text class="form-label">用药时间</text>
-                <picker mode="time" value="{{form.medicationTime}}" bindchange="onMedicationTimeChange">
-                  <view class="visit-time-input">
-                    <text class="visit-time-text {{form.medicationTime ? '' : 'placeholder-text'}}">{{form.medicationTime || '选填，点击选择时间'}}</text>
-                    <t-icon name="time" size="32rpx" color="#999" />
-                  </view>
-                </picker>
-              </view>
-              <!-- 入院/入仓 -->
-              <view class="form-item">
-                <text class="form-label">状态标记</text>
-                <view class="toggle-row">
-                  <view class="toggle-item" bindtap="toggleBool" data-field="isHospitalized">
-                    <view class="toggle-box {{form.isHospitalized ? 'toggle-active' : ''}}">
-                      <t-icon wx:if="{{form.isHospitalized}}" name="check" size="28rpx" color="white" />
-                    </view>
-                    <text class="toggle-label">入院</text>
-                  </view>
-                  <view class="toggle-item" bindtap="toggleBool" data-field="isInWard">
-                    <view class="toggle-box {{form.isInWard ? 'toggle-active' : ''}}">
-                      <t-icon wx:if="{{form.isInWard}}" name="check" size="28rpx" color="white" />
-                    </view>
-                    <text class="toggle-label">入仓</text>
-                  </view>
                 </view>
               </view>
             </view>

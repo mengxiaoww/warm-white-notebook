@@ -434,12 +434,7 @@ Page({
 
         if (chartData.length > 0) {
           const latest = chartData[chartData.length - 1].value;
-          // 饮食次数显示整数，其他数据智能格式化
-          if (dataType.key === 'mealCount') {
-            latestValue = latest.toFixed(0) + dataType.unit;
-          } else {
-            latestValue = this.formatNumber(latest) + dataType.unit;
-          }
+          latestValue = this.formatNumber(latest) + dataType.unit;
         }
       }
 
@@ -483,29 +478,6 @@ Page({
       return [];
     }
 
-    // 特殊处理：饮食记录统计每天的记录次数
-    if (dataType.key === 'mealCount') {
-      // 按日期分组统计记录次数
-      const countByDate = {};
-      rawData.forEach(item => {
-        if (item.date) {
-          countByDate[item.date] = (countByDate[item.date] || 0) + 1;
-        }
-      });
-
-      // 转换为图表数据格式
-      const chartData = Object.keys(countByDate)
-        .sort((a, b) => new Date(a) - new Date(b))
-        .map((date, index) => ({
-          name: this.formatDate(date),
-          value: countByDate[date],
-          createTime: new Date(date),
-          index: index
-        }));
-
-      return chartData;
-    }
-
     const validData = [];
 
     rawData.forEach((item, index) => {
@@ -530,12 +502,35 @@ Page({
 
     validData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    const chartData = validData.map((item, index) => ({
-      name: this.formatDate(item.date),
-      value: item.value,
-      createTime: item.createTime,
-      index: index
-    }));
+    // 对于饮水数据，需要按日期分组求和（每日总量）
+    let chartData;
+    if (dataType.key === 'water') {
+      const groupedByDate = {};
+      validData.forEach(item => {
+        if (!groupedByDate[item.date]) {
+          groupedByDate[item.date] = {
+            date: item.date,
+            value: 0,
+            createTime: item.createTime
+          };
+        }
+        groupedByDate[item.date].value += item.value;
+      });
+
+      chartData = Object.values(groupedByDate).map((item, index) => ({
+        name: this.formatDate(item.date),
+        value: item.value,
+        createTime: item.createTime,
+        index: index
+      }));
+    } else {
+      chartData = validData.map((item, index) => ({
+        name: this.formatDate(item.date),
+        value: item.value,
+        createTime: item.createTime,
+        index: index
+      }));
+    }
 
     return chartData;
   },
@@ -602,8 +597,57 @@ Page({
     }
   },
 
+  // 计算合理的Y轴范围和间隔
+  calculateYAxisConfig(data, dataType) {
+    if (!data || data.length === 0) {
+      return { min: 0, max: 100, interval: 20 };
+    }
+
+    const values = data.map(item => item.value);
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    const range = maxValue - minValue;
+
+    // 对于变化不大的指标（如身高），自动扩展范围以获得更好的可视化
+    let min = minValue;
+    let max = maxValue;
+
+    // 如果范围太小（小于10），扩展范围
+    if (range < 10) {
+      const padding = Math.max(5, range * 0.5);
+      min = Math.max(0, minValue - padding);
+      max = maxValue + padding;
+    } else if (range < 50) {
+      const padding = range * 0.2;
+      min = Math.max(0, minValue - padding);
+      max = maxValue + padding;
+    } else {
+      const padding = range * 0.1;
+      min = Math.max(0, minValue - padding);
+      max = maxValue + padding;
+    }
+
+    // 计算合理的间隔
+    const newRange = max - min;
+    let interval;
+    if (newRange <= 10) {
+      interval = 2;
+    } else if (newRange <= 20) {
+      interval = 5;
+    } else if (newRange <= 50) {
+      interval = 10;
+    } else if (newRange <= 100) {
+      interval = 20;
+    } else {
+      interval = Math.ceil(newRange / 5);
+    }
+
+    return { min: Math.floor(min), max: Math.ceil(max), interval };
+  },
+
   // 创建图表配置选项
   createChartOption(data, dataType) {
+    const yAxisConfig = this.calculateYAxisConfig(data, dataType);
 
     const option = {
       backgroundColor: '#FFFFFF',
@@ -686,6 +730,9 @@ Page({
       },
       yAxis: {
         type: 'value',
+        min: yAxisConfig.min,
+        max: yAxisConfig.max,
+        interval: yAxisConfig.interval,
         axisLabel: {
           fontSize: 10,
           color: '#000000',
@@ -1349,7 +1396,7 @@ Page({
     const currentProfileId = app.getCurrentProfileId();
 
     if (!openid) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
+      wx.showToast({ title: '请先去【我的】登录', icon: 'none' });
       return;
     }
 
@@ -1473,7 +1520,7 @@ Page({
     const profileId = app.getCurrentProfileId();
 
     if (!openid || !profileId) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
+      wx.showToast({ title: '请先去【我的】登录', icon: 'none' });
       return;
     }
 

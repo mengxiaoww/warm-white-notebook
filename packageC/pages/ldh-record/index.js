@@ -117,8 +117,7 @@ Page({
 
   // 页面隐藏
   onHide() {
-    // 清理临时配置（如果未保存）
-    this.cleanupTemporaryConfigIfNotSaved();
+    // 不清理临时配置，因为选相册/相机会触发onHide，回来后需要恢复配置
   },
 
   // 页面卸载
@@ -165,7 +164,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();
@@ -660,7 +659,7 @@ Page({
     const { openid, currentProfileId, selectedDate, formData } = this.data;
     if (!openid || !currentProfileId) {
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'none'
     });
       return;
@@ -901,7 +900,7 @@ Page({
     if (!openid || !currentProfileId) {
       wx.hideLoading();
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'error'
     });
       return;
@@ -1182,159 +1181,36 @@ Page({
     });
   },
 
-  // OCR扫描录入
+  // OCR扫描录入（改用AI图片识别，和肝功能/肾功能一致）
   scanOCR() {
-    const that = this;
-
-    // 让用户选择图片
-    wx.chooseImage({
+    wx.chooseMedia({
       count: 1,
-      sizeType: ['original', 'compressed'],
+      mediaType: ['image'],
       sourceType: ['album', 'camera'],
-      success(res) {
-        const tempFilePath = res.tempFilePaths[0];
-
-        wx.showLoading({
-          title: '识别中...',
-          mask: true
-        });
-
-        // 获取图片信息
-        wx.getImageInfo({
-          src: tempFilePath,
-          success: function (imgInfo) {
-            console.log('图片信息:', imgInfo);
-
-            // 压缩图片以减少数据大小
-            wx.compressImage({
-              src: tempFilePath,
-              quality: 80,
-              success: function (compressRes) {
-                console.log('压缩后图片路径:', compressRes.tempFilePath);
-
-                // 调用OCR接口
-                wx.getFileSystemManager().readFile({
-                  filePath: compressRes.tempFilePath,
-                  encoding: 'base64',
-                  success: function (fileRes) {
-                    // 检查数据大小，云函数限制约为1MB
-                    const dataSize = fileRes.data.length;
-                    console.log('Base64数据大小:', dataSize, 'bytes');
-
-                    if (dataSize > 800000) { // 800KB限制
-                      wx.hideLoading();
-                      wx.showToast({
-      title: '图片过大，请选择更小的图片',
-      icon: 'none',
-      duration: 2500
-                      });
-                      return;
-                    }
-
-                    wx.cloud.callFunction({
-                      name: 'ocrFunction',
-                      data: {
-                        imgBase64: fileRes.data,
-                        imgType: imgInfo.type || 'png'
-                      },
-                      success: function (cloudRes) {
-                        wx.hideLoading();
-                        console.log('OCR云函数返回:', cloudRes);
-
-                        if (cloudRes.result) {
-                          // 检查云函数是否正确处理了请求
-                          if (cloudRes.result.success === false) {
-                            console.error('OCR识别失败:', cloudRes.result.error);
-                            wx.showToast({
-      title: '识别失败: ' + (cloudRes.result.error || '未知错误'),
-      icon: 'none',
-      duration: 2500
-                            });
-                          } else if (cloudRes.result.items && cloudRes.result.items.length > 0) {
-                            // 解析OCR结果
-                            that.parseOCRResult(cloudRes.result.items);
-                          } else {
-                            wx.showToast({
-      title: '未识别到有效内容',
-      icon: 'none'
-    });
-                          }
-                        } else {
-                          console.error('云函数返回异常:', cloudRes);
-                          if (cloudRes.errMsg) {
-                            wx.showToast({
-      title: '识别服务异常: ' + cloudRes.errMsg,
-      icon: 'none',
-      duration: 2500
-                            });
-                          } else {
-                            wx.showToast({
-      title: '识别服务异常，请重新部署云函数',
-      icon: 'none',
-      duration: 3000
-                            });
-                          }
-                        }
-                      },
-                      fail: function (err) {
-                        wx.hideLoading();
-                        console.error('调用云函数失败:', err);
-
-                        // 处理数据过大错误
-                        if (err.errMsg && err.errMsg.includes('data exceed max size')) {
-                          wx.showToast({
-      title: '图片数据过大，请选择更小的图片',
-      icon: 'none',
-      duration: 3000
-                          });
-                        } else {
-                          wx.showToast({
-      title: '调用识别服务失败',
-      icon: 'none'
-    });
-                        }
-                      }
-                    });
-                  },
-                  fail: function (err) {
-                    wx.hideLoading();
-                    console.error('读取图片失败:', err);
-                    wx.showToast({
-      title: '读取图片失败',
-      icon: 'none'
-    });
-                  }
-                });
-              },
-              fail: function (err) {
-                wx.hideLoading();
-                console.error('压缩图片失败:', err);
-                wx.showToast({
-      title: '压缩图片失败',
-      icon: 'none'
-    });
-              }
-            });
-          },
-          fail: function (err) {
-            wx.hideLoading();
-            console.error('获取图片信息失败:', err);
-            wx.showToast({
-      title: '获取图片信息失败',
-      icon: 'none'
-    });
+      success: async (res) => {
+        const tempFilePath = res.tempFiles[0].tempFilePath;
+        wx.showLoading({ title: '识别中...', mask: true });
+        try {
+          const matchedIndicators = await this.recognizeImageWithAI(tempFilePath);
+          wx.hideLoading();
+          if (!matchedIndicators || matchedIndicators.length === 0) {
+            wx.showToast({ title: '未识别到相关指标', icon: 'none' });
+            return;
           }
-        });
+          this.setData({ aiRecognizedData: matchedIndicators, aiResultVisible: true });
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({ title: error.message || '识别失败，请重试', icon: 'none', duration: 2000 });
+        }
       },
-      fail: function (err) {
-        console.error('选择图片失败:', err);
-        wx.showToast({
-      title: '选择图片失败',
-      icon: 'none'
-    });
+      fail: (err) => {
+        if (err.errMsg !== 'chooseMedia:fail cancel') {
+          wx.showToast({ title: '选择图片失败', icon: 'none' });
+        }
       }
     });
   },
+
 
   // 解析OCR结果
   parseOCRResult(items) {
@@ -1346,59 +1222,97 @@ Page({
     const ldhKeywordMap = {
       'LDH': ['ldh'],
       '乳酸脱氢酶': ['ldh'],
+      'Lactate Dehydrogenase': ['ldh'],
+      'HBDH': ['hbdh'],
+      'α-羟丁酸脱氢酶': ['hbdh'],
+      'α羟丁酸脱氢酶': ['hbdh'],
+      'a-羟丁酸脱氢酶': ['hbdh'],
+      'CK': ['ck'],
+      '肌酸激酶': ['ck'],
+      'Creatine Kinase': ['ck'],
+      'CK-MB': ['ckmb'],
+      'CKMB': ['ckmb'],
+      '肌酸激酶同工酶': ['ckmb'],
+      'AST': ['ast'],
+      '天冬氨酸氨基转移酶': ['ast'],
+      'ALT': ['alt'],
+      '丙氨酸氨基转移酶': ['alt'],
       'LDH1': ['ldh1'],
       'LDH2': ['ldh2'],
-      'PP65': ['pp65'],
-      'pp65': ['pp65'],
-      'PP65抗原': ['pp65'],
-      'pp65抗原': ['pp65'],
-      'IgM': ['igM'],
-      'igM': ['igM'],
-      '巨细胞病毒IgM': ['igM'],
-      'IgG': ['igG'],
-      'igG': ['igG'],
-      '巨细胞病毒IgG': ['igG'],
-      'IgG亲和力': ['avidity'],
-      '亲和力': ['avidity'],
-      '即早基因': ['immediate'],
-      '晚期基因': ['late'],
-      'IgA': ['igA'],
-      'igA': ['igA'],
-      'P52': ['antigenP52'],
-      'p52': ['antigenP52'],
-      '早期抗原': ['earlyAntigen']
+      'LDH3': ['ldh3'],
+      'LDH4': ['ldh4'],
+      'LDH5': ['ldh5'],
     };
 
     console.log('开始解析OCR结果:', items);
 
+    // 将items按Y坐标分组（同一行的items）
+    const rows = [];
     items.forEach(item => {
-      const text = item.text;
-      console.log('处理文本:', text);
-
-      // 检查每个关键词
-      Object.keys(ldhKeywordMap).forEach(keyword => {
-        if (text.includes(keyword)) {
-          console.log('找到关键词:', keyword, '在文本:', text);
-
-          // 尝试提取数值
-          const numberMatch = text.match(/[\d.,]+/);
-          if (numberMatch) {
-            const value = numberMatch[0];
-            console.log('提取到数值:', value);
-
-            // 映射到对应的表单字段
-            ldhKeywordMap[keyword].forEach(fieldName => {
-              if (that.data.basicIndicators.find(ind => ind.id === fieldName) ||
-                that.data.customIndicators.find(ind => ind.id === fieldName)) {
-                newFormData[fieldName] = value;
-                recognizedCount++;
-                console.log('设置字段:', fieldName, '值:', value);
-              }
-            });
-          }
-        }
-      });
+      const y = item.pos ? Math.round((item.pos[0].y + item.pos[2].y) / 2) : 0;
+      const existingRow = rows.find(r => Math.abs(r.y - y) < 15);
+      if (existingRow) {
+        existingRow.texts.push(item.text);
+      } else {
+        rows.push({ y, texts: [item.text] });
+      }
     });
+
+    // 如果没有pos信息，退回到原来的逐item处理
+    const hasPosInfo = items.length > 0 && items[0].pos;
+
+    if (hasPosInfo) {
+      // 按行处理：关键词和数值在同一行
+      rows.forEach(row => {
+        const rowText = row.texts.join(' ');
+        console.log('处理行:', rowText);
+
+        Object.keys(ldhKeywordMap).forEach(keyword => {
+          if (rowText.includes(keyword)) {
+            console.log('找到关键词:', keyword, '在行:', rowText);
+            const numberMatch = rowText.match(/\b(\d+\.?\d*)\b/g);
+            if (numberMatch) {
+              // 取第一个合理的数值（排除明显是参考范围的）
+              const value = numberMatch[0];
+              console.log('提取到数值:', value);
+              ldhKeywordMap[keyword].forEach(fieldName => {
+                if (that.data.basicIndicators.find(ind => ind.id === fieldName) ||
+                  that.data.customIndicators.find(ind => ind.id === fieldName)) {
+                  newFormData[fieldName] = value;
+                  recognizedCount++;
+                  console.log('设置字段:', fieldName, '值:', value);
+                }
+              });
+            }
+          }
+        });
+      });
+    } else {
+      // 无坐标信息：只在当前item内找数值，不跨行
+      items.forEach(item => {
+        const text = item.text;
+        console.log('处理文本:', text);
+
+        Object.keys(ldhKeywordMap).forEach(keyword => {
+          if (text.includes(keyword)) {
+            console.log('找到关键词:', keyword, '在文本:', text);
+            const numberMatch = text.match(/\b(\d+\.?\d*)\b/);
+            if (numberMatch) {
+              const value = numberMatch[0];
+              console.log('提取到数值:', value);
+              ldhKeywordMap[keyword].forEach(fieldName => {
+                if (that.data.basicIndicators.find(ind => ind.id === fieldName) ||
+                  that.data.customIndicators.find(ind => ind.id === fieldName)) {
+                  newFormData[fieldName] = value;
+                  recognizedCount++;
+                  console.log('设置字段:', fieldName, '值:', value);
+                }
+              });
+            }
+          }
+        });
+      });
+    }
 
     // 更新表单数据
     if (recognizedCount > 0) {
@@ -1459,17 +1373,26 @@ Page({
       mediaType: ['image'],
       sourceType: ['camera'],
       camera: 'back',
-      success: (res) => {
+      success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
-        this.recognizeImageWithAI(tempFilePath);
+        wx.showLoading({ title: '识别中...', mask: true });
+        try {
+          const matchedIndicators = await this.recognizeImageWithAI(tempFilePath);
+          wx.hideLoading();
+          if (!matchedIndicators || matchedIndicators.length === 0) {
+            wx.showToast({ title: '未识别到相关指标', icon: 'none' });
+            return;
+          }
+          this.setData({ aiRecognizedData: matchedIndicators, aiResultVisible: true });
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({ title: error.message || '识别失败，请重试', icon: 'none', duration: 2000 });
+        }
       },
       fail: (err) => {
         console.error('拍照失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
-          wx.showToast({
-      title: '拍照失败',
-      icon: 'none'
-    });
+          wx.showToast({ title: '拍照失败', icon: 'none' });
         }
       }
     });
@@ -1486,17 +1409,26 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album'],
-      success: (res) => {
+      success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
-        this.recognizeImageWithAI(tempFilePath);
+        wx.showLoading({ title: '识别中...', mask: true });
+        try {
+          const matchedIndicators = await this.recognizeImageWithAI(tempFilePath);
+          wx.hideLoading();
+          if (!matchedIndicators || matchedIndicators.length === 0) {
+            wx.showToast({ title: '未识别到相关指标', icon: 'none' });
+            return;
+          }
+          this.setData({ aiRecognizedData: matchedIndicators, aiResultVisible: true });
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({ title: error.message || '识别失败，请重试', icon: 'none', duration: 2000 });
+        }
       },
       fail: (err) => {
         console.error('选择图片失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
-          wx.showToast({
-      title: '选择图片失败',
-      icon: 'none'
-    });
+          wx.showToast({ title: '选择图片失败', icon: 'none' });
         }
       }
     });
@@ -1702,11 +1634,14 @@ Page({
             console.log('当前配置的指标:', allConfiguredIndicators);
 
             // 只保留能匹配到当前配置项的指标,并补充正确的中文label
+            const cleanLabel = s => (s || '').replace(/[*★☆\s]/g, '').toLowerCase();
             const matchedIndicators = data.indicators.map(aiItem => {
-              // 尝试匹配配置的指标
-              const matchedIndicator = allConfiguredIndicators.find(indicator =>
-                aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
-              );
+              // 优先精确 id 匹配，fallback 用清洗后的中文名匹配
+              let matchedIndicator = allConfiguredIndicators.find(indicator => aiItem.id === indicator.id);
+              if (!matchedIndicator && aiItem.label) {
+                const cleanedAiLabel = cleanLabel(aiItem.label);
+                matchedIndicator = allConfiguredIndicators.find(indicator => cleanedAiLabel === cleanLabel(indicator.name));
+              }
 
               if (matchedIndicator) {
                 console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
@@ -1845,9 +1780,18 @@ Page({
         ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
         ...(customIndicators || []).map(item => ({ id: item.id, name: item.name, unit: item.unit }))
       ];
-      const indicatorDesc = allIndicators.map(item =>
-        `   - ${item.name}（id: ${item.id}，单位：${item.unit}）`
-      ).join('\n');
+      const aliasMap = {
+        'ldh': '乳酸脱氢酶/LDH/Lactate Dehydrogenase',
+        'hbdh': 'α-羟丁酸脱氢酶/α羟丁酸脱氢酶/HBDH/HBD',
+        'ck': '肌酸激酶/CK/CPK/Creatine Kinase',
+        'ckmb': '肌酸激酶同工酶/CK-MB/CKMB',
+        'ast': '谷草转氨酶/天门冬氨酸氨基转移酶/AST/GOT',
+        'alt': '谷丙转氨酶/丙氨酸氨基转移酶/ALT/GPT',
+      };
+      const indicatorDesc = allIndicators.map(item => {
+        const alias = aliasMap[item.id] || item.name;
+        return `   - ${alias}（id: ${item.id}，单位：${item.unit}）`;
+      }).join('\n');
 
       console.log('📋 当前页面配置的指标:', allIndicators);
       console.log('📸 图片URL:', imageUrl);
@@ -1857,18 +1801,15 @@ Page({
         data: {
           messages: [
             {
-              role: 'system',
-              content: `你是专业的医疗报告识别助手。请识别检验报告图片中的以下指标：\n\n**要识别的指标**：\n${indicatorDesc}\n\n**识别规则**：\n- value必须是纯数字，不包含单位\n- 如果某个指标在图片中未找到，则不要包含在结果中\n\n**输出格式**：\n{"indicators": [{"id": "ldh", "label": "乳酸脱氢酶", "value": "180", "unit": "U/L"}]}\n\n只返回JSON，不要有其他说明文字。`
-            },
-            {
               role: 'user',
               content: [
                 { type: 'image_url', image_url: { url: imageUrl, detail: 'high' } },
-                { type: 'text', text: '提取检验指标数据' }
+                { type: 'text', text: `你是专业的医疗报告识别助手。请识别这张检验报告图片中的以下指标：\n\n**要识别的指标**（格式：别名列表，id，单位）：\n${indicatorDesc}\n\n**识别规则**：\n- 在图片中找到每个指标对应的行（指标可能用别名列表中的任意一种名称出现）\n- 每个指标名称和它的检测结果值在同一行，严格按行对应，不要错位\n- value是该指标本次检测的实际测量值，纯数字不含单位\n- 参考范围（正常值范围）不是测量值，不要填入value，参考范围通常是"数字~数字"或"数字-数字"格式\n- 返回结果中的id必须使用上面括号中给出的id值，不能自己创造id\n- 如果某个指标在图片中未找到，则不要包含在结果中\n- 只返回以下JSON格式，不要有其他说明文字\n\n{"indicators": [{"id": "ldh", "label": "乳酸脱氢酶", "value": "2299", "unit": "U/L"}]}` }
               ]
             }
           ],
-          mode: 'unified',
+          mode: 'image',
+          sessionId: `ldh_image_${Date.now()}`,
           stream: false
         },
         config: { timeout: 30000 }
@@ -1903,15 +1844,40 @@ Page({
       const parsed = JSON.parse(jsonStr);
       console.log('📦 解析后的数据:', parsed);
 
-      if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
+      let indicatorList = null;
+      if (Array.isArray(parsed)) {
+        indicatorList = parsed;
+      } else if (parsed.indicators && Array.isArray(parsed.indicators)) {
+        indicatorList = parsed.indicators;
+      } else if (parsed.data && Array.isArray(parsed.data)) {
+        indicatorList = parsed.data;
+      } else if (parsed.results && Array.isArray(parsed.results)) {
+        indicatorList = parsed.results;
+      } else if (parsed.values && typeof parsed.values === 'object') {
+        indicatorList = Object.keys(parsed.values).map(key => ({
+          id: key,
+          label: key,
+          value: String(parsed.values[key])
+        }));
+      } else {
+        const anyArrayKey = Object.keys(parsed).find(k => Array.isArray(parsed[k]));
+        if (anyArrayKey) indicatorList = parsed[anyArrayKey];
+      }
+      if (!indicatorList) {
+        console.error('❌ 无法识别的AI返回格式，完整内容:', JSON.stringify(parsed));
         throw new Error('AI返回数据格式不支持');
       }
 
       const allConfiguredIndicators = [...displayedBasicIndicators, ...(customIndicators || [])];
-      const matchedIndicators = parsed.indicators.map(aiItem => {
-        const matchedIndicator = allConfiguredIndicators.find(indicator =>
-          aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
-        );
+      const cleanLabel = s => (s || '').replace(/[*★☆\s]/g, '').toLowerCase();
+      const matchedIndicators = indicatorList.map(aiItem => {
+        // id精确匹配优先
+        let matchedIndicator = allConfiguredIndicators.find(indicator => aiItem.id === indicator.id);
+        // id匹配失败，再用清洗后的中文名匹配
+        if (!matchedIndicator && aiItem.label) {
+          const cleanedAiLabel = cleanLabel(aiItem.label);
+          matchedIndicator = allConfiguredIndicators.find(indicator => cleanedAiLabel === cleanLabel(indicator.name));
+        }
         if (matchedIndicator) {
           return {
             ...aiItem,

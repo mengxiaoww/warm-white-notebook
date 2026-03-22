@@ -18,28 +18,16 @@ Page({
           { id: 'aml', name: '急髓', code: 'AML' },
           { id: 'ph_all', name: '费阳急淋', code: 'Ph+ALL' },
           { id: 'early_t', name: '早期前体T', code: 'ETP-ALL' },
-          { id: 't_lbl', name: 'T淋巴母细胞/白血病', code: 'T-LBL' },
-          { id: 'b_lbl', name: 'B淋巴母细胞/白血病', code: 'B-LBL' },
+          { id: 't_lbl', name: 'T淋巴母/白血病', code: 'T-LBL' },
+          { id: 'b_lbl', name: 'B淋巴母/白血病', code: 'B-LBL' },
+          { id: 'mds', name: 'MDS', code: 'MDS' },
+          { id: 'mpn', name: 'MPN', code: 'MPN' },
           { id: 'cml_cp', name: 'CML慢髓', code: 'CML-CP' },
           { id: 'cml_bp', name: 'CML急变', code: 'CML-BP' },
           { id: 'm3_apl', name: 'M3急性早幼粒', code: 'APL' },
           { id: 'mixed', name: '混合型', code: 'MPAL' },
-          { id: 'cll_sll', name: '慢淋小淋', code: 'CLL/SLL' },
+          { id: 'cll_sll', name: '慢淋/小淋', code: 'CLL/SLL' },
           { id: 'other_leukemia', name: '其他类型白血病', code: 'OTHER' }
-        ]
-      },
-      {
-        id: 'mds',
-        name: 'MDS',
-        children: [
-          { id: 'mds_sld', name: 'MDS-SLD', code: 'MDS-SLD' },
-          { id: 'mds_mld', name: 'MDS-MLD', code: 'MDS-MLD' },
-          { id: 'mds_rs_sld', name: 'MDS-RS-SLD', code: 'MDS-RS-SLD' },
-          { id: 'mds_rs_mld', name: 'MDS-RS-MLD', code: 'MDS-RS-MLD' },
-          { id: 'mds_eb1', name: 'MDS-EB-1', code: 'MDS-EB-1' },
-          { id: 'mds_eb2', name: 'MDS-EB-2', code: 'MDS-EB-2' },
-          { id: 'mds_u', name: 'MDS-U', code: 'MDS-U' },
-          { id: 'mds_del5q', name: 'MDS伴单独del(5q)', code: 'MDS-del5q' }
         ]
       },
       {
@@ -48,30 +36,22 @@ Page({
         children: [
           { id: 'hodgkin', name: '霍奇金', code: 'HL' },
           { id: 'dlbcl', name: '弥漫性大B', code: 'DLBCL' },
-          { id: 'hgbl_nos', name: '高级别B非特指', code: 'HGBL-NOS' },
           { id: 'fl_low', name: '滤泡低级别', code: 'FL-LG' },
           { id: 'fl_3b', name: '滤泡3B', code: 'FL-3B' },
           { id: 'fl_transform', name: '滤泡转大B', code: 'FL-TB' },
-          { id: 'fl_pediatric', name: '儿童滤泡', code: 'PFL' },
           { id: 'b_lbl_lymphoma', name: 'B淋巴母细胞', code: 'B-LBL' },
           { id: 'mcl', name: '套细胞', code: 'MCL' },
           { id: 'mzl', name: '边缘区', code: 'MZL' },
           { id: 'burkitt', name: '伯基特', code: 'BL' },
           { id: 'cll_sll_lymphoma', name: '慢淋/小淋', code: 'CLL/SLL' },
           { id: 'wm', name: '华氏巨球', code: 'WM' },
-          { id: 'lymphoma_transform', name: '慢淋转化', code: 'LT' },
           { id: 'nkt', name: 'NK/T', code: 'NK/T' },
           { id: 't_lbl_lymphoma', name: 'T淋巴母细胞', code: 'T-LBL' },
           { id: 'ptcl_nos', name: '外周T，非特指', code: 'PTCL-NOS' },
           { id: 'aitl', name: '血管免疫母', code: 'AITL' },
-          { id: 'tfh', name: '滤泡辅助T', code: 'TFH' },
-          { id: 'alcl', name: '皮肤间变大', code: 'ALCL' },
           { id: 'alcl_alk_pos', name: 'ALK+间变大', code: 'ALCL-ALK+' },
           { id: 'alcl_alk_neg', name: 'ALK-间变大', code: 'ALCL-ALK-' },
-          { id: 'hstl', name: '肝脾T', code: 'HSTL' },
-          { id: 'eatl', name: '肠道T', code: 'EATL' },
-          { id: 'mf', name: '蕈样肉芽肿', code: 'MF' },
-          { id: 'sptcl', name: '脂膜炎T', code: 'SPTCL' },
+          { id: 'meitl', name: '单行性亲上皮性肠道T', code: 'MEITL' },
           { id: 'other_lymphoma', name: '其他类型淋巴瘤', code: 'OTHER' }
         ]
       },
@@ -91,16 +71,6 @@ Page({
           { id: 'blind_type', name: '冒烟型', code: 'SMM' },
           { id: 'unclear_myeloma', name: '不清楚分型', code: 'UNCLEAR' },
           { id: 'other_myeloma', name: '其他分型骨髓瘤', code: 'OTHER' }
-        ]
-      },
-      {
-        id: 'mpn',
-        name: 'MPN',
-        children: [
-          { id: 'pv', name: '真性红细胞增多症', code: 'PV' },
-          { id: 'et', name: '原发性血小板增多症', code: 'ET' },
-          { id: 'pmf', name: '原发性骨髓纤维化', code: 'PMF' },
-          { id: 'other_mpn', name: '其他MPN', code: 'OTHER-MPN' }
         ]
       },
       {

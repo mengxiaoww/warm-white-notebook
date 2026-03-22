@@ -64,7 +64,7 @@ Page({
     if (!openid || !currentProfileId) {
       wx.showModal({
         title: '提示',
-        content: !openid ? '请先登录' : '请先选择档案',
+        content: !openid ? '请先去【我的】登录' : '请先选择档案',
         showCancel: false,
         success: () => wx.navigateBack()
       });

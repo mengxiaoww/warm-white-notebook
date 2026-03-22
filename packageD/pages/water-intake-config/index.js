@@ -763,7 +763,7 @@ Page({
 
     if (!openid || !currentProfileId) {
       wx.showToast({
-        title: '请先登录并选择档案',
+        title: '请先去【我的】登录并选择档案',
         icon: 'none'
       });
       return;

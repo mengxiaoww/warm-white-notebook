@@ -39,7 +39,7 @@ const dataTypeGroups = [
     id: 'lifestyle',
     name: '生活指标',
     color: '#FFB84D',
-    types: [18, 19, 20, 21, 22]
+    types: [18, 19, 20, 21]
   }
 ];
 
@@ -78,8 +78,7 @@ const dataTypes = [
   { key: 'water', name: '饮水', unit: 'ml', icon: 'WI', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [1500, 2500], collection: 'waterIntakes', desc: '每日饮水' },
   { key: 'temperature', name: '体温', unit: '°C', icon: 'T', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [36.0, 37.3], collection: 'temperatures', desc: '体温监测' },
   { key: 'weight', name: '体重', unit: 'kg', icon: 'W', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [40, 100], collection: 'bodyMeasurements', desc: '体重管理' },
-  { key: 'height', name: '身高', unit: 'cm', icon: 'H', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [140, 200], collection: 'bodyMeasurements', desc: '身高记录' },
-  { key: 'mealCount', name: '饮食', unit: '次', icon: 'D', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [2, 4], collection: 'diets', desc: '每日饮食记录次数' }
+  { key: 'height', name: '身高', unit: 'cm', icon: 'H', iconBg: '#FFB84D', color: '#FFB84D', lightColor: '#FFF3E0', normalRange: [140, 200], collection: 'bodyMeasurements', desc: '身高记录' }
 ];
 
 const timeRanges = [

@@ -1244,7 +1244,7 @@ Page({
       if (!openid) {
         wx.hideLoading();
         wx.showToast({
-          title: '请先登录',
+          title: '请先去【我的】登录',
           icon: 'none'
         });
         return;

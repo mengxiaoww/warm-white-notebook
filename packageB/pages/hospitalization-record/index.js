@@ -12,7 +12,6 @@ Page({
       dischargeDate: '',
       hospital: '',
       department: '',
-      cost: '',
       notes: ''
     },
     admissionPickerVisible: false,
@@ -63,7 +62,7 @@ Page({
       currentProfileId = app.getCurrentProfileId();
     }
     if (!openid) {
-      wx.showModal({ title: '提示', content: '请先登录', showCancel: false, success: () => wx.navigateBack() });
+      wx.showModal({ title: '提示', content: '请先去【我的】登录', showCancel: false, success: () => wx.navigateBack() });
       return;
     }
     if (!currentProfileId) {
@@ -109,7 +108,6 @@ Page({
         dischargeDate: '',
         hospital: '',
         department: '',
-        cost: '',
         notes: ''
       }
     });
@@ -131,7 +129,6 @@ Page({
         dischargeDate: record.dischargeDate || '',
         hospital: record.hospital || '',
         department: record.department || '',
-        cost: record.cost || '',
         notes: record.notes || ''
       }
     });
@@ -204,7 +201,6 @@ Page({
         dischargeDate: form.dischargeDate,
         hospital: form.hospital.trim(),
         department: form.department.trim(),
-        cost: form.cost,
         notes: form.notes.trim(),
         updateTime: db.serverDate()
       };

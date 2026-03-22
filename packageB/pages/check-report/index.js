@@ -63,8 +63,10 @@ Page({
 
     // 检查项目名称快捷提示词
     projectNameSuggestions: [
-      '血常规', '肝功能', '肾功能', 'CT检查', 'MRI检查',
-      'X光检查', 'B超检查', '心电图', '尿常规', '凝血功能'
+      'CT', '骨穿', '肝功能', '肾功能', '血常规',
+      'PET-CT', '超声检查', 'MR/增强MR核磁共振检查', '胃肠镜', '鼻咽镜',
+      '免疫组化(IHC)', '基因检测', 'FISH检测(荧光原位杂交)', 'NGS检测', 'PCR检测',
+      '流式细胞术', '免疫固定电泳', '血清游离轻链', '血清M蛋白', '24小时尿蛋白'
     ]
 
   },
@@ -145,7 +147,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();

@@ -120,8 +120,7 @@ Page({
 
   // 页面隐藏
   onHide() {
-    // 清理临时配置（如果未保存）
-    this.cleanupTemporaryConfigIfNotSaved();
+    // 不清理临时配置，因为选相册/相机会触发onHide，回来后需要恢复配置
   },
 
   // 加载临时配置预览
@@ -418,7 +417,7 @@ Page({
     const { openid, currentProfileId, selectedDate, formData } = this.data;
     if (!openid || !currentProfileId) {
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'none'
     });
       return;
@@ -516,7 +515,7 @@ Page({
     if (!openid || !currentProfileId) {
       wx.hideLoading();
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'none'
     });
       return;
@@ -1064,7 +1063,7 @@ Page({
     const success = this.getUserInfo();
     if (!success) {
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'none'
     });
       return;
@@ -1202,7 +1201,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();

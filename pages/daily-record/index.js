@@ -186,6 +186,8 @@ Page({
 
     newTaskText: '',
 
+    taskSuggestions: ['骨穿', '腰穿打鞘', 'PICC换膜', '输液港维护'],
+
     date: '',
 
     datePickerVisible: false,
@@ -979,6 +981,8 @@ Page({
         this.loadKeyDates(openid, profileId)
 
         this.loadTodayTasks(openid, profileId)
+
+        this.loadMarkedDates(openid, profileId)
 
       }
 
@@ -2416,56 +2420,36 @@ Page({
 
         });
 
-        // 创建饮水数据映射
+        // 创建饮水数据映射（累加当日所有记录）
 
         const waterMap = {}
 
         waterRes.data.forEach(item => {
 
-          const waterData = {}
-
-          // 从customValues加载自定义指标
-
-          if (item.customValues) {
-
-            Object.keys(item.customValues).forEach(key => {
-
-              waterData[key] = item.customValues[key]
-
-            })
-
+          if (!waterMap[item.date]) {
+            waterMap[item.date] = { water: 0 }
           }
 
-          // 加载基础指标（饮水量）
-
+          // 累加基础饮水量
           if (item.water !== undefined && item.water !== null && item.water !== '') {
-
-            waterData.water = item.water
-
+            waterMap[item.date].water += parseFloat(item.water) || 0
           }
 
-          // 只保留有数据的指标
-
-          const filteredWaterData = {}
-
-          Object.keys(waterData).forEach(key => {
-
-            const value = waterData[key]
-
-            if (value !== undefined && value !== null && value !== '') {
-
-              filteredWaterData[key] = value
-
-            }
-
-          })
-
-          if (Object.keys(filteredWaterData).length > 0) {
-
-            waterMap[item.date] = filteredWaterData
-
+          // 累加自定义指标
+          if (item.customValues) {
+            Object.keys(item.customValues).forEach(key => {
+              const val = parseFloat(item.customValues[key])
+              if (!isNaN(val)) {
+                waterMap[item.date][key] = (waterMap[item.date][key] || 0) + val
+              }
+            })
           }
 
+        })
+
+        // 移除总量为0的日期
+        Object.keys(waterMap).forEach(date => {
+          if (!waterMap[date].water) delete waterMap[date]
         })
 
         // 创建饮食数据映射
@@ -2647,6 +2631,26 @@ Page({
           this.updateCalendarWithoutBloodData()
 
         })
+
+      // 同步刷新住院日期范围（确保新增/编辑住院记录后日历高亮正确）
+      db.collection('hospitalizationRecords')
+        .where({ openid: openid, profileId: currentProfileId })
+        .field({ admissionDate: true, dischargeDate: true })
+        .get()
+        .then(hospRes => {
+          const hospitalizationRanges = hospRes.data
+            .filter(r => r.admissionDate)
+            .map(r => ({
+              start: r.admissionDate,
+              end: r.dischargeDate || this.formatDate(new Date())
+            }));
+          this.setData({ hospitalizationRanges });
+          this.generateWeekView();
+          if (this.data.calendarExpanded) {
+            this.generateMonthView();
+          }
+        })
+        .catch(err => console.error('刷新住院记录范围失败:', err));
 
     } else {
 
@@ -3350,7 +3354,7 @@ Page({
 
       wx.showToast({
 
-        title: '请先登录',
+        title: '请先去【我的】登录',
 
         icon: 'none'
 
@@ -3542,7 +3546,7 @@ Page({
 
       wx.showToast({
 
-        title: '请先登录并选择档案',
+        title: '请先去【我的】登录并选择档案',
 
         icon: 'none'
 
@@ -4490,7 +4494,7 @@ Page({
 
         wx.showToast({
 
-          title: '请先登录',
+          title: '请先去【我的】登录',
 
           icon: 'none'
 
@@ -4703,7 +4707,7 @@ Page({
 
       wx.showToast({
 
-        title: '请先登录',
+        title: '请先去【我的】登录',
 
         icon: 'none'
 
@@ -4903,7 +4907,7 @@ Page({
 
       wx.showToast({
 
-        title: '请先登录',
+        title: '请先去【我的】登录',
 
         icon: 'none'
 
@@ -8701,7 +8705,7 @@ Page({
 
         wx.showToast({
 
-          title: '请先登录',
+          title: '请先去【我的】登录',
 
           icon: 'none'
 
@@ -9215,15 +9219,16 @@ Page({
       const res = await db.collection('waterIntakes')
         .where(queryCondition)
         .orderBy('createTime', 'desc')
-        .limit(1)
         .get()
 
       console.log('💧 饮水查询结果:', res)
       console.log('💧 数据数量:', res.data.length)
 
       if (res.data.length > 0) {
-        const waterData = res.data[0]
-        console.log('💧 饮水数据内容:', waterData)
+        // 累加当日所有记录的饮水量
+        const totalWater = res.data.reduce((sum, item) => sum + (parseFloat(item.water) || 0), 0)
+        const waterData = { ...res.data[0], water: totalWater }
+        console.log('💧 饮水数据内容（累计）:', waterData)
         return waterData
       } else {
         console.log('💧 未找到饮水数据')
@@ -10731,7 +10736,7 @@ Page({
       if (!openid || !profileId) {
         wx.hideLoading()
         wx.showToast({
-          title: '请先登录并选择档案',
+          title: '请先去【我的】登录并选择档案',
           icon: 'none',
           duration: 2000
         })
@@ -11159,7 +11164,7 @@ Page({
 
     if (!openid) {
       wx.showToast({
-        title: '请先登录',
+        title: '请先去【我的】登录',
         icon: 'none'
       })
       return
@@ -11178,6 +11183,13 @@ Page({
     })
   },
 
+  // 选择快捷提示词
+  selectTaskSuggestion(e) {
+    this.setData({
+      newTaskText: e.currentTarget.dataset.value
+    })
+  },
+
   // 确认添加事项
   async confirmAddTask() {
     const app = getApp()
@@ -11186,7 +11198,7 @@ Page({
 
     if (!openid || !profileId) {
       wx.showToast({
-        title: '请先登录',
+        title: '请先去【我的】登录',
         icon: 'none'
       })
       return
@@ -11249,7 +11261,7 @@ Page({
 
     if (!openid) {
       wx.showToast({
-        title: '请先登录',
+        title: '请先去【我的】登录',
         icon: 'none'
       })
       return
@@ -11316,7 +11328,7 @@ Page({
 
     if (!openid) {
       wx.showToast({
-        title: '请先登录',
+        title: '请先去【我的】登录',
         icon: 'none'
       })
       return

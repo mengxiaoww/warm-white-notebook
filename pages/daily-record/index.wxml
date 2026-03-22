@@ -245,7 +245,7 @@
             <block wx:elif="{{(item.id === 'water' || item.id === 'waterIntake') && selectedDateData.waterData}}">
               <view class="ldh-single-data">
                 <view class="ldh-header">
-                  <view class="ldh-label">饮水量</view>
+                  <view class="ldh-label">一日总量</view>
                 </view>
                 <view class="ldh-value-container">
                   <text class="ldh-big-value">{{selectedDateData.waterData.water || '0'}}</text>
@@ -258,7 +258,7 @@
             <block wx:elif="{{item.id === 'diet' && selectedDateData.dietData}}">
               <view class="ldh-single-data">
                 <view class="ldh-header">
-                  <view class="ldh-label">饮食记录</view>
+                  <view class="ldh-label">最近饮食记录</view>
                 </view>
                 <view class="diet-content-preview">
                   <text class="diet-content-text">{{selectedDateData.dietData.content || '已记录'}}</text>
@@ -731,6 +731,12 @@
               maxlength="30"
               clearable
             />
+          </view>
+          <!-- 快捷提示词 -->
+          <view class="task-suggestions">
+            <view class="task-suggestion-btn {{newTaskText === item ? 'task-suggestion-active' : ''}}"
+              wx:for="{{taskSuggestions}}" wx:key="index"
+              bindtap="selectTaskSuggestion" data-value="{{item}}">{{item}}</view>
           </view>
         </view>
         <view class="milestone-popup-footer">

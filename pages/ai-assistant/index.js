@@ -231,7 +231,7 @@ Page({
     const openid = app.getOpenIdIfLoggedIn();
     if (!openid) {
       wx.showToast({
-        title: '请先登录',
+        title: '请先去【我的】登录',
         icon: 'none'
       });
       return;
@@ -637,6 +637,64 @@ Page({
         }
       }
 
+      // 🔥 兼容性修复：血糖字段名映射（value/bloodSugar/glucose → fbg）
+      if (healthData.dataType === 'bloodSugar') {
+        const sugarVal = processedValues.fbg || processedValues.value || processedValues.bloodSugar || processedValues.glucose || processedValues.blood_sugar;
+        if (sugarVal !== undefined && !processedValues.fbg) {
+          processedValues.fbg = sugarVal;
+          delete processedValues.value;
+          delete processedValues.bloodSugar;
+          delete processedValues.glucose;
+          delete processedValues.blood_sugar;
+          console.log('🔧 兼容性处理：血糖字段映射为 fbg:', sugarVal);
+        }
+      }
+
+      // 🔥 兼容性修复：血氧字段名映射（value/bloodOxygen/oxygen → spo2）
+      if (healthData.dataType === 'bloodOxygen') {
+        const oxyVal = processedValues.spo2 || processedValues.value || processedValues.bloodOxygen || processedValues.oxygen || processedValues.blood_oxygen;
+        if (oxyVal !== undefined && !processedValues.spo2) {
+          processedValues.spo2 = oxyVal;
+          delete processedValues.value;
+          delete processedValues.bloodOxygen;
+          delete processedValues.oxygen;
+          delete processedValues.blood_oxygen;
+          console.log('🔧 兼容性处理：血氧字段映射为 spo2:', oxyVal);
+        }
+      }
+
+      // 🔥 兼容性修复：体温字段名映射（value/temp/bodyTemperature → temperature）
+      if (healthData.dataType === 'temperature') {
+        const tempVal = processedValues.temperature || processedValues.value || processedValues.temp || processedValues.bodyTemperature;
+        if (tempVal !== undefined && !processedValues.temperature) {
+          processedValues.temperature = tempVal;
+          delete processedValues.value;
+          delete processedValues.temp;
+          delete processedValues.bodyTemperature;
+          console.log('🔧 兼容性处理：体温字段映射为 temperature:', tempVal);
+        }
+      }
+
+      // 🔥 兼容性修复：血压字段名映射（high/low/收缩压/舒张压 → systolic/diastolic）
+      if (healthData.dataType === 'bloodPressure') {
+        const sysVal = processedValues.systolic || processedValues.high || processedValues.sbp || processedValues.systolicPressure;
+        const diaVal = processedValues.diastolic || processedValues.low || processedValues.dbp || processedValues.diastolicPressure;
+        if (sysVal !== undefined && !processedValues.systolic) {
+          processedValues.systolic = sysVal;
+          delete processedValues.high;
+          delete processedValues.sbp;
+          delete processedValues.systolicPressure;
+          console.log('🔧 兼容性处理：收缩压字段映射为 systolic:', sysVal);
+        }
+        if (diaVal !== undefined && !processedValues.diastolic) {
+          processedValues.diastolic = diaVal;
+          delete processedValues.low;
+          delete processedValues.dbp;
+          delete processedValues.diastolicPressure;
+          console.log('🔧 兼容性处理：舒张压字段映射为 diastolic:', diaVal);
+        }
+      }
+
       console.log('🔍 转换后的数值:', processedValues);
       Object.keys(processedValues).forEach(key => {
         console.log(`  ${key}: 值=${processedValues[key]}, 类型=${typeof processedValues[key]}`);
@@ -661,8 +719,8 @@ Page({
       });
 
       // 🔥 关键修复：区分多记录类型和单记录类型
-      // 多记录类型（每天可以多条）：饮食、尿量、排便、饮水
-      const multiRecordTypes = ['diet', 'urine', 'stool', 'water'];
+      // 多记录类型（每天可以多条）：饮食、尿量、排便、饮水、体温、血压、血糖、血氧
+      const multiRecordTypes = ['diet', 'urine', 'stool', 'water', 'temperature', 'bloodPressure', 'bloodSugar', 'bloodOxygen'];
       const isMultiRecord = multiRecordTypes.includes(healthData.dataType);
 
       let recordId;
@@ -684,8 +742,9 @@ Page({
           createTime: new Date()
         };
 
-        // 如果是饮食记录且没有time字段，添加当前时间
-        if (healthData.dataType === 'diet' && !recordData.time) {
+        // 如果是需要time字段的多记录类型，且没有time字段，添加当前时间
+        const timeRequiredTypes = ['diet', 'urine', 'stool', 'water', 'temperature', 'bloodPressure', 'bloodSugar', 'bloodOxygen'];
+        if (timeRequiredTypes.includes(healthData.dataType) && !recordData.time) {
           const now = new Date();
           recordData.time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
         }

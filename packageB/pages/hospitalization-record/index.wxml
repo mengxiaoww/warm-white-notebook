@@ -43,11 +43,6 @@
               <view class="dept-tag" wx:if="{{item.department}}">
                 <text>{{item.department}}</text>
               </view>
-              <!-- 费用 -->
-              <view class="cost-row" wx:if="{{item.cost}}">
-                <text class="cost-label">总费用</text>
-                <text class="cost-value">¥{{item.cost}}</text>
-              </view>
               <!-- 备注 -->
               <view class="notes-row" wx:if="{{item.notes}}">
                 <text class="notes-text">备注：{{item.notes}}</text>
@@ -127,12 +122,6 @@
           <view class="form-item">
             <text class="form-label">科室（可选）</text>
             <t-input value="{{form.department}}" placeholder="如：血液科" bind:change="onInput" data-field="department" class="form-input" />
-          </view>
-
-          <!-- 费用 -->
-          <view class="form-item">
-            <text class="form-label">费用金额（可选）</text>
-            <t-input value="{{form.cost}}" placeholder="如：6000" type="digit" bind:change="onInput" data-field="cost" class="form-input" />
           </view>
 
           <!-- 备注 -->

@@ -62,7 +62,7 @@
               </view>
               <view class="record-details">
                 <view class="detail-item" wx:if="{{item.water}}">
-                  <text class="detail-label">饮水量：</text>
+                  <text class="detail-label">一日总量：</text>
                   <text class="detail-value">{{item.water}} ml</text>
                 </view>
               </view>
@@ -136,7 +136,7 @@
           <!-- 饮水量 -->
           <view class="form-group">
             <view class="form-label">
-              <text class="label-text">饮水量</text>
+              <text class="label-text">一日总量</text>
               <text class="required">*</text>
             </view>
             <view class="form-input-wrapper">

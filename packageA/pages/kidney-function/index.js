@@ -133,8 +133,7 @@ Page({
 
   // 页面隐藏
   onHide() {
-    // 清理临时配置（如果未保存）
-    this.cleanupTemporaryConfigIfNotSaved();
+    // 不清理临时配置，因为选相册/相机会触发onHide，回来后需要恢复配置
   },
 
   // 加载临时配置预览
@@ -763,7 +762,7 @@ Page({
     const { openid, currentProfileId, selectedDate, formData } = this.data;
     if (!openid || !currentProfileId) {
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'none'
     });
       return;
@@ -862,7 +861,7 @@ Page({
     if (!openid || !currentProfileId) {
       wx.hideLoading();
       wx.showToast({
-      title: '请先登录并选择档案',
+      title: '请先去【我的】登录并选择档案',
       icon: 'none'
     });
       return;
@@ -1144,7 +1143,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();
@@ -1589,17 +1588,26 @@ Page({
       mediaType: ['image'],
       sourceType: ['camera'],
       camera: 'back',
-      success: (res) => {
+      success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
-        this.recognizeImageWithAI(tempFilePath);
+        wx.showLoading({ title: '识别中...', mask: true });
+        try {
+          const matchedIndicators = await this.recognizeImageWithAI(tempFilePath);
+          wx.hideLoading();
+          if (!matchedIndicators || matchedIndicators.length === 0) {
+            wx.showToast({ title: '未识别到相关指标', icon: 'none' });
+            return;
+          }
+          this.setData({ aiRecognizedData: matchedIndicators, aiResultVisible: true });
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({ title: error.message || '识别失败，请重试', icon: 'none', duration: 2000 });
+        }
       },
       fail: (err) => {
         console.error('拍照失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
-          wx.showToast({
-      title: '拍照失败',
-      icon: 'none'
-    });
+          wx.showToast({ title: '拍照失败', icon: 'none' });
         }
       }
     });
@@ -1616,17 +1624,26 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album'],
-      success: (res) => {
+      success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
-        this.recognizeImageWithAI(tempFilePath);
+        wx.showLoading({ title: '识别中...', mask: true });
+        try {
+          const matchedIndicators = await this.recognizeImageWithAI(tempFilePath);
+          wx.hideLoading();
+          if (!matchedIndicators || matchedIndicators.length === 0) {
+            wx.showToast({ title: '未识别到相关指标', icon: 'none' });
+            return;
+          }
+          this.setData({ aiRecognizedData: matchedIndicators, aiResultVisible: true });
+        } catch (error) {
+          wx.hideLoading();
+          wx.showToast({ title: error.message || '识别失败，请重试', icon: 'none', duration: 2000 });
+        }
       },
       fail: (err) => {
         console.error('选择图片失败:', err);
         if (err.errMsg !== 'chooseMedia:fail cancel') {
-          wx.showToast({
-      title: '选择图片失败',
-      icon: 'none'
-    });
+          wx.showToast({ title: '选择图片失败', icon: 'none' });
         }
       }
     });
@@ -1865,11 +1882,14 @@ Page({
             console.log('当前配置的指标:', allConfiguredIndicators);
 
             // 只保留能匹配到当前配置项的指标,并补充正确的中文label
+            const cleanLabel = s => (s || '').replace(/[*★☆\s]/g, '').toLowerCase();
             const matchedIndicators = data.indicators.map(aiItem => {
-              // 尝试匹配配置的指标
-              const matchedIndicator = allConfiguredIndicators.find(indicator =>
-                aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
-              );
+              // 优先精确 id 匹配，fallback 用清洗后的中文名匹配
+              let matchedIndicator = allConfiguredIndicators.find(indicator => aiItem.id === indicator.id);
+              if (!matchedIndicator && aiItem.label) {
+                const cleanedAiLabel = cleanLabel(aiItem.label);
+                matchedIndicator = allConfiguredIndicators.find(indicator => cleanedAiLabel === cleanLabel(indicator.name));
+              }
 
               if (matchedIndicator) {
                 console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
@@ -2008,27 +2028,41 @@ Page({
         ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
         ...(customIndicators || []).map(item => ({ id: item.id, name: item.name, unit: item.unit }))
       ];
-      const indicatorDesc = allIndicators.map(item =>
-        `   - ${item.name}（id: ${item.id}，单位：${item.unit}）`
-      ).join('\n');
+      const aliasMap = {
+        'cr': '肌酐/血肌酐/Cr/CREA/Creatinine',
+        'bun': '尿素/尿素氮/BUN/UREA/血尿素',
+        'ua': '尿酸/UA/URIC/Uric Acid',
+        'egfr': '肾小球滤过率/eGFR/GFR',
+        'cys': '胱抑素C/Cystatin C/CysC',
+        'beta2': 'β2微球蛋白/β2-MG/Beta2-Microglobulin',
+        'tp': '总蛋白/TP',
+        'alb': '白蛋白/ALB',
+        'co2': '二氧化碳/CO2/碳酸氢根/HCO3',
+        'k': '钾/血钾/K/Potassium',
+        'na': '钠/血钠/Na/Sodium',
+        'cl': '氯/血氯/Cl/Chloride',
+        'ca': '钙/血钙/Ca/Calcium',
+        'p': '磷/血磷/P/Phosphorus',
+      };
+      const indicatorDesc = allIndicators.map(item => {
+        const alias = aliasMap[item.id] || item.name;
+        return `   - ${alias}（id: ${item.id}，单位：${item.unit}）`;
+      }).join('\n');
 
       const res = await wx.cloud.callFunction({
         name: 'callSiliconFlowAI',
         data: {
           messages: [
             {
-              role: 'system',
-              content: `你是专业的医疗报告识别助手。请识别检验报告图片中的以下指标：\n\n**要识别的指标**：\n${indicatorDesc}\n\n**识别规则**：\n- value必须是纯数字，不包含单位\n- 如果某个指标在图片中未找到，则不要包含在结果中\n\n**输出格式**：\n{"indicators": [{"id": "cr", "label": "肌酐", "value": "80", "unit": "μmol/L"}]}\n\n只返回JSON，不要有其他说明文字。`
-            },
-            {
               role: 'user',
               content: [
                 { type: 'image_url', image_url: { url: imageUrl, detail: 'high' } },
-                { type: 'text', text: '提取检验指标数据' }
+                { type: 'text', text: `你是专业的医疗报告识别助手。请识别这张检验报告图片中的以下指标：\n\n**要识别的指标**（格式：别名列表，id，单位）：\n${indicatorDesc}\n\n**识别规则**：\n- 在图片中找到每个指标对应的行（指标可能用别名列表中的任意一种名称出现）\n- 每个指标名称和它的检测结果值在同一行，严格按行对应，不要错位\n- value是该指标本次检测的实际测量值，纯数字不含单位\n- 参考范围（正常值范围）不是测量值，不要填入value，参考范围通常是"数字~数字"或"数字-数字"格式\n- 返回结果中的id必须使用上面括号中给出的id值，不能自己创造id\n- 如果某个指标在图片中未找到，则不要包含在结果中\n- 只返回以下JSON格式，不要有其他说明文字\n\n{"indicators": [{"id": "cr", "label": "肌酐", "value": "80", "unit": "μmol/L"}]}` }
               ]
             }
           ],
-          mode: 'unified',
+          mode: 'image',
+          sessionId: `kidney_image_${Date.now()}`,
           stream: false
         },
         config: { timeout: 30000 }
@@ -2039,6 +2073,7 @@ Page({
       }
 
       let aiResponse = res.result.reply || res.result.content;
+      console.log('🔍 AI原始返回内容:', aiResponse);
       let jsonStr = null;
       const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/);
       if (jsonMatch) {
@@ -2056,15 +2091,44 @@ Page({
       if (jsonStr.charCodeAt(0) === 0xFEFF) jsonStr = jsonStr.substring(1);
 
       const parsed = JSON.parse(jsonStr);
-      if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
+      console.log('📦 解析后的数据:', parsed);
+
+      let indicatorList = null;
+      if (Array.isArray(parsed)) {
+        indicatorList = parsed;
+      } else if (parsed.indicators && Array.isArray(parsed.indicators)) {
+        indicatorList = parsed.indicators;
+      } else if (parsed.data && Array.isArray(parsed.data)) {
+        indicatorList = parsed.data;
+      } else if (parsed.results && Array.isArray(parsed.results)) {
+        indicatorList = parsed.results;
+      } else if (parsed.values && typeof parsed.values === 'object') {
+        indicatorList = Object.keys(parsed.values).map(key => ({
+          id: key,
+          label: key,
+          value: String(parsed.values[key])
+        }));
+      } else {
+        const anyArrayKey = Object.keys(parsed).find(k => Array.isArray(parsed[k]));
+        if (anyArrayKey) indicatorList = parsed[anyArrayKey];
+      }
+      if (!indicatorList) {
+        console.error('❌ 无法识别的AI返回格式，完整内容:', JSON.stringify(parsed));
         throw new Error('AI返回数据格式不支持');
       }
 
       const allConfiguredIndicators = [...displayedBasicIndicators, ...(customIndicators || [])];
-      const matchedIndicators = parsed.indicators.map(aiItem => {
-        const matchedIndicator = allConfiguredIndicators.find(indicator =>
-          aiItem.id === indicator.id || this.fuzzyMatch(aiItem.label, indicator.name)
-        );
+      const cleanLabel = s => (s || '').replace(/[*★☆\s]/g, '').toLowerCase();
+      const matchedIndicators = indicatorList.map(aiItem => {
+        // 优先精确 id 匹配
+        let matchedIndicator = allConfiguredIndicators.find(indicator => aiItem.id === indicator.id);
+        // id 不匹配时，用清洗后的中文名匹配（去除星号等干扰字符）
+        if (!matchedIndicator && aiItem.label) {
+          const cleanedAiLabel = cleanLabel(aiItem.label);
+          matchedIndicator = allConfiguredIndicators.find(indicator =>
+            cleanedAiLabel === cleanLabel(indicator.name)
+          );
+        }
         if (matchedIndicator) {
           return {
             ...aiItem,

@@ -424,7 +424,8 @@
                   </view>
                   <view class="timeline-relative-time">{{item.relativeTime || item.weekday}}</view>
                 </view>
-                <view class="check-report-content">
+                <!-- 检查报告 / 门诊记录 -->
+                <view class="check-report-content" wx:if="{{item.recordType === 'checkReport' || item.recordType === 'clinic'}}">
                   <view class="report-header">
                     <view class="report-title-row">
                       <view class="report-icon-wrapper">
@@ -457,6 +458,59 @@
                   <!-- 详细结果 -->
                   <view class="result-detail" wx:if="{{item.detailedResults}}">
                     <text class="result-text">{{item.detailedResults}}</text>
+                  </view>
+                </view>
+                <!-- 住院记录 -->
+                <view class="check-report-content" wx:if="{{item.recordType === 'hospitalization'}}">
+                  <view class="report-header">
+                    <view class="report-title-row">
+                      <view class="report-icon-wrapper">
+                        <t-icon name="home" size="40rpx" color="#FFB84D" />
+                      </view>
+                      <view class="report-project-name">{{item.projectName}}</view>
+                    </view>
+                    <view class="result-badge" wx:if="{{item.resultTypeLabel}}">{{item.resultTypeLabel}}</view>
+                  </view>
+                  <view class="report-meta-info">
+                    <view class="meta-item">
+                      <text class="meta-label">入院日期：</text>
+                      <text class="meta-value">{{item.admissionDate}}</text>
+                    </view>
+                    <view class="meta-item" wx:if="{{item.dischargeDate}}">
+                      <text class="meta-label">出院日期：</text>
+                      <text class="meta-value">{{item.dischargeDate}}</text>
+                    </view>
+                    <view class="meta-item" wx:if="{{!item.dischargeDate}}">
+                      <text class="meta-value" style="color:#FF9800">住院中</text>
+                    </view>
+                  </view>
+                  <view class="result-detail" wx:if="{{item.notes}}">
+                    <text class="result-text">{{item.notes}}</text>
+                  </view>
+                </view>
+                <!-- 治疗记录 -->
+                <view class="check-report-content" wx:if="{{item.recordType === 'treatment'}}">
+                  <view class="report-header">
+                    <view class="report-title-row">
+                      <view class="report-icon-wrapper">
+                        <t-icon name="heart" size="40rpx" color="#FFB84D" />
+                      </view>
+                      <view class="report-project-name">{{item.projectName}}</view>
+                    </view>
+                    <view class="result-badge">{{item.resultTypeLabel}}</view>
+                  </view>
+                  <view class="report-meta-info">
+                    <view class="meta-item">
+                      <text class="meta-label">记录日期：</text>
+                      <text class="meta-value">{{item.date}}</text>
+                    </view>
+                    <view class="meta-item" wx:if="{{item.medicationName}}">
+                      <text class="meta-label">药物：</text>
+                      <text class="meta-value">{{item.medicationName}}</text>
+                    </view>
+                  </view>
+                  <view class="result-detail" wx:if="{{item.notes}}">
+                    <text class="result-text">{{item.notes}}</text>
                   </view>
                 </view>
               </view>

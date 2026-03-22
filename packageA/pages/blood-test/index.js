@@ -1,9 +1,5 @@
 // 移除Toast import，使用wx.showToast替代
 
-// 引入微信同声传译插件
-const plugin = requirePlugin("WechatSI");
-const manager = plugin.getRecordRecognitionManager();
-
 // 引入工具函数
 const { getTodayLocalDate } = require('../../../utils/util.js');
 
@@ -76,7 +72,8 @@ Page({
     voiceRecordingVisible: false, // 语音录音弹窗显示状态
     isRecording: false,           // 是否正在录音
     recordDuration: 0,            // 录音时长（秒）
-    recognizedText: ''            // 实时识别的文字
+    recognizedText: '',           // 实时识别的文字
+    voiceRecognitionManager: null // 语音识别管理器
   },
 
   // 页面初始化
@@ -407,8 +404,12 @@ Page({
         englishKeywords: ['MONO#', 'Mon#']
       },
       'crp': {
-        keywords: ['CRP', 'C反应蛋白', 'C-反应蛋白', 'C反应蛋白(CRP)'],
-        englishKeywords: ['CRP']
+        keywords: ['CRP', 'C反应蛋白', 'C-反应蛋白', 'C反应蛋白(CRP)', '超敏C反应蛋白', 'hs-CRP', 'hsCRP', 'hs_CRP', 'HSCRP'],
+        englishKeywords: ['CRP', 'hs-CRP', 'hsCRP']
+      },
+      'hct': {
+        keywords: ['HCT', 'Hct', '红细胞压积', '血细胞比容', '红细胞比积', 'HCT(红细胞压积)', '压积'],
+        englishKeywords: ['HCT', 'Hct']
       }
     };
 
@@ -797,7 +798,9 @@ Page({
       /\bNEUT#?\s+(\d+(?:\.\d+)?)\s*[↑↓]?/i,
       /\bLYM#?\s+(\d+(?:\.\d+)?)\s*[↑↓]?/i,
       /\bMON#?\s+(\d+(?:\.\d+)?)\s*[↑↓]?/i,
-      /\bCRP\s+(\d+(?:\.\d+)?)\s*[↑↓]?/i
+      /\bCRP\s+(\d+(?:\.\d+)?)\s*[↑↓]?/i,
+      /\bHCT\s+(\d+(?:\.\d+)?)\s*[↑↓]?/i,
+      /\bHct\s+(\d+(?:\.\d+)?)\s*[↑↓]?/i
     ];
 
     for (const pattern of englishDirectPatterns) {
@@ -822,7 +825,10 @@ Page({
       /中性[粒]*细胞[数计数绝对值#]*\s*[（(]?[NEUT#]*[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/,
       /淋巴细胞[数计数绝对值#]*\s*[（(]?[LYM#]*[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/,
       /单核细胞[数计数绝对值#]*\s*[（(]?[MON#]*[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/,
-      /C反应蛋白\s*[（(]?[CRP]*[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/
+      /C反应蛋白\s*[（(]?[CRP]*[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/,
+      /超敏C反应蛋白\s*[（(]?(?:hs-CRP|hsCRP|CRP)?[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/,
+      /红细胞压积\s*[（(]?[HCT]*[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/,
+      /血细胞比容\s*[（(]?[HCT]*[)）]?\s*(\d+(?:\.\d+)?)\s*[↑↓]?/
     ];
 
     for (const pattern of chinesePatterns) {
@@ -999,8 +1005,10 @@ Page({
             console.log(`    ⏭️ 跳过淋巴细胞百分比行: "${searchText}"`);
             continue;
           }
-          // 只匹配包含LYMPH#（绝对值）或"淋巴细胞计数"的行
-          if (searchText.includes('LYMPH#') || searchText.includes('淋巴细胞计数')) {
+          // 只匹配包含LYMPH#/LYM#（绝对值）或"淋巴细胞计数/绝对值"的行
+          if (searchText.includes('LYMPH#') || searchText.includes('LYM#') ||
+              searchText.includes('淋巴细胞计数') || searchText.includes('淋巴细胞绝对值') ||
+              searchText.includes('淋巴细胞数')) {
             console.log(`    🎯 找到淋巴细胞绝对值行: "${searchText}"`);
             // 检查这行后面的数值
             for (let lymphOffset = 1; lymphOffset <= 3; lymphOffset++) {
@@ -1030,8 +1038,10 @@ Page({
             console.log(`    ⏭️ 跳过单核细胞百分比行: "${searchText}"`);
             continue;
           }
-          // 只匹配包含MONO#（绝对值）或"单核细胞计数"的行
-          if (searchText.includes('MONO#') || searchText.includes('单核细胞计数')) {
+          // 只匹配包含MONO#/MON#（绝对值）或"单核细胞计数/绝对值"的行
+          if (searchText.includes('MONO#') || searchText.includes('MON#') ||
+              searchText.includes('单核细胞计数') || searchText.includes('单核细胞绝对值') ||
+              searchText.includes('单核细胞数')) {
             console.log(`    🎯 找到单核细胞绝对值行: "${searchText}"`);
             // 检查这行后面的数值
             for (let monoOffset = 1; monoOffset <= 3; monoOffset++) {
@@ -1065,8 +1075,10 @@ Page({
             console.log(`    ⏭️ 跳过CRP无关行: "${searchText}"`);
             continue;
           }
-          // 只在纯CRP行或包含"C反应蛋白"的行匹配
-          if (searchText === 'CRP' || searchText.includes('C反应蛋白')) {
+          // 只在纯CRP行或包含"C反应蛋白"、"超敏C反应蛋白"的行匹配
+          if (searchText === 'CRP' || searchText.includes('C反应蛋白') ||
+              searchText.includes('超敏C反应蛋白') || searchText.includes('hs-CRP') ||
+              searchText.includes('hsCRP')) {
             console.log(`    🎯 找到CRP指标行: "${searchText}"`);
             // 检查这行后面的数值
             for (let crpOffset = 1; crpOffset <= 3; crpOffset++) {
@@ -1086,6 +1098,42 @@ Page({
           }
           // 如果不是纯CRP行，跳过
           console.log(`    ⏭️ 跳过非CRP指标行: "${searchText}"`);
+          continue;
+        }
+
+        // 对于HCT（红细胞压积），匹配独立的HCT指标行
+        if (fieldName === 'hct') {
+          // 跳过包含无关内容的行
+          if (searchText.includes('检查项目') || searchText.includes('设备') ||
+            searchText.includes('仪器') || searchText.includes('患者编号') ||
+            searchText.includes('标本号') || searchText.includes('姓名') || searchText.includes('年龄')) {
+            console.log(`    ⏭️ 跳过HCT无关行: "${searchText}"`);
+            continue;
+          }
+          // 匹配HCT行或包含"红细胞压积"、"血细胞比容"的行
+          if (searchText === 'HCT' || searchText === 'Hct' ||
+              searchText.includes('红细胞压积') || searchText.includes('血细胞比容') ||
+              searchText.includes('红细胞比积')) {
+            console.log(`    🎯 找到HCT指标行: "${searchText}"`);
+            // 检查这行后面的数值
+            for (let hctOffset = 1; hctOffset <= 3; hctOffset++) {
+              const hctIndex = searchIndex + hctOffset;
+              if (hctIndex >= items.length) break;
+              const hctText = items[hctIndex].text.trim();
+              console.log(`      📊 HCT后第${hctOffset}行: "${hctText}"`);
+              if (/^\d+(\.\d+)?$/.test(hctText)) {
+                const num = parseFloat(hctText);
+                // HCT正常范围约35-50%
+                if (num >= 10 && num <= 100) {
+                  const formattedValue = this.formatValue(hctText);
+                  console.log(`    ✅ HCT匹配成功: "${selectedKeyword}" -> "${formattedValue}"`);
+                  return { value: formattedValue, keyword: selectedKeyword };
+                }
+              }
+            }
+          }
+          // 如果不是HCT指标行，跳过
+          console.log(`    ⏭️ 跳过非HCT指标行: "${searchText}"`);
           continue;
         }
 
@@ -1233,7 +1281,7 @@ Page({
     const { openid, currentProfileId, selectedDate, formData } = this.data;
     if (!openid || !currentProfileId) {
       wx.showToast({
-        title: '请先登录并选择档案',
+        title: '请先去【我的】登录并选择档案',
         icon: 'none'
       });
       return;
@@ -1331,7 +1379,7 @@ Page({
     if (!openid || !currentProfileId) {
       wx.hideLoading();
       wx.showToast({
-        title: '请先登录并选择档案',
+        title: '请先去【我的】登录并选择档案',
         icon: 'none'
       });
       return;
@@ -1880,7 +1928,7 @@ Page({
     const success = this.getUserInfo();
     if (!success) {
       wx.showToast({
-        title: '请先登录并选择档案',
+        title: '请先去【我的】登录并选择档案',
         icon: 'none'
       });
       return;
@@ -2018,7 +2066,7 @@ Page({
     if (!openid) {
       wx.showModal({
         title: '提示',
-        content: '请先登录',
+        content: '请先去【我的】登录',
         showCancel: false,
         success: () => {
           wx.navigateBack();
@@ -2265,7 +2313,7 @@ Page({
           isTrue: config[key] === true
         });
 
-        if (config[key] === true) {
+        if (!!config[key]) {
           const indicator = { ...defaultIndicators[key] };
 
           // 如果有自定义设置，应用自定义设置
@@ -2285,7 +2333,7 @@ Page({
 
       // 处理自定义指标（只显示选中的）
       Object.keys(customSettings).forEach(indicatorId => {
-        if (indicatorId.startsWith('custom_') && config[indicatorId] === true) {
+        if (indicatorId.startsWith('custom_') && !!config[indicatorId]) {
           const setting = customSettings[indicatorId];
           customIndicators.push({
             id: indicatorId,
@@ -2992,6 +3040,9 @@ Page({
 
   // 初始化语音识别
   initVoiceRecognition() {
+    const plugin = requirePlugin('WechatSI');
+    const manager = plugin.getRecordRecognitionManager();
+    this.data.voiceRecognitionManager = manager;
     // 监听识别开始
     manager.onStart = () => {
       console.log('📢 语音识别开始');
@@ -3032,23 +3083,30 @@ Page({
 
   // 开始/停止录音切换
   toggleRecording() {
-    const { isRecording } = this.data;
+    const { isRecording, voiceRecognitionManager } = this.data;
 
     if (!isRecording) {
       // 开始语音识别
-      manager.start({
-        lang: 'zh_CN', // 中文识别
-        duration: 60000 // 最长60秒
-      });
+      if (voiceRecognitionManager) {
+        voiceRecognitionManager.start({
+          lang: 'zh_CN', // 中文识别
+          duration: 60000 // 最长60秒
+        });
+      }
     } else {
       // 停止语音识别
-      manager.stop();
+      if (voiceRecognitionManager) {
+        voiceRecognitionManager.stop();
+      }
     }
   },
 
   // 取消录音
   cancelRecording() {
-    manager.stop();
+    const { voiceRecognitionManager } = this.data;
+    if (voiceRecognitionManager) {
+      voiceRecognitionManager.stop();
+    }
     this.stopDurationTimer();
     this.setData({
       isRecording: false,
@@ -3198,19 +3256,24 @@ ${indicatorDesc}
    - 血红蛋白/HGB/Hb/HB/血色素 → id: "hgb"
    - 血小板/PLT/血小板计数 → id: "plt"
    - 中性粒细胞/NEUT/中性粒/中性细胞/中粒/中性粒细胞数/中性粒细胞绝对值 → id: "neut" (注意：必须是绝对计数×10⁹/L，不是百分比%)
-   - 淋巴细胞/LYMPH/淋巴/淋巴细胞数/淋巴细胞绝对值 → id: "lymph"
-   - 单核细胞/MONO/单核/单个核细胞/单核细胞数/单核细胞绝对值 → id: "mono"
-   - C反应蛋白/CRP/C-反应蛋白/超敏C反应蛋白 → id: "crp"
+   - 淋巴细胞/LYMPH/淋巴/淋巴细胞数/淋巴细胞绝对值/淋巴绝对值/淋巴计数 → id: "lymph"
+   - 单核细胞/MONO/单核/单个核细胞/单核细胞数/单核细胞绝对值/单核绝对值/单核计数/单核细胞计数 → id: "mono"
+   - C反应蛋白/CRP/C-反应蛋白/超敏C反应蛋白/hs-CRP/hsCRP/西反应蛋白/C蛋白 → id: "crp"
    - 红细胞/RBC/红细胞计数 → id: "rbc"
-   - 血细胞比容/HCT/压积 → id: "hct"
+   - 血细胞比容/HCT/压积/红细胞压积 → id: "hct"
 
-3. **识别各种口语和书面表达**：
+3. **特别注意**：
+   - 如果用户说"单核"、"单核细胞"、"单核绝对值"等，统一识别为 id: "mono"（单核细胞绝对值）
+   - 如果用户说"C反应蛋白"、"CRP"、"C蛋白"等，统一识别为 id: "crp"（C反应蛋白）
+   - 上述指标只要在**当前页面需要识别的指标**列表中出现，就必须识别并返回
+
+4. **识别各种口语和书面表达**：
    - "点"代表小数点："五点二"="5.2"、"一点五七"="1.57"
    - 数字表达："一百三十四"="134"、"两百五"="250"、"两百九十"="290"
    - 小数表达："五点二"="5.2"、"四点八"="4.8"
    - 支持混合表达："白细胞5点2"、"血红蛋白134"、"血小板290"
 
-4. **单位智能匹配和数值范围校验**：
+5. **单位智能匹配和数值范围校验**：
    - 白细胞: 单位×10⁹/L，合理范围1-20
    - 血红蛋白: 单位g/L，合理范围90-180
    - 血小板: 单位×10⁹/L，合理范围100-400
@@ -3877,8 +3940,8 @@ ${indicatorDesc}
       '血红蛋白': ['hgb', 'hb', '血红蛋白', '血色素', 'hemoglobin'],
       '红细胞': ['rbc', '红细胞', '红细胞计数', '红血球'],
       '血小板': ['plt', '血小板', '血小板计数'],
-      '单核细胞': ['mono', 'mono#', '单核细胞', '单核', '单个核细胞', '单核细胞数', '单核细胞绝对值'],
-      'c反应蛋白': ['crp', 'c反应蛋白', 'c-反应蛋白', '超敏c反应蛋白', 'hs-crp'],
+      '单核细胞': ['mono', 'mono#', '单核细胞', '单核', '单个核细胞', '单核细胞数', '单核细胞绝对值', '单核绝对值', '单核计数', '单核细胞计数'],
+      'c反应蛋白': ['crp', 'c反应蛋白', 'c-反应蛋白', '超敏c反应蛋白', 'hs-crp', 'hscrp', 'hs_crp', '西反应蛋白', 'c蛋白'],
       '血细胞比容': ['hct', '血细胞比容', '压积', '红细胞压积'],
       '嗜酸性粒细胞': ['eos', 'eos#', '嗜酸性粒细胞', '嗜酸', '嗜酸性粒细胞数'],
       '嗜碱性粒细胞': ['baso', 'baso#', '嗜碱性粒细胞', '嗜碱', '嗜碱性粒细胞数']

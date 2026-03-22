@@ -524,3 +524,17 @@
   transform: scale(0.98);
   box-shadow: 0 2rpx 12rpx rgba(255, 152, 0, 0.4);
 }
+
+.ai-result-tip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 32rpx;
+  background: #f9f9f9;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.ai-result-tip-text {
+  font-size: 22rpx;
+  color: #999;
+}
