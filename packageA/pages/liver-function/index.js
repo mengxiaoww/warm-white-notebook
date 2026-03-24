@@ -1671,6 +1671,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['camera'],
+      sizeType: ['original'],
       camera: 'back',
       success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
@@ -1708,6 +1709,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album'],
+      sizeType: ['original'],
       success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
         wx.showLoading({ title: '识别中...', mask: true });
@@ -1945,13 +1947,15 @@ Page({
           try {
             data = JSON.parse(jsonStr);
           } catch (parseError) {
-            console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
-            wx.hideLoading();
-            wx.showToast({
-      title: 'AI返回数据格式错误',
-      icon: 'none'
-    });
-            return;
+            console.log('JSON解析失败，尝试修复截断的JSON...');
+            data = this._tryRepairJSON(jsonStr);
+            if (!data) {
+              console.error('JSON修复失败:', parseError, '失败的字符串:', jsonStr);
+              wx.hideLoading();
+              wx.showToast({ title: 'AI返回数据格式错误', icon: 'none' });
+              return;
+            }
+            console.log('✅ JSON修复成功');
           }
 
           if (data && data.indicators && data.indicators.length > 0) {
@@ -2119,45 +2123,117 @@ Page({
         ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
         ...(customIndicators || []).map(item => ({ id: item.id, name: item.name, unit: item.unit }))
       ];
-      const aliasMap = {
-        'alt': '谷丙转氨酶/丙氨酸氨基转移酶/ALT/GPT',
-        'ast': '谷草转氨酶/天门冬氨酸氨基转移酶/AST/GOT',
-        'tbil': '总胆红素/TBIL/T-BIL',
-        'dbil': '直接胆红素/结合胆红素/DBIL/D-BIL',
-        'ibil': '间接胆红素/非结合胆红素/IBIL/I-BIL',
-        'ggt': '谷氨酰转肽酶/γ-谷氨酰转肽酶/GGT/γ-GT',
-        'alp': '碱性磷酸酶/ALP',
-        'tp': '总蛋白/TP',
-        'alb': '白蛋白/ALB',
-        'glob': '球蛋白/GLOB',
-        'ag': '白球比/A/G',
-        'che': '胆碱酯酶/CHE',
-        'tba': '总胆汁酸/TBA',
-        'pa': '前白蛋白/PA',
-        'ldh': '乳酸脱氢酶/LDH',
+      const indicatorDesc = allIndicators.map((item, i) =>
+        `${i + 1}. ${item.name}（id: ${item.id}，单位：${item.unit}）`
+      ).join('\n');
+
+      // 动态生成指标在报告中的常见名称映射
+      const indicatorReportNames = {
+        alt: '- ALT（id: alt）：报告中名称可能为"谷丙转氨酶"、"*谷丙转氨酶"、"ALT"、"GPT"、"丙氨酸氨基转移酶"',
+        ast: '- AST（id: ast）：报告中名称可能为"谷草转氨酶"、"*谷草转氨酶"、"AST"、"GOT"、"天门冬氨酸氨基转移酶"',
+        tbil: '- 总胆红素（id: tbil）：报告中名称可能为"总胆红素"、"*总胆红素"、"TBIL"、"T-BIL"',
+        dbil: '- 直接胆红素（id: dbil）：报告中名称可能为"直接胆红素"、"*直接胆红素"、"DBIL"、"D-BIL"、"结合胆红素"',
+        ibil: '- 间接胆红素（id: ibil）：报告中名称可能为"间接胆红素"、"IBIL"、"I-BIL"、"非结合胆红素"',
+        ggt: '- GGT（id: ggt）：报告中名称可能为"谷氨酰转肽酶"、"*谷氨酰转肽酶"、"GGT"、"γ-GT"、"γ-谷氨酰转肽酶"',
+        alp: '- ALP（id: alp）：报告中名称可能为"碱性磷酸酶"、"*碱性磷酸酶"、"ALP"',
+        tp: '- 总蛋白（id: tp）：报告中名称可能为"总蛋白"、"*总蛋白"、"TP"',
+        alb: '- 白蛋白（id: alb）：报告中名称可能为"白蛋白"、"*白蛋白"、"ALB"',
+        glob: '- 球蛋白（id: glob）：报告中名称可能为"球蛋白"、"GLOB"',
+        ag: '- 白球比（id: ag）：报告中名称可能为"白球比例"、"白球比"、"A/G"',
+        che: '- 胆碱酯酶（id: che）：报告中名称可能为"胆碱酯酶"、"*胆碱酯酶"、"CHE"、"胆碱脂酶"',
+        tba: '- 总胆汁酸（id: tba）：报告中名称可能为"总胆汁酸"、"*总胆汁酸"、"TBA"',
+        pa: '- 前白蛋白（id: pa）：报告中名称可能为"前白蛋白"、"PA"、"PreAlb"、"转甲状腺素蛋白"',
+        ldh: '- LDH（id: ldh）：报告中名称可能为"乳酸脱氢酶"、"*乳酸脱氢酶"、"LDH"',
+        afp: '- AFP（id: afp）：报告中名称可能为"甲胎蛋白"、"AFP"、"α-胎蛋白"',
+        pct: '- PCT（id: pct）：报告中名称可能为"降钙素原"、"PCT"'
       };
-      const indicatorDesc = allIndicators.map(item => {
-        const alias = aliasMap[item.id] || item.name;
-        return `   - ${alias}（id: ${item.id}，单位：${item.unit}）`;
-      }).join('\n');
+      const nameDesc = allIndicators
+        .filter(item => indicatorReportNames[item.id])
+        .map(item => indicatorReportNames[item.id])
+        .join('\n');
+
+      // 动态生成数值合理性校验范围
+      const indicatorValueRanges = {
+        alt: '   - ALT：5-500 U/L（谷丙转氨酶）',
+        ast: '   - AST：5-500 U/L（谷草转氨酶，注意不是AST:ALT比值）',
+        tbil: '   - TBIL：1-200 μmol/L',
+        dbil: '   - DBIL：0-100 μmol/L',
+        ggt: '   - GGT：5-500 U/L',
+        alp: '   - ALP：20-500 U/L',
+        tp: '   - TP：40-100 g/L',
+        alb: '   - ALB：20-60 g/L',
+        che: '   - CHE(胆碱酯酶)：3000-15000 U/L',
+        tba: '   - TBA(总胆汁酸)：0-20 μmol/L',
+        ldh: '   - LDH(乳酸脱氢酶)：100-300 U/L'
+      };
+      const rangeDesc = allIndicators
+        .filter(item => indicatorValueRanges[item.id])
+        .map(item => indicatorValueRanges[item.id])
+        .join('\n');
+
+      // 动态生成易混淆警告（仅在相关指标都被配置时才包含）
+      const configuredIds = new Set(allIndicators.map(item => item.id));
+      let confusionWarnings = '';
+      if (configuredIds.has('ast')) {
+        confusionWarnings += '\n1. **AST vs AST:ALT比值**：报告中"AST:ALT"或"AST/ALT"是一个比值（通常<2.0），这不是AST的结果值！AST的值应从"谷草转氨酶"行读取。';
+      }
+      if (configuredIds.has('che') && configuredIds.has('ldh')) {
+        confusionWarnings += '\n2. **胆碱酯酶(CHE) vs 乳酸脱氢酶(LDH)**：CHE通常4000-13000 U/L，LDH通常110-250 U/L，绝对不能混淆！';
+      }
+      if (configuredIds.has('tba')) {
+        confusionWarnings += '\n3. **总胆汁酸(TBA) vs β-羟丁酸**：总胆汁酸通常0-15 μmol/L，β-羟丁酸通常0-280 μmol/L，不要混淆！';
+      }
 
       const res = await wx.cloud.callFunction({
         name: 'callSiliconFlowAI',
         data: {
           messages: [
             {
+              role: 'system',
+              content: `你是专业的医疗报告识别助手。请仔细扫描整张检验报告图片，只识别以下肝功能相关指标（不要识别其他指标）：
+
+**要识别的指标**：
+${indicatorDesc}
+${nameDesc ? '\n**指标在报告中可能出现的名称**：\n' + nameDesc : ''}
+${confusionWarnings ? '\n**⚠️ 常见易混淆指标警告**：' + confusionWarnings : ''}
+
+**关键识别规则**：
+
+1. **精确按行读取**：报告是表格结构，每行包含：序号、项目名称、结果值、箭头标记、参考范围、单位、检验方法。你必须先找到指标名称所在的行，然后只读取该行的"结果"列数值。绝对不能把A行的值填到B指标上。
+
+2. **区分结果值和参考范围**：
+   - "结果"列是本次检测的实际测量值（通常是单个数字如 131、124、29.37）
+   - "参考范围"列通常是"数字-数字"格式（如 5-40、15-40、3.40-17.10）
+   - 必须提取"结果"列的数值，不要提取参考范围
+
+3. **严格匹配，宁缺勿错**：
+   - 如果某个指标在报告中不存在，绝对不要返回该指标
+   - 如果不确定某个值是否正确，宁可不返回
+   - 只返回上述列出的指标，不要返回其他指标
+   - 比值项（如AST:ALT、UN:CREA）不是单独指标的结果值
+
+4. **数值合理性校验**：
+${rangeDesc || '   - 请根据医学常识判断数值是否合理'}
+   - 如果读到的值明显不在合理范围内，请重新确认是否读对了行
+
+**输出格式**：
+{"indicators": [{"id": "alt", "label": "谷丙转氨酶", "value": "131", "unit": "U/L"}]}
+
+只返回JSON，不要有其他说明文字。`
+            },
+            {
               role: 'user',
               content: [
                 { type: 'image_url', image_url: { url: imageUrl, detail: 'high' } },
-                { type: 'text', text: `你是专业的医疗报告识别助手。请识别这张检验报告图片中的以下指标：\n\n**要识别的指标**（格式：别名列表，id，单位）：\n${indicatorDesc}\n\n**识别规则**：\n- 在图片中找到每个指标对应的行（指标可能用别名列表中的任意一种名称出现）\n- 每个指标名称和它的检测结果值在同一行，严格按行对应，不要错位\n- value是该指标本次检测的实际测量值，纯数字不含单位\n- 参考范围（正常值范围）不是测量值，不要填入value，参考范围通常是"数字~数字"或"数字-数字"格式\n- 返回结果中的id必须使用上面括号中给出的id值，不能自己创造id\n- 如果某个指标在图片中未找到，则不要包含在结果中\n- 只返回以下JSON格式，不要有其他说明文字\n\n{"indicators": [{"id": "alt", "label": "谷丙转氨酶", "value": "131", "unit": "U/L"}]}` }
+                { type: 'text', text: '请逐行扫描报告，精确提取肝功能指标的检测结果值' }
               ]
             }
           ],
-          mode: 'image',
-          sessionId: `liver_image_${Date.now()}`,
-          stream: false
+          mode: 'unified',
+          stream: false,
+          temperature: 0,
+          max_tokens: 4096
         },
-        config: { timeout: 30000 }
       });
 
       if (!res.result || (!res.result.reply && !res.result.content)) {
@@ -2182,7 +2258,18 @@ Page({
       jsonStr = jsonStr.trim();
       if (jsonStr.charCodeAt(0) === 0xFEFF) jsonStr = jsonStr.substring(1);
 
-      const parsed = JSON.parse(jsonStr);
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.log('JSON解析失败，尝试修复截断的JSON...');
+        parsed = this._tryRepairJSON(jsonStr);
+        if (!parsed) {
+          console.error('JSON修复失败:', parseError, '失败的字符串:', jsonStr);
+          throw new Error('AI返回数据格式错误');
+        }
+        console.log('✅ JSON修复成功');
+      }
       console.log('📦 解析后的数据:', parsed);
 
       let indicatorList = null;
@@ -2214,10 +2301,18 @@ Page({
       const allConfiguredIndicators = [...displayedBasicIndicators, ...(customIndicators || [])];
       const cleanLabel = s => (s || '').replace(/[*★☆\s]/g, '').toLowerCase();
       const matchedIndicators = indicatorList.map(aiItem => {
+        // 1. 优先精确 id 匹配
         let matchedIndicator = allConfiguredIndicators.find(indicator => aiItem.id === indicator.id);
+        // 2. id 不匹配时，用清洗后的中文名精确匹配
         if (!matchedIndicator && aiItem.label) {
           const cleanedAiLabel = cleanLabel(aiItem.label);
           matchedIndicator = allConfiguredIndicators.find(indicator => cleanedAiLabel === cleanLabel(indicator.name));
+        }
+        // 3. 精确匹配失败时，使用模糊匹配（包含关系、关键词匹配）
+        if (!matchedIndicator && aiItem.label) {
+          matchedIndicator = allConfiguredIndicators.find(indicator =>
+            this.fuzzyMatch(aiItem.label, indicator.name)
+          );
         }
         if (matchedIndicator) {
           return {
@@ -2240,6 +2335,49 @@ Page({
       console.error('AI识别失败:', error);
       throw error;
     }
+  },
+
+  // 尝试修复截断的JSON字符串
+  // 尝试修复截断的JSON字符串
+  _tryRepairJSON(str) {
+    if (!str) return null;
+    try { return JSON.parse(str); } catch(e) {}
+    // 辅助函数：计算未闭合括号并补全
+    function countAndClose(s) {
+      let braces = 0, brackets = 0, inStr = false, escape = false;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (escape) { escape = false; continue; }
+        if (ch === '\\') { escape = true; continue; }
+        if (ch === '"') { inStr = !inStr; continue; }
+        if (inStr) continue;
+        if (ch === '{') braces++;
+        else if (ch === '}') braces--;
+        else if (ch === '[') brackets++;
+        else if (ch === ']') brackets--;
+      }
+      if (inStr) return null; // 字符串内截断，此策略无法处理
+      let repaired = s;
+      for (let i = 0; i < brackets; i++) repaired += ']';
+      for (let i = 0; i < braces; i++) repaired += '}';
+      try { return JSON.parse(repaired); } catch(e) { return null; }
+    }
+    // 策略1: 直接补全括号（处理在元素边界截断的情况）
+    let result = countAndClose(str);
+    if (result) {
+      console.log('🔧 JSON修复: 补全括号成功');
+      return result;
+    }
+    // 策略2: 回退到最后一个完整的}并补全（处理在字符串/值中间截断的情况）
+    const lastBrace = str.lastIndexOf('}');
+    if (lastBrace > 0) {
+      result = countAndClose(str.substring(0, lastBrace + 1));
+      if (result) {
+        console.log('🔧 JSON修复: 截断到最后完整元素并补全成功');
+        return result;
+      }
+    }
+    return null;
   },
 
   // 根据置信度获取颜色

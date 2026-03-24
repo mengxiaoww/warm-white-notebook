@@ -9,6 +9,9 @@
       "Bash(xargs grep -l \"ec-canvas\\\\|echarts\")",
       "Bash(xargs grep -l \"medications\\\\|collection.*medication\")",
       "Bash(grep -rn \"//.*住院\\\\|//.*治疗\\\\|/\\\\*.*住院\\\\|/\\\\*.*治疗\" --include=\"*.js\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\mengx\\iCloudDrive\\Documents\\cloudfunctions_backup\\callSiliconFlowAI"
     ]
   }
 }

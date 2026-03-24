@@ -1587,6 +1587,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['camera'],
+      sizeType: ['original'],
       camera: 'back',
       success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
@@ -1624,6 +1625,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album'],
+      sizeType: ['original'],
       success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
         wx.showLoading({ title: '识别中...', mask: true });
@@ -1861,13 +1863,15 @@ Page({
           try {
             data = JSON.parse(jsonStr);
           } catch (parseError) {
-            console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
-            wx.hideLoading();
-            wx.showToast({
-      title: 'AI返回数据格式错误',
-      icon: 'none'
-    });
-            return;
+            console.log('JSON解析失败，尝试修复截断的JSON...');
+            data = this._tryRepairJSON(jsonStr);
+            if (!data) {
+              console.error('JSON修复失败:', parseError, '失败的字符串:', jsonStr);
+              wx.hideLoading();
+              wx.showToast({ title: 'AI返回数据格式错误', icon: 'none' });
+              return;
+            }
+            console.log('✅ JSON修复成功');
           }
 
           if (data && data.indicators && data.indicators.length > 0) {
@@ -1883,28 +1887,56 @@ Page({
 
             // 只保留能匹配到当前配置项的指标,并补充正确的中文label
             const cleanLabel = s => (s || '').replace(/[*★☆\s]/g, '').toLowerCase();
+            const voiceIdAliasMap = {
+              'cr': 'cr', 'crea': 'cr', 'creatinine': 'cr', '肌酐': 'cr', 'scr': 'cr',
+              'bun': 'bun', 'urea': 'bun', '尿素氮': 'bun', '尿素': 'bun',
+              'ua': 'ua', 'uric': 'ua', '尿酸': 'ua',
+              'egfr': 'egfr', 'gfr': 'egfr', '肾小球滤过率': 'egfr',
+              'cysc': 'cysc', 'cystatin': 'cysc', 'cystatinc': 'cysc', '胱抑素': 'cysc', '胱抑素c': 'cysc',
+              'b2mg': 'b2mg', 'beta2mg': 'b2mg', 'β2微球蛋白': 'b2mg', 'β2-mg': 'b2mg',
+              'rtn': 'rtn', 'rbp': 'rtn', '视黄醇结合蛋白': 'rtn',
+              'upro': 'upro', '尿蛋白': 'upro',
+              'microalb': 'microalb', 'microalbumin': 'microalb', '微量白蛋白': 'microalb'
+            };
+            const normalizeVoiceId = s => (s || '').replace(/[-_\s*★☆]/g, '').toLowerCase();
             const matchedIndicators = data.indicators.map(aiItem => {
-              // 优先精确 id 匹配，fallback 用清洗后的中文名匹配
-              let matchedIndicator = allConfiguredIndicators.find(indicator => aiItem.id === indicator.id);
+              // 1. 精确 id 匹配（大小写不敏感）
+              let matchedIndicator = allConfiguredIndicators.find(indicator =>
+                normalizeVoiceId(aiItem.id) === normalizeVoiceId(indicator.id)
+              );
+              // 2. 别名表映射 id
+              if (!matchedIndicator && aiItem.id) {
+                const mappedId = voiceIdAliasMap[normalizeVoiceId(aiItem.id)];
+                if (mappedId) matchedIndicator = allConfiguredIndicators.find(i => i.id === mappedId);
+              }
+              // 3. 清洗后中文名匹配
               if (!matchedIndicator && aiItem.label) {
                 const cleanedAiLabel = cleanLabel(aiItem.label);
                 matchedIndicator = allConfiguredIndicators.find(indicator => cleanedAiLabel === cleanLabel(indicator.name));
+                if (!matchedIndicator) {
+                  const mappedId = voiceIdAliasMap[cleanedAiLabel];
+                  if (mappedId) matchedIndicator = allConfiguredIndicators.find(i => i.id === mappedId);
+                }
               }
-
+              // 4. 模糊匹配兜底
+              if (!matchedIndicator && aiItem.label) {
+                matchedIndicator = allConfiguredIndicators.find(indicator =>
+                  this.fuzzyMatch(aiItem.label, indicator.name)
+                );
+              }
               if (matchedIndicator) {
                 console.log(`✅ 匹配成功: ${aiItem.label} -> ${matchedIndicator.name}`);
-                // 返回数据时,使用配置的中文名称作为label
                 return {
                   ...aiItem,
                   id: matchedIndicator.id,
-                  label: matchedIndicator.name,  // 使用配置的中文名称
-                  unit: aiItem.unit || matchedIndicator.unit  // 优先使用AI识别的单位,否则使用配置的单位
+                  label: matchedIndicator.name,
+                  unit: aiItem.unit || matchedIndicator.unit
                 };
               } else {
-                console.log(`❌ 未匹配: ${aiItem.label}`);
+                console.warn(`❌ 未匹配: ${aiItem.label}(${aiItem.id})`);
                 return null;
               }
-            }).filter(item => item !== null);  // 过滤掉未匹配的项
+            }).filter(item => item !== null);
 
             console.log('🎯 最终匹配结果:', matchedIndicators);
 
@@ -1961,9 +1993,10 @@ Page({
   fuzzyMatch(aiLabel, configName) {
     if (!aiLabel || !configName) return false;
 
-    // 转小写比较
-    const label = aiLabel.toLowerCase().trim();
-    const name = configName.toLowerCase().trim();
+    // 去除所有特殊字符（*号、空格、星号等）后再比较
+    const strip = s => s.replace(/[*★☆\s\-_().（）]/g, '').toLowerCase();
+    const label = strip(aiLabel);
+    const name = strip(configName);
 
     // 完全匹配
     if (label === name) return true;
@@ -1973,20 +2006,20 @@ Page({
 
     // 肾功能相关的特殊匹配规则
     const kidneyKeywords = [
-      ['cr', '肌酐', 'creatinine', '血肌酐'],
-      ['bun', '尿素氮', 'urea', 'nitrogen', '血尿素氮'],
-      ['ua', '尿酸', 'uric', 'acid', '血尿酸'],
+      ['cr', '肌酐', 'creatinine', '血肌酐', 'crea'],
+      ['bun', '尿素氮', 'urea', 'nitrogen', '血尿素氮', '尿素'],
+      ['ua', '尿酸', 'uricacid', '血尿酸'],
       ['egfr', 'gfr', '肾小球滤过率', 'glomerular', 'filtration'],
-      ['cysc', '胱抑素', 'cystatin', 'c', '胱抑素c'],
-      ['b2mg', 'β2微球蛋白', 'beta2', 'microglobulin', 'β2-mg'],
-      ['rtn', '视黄醇', 'retinol', 'binding', '视黄醇结合蛋白'],
-      ['upro', '尿蛋白', 'urine', 'protein', 'urinary'],
-      ['microalb', '微量白蛋白', 'microalbumin', 'albumin']
+      ['cysc', '胱抑素', 'cystatin', '胱抑素c', 'cystatinc'],
+      ['b2mg', 'β2微球蛋白', 'beta2', 'microglobulin', 'β2mg', 'b2microglobulin'],
+      ['rtn', '视黄醇', 'retinol', 'binding', '视黄醇结合蛋白', 'rbp'],
+      ['upro', '尿蛋白', 'urineprotein', 'urinaryprotein'],
+      ['microalb', '微量白蛋白', 'microalbumin', 'malb']
     ];
 
     for (const keywords of kidneyKeywords) {
-      const labelMatches = keywords.some(keyword => label.includes(keyword));
-      const nameMatches = keywords.some(keyword => name.includes(keyword));
+      const labelMatches = keywords.some(keyword => label.includes(strip(keyword)));
+      const nameMatches = keywords.some(keyword => name.includes(strip(keyword)));
       if (labelMatches && nameMatches) return true;
     }
 
@@ -2028,44 +2061,47 @@ Page({
         ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
         ...(customIndicators || []).map(item => ({ id: item.id, name: item.name, unit: item.unit }))
       ];
-      const aliasMap = {
-        'cr': '肌酐/血肌酐/Cr/CREA/Creatinine',
-        'bun': '尿素/尿素氮/BUN/UREA/血尿素',
-        'ua': '尿酸/UA/URIC/Uric Acid',
-        'egfr': '肾小球滤过率/eGFR/GFR',
-        'cys': '胱抑素C/Cystatin C/CysC',
-        'beta2': 'β2微球蛋白/β2-MG/Beta2-Microglobulin',
-        'tp': '总蛋白/TP',
-        'alb': '白蛋白/ALB',
-        'co2': '二氧化碳/CO2/碳酸氢根/HCO3',
-        'k': '钾/血钾/K/Potassium',
-        'na': '钠/血钠/Na/Sodium',
-        'cl': '氯/血氯/Cl/Chloride',
-        'ca': '钙/血钙/Ca/Calcium',
-        'p': '磷/血磷/P/Phosphorus',
-      };
-      const indicatorDesc = allIndicators.map(item => {
-        const alias = aliasMap[item.id] || item.name;
-        return `   - ${alias}（id: ${item.id}，单位：${item.unit}）`;
-      }).join('\n');
+      const indicatorDesc = allIndicators.map((item, i) =>
+        `${i + 1}. ${item.name}（id: ${item.id}，单位：${item.unit}）`
+      ).join('\n');
+
+      // 构建极简、强指令性的 prompt，让模型严格输出我们定义的 id
+      const indicatorPromptLines = allIndicators.map(item =>
+        `- 报告中的「${item.name}」相关行 → id必须用"${item.id}"，label必须用"${item.name}"，单位"${item.unit}"（报告中该指标可能带*前缀，忽略*）`
+      ).join('\n');
 
       const res = await wx.cloud.callFunction({
         name: 'callSiliconFlowAI',
         data: {
           messages: [
             {
+              role: 'system',
+              content: `你是医疗报告数据提取助手。从图片中提取检验结果，严格按以下规则输出JSON。
+
+【指标映射规则（id和label必须完全按照此处规定输出，不能自创）】
+${indicatorPromptLines}
+
+【提取规则】
+1. 只提取"结果"列的数值（单个数字），不要提取参考范围（x-y格式）
+2. 如果某指标不在报告中，不要输出该指标
+3. 指标名前的*号是异常标记，忽略它，按正常名称匹配
+
+【输出格式，只输出JSON，不要任何其他文字】
+{"indicators":[{"id":"cr","label":"肌酐","value":"49","unit":"μmol/L"}]}`
+            },
+            {
               role: 'user',
               content: [
                 { type: 'image_url', image_url: { url: imageUrl, detail: 'high' } },
-                { type: 'text', text: `你是专业的医疗报告识别助手。请识别这张检验报告图片中的以下指标：\n\n**要识别的指标**（格式：别名列表，id，单位）：\n${indicatorDesc}\n\n**识别规则**：\n- 在图片中找到每个指标对应的行（指标可能用别名列表中的任意一种名称出现）\n- 每个指标名称和它的检测结果值在同一行，严格按行对应，不要错位\n- value是该指标本次检测的实际测量值，纯数字不含单位\n- 参考范围（正常值范围）不是测量值，不要填入value，参考范围通常是"数字~数字"或"数字-数字"格式\n- 返回结果中的id必须使用上面括号中给出的id值，不能自己创造id\n- 如果某个指标在图片中未找到，则不要包含在结果中\n- 只返回以下JSON格式，不要有其他说明文字\n\n{"indicators": [{"id": "cr", "label": "肌酐", "value": "80", "unit": "μmol/L"}]}` }
+                { type: 'text', text: '请提取图片中的肾功能检验结果，严格按system指令输出JSON' }
               ]
             }
           ],
-          mode: 'image',
-          sessionId: `kidney_image_${Date.now()}`,
-          stream: false
+          mode: 'unified',
+          stream: false,
+          temperature: 0,
+          max_tokens: 2048
         },
-        config: { timeout: 30000 }
       });
 
       if (!res.result || (!res.result.reply && !res.result.content)) {
@@ -2074,15 +2110,32 @@ Page({
 
       let aiResponse = res.result.reply || res.result.content;
       console.log('🔍 AI原始返回内容:', aiResponse);
+
+      // Qwen3-VL 等思考模型会输出 <think>...</think> 块，需先剔除
+      aiResponse = aiResponse.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      console.log('🔍 去除思考块后内容:', aiResponse);
+
       let jsonStr = null;
       const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/);
       if (jsonMatch) {
         jsonStr = jsonMatch[1];
       } else {
-        const jsonStart = aiResponse.indexOf('{');
+        // 找最后一个完整的JSON对象（避免误取思考块中的内容）
         const jsonEnd = aiResponse.lastIndexOf('}');
-        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
-          jsonStr = aiResponse.substring(jsonStart, jsonEnd + 1);
+        if (jsonEnd !== -1) {
+          // 从该 } 往前找配对的 {
+          let depth = 0;
+          let jsonStart = -1;
+          for (let i = jsonEnd; i >= 0; i--) {
+            if (aiResponse[i] === '}') depth++;
+            else if (aiResponse[i] === '{') {
+              depth--;
+              if (depth === 0) { jsonStart = i; break; }
+            }
+          }
+          if (jsonStart !== -1) {
+            jsonStr = aiResponse.substring(jsonStart, jsonEnd + 1);
+          }
         }
       }
 
@@ -2090,7 +2143,18 @@ Page({
       jsonStr = jsonStr.trim();
       if (jsonStr.charCodeAt(0) === 0xFEFF) jsonStr = jsonStr.substring(1);
 
-      const parsed = JSON.parse(jsonStr);
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.log('JSON解析失败，尝试修复截断的JSON...');
+        parsed = this._tryRepairJSON(jsonStr);
+        if (!parsed) {
+          console.error('JSON修复失败:', parseError, '失败的字符串:', jsonStr);
+          throw new Error('AI返回数据格式错误');
+        }
+        console.log('✅ JSON修复成功');
+      }
       console.log('📦 解析后的数据:', parsed);
 
       let indicatorList = null;
@@ -2119,14 +2183,52 @@ Page({
 
       const allConfiguredIndicators = [...displayedBasicIndicators, ...(customIndicators || [])];
       const cleanLabel = s => (s || '').replace(/[*★☆\s]/g, '').toLowerCase();
+
+      // 内置 id 别名表：AI 可能返回的各种 id 变体 -> 标准 id
+      const idAliasMap = {
+        'cr': 'cr', 'crea': 'cr', 'creatinine': 'cr', '肌酐': 'cr', 'scr': 'cr',
+        'bun': 'bun', 'urea': 'bun', '尿素氮': 'bun', '尿素': 'bun',
+        'ua': 'ua', 'uric': 'ua', '尿酸': 'ua',
+        'egfr': 'egfr', 'gfr': 'egfr', '肾小球滤过率': 'egfr',
+        'cysc': 'cysc', 'cystatin': 'cysc', 'cystatinc': 'cysc', '胱抑素': 'cysc', '胱抑素c': 'cysc',
+        'b2mg': 'b2mg', 'beta2mg': 'b2mg', 'b2microglobulin': 'b2mg', 'β2微球蛋白': 'b2mg', 'β2-mg': 'b2mg',
+        'rtn': 'rtn', 'rbp': 'rtn', '视黄醇结合蛋白': 'rtn', '视黄醇': 'rtn',
+        'upro': 'upro', 'urinepro': 'upro', '尿蛋白': 'upro',
+        'microalb': 'microalb', 'malb': 'microalb', 'microalbumin': 'microalb', '微量白蛋白': 'microalb'
+      };
+
+      const normalizeId = s => (s || '').replace(/[-_\s*★☆]/g, '').toLowerCase();
+
       const matchedIndicators = indicatorList.map(aiItem => {
-        // 优先精确 id 匹配
-        let matchedIndicator = allConfiguredIndicators.find(indicator => aiItem.id === indicator.id);
-        // id 不匹配时，用清洗后的中文名匹配（去除星号等干扰字符）
+        // 1. 精确 id 匹配（大小写不敏感）
+        let matchedIndicator = allConfiguredIndicators.find(indicator =>
+          normalizeId(aiItem.id) === normalizeId(indicator.id)
+        );
+        // 2. 通过别名表映射 id
+        if (!matchedIndicator && aiItem.id) {
+          const mappedId = idAliasMap[normalizeId(aiItem.id)];
+          if (mappedId) {
+            matchedIndicator = allConfiguredIndicators.find(indicator => indicator.id === mappedId);
+          }
+        }
+        // 3. 用清洗后的中文名精确匹配
         if (!matchedIndicator && aiItem.label) {
           const cleanedAiLabel = cleanLabel(aiItem.label);
           matchedIndicator = allConfiguredIndicators.find(indicator =>
             cleanedAiLabel === cleanLabel(indicator.name)
+          );
+          // 3b. 通过别名表映射 label
+          if (!matchedIndicator) {
+            const mappedId = idAliasMap[cleanedAiLabel];
+            if (mappedId) {
+              matchedIndicator = allConfiguredIndicators.find(indicator => indicator.id === mappedId);
+            }
+          }
+        }
+        // 4. 模糊匹配兜底
+        if (!matchedIndicator && aiItem.label) {
+          matchedIndicator = allConfiguredIndicators.find(indicator =>
+            this.fuzzyMatch(aiItem.label, indicator.name)
           );
         }
         if (matchedIndicator) {
@@ -2139,10 +2241,16 @@ Page({
             confidenceColor: this.getConfidenceColor(aiItem.confidence || 85)
           };
         }
+        console.warn('❌ 无法匹配AI指标:', JSON.stringify(aiItem));
         return null;
       }).filter(item => item !== null);
 
-      if (matchedIndicators.length === 0) throw new Error('未识别到当前配置项的数据');
+      if (matchedIndicators.length === 0) {
+        const aiItemsSummary = indicatorList.map(i => `${i.label||''}(${i.id||''})`).join(', ');
+        const configuredSummary = allConfiguredIndicators.map(i => `${i.name}(${i.id})`).join(', ');
+        console.error('匹配失败 - AI返回:', aiItemsSummary, '| 当前配置:', configuredSummary);
+        throw new Error('未识别到当前配置项的数据');
+      }
 
       return matchedIndicators;
 
@@ -2150,6 +2258,49 @@ Page({
       console.error('AI识别失败:', error);
       throw error;
     }
+  },
+
+  // 尝试修复截断的JSON字符串
+  // 尝试修复截断的JSON字符串
+  _tryRepairJSON(str) {
+    if (!str) return null;
+    try { return JSON.parse(str); } catch(e) {}
+    // 辅助函数：计算未闭合括号并补全
+    function countAndClose(s) {
+      let braces = 0, brackets = 0, inStr = false, escape = false;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (escape) { escape = false; continue; }
+        if (ch === '\\') { escape = true; continue; }
+        if (ch === '"') { inStr = !inStr; continue; }
+        if (inStr) continue;
+        if (ch === '{') braces++;
+        else if (ch === '}') braces--;
+        else if (ch === '[') brackets++;
+        else if (ch === ']') brackets--;
+      }
+      if (inStr) return null; // 字符串内截断，此策略无法处理
+      let repaired = s;
+      for (let i = 0; i < brackets; i++) repaired += ']';
+      for (let i = 0; i < braces; i++) repaired += '}';
+      try { return JSON.parse(repaired); } catch(e) { return null; }
+    }
+    // 策略1: 直接补全括号（处理在元素边界截断的情况）
+    let result = countAndClose(str);
+    if (result) {
+      console.log('🔧 JSON修复: 补全括号成功');
+      return result;
+    }
+    // 策略2: 回退到最后一个完整的}并补全（处理在字符串/值中间截断的情况）
+    const lastBrace = str.lastIndexOf('}');
+    if (lastBrace > 0) {
+      result = countAndClose(str.substring(0, lastBrace + 1));
+      if (result) {
+        console.log('🔧 JSON修复: 截断到最后完整元素并补全成功');
+        return result;
+      }
+    }
+    return null;
   },
 
   // 根据置信度获取颜色

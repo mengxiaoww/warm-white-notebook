@@ -427,16 +427,15 @@ Page({
 
 
 
-        // 如果当前日期没有配置，且是未来日期，尝试继承最近的配置
-        if (configRes.data.length === 0 && this.data.dateType === 'future') {
+        // 如果当前日期没有配置，尝试继承最近的配置（今天、过去、未来日期均支持继承）
+        if (configRes.data.length === 0) {
 
-
-          // 查找最近的有效配置（包括今日和历史配置）
+          // 查找最近的有效配置（包括历史配置）
           const inheritableConfigRes = await db.collection('userIndicatorConfig')
             .where({
               openid: openid,
               profileId: currentProfileId,
-              date: db.command.lte(editingDate) // 小于等于当前日期
+              date: db.command.lt(editingDate) // 小于当前日期（查找过去的配置）
             })
             .orderBy('date', 'desc') // 按日期降序，找最近的
             .limit(1)

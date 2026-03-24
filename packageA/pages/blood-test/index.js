@@ -115,10 +115,14 @@ Page({
 
     // 检查是否有临时配置预览（从配置页面返回）
     if (app.globalData.temporaryBloodTestConfig) {
-      this.loadTemporaryConfiguration();
+      // 🔧 修复：拍照/相册返回时跳过重复加载临时配置，避免反复弹toast
+      if (!this._isProcessingAIImport) {
+        this.loadTemporaryConfiguration();
 
-      // 🔧 关键修复：恢复用户之前的输入
-      this.restoreTemporaryUserInput();
+        // 🔧 关键修复：恢复用户之前的输入
+        this.restoreTemporaryUserInput();
+      }
+      this._isProcessingAIImport = false;
     } else if (app.globalData.needRefreshBloodTestConfig || app.globalData.indicatorConfigChanged) {
       app.globalData.needRefreshBloodTestConfig = false;
       app.globalData.indicatorConfigChanged = false;
@@ -1640,8 +1644,11 @@ Page({
         });
       }
 
-      // 🔧 关键逻辑：如果存在临时配置，现在保存它
+      // 🔧 关键逻辑：保存指标配置
+      // 优先保存临时配置（从配置页面返回的），否则保存当前页面的指标配置
       await this.saveTemporaryConfigIfExists();
+      // 🔧 修复：即使没有临时配置，也保存当前指标配置，确保继承的配置被持久化
+      await this.saveCurrentIndicatorConfig();
 
       // 通知首页刷新日历数据（通过全局变量）
       const app = getApp();
@@ -1847,6 +1854,7 @@ Page({
       // 5. 设置刷新标志，让其他页面知道配置已更新
       if (app.globalData) {
         app.globalData.needRefreshBloodTestConfig = true;
+        app.globalData._indicatorConfigJustSaved = true; // 标记已保存，避免saveCurrentIndicatorConfig重复保存
         app.globalData.indicatorConfigChanged = true;
       }
 
@@ -1858,6 +1866,79 @@ Page({
         icon: 'none',
         duration: 2000
       });
+    }
+  },
+
+  // 🔧 修复：保存当前页面的指标配置到数据库（确保继承的配置也被持久化）
+  async saveCurrentIndicatorConfig() {
+    const app = getApp();
+    // 如果临时配置刚刚被保存过（saveTemporaryConfigIfExists已处理），就不重复保存
+    if (app.globalData && app.globalData._indicatorConfigJustSaved) {
+      delete app.globalData._indicatorConfigJustSaved;
+      return;
+    }
+
+    const { openid, currentProfileId, selectedDate, userIndicatorConfig } = this.data;
+
+    if (!openid || !currentProfileId || !selectedDate || !userIndicatorConfig) {
+      return;
+    }
+
+    // 检查当前配置是否有意义（至少有选中的指标）
+    const hasSelectedIndicators = Object.keys(userIndicatorConfig).some(key => !!userIndicatorConfig[key]);
+    if (!hasSelectedIndicators) {
+      return;
+    }
+
+    try {
+      const db = wx.cloud.database();
+
+      // 查询当前日期是否已有配置
+      const existingConfigRes = await db.collection('userIndicatorConfig')
+        .where({
+          openid: openid,
+          profileId: currentProfileId,
+          date: selectedDate
+        })
+        .get();
+
+      const today = getTodayLocalDate();
+      const dateType = this.determineDateType(selectedDate, today);
+
+      const configData = {
+        selectedIndicators: userIndicatorConfig,
+        updateTime: db.serverDate(),
+        configType: dateType || 'today',
+        effectiveScope: (dateType === 'today') ? 'future' : 'single'
+      };
+
+      if (existingConfigRes.data.length > 0) {
+        await db.collection('userIndicatorConfig')
+          .doc(existingConfigRes.data[0]._id)
+          .update({
+            data: configData
+          });
+        console.log(`📝 已持久化 ${selectedDate} 的指标配置（更新）`);
+      } else {
+        await db.collection('userIndicatorConfig').add({
+          data: {
+            openid: openid,
+            profileId: currentProfileId,
+            date: selectedDate,
+            ...configData
+          }
+        });
+        console.log(`➕ 已持久化 ${selectedDate} 的指标配置（新增）`);
+      }
+
+      // 如果是今日配置，也应用到未来日期
+      if (dateType === 'today') {
+        await this.applyTodayConfigToFuture(selectedDate, userIndicatorConfig, openid, currentProfileId, db);
+      }
+
+    } catch (err) {
+      console.error('持久化指标配置失败:', err);
+      // 不影响主流程
     }
   },
 
@@ -3256,15 +3337,17 @@ ${indicatorDesc}
    - 血红蛋白/HGB/Hb/HB/血色素 → id: "hgb"
    - 血小板/PLT/血小板计数 → id: "plt"
    - 中性粒细胞/NEUT/中性粒/中性细胞/中粒/中性粒细胞数/中性粒细胞绝对值 → id: "neut" (注意：必须是绝对计数×10⁹/L，不是百分比%)
-   - 淋巴细胞/LYMPH/淋巴/淋巴细胞数/淋巴细胞绝对值/淋巴绝对值/淋巴计数 → id: "lymph"
-   - 单核细胞/MONO/单核/单个核细胞/单核细胞数/单核细胞绝对值/单核绝对值/单核计数/单核细胞计数 → id: "mono"
+   - 淋巴细胞/LYMPH/淋巴/淋巴细胞数/淋巴细胞绝对值/淋巴绝对值/淋巴计数 → id: "lymph" (注意：必须是绝对计数×10⁹/L，不是百分比%)
+   - 单核细胞/MONO/单核/单个核细胞/单核细胞数/单核细胞绝对值/单核绝对值/单核计数/单核细胞计数 → id: "mono" (注意：必须是绝对计数×10⁹/L，不是百分比%)
    - C反应蛋白/CRP/C-反应蛋白/超敏C反应蛋白/hs-CRP/hsCRP/西反应蛋白/C蛋白 → id: "crp"
    - 红细胞/RBC/红细胞计数 → id: "rbc"
    - 血细胞比容/HCT/压积/红细胞压积 → id: "hct"
 
 3. **特别注意**：
-   - 如果用户说"单核"、"单核细胞"、"单核绝对值"等，统一识别为 id: "mono"（单核细胞绝对值）
+   - 如果用户说"单核"、"单核细胞"、"单核绝对值"、"单核细胞数"等，统一识别为 id: "mono"（单核细胞绝对值）
+   - 如果用户说"淋巴"、"淋巴细胞"、"淋巴绝对值"、"淋巴细胞数"等，统一识别为 id: "lymph"（淋巴细胞绝对值）
    - 如果用户说"C反应蛋白"、"CRP"、"C蛋白"等，统一识别为 id: "crp"（C反应蛋白）
+   - **百分比数据必须忽略**：如果用户说了"中性粒细胞百分比"、"淋巴细胞百分比"、"单核细胞百分比"等百分比类数据，直接跳过不识别，只识别绝对计数值
    - 上述指标只要在**当前页面需要识别的指标**列表中出现，就必须识别并返回
 
 4. **识别各种口语和书面表达**：
@@ -3309,14 +3392,23 @@ ${indicatorDesc}
         }
       });
 
-      console.log('🤖 AI解析响应:', res.result);
+      console.log('🤖 AI解析响应:', JSON.stringify(res.result));
 
-      if (!res.result || (!res.result.reply && !res.result.content)) {
-        throw new Error('AI响应格式错误');
+      if (!res.result) {
+        throw new Error('AI响应为空');
+      }
+
+      if (res.result.success === false) {
+        throw new Error('AI识别失败: ' + (res.result.error || '未知错误'));
       }
 
       // 解析AI返回的JSON - 兼容reply和content两种字段
       let aiResponse = res.result.reply || res.result.content;
+
+      if (!aiResponse) {
+        console.error('AI响应中无有效内容:', JSON.stringify(res.result));
+        throw new Error('AI响应内容为空');
+      }
 
       console.log('📝 原始AI响应:', aiResponse);
 
@@ -3353,8 +3445,13 @@ ${indicatorDesc}
       try {
         parsed = JSON.parse(jsonStr);
       } catch (parseError) {
-        console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
-        throw new Error('AI返回数据格式错误');
+        console.log('JSON解析失败，尝试修复截断的JSON...');
+        parsed = this._tryRepairJSON(jsonStr);
+        if (!parsed) {
+          console.error('JSON修复失败:', parseError, '失败的字符串:', jsonStr);
+          throw new Error('AI返回数据格式错误');
+        }
+        console.log('✅ JSON修复成功');
       }
 
       console.log('📦 解析后的数据:', parsed);
@@ -3435,6 +3532,8 @@ ${indicatorDesc}
 
   // 处理AI图片输入
   handleAIImageInput(sourceType) {
+    // 标记正在进行AI导入操作，防止拍照/相册返回时onShow重复加载临时配置和弹toast
+    this._isProcessingAIImport = true;
     wx.chooseImage({
       count: 1,
       sizeType: ['original'],  // 使用原图，保证识别质量
@@ -3481,10 +3580,12 @@ ${indicatorDesc}
         } catch (error) {
           wx.hideLoading();
           console.error('❌ 识别失败:', error);
-          wx.showToast({
-            title: error.message || '识别失败，请重试',
-            icon: 'none',
-            duration: 2000
+          const errMsg = error.message || '识别失败，请重试';
+          wx.showModal({
+            title: '识别失败',
+            content: errMsg,
+            showCancel: false,
+            confirmText: '知道了'
           });
         }
       }
@@ -3500,7 +3601,7 @@ ${indicatorDesc}
       // 使用快照指标（防止 onShow 异步覆盖），fallback 到 this.data
       const { displayedBasicIndicators, customIndicators } = snapshotIndicators || this.data;
 
-      // 构建指标列表描述
+      // 只使用当前配置的指标（已显示的基础指标 + 自定义指标）
       const allIndicators = [
         ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
         ...(customIndicators || []).map(item => ({ id: item.id, name: item.name, unit: item.unit }))
@@ -3514,6 +3615,57 @@ ${indicatorDesc}
       console.log('📋 当前页面配置的指标:', allIndicators);
       console.log('📸 图片URL:', imageUrl);
 
+      // 动态生成指标在报告中的常见名称映射（只包含当前配置的指标）
+      const indicatorReportNames = {
+        wbc: '- WBC: "白细胞计数"、"白细胞"、"白细胞数"、"白细胞数目"、"WBC"',
+        plt: '- PLT: "血小板计数"、"血小板"、"血小板数"、"血小板数目"、"PLT"（值通常是三位整数如160、290）',
+        rbc: '- RBC: "红细胞计数"、"红细胞"、"红细胞数"、"红细胞数目"、"RBC"（值通常是小数如3.73、4.04）',
+        hgb: '- HGB: "血红蛋白"、"HGB"、"Hb"、"血色素"',
+        hct: '- HCT: "红细胞压积"、"HCT"、"血细胞比容"、"红细胞比容"',
+        neut: '- NEUT#: "中性粒细胞"、"中性粒细胞数"、"中性粒细胞数目"、"中性细胞数"、"NEUT#"、"Neu#"（注意：只取绝对值行，单位10^9/L，不取百分比%行）',
+        lymph: '- LYMPH#: "淋巴细胞"、"淋巴细胞数"、"淋巴细胞数目"、"LYMPH#"、"Lym#"（注意：只取绝对值行，单位10^9/L）',
+        mono: '- MONO#: "单核细胞"、"单核细胞数"、"单核细胞数目"、"MONO#"、"Mon#"（注意：只取绝对值行，单位10^9/L）',
+        crp: '- CRP: "C反应蛋白"、"CRP"、"C-反应蛋白"、"超敏C反应蛋白"、"hs-CRP"'
+      };
+      const nameDesc = allIndicators
+        .filter(item => indicatorReportNames[item.id])
+        .map(item => indicatorReportNames[item.id])
+        .join('\n');
+
+      // 动态生成数值合理性校验范围（只包含当前配置的指标）
+      const indicatorValueRanges = {
+        wbc: '   - WBC：0.5-30 ×10⁹/L',
+        neut: '   - NEUT#：0.1-15 ×10⁹/L',
+        lymph: '   - LYMPH#：0.1-10 ×10⁹/L',
+        mono: '   - MONO#：0.01-2 ×10⁹/L',
+        hgb: '   - HGB：50-180 g/L',
+        plt: '   - PLT：50-500 ×10⁹/L',
+        rbc: '   - RBC：1.5-6.5 ×10¹²/L',
+        hct: '   - HCT：15-55 %',
+        crp: '   - CRP：0-100 mg/L'
+      };
+      const rangeDesc = allIndicators
+        .filter(item => indicatorValueRanges[item.id])
+        .map(item => indicatorValueRanges[item.id])
+        .join('\n');
+
+      // 动态生成区分规则（仅在相关指标都被配置时才包含）
+      const configuredIds = new Set(allIndicators.map(item => item.id));
+      let extraRules = '';
+      if (configuredIds.has('neut') || configuredIds.has('lymph') || configuredIds.has('mono')) {
+        extraRules += `\n2. **区分百分比和绝对值**：
+   - 中性粒细胞（NEUT）、淋巴细胞（LYMPH）、单核细胞（MONO）在报告中通常有两行：百分比（%）和绝对计数（×10⁹/L）
+   - 必须提取**绝对计数值**（带#号或标注"细胞数"/"粒细胞"的行，单位为10^9/L），不要提取百分比行（单位为%）
+   - 例如：NEUT%=30.60 和 NEUT#=0.54，应该提取0.54\n`;
+      }
+      if ([configuredIds.has('plt'), configuredIds.has('rbc'), configuredIds.has('hct')].filter(Boolean).length >= 2) {
+        extraRules += `\n3. **区分PLT、RBC、HCT（常见混淆）**：
+   - PLT（血小板计数）：通常是**三位整数**如 160、290、174
+   - RBC（红细胞计数）：通常是**小数**如 2.13、3.73、4.04
+   - HCT（红细胞压积）：通常是**两位数**如 21.4、33.5、36.6，单位%
+   - 这三个指标值差异很大，请仔细核对指标名称所在行\n`;
+      }
+
       // 调用AI云函数，使用Qwen3-VL视觉模型识别图片
       const res = await wx.cloud.callFunction({
         name: 'callSiliconFlowAI',
@@ -3521,23 +3673,27 @@ ${indicatorDesc}
           messages: [
             {
               role: 'system',
-              content: `你是专业的医疗报告识别助手。请仔细扫描整张血常规报告图片，识别以下所有指标：
+              content: `你是专业的医疗报告识别助手。请仔细扫描整张血常规报告图片，只识别以下指标（不要识别其他指标）：
 
-**要识别的指标**：
+**要识别的指标及报告中常见名称**：
 ${indicatorDesc}
+${nameDesc ? '\n**指标在报告中可能出现的名称**：\n' + nameDesc : ''}
 
-**识别规则**：
-- 必须扫描报告的每一行，包括表格底部、炎症指标区、附加检测区等所有区域
-- C反应蛋白（CRP）可能单独列在报告末尾或炎症指标区，务必查找
-- 单核细胞（MONO）可能标注为"单核细胞#"、"MONO#"或"单核细胞绝对值"
-- 对于细胞计数类指标（中性粒细胞、淋巴细胞、单核细胞等），必须提取绝对值（单位：×10⁹/L），不要提取百分比（单位：%）
-- 如果报告中同时显示了绝对值和百分比，优先选择绝对值
-- 血红蛋白（HGB）单位为g/L，正常范围110-180，如识别到的值在10-18之间可能是g/dL需乘以10
-- value必须是纯数字，不包含单位
-- 如果某个指标在图片中未找到，则不要包含在结果中
+**关键识别规则**：
+
+1. **精确定位每个指标**：报告可能是多列布局（左右两栏），必须找到每个指标名称对应的同一行的结果值，不要把不同行的值张冠李戴。
+${extraRules}
+4. **数值合理性校验**：
+${rangeDesc || '   - 请根据医学常识判断数值是否合理'}
+
+5. **其他规则**：
+   - 必须扫描报告的每一行，包括表格底部、右侧栏
+   - value必须是纯数字
+   - 未找到的指标不要包含在结果中
+   - **只返回上述列出的指标，不要返回其他指标**
 
 **输出格式**：
-{"indicators": [{"id": "wbc", "label": "白细胞", "value": "5.2", "unit": "×10⁹/L"}, ...]}
+{"indicators": [{"id": "wbc", "label": "白细胞计数", "value": "5.76", "unit": "×10⁹/L"}, ...]}
 
 只返回JSON，不要有其他说明文字。`
             },
@@ -3559,21 +3715,35 @@ ${indicatorDesc}
             }
           ],
           mode: 'unified',
-          stream: false
+          stream: false,
+          temperature: 0,  // 消除随机性，确保同一张图每次识别结果一致
+          max_tokens: 4096  // 确保AI有足够的输出空间返回所有指标
         },
         config: {
-          timeout: 30000  // 30秒超时（Qwen3-VL速度快）
+          timeout: 60000  // 60秒超时（复杂报告需要更多时间）
         }
       });
 
-      console.log('🤖 AI识别响应:', res.result);
+      console.log('🤖 AI识别响应:', JSON.stringify(res.result));
 
-      if (!res.result || (!res.result.reply && !res.result.content)) {
-        throw new Error('AI响应格式错误');
+      if (!res.result) {
+        throw new Error('AI响应为空');
       }
 
-      // 解析AI返回的JSON - 兼容reply和content两种字段
+      // 检查云函数是否返回了错误
+      if (res.result.success === false) {
+        const errMsg = res.result.error || '未知错误';
+        console.error('云函数返回错误:', errMsg);
+        throw new Error('AI识别失败: ' + errMsg);
+      }
+
+      // 兼容reply和content两种字段
       let aiResponse = res.result.reply || res.result.content;
+
+      if (!aiResponse) {
+        console.error('AI响应中无有效内容，完整响应:', JSON.stringify(res.result));
+        throw new Error('AI响应内容为空');
+      }
 
       console.log('📝 原始AI响应:', aiResponse);
 
@@ -3610,8 +3780,13 @@ ${indicatorDesc}
       try {
         parsed = JSON.parse(jsonStr);
       } catch (parseError) {
-        console.error('JSON解析失败:', parseError, '失败的字符串:', jsonStr);
-        throw new Error('AI返回数据格式错误');
+        console.log('JSON解析失败，尝试修复截断的JSON...');
+        parsed = this._tryRepairJSON(jsonStr);
+        if (!parsed) {
+          console.error('JSON修复失败:', parseError, '失败的字符串:', jsonStr);
+          throw new Error('AI返回数据格式错误');
+        }
+        console.log('✅ JSON修复成功');
       }
 
       console.log('📦 解析后的数据:', parsed);
@@ -3638,15 +3813,28 @@ ${indicatorDesc}
 
       console.log('✅ AI识别结果:', indicators);
 
-      // 已经在函数开头获取了 displayedBasicIndicators 和 customIndicators
+      // 只使用当前配置的指标进行匹配
       const allConfiguredIndicators = [
-        ...displayedBasicIndicators,
+        ...displayedBasicIndicators.map(item => ({ id: item.id, name: item.name, unit: item.unit })),
         ...(customIndicators || [])
       ];
 
-      console.log('📋 当前配置的指标:', allConfiguredIndicators);
+      console.log('📋 可匹配的指标:', allConfiguredIndicators);
 
-      // 只保留能匹配到当前配置项的指标，并补充正确的中文label
+      // 保留能匹配到的指标，并补充正确的中文label
+      // 数值合理范围校验表（用于标记可疑值）
+      const valueRanges = {
+        wbc: { min: 0.1, max: 50 },
+        neut: { min: 0.01, max: 20 },
+        lymph: { min: 0.01, max: 15 },
+        mono: { min: 0.001, max: 5 },
+        hgb: { min: 30, max: 250 },
+        plt: { min: 20, max: 800 },
+        rbc: { min: 0.5, max: 8 },
+        hct: { min: 10, max: 65 },
+        crp: { min: 0, max: 300 }
+      };
+
       const matchedIndicators = indicators.map(aiItem => {
         // 尝试匹配配置的指标
         const matchedIndicator = allConfiguredIndicators.find(indicator =>
@@ -3664,12 +3852,25 @@ ${indicatorDesc}
               console.log(`🔄 血红蛋白单位换算: ${aiItem.value} g/dL -> ${value} g/L`);
             }
           }
+
+          // 数值合理性校验：标记可疑值降低置信度
+          let confidence = aiItem.confidence || 95;
+          const range = valueRanges[matchedIndicator.id];
+          if (range) {
+            const numVal = parseFloat(value);
+            if (!isNaN(numVal) && (numVal < range.min || numVal > range.max)) {
+              console.log(`⚠️ 值可疑: ${matchedIndicator.name}=${numVal}，合理范围${range.min}-${range.max}`);
+              confidence = Math.min(confidence, 40); // 降低置信度
+            }
+          }
+
           return {
             ...aiItem,
             id: matchedIndicator.id,
             label: matchedIndicator.name,
             value: value,
-            unit: aiItem.unit || matchedIndicator.unit
+            unit: aiItem.unit || matchedIndicator.unit,
+            confidence: confidence
           };
         } else {
           console.log(`❌ 未匹配: ${aiItem.label}`);
@@ -3683,11 +3884,13 @@ ${indicatorDesc}
         throw new Error('未识别到当前配置项的数据');
       }
 
-      // 根据置信度给进度条上色（使用暖色调：橙色系）
+      // 根据置信度上色：高置信度橙色，低置信度（可疑值）红色
       const result = matchedIndicators.map(item => ({
         ...item,
-        confidenceColor: item.confidence >= 80 ? '#FF9800' :  // 橙色
-                        item.confidence >= 60 ? '#FFB84D' : '#FFA726'  // 淡橙色
+        confidenceColor: item.confidence >= 80 ? '#FF9800' :  // 橙色 - 高置信度
+                        item.confidence >= 60 ? '#FFB84D' :   // 淡橙色 - 中等置信度
+                        '#F44336',                            // 红色 - 低置信度/可疑值
+        suspicious: item.confidence < 60 // 标记可疑值
       }));
 
       return result;
@@ -3752,7 +3955,7 @@ ${indicatorDesc}
           messages: [
             {
               role: 'system',
-              content: `从血常规报告OCR文本提取指标。只提取：WBC、NEUT#(不是NEUT%)、HGB、PLT、RBC、LYMPH#、MONO#、CRP。返回JSON：
+              content: `从血常规报告OCR文本提取指标。只提取：WBC、NEUT#(不是NEUT%)、HGB、PLT、RBC、LYMPH#、MONO#、HCT、CRP。ID映射：WBC→wbc, NEUT#→neut, HGB→hgb, PLT→plt, RBC→rbc, LYMPH#→lymph, MONO#→mono, HCT→hct, CRP→crp。返回JSON：
 {
   "indicators": [
     {
@@ -3764,7 +3967,7 @@ ${indicatorDesc}
     }
   ]
 }
-只返回JSON，value为纯数字，confidence为0-100整数。`
+只返回JSON，value为纯数字，confidence为0-100整数。尽可能提取所有能找到的上述指标。`
             },
             {
               role: 'user',
@@ -3778,14 +3981,23 @@ ${indicatorDesc}
         }
       });
 
-      console.log('🤖 AI解析响应:', res.result);
+      console.log('🤖 AI解析响应:', JSON.stringify(res.result));
 
-      if (!res.result || (!res.result.reply && !res.result.content)) {
+      if (!res.result) {
         throw new Error('AI响应为空');
+      }
+
+      if (res.result.success === false) {
+        throw new Error('AI识别失败: ' + (res.result.error || '未知错误'));
       }
 
       // 解析AI返回的JSON - 兼容reply和content
       let aiResponse = res.result.reply || res.result.content;
+
+      if (!aiResponse) {
+        console.error('AI响应中无有效内容:', JSON.stringify(res.result));
+        throw new Error('AI响应内容为空');
+      }
 
       // 清理markdown代码块标记
       aiResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
@@ -3836,23 +4048,13 @@ ${indicatorDesc}
     let fillCount = 0;
     const matchedItems = []; // 记录匹配成功的项
 
-    // 遍历AI识别的每一项数据
+    // 遍历AI识别的每一项数据，只匹配当前配置的指标
     aiRecognizedData.forEach(aiItem => {
       let matched = false;
 
-      // 1. 尝试匹配基础指标
+      // 1. 尝试匹配已显示的基础指标
       for (const indicator of displayedBasicIndicators) {
-        // 方式1: 直接通过id匹配（AI返回的id与基础指标id相同）
-        if (aiItem.id === indicator.id) {
-          newFormData[indicator.id] = aiItem.value;
-          fillCount++;
-          matched = true;
-          matchedItems.push(`${indicator.name}: ${aiItem.value}${aiItem.unit || indicator.unit}`);
-          break;
-        }
-
-        // 方式2: 通过label名称匹配（AI返回的label与基础指标name相同或相似）
-        if (aiItem.label && this.fuzzyMatch(aiItem.label, indicator.name)) {
+        if (aiItem.id === indicator.id || (aiItem.label && this.fuzzyMatch(aiItem.label, indicator.name))) {
           newFormData[indicator.id] = aiItem.value;
           fillCount++;
           matched = true;
@@ -3864,17 +4066,7 @@ ${indicatorDesc}
       // 2. 如果基础指标没匹配上，尝试匹配自定义指标
       if (!matched && customIndicators && customIndicators.length > 0) {
         for (const customIndicator of customIndicators) {
-          // 方式1: 通过id匹配
-          if (aiItem.id === customIndicator.id) {
-            newFormData[customIndicator.id] = aiItem.value;
-            fillCount++;
-            matched = true;
-            matchedItems.push(`${customIndicator.name}: ${aiItem.value}${aiItem.unit || customIndicator.unit}`);
-            break;
-          }
-
-          // 方式2: 通过名称模糊匹配
-          if (aiItem.label && this.fuzzyMatch(aiItem.label, customIndicator.name)) {
+          if (aiItem.id === customIndicator.id || (aiItem.label && this.fuzzyMatch(aiItem.label, customIndicator.name))) {
             newFormData[customIndicator.id] = aiItem.value;
             fillCount++;
             matched = true;
@@ -3891,27 +4083,71 @@ ${indicatorDesc}
     });
 
     // 更新表单
-    this.setData({
+    const updateData = {
       formData: newFormData,
       aiResultVisible: false,
       aiRecognizedData: []
-    });
+    };
+
+    this.setData(updateData);
 
     // 显示填充结果
     if (fillCount > 0) {
       wx.showToast({
-      title: `已填充${fillCount}个指标`,
-      icon: 'success',
-      duration: 2000
+        title: `已填充${fillCount}个指标`,
+        icon: 'success',
+        duration: 2500
       });
       console.log('✅ 填充成功的项:', matchedItems);
     } else {
       wx.showToast({
-      title: '未找到匹配的指标',
-      icon: 'none',
-      duration: 2000
+        title: '未找到匹配的指标',
+        icon: 'none',
+        duration: 2000
       });
     }
+  },
+
+  // 尝试修复截断的JSON字符串
+  _tryRepairJSON(str) {
+    if (!str) return null;
+    try { return JSON.parse(str); } catch(e) {}
+    // 辅助函数：计算未闭合括号并补全
+    function countAndClose(s) {
+      let braces = 0, brackets = 0, inStr = false, escape = false;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (escape) { escape = false; continue; }
+        if (ch === '\\') { escape = true; continue; }
+        if (ch === '"') { inStr = !inStr; continue; }
+        if (inStr) continue;
+        if (ch === '{') braces++;
+        else if (ch === '}') braces--;
+        else if (ch === '[') brackets++;
+        else if (ch === ']') brackets--;
+      }
+      if (inStr) return null; // 字符串内截断，此策略无法处理
+      let repaired = s;
+      for (let i = 0; i < brackets; i++) repaired += ']';
+      for (let i = 0; i < braces; i++) repaired += '}';
+      try { return JSON.parse(repaired); } catch(e) { return null; }
+    }
+    // 策略1: 直接补全括号（处理在元素边界截断的情况）
+    let result = countAndClose(str);
+    if (result) {
+      console.log('🔧 JSON修复: 补全括号成功');
+      return result;
+    }
+    // 策略2: 回退到最后一个完整的}并补全（处理在字符串/值中间截断的情况）
+    const lastBrace = str.lastIndexOf('}');
+    if (lastBrace > 0) {
+      result = countAndClose(str.substring(0, lastBrace + 1));
+      if (result) {
+        console.log('🔧 JSON修复: 截断到最后完整元素并补全成功');
+        return result;
+      }
+    }
+    return null;
   },
 
   // 模糊匹配函数（用于匹配指标名称）
@@ -3925,26 +4161,33 @@ ${indicatorDesc}
     // 完全匹配
     if (s1 === s2) return true;
 
-    // 去除常见后缀再匹配（如"白细胞计数"和"白细胞"）
-    const cleanS1 = s1.replace(/(计数|数量|值|浓度|水平|含量|绝对值|百分比|比率)$/, '');
-    const cleanS2 = s2.replace(/(计数|数量|值|浓度|水平|含量|绝对值|百分比|比率)$/, '');
+    // 防止百分比和绝对值互相匹配（如"单核细胞百分比"不应匹配"单核细胞绝对值"）
+    const s1IsPct = /百分比|比率|%/.test(s1);
+    const s2IsPct = /百分比|比率|%/.test(s2);
+    const s1IsAbs = /绝对值|计数|^(?!.*(?:百分比|比率|%)).*数$/.test(s1);
+    const s2IsAbs = /绝对值|计数|^(?!.*(?:百分比|比率|%)).*数$/.test(s2);
+    if ((s1IsPct && s2IsAbs) || (s1IsAbs && s2IsPct)) return false;
+
+    // 去除常见后缀再匹配（如"白细胞计数"和"白细胞"、"血小板数目"和"血小板"）
+    const cleanS1 = s1.replace(/(计数|数量|数目|数|值|浓度|水平|含量|绝对值|百分比|比率)$/, '');
+    const cleanS2 = s2.replace(/(计数|数量|数目|数|值|浓度|水平|含量|绝对值|百分比|比率)$/, '');
 
     // 清理后完全匹配
     if (cleanS1 === cleanS2) return true;
 
-    // 特殊医学术语映射（支持多种表达方式）
+    // 特殊医学术语映射（支持多种表达方式，覆盖不同医院报告写法）
     const termMap = {
-      '白细胞': ['wbc', '白细胞', '白细胞计数', '白血球'],
-      '中性粒细胞': ['neut', 'neut#', '中性粒细胞', '中性粒', '中性细胞', '中性粒细胞数', '中性粒细胞绝对值'],
-      '淋巴细胞': ['lymph', 'lymph#', '淋巴细胞', '淋巴', '淋巴细胞数', '淋巴细胞绝对值'],
-      '血红蛋白': ['hgb', 'hb', '血红蛋白', '血色素', 'hemoglobin'],
-      '红细胞': ['rbc', '红细胞', '红细胞计数', '红血球'],
-      '血小板': ['plt', '血小板', '血小板计数'],
-      '单核细胞': ['mono', 'mono#', '单核细胞', '单核', '单个核细胞', '单核细胞数', '单核细胞绝对值', '单核绝对值', '单核计数', '单核细胞计数'],
-      'c反应蛋白': ['crp', 'c反应蛋白', 'c-反应蛋白', '超敏c反应蛋白', 'hs-crp', 'hscrp', 'hs_crp', '西反应蛋白', 'c蛋白'],
-      '血细胞比容': ['hct', '血细胞比容', '压积', '红细胞压积'],
-      '嗜酸性粒细胞': ['eos', 'eos#', '嗜酸性粒细胞', '嗜酸', '嗜酸性粒细胞数'],
-      '嗜碱性粒细胞': ['baso', 'baso#', '嗜碱性粒细胞', '嗜碱', '嗜碱性粒细胞数']
+      '白细胞': ['wbc', '白细胞', '白细胞计数', '白血球', '白细胞数', '白细胞数目'],
+      '中性粒细胞': ['neut', 'neut#', 'neu', 'neu#', '中性粒细胞', '中性粒', '中性细胞', '中性粒细胞数', '中性粒细胞绝对值', '中性粒细胞数目', '中性粒细胞计数', '中性细胞数'],
+      '淋巴细胞': ['lymph', 'lymph#', 'lym', 'lym#', '淋巴细胞', '淋巴', '淋巴细胞数', '淋巴细胞绝对值', '淋巴细胞数目', '淋巴细胞计数'],
+      '血红蛋白': ['hgb', 'hb', 'hgb', '血红蛋白', '血色素', 'hemoglobin'],
+      '红细胞': ['rbc', '红细胞', '红细胞计数', '红血球', '红细胞数', '红细胞数目'],
+      '血小板': ['plt', '血小板', '血小板计数', '血小板数', '血小板数目', 'platelet'],
+      '单核细胞': ['mono', 'mono#', 'mon', 'mon#', '单核细胞', '单核', '单个核细胞', '单核细胞数', '单核细胞绝对值', '单核绝对值', '单核计数', '单核细胞计数', '单核细胞数目'],
+      'c反应蛋白': ['crp', 'c反应蛋白', 'c-反应蛋白', '超敏c反应蛋白', 'hs-crp', 'hscrp', 'hs_crp', '西反应蛋白', 'c蛋白', 'c-反应蛋白', 'c反应蛋白定量'],
+      '血细胞比容': ['hct', '血细胞比容', '压积', '红细胞压积', '红细胞比积', '红细胞比容'],
+      '嗜酸性粒细胞': ['eos', 'eos#', '嗜酸性粒细胞', '嗜酸', '嗜酸性粒细胞数', '嗜酸性粒细胞数目'],
+      '嗜碱性粒细胞': ['baso', 'baso#', 'bas', 'bas#', '嗜碱性粒细胞', '嗜碱', '嗜碱性粒细胞数', '嗜碱性粒细胞数目']
     };
 
     // 检查是否在同一个术语组中

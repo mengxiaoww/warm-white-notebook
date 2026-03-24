@@ -3,7 +3,8 @@
     "allow": [
       "Bash(xargs grep -l \"db.collection.*medication\")",
       "Bash(xargs grep -l \"formatDate\\\\|getTodayLocalDate\")",
-      "Bash(xargs grep -l \"expenseRecords\\\\|费用统计\")"
+      "Bash(xargs grep -l \"expenseRecords\\\\|费用统计\")",
+      "Bash(find c:/Users/mengx/Documents/ -maxdepth 5 -path */callSiliconFlowAI*)"
     ]
   }
 }

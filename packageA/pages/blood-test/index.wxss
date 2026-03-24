@@ -907,6 +907,20 @@ page .t-picker__confirm:active {
   background: linear-gradient(135deg, rgba(255, 152, 0, 0.03) 0%, rgba(255, 184, 77, 0.05) 100%);
 }
 
+.ai-result-tip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 32rpx;
+  background: #f9f9f9;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.ai-result-tip-text {
+  font-size: 22rpx;
+  color: #999;
+}
+
 .ai-header-left {
   display: flex;
   align-items: center;
@@ -972,6 +986,21 @@ page .t-picker__confirm:active {
   flex: 1;
   min-width: 120rpx;
   word-break: break-all;
+}
+
+.ai-result-suspicious {
+  background: rgba(244, 67, 54, 0.06);
+  border-left: 4rpx solid #F44336;
+}
+
+.ai-suspicious-tag {
+  font-size: 20rpx;
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  margin-left: 10rpx;
+  flex-shrink: 0;
 }
 
 .ai-confidence-badge {

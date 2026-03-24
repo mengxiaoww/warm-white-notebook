@@ -1,0 +1,11 @@
+{
+  "name": "callSiliconFlowAI",
+  "version": "1.0.0",
+  "description": "调用硅基流动AI API的云函数",
+  "main": "index.js",
+  "dependencies": {},
+  "cloudfunction-config": {
+    "timeout": 60,
+    "runtime": "Nodejs16.13"
+  }
+}

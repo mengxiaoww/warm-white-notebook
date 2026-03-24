@@ -890,6 +890,20 @@ page .t-picker__confirm:active {
   background: linear-gradient(135deg, rgba(255, 152, 0, 0.03) 0%, rgba(255, 184, 77, 0.05) 100%);
 }
 
+.ai-result-tip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 32rpx;
+  background: #f9f9f9;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.ai-result-tip-text {
+  font-size: 22rpx;
+  color: #999;
+}
+
 .ai-header-left {
   display: flex;
   align-items: center;

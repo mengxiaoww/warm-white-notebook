@@ -1442,6 +1442,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['camera'],
+      sizeType: ['original'],
       camera: 'back',
       success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
@@ -1479,6 +1480,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album'],
+      sizeType: ['original'],
       success: async (res) => {
         const tempFilePath = res.tempFiles[0].tempFilePath;
         wx.showLoading({ title: '识别中...', mask: true });
@@ -1844,26 +1846,60 @@ Page({
         `   - ${item.name}（id: ${item.id}，单位：${item.unit}）`
       ).join('\n');
 
+      // 动态生成指标在报告中的常见名称映射
+      const indicatorReportNames = {
+        ebvDna: '- EBV-DNA（id: ebvDna）：报告中名称可能为"EB病毒DNA"、"EBV-DNA"、"EBV DNA定量"、"人类疱疹病毒4型DNA"'
+      };
+      const nameDesc = allIndicators
+        .filter(item => indicatorReportNames[item.id])
+        .map(item => indicatorReportNames[item.id])
+        .join('\n');
+
       const res = await wx.cloud.callFunction({
         name: 'callSiliconFlowAI',
         data: {
           messages: [
             {
               role: 'system',
-              content: `你是专业的医疗报告识别助手。请识别检验报告图片中的以下指标：\n\n**要识别的指标**：\n${indicatorDesc}\n\n**识别规则**：\n- value必须是纯数字，不包含单位\n- 如果某个指标在图片中未找到，则不要包含在结果中\n\n**输出格式**：\n{"indicators": [{"id": "ebvDna", "label": "EB病毒DNA", "value": "500", "unit": "IU/mL"}]}\n\n只返回JSON，不要有其他说明文字。`
+              content: `你是专业的医疗报告识别助手。请仔细扫描整张检验报告图片，只识别以下EB病毒（EBV）相关指标（不要识别其他指标）：
+
+**要识别的指标**：
+${indicatorDesc}
+${nameDesc ? '\n**指标在报告中可能出现的名称**：\n' + nameDesc : ''}
+
+**关键识别规则**：
+
+1. **精确按行读取**：报告是表格结构，先找到指标名称所在行，再读取该行的"结果"列数值。不要把不同行的值张冠李戴。
+
+2. **区分结果值和参考范围**：提取"结果"列的实际测量值，不要提取参考范围。
+
+3. **特殊值处理**：
+   - 如果结果显示"<500"或"<1.00E+02"等，提取数字部分（如500、100）
+   - 如果结果显示"阴性"或"阳性"，不要包含该指标（只提取数值型结果）
+
+4. **严格匹配，宁缺勿错**：
+   - 如果某个指标在报告中不存在，绝对不要返回该指标
+   - 只返回上述列出的指标，不要返回其他指标
+
+**输出格式**：
+{"indicators": [{"id": "ebvDna", "label": "EB病毒DNA", "value": "500", "unit": "IU/mL"}]}
+
+只返回JSON，不要有其他说明文字。`
             },
             {
               role: 'user',
               content: [
                 { type: 'image_url', image_url: { url: imageUrl, detail: 'high' } },
-                { type: 'text', text: '提取检验指标数据' }
+                { type: 'text', text: '请逐行扫描报告，精确提取EB病毒（EBV）相关指标的检测结果值' }
               ]
             }
           ],
           mode: 'unified',
-          stream: false
+          stream: false,
+          temperature: 0,
+          max_tokens: 4096
         },
-        config: { timeout: 30000 }
+        config: { timeout: 60000 }
       });
 
       console.log('🤖 AI识别响应:', res.result);
@@ -1889,7 +1925,18 @@ Page({
       jsonStr = jsonStr.trim();
       if (jsonStr.charCodeAt(0) === 0xFEFF) jsonStr = jsonStr.substring(1);
 
-      const parsed = JSON.parse(jsonStr);
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (parseError) {
+        console.log('JSON解析失败，尝试修复截断的JSON...');
+        parsed = this._tryRepairJSON(jsonStr);
+        if (!parsed) {
+          console.error('JSON修复失败:', parseError, '失败的字符串:', jsonStr);
+          throw new Error('AI返回数据格式错误');
+        }
+        console.log('✅ JSON修复成功');
+      }
       if (!parsed.indicators || !Array.isArray(parsed.indicators)) {
         throw new Error('AI返回数据格式不支持');
       }
@@ -1920,6 +1967,48 @@ Page({
       console.error('AI识别失败:', error);
       throw error;
     }
+  },
+
+  // 尝试修复截断的JSON字符串
+  _tryRepairJSON(str) {
+    if (!str) return null;
+    try { return JSON.parse(str); } catch(e) {}
+    // 辅助函数：计算未闭合括号并补全
+    function countAndClose(s) {
+      let braces = 0, brackets = 0, inStr = false, escape = false;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (escape) { escape = false; continue; }
+        if (ch === '\\') { escape = true; continue; }
+        if (ch === '"') { inStr = !inStr; continue; }
+        if (inStr) continue;
+        if (ch === '{') braces++;
+        else if (ch === '}') braces--;
+        else if (ch === '[') brackets++;
+        else if (ch === ']') brackets--;
+      }
+      if (inStr) return null; // 字符串内截断，此策略无法处理
+      let repaired = s;
+      for (let i = 0; i < brackets; i++) repaired += ']';
+      for (let i = 0; i < braces; i++) repaired += '}';
+      try { return JSON.parse(repaired); } catch(e) { return null; }
+    }
+    // 策略1: 直接补全括号（处理在元素边界截断的情况）
+    let result = countAndClose(str);
+    if (result) {
+      console.log('🔧 JSON修复: 补全括号成功');
+      return result;
+    }
+    // 策略2: 回退到最后一个完整的}并补全（处理在字符串/值中间截断的情况）
+    const lastBrace = str.lastIndexOf('}');
+    if (lastBrace > 0) {
+      result = countAndClose(str.substring(0, lastBrace + 1));
+      if (result) {
+        console.log('🔧 JSON修复: 截断到最后完整元素并补全成功');
+        return result;
+      }
+    }
+    return null;
   },
 
   // 根据置信度获取颜色
@@ -2007,7 +2096,8 @@ Page({
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  },
+  }
+,
   // 分享功能
   async onShareAppMessage() {
     const fileID = 'cloud://cloud1-9gzf2w8c9c9b7b73.636c-cloud1-9gzf2w8c9c9b7b73-1364697418/Logo/LOGO2.png'

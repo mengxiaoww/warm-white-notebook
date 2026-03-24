@@ -192,14 +192,21 @@
         </view>
       </view>
 
+      <!-- 提示语 -->
+      <view class="ai-result-tip">
+        <t-icon name="info-circle" size="24rpx" color="#999" />
+        <text class="ai-result-tip-text">本结果由AI智能识别生成，建议核对后再确认填充</text>
+      </view>
+
       <!-- 识别结果列表 -->
       <scroll-view class="ai-result-content" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
-        <view class="ai-result-item" wx:for="{{aiRecognizedData}}" wx:key="field" wx:if="{{item.value}}">
+        <view class="ai-result-item {{item.suspicious ? 'ai-result-suspicious' : ''}}" wx:for="{{aiRecognizedData}}" wx:key="field" wx:if="{{item.value}}">
           <view class="ai-item-header">
             <text class="ai-item-name">{{item.label}}</text>
+            <text class="ai-suspicious-tag" wx:if="{{item.suspicious}}">值可疑</text>
           </view>
           <view class="ai-item-value">
-            <text class="value-number">{{item.value}}</text>
+            <text class="value-number" style="{{item.suspicious ? 'color:#F44336' : ''}}">{{item.value}}</text>
             <text class="value-unit">{{item.unit}}</text>
           </view>
         </view>
