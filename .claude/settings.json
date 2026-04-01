@@ -4,7 +4,11 @@
       "Bash(xargs grep -l \"db.collection.*medication\")",
       "Bash(xargs grep -l \"formatDate\\\\|getTodayLocalDate\")",
       "Bash(xargs grep -l \"expenseRecords\\\\|费用统计\")",
-      "Bash(find c:/Users/mengx/Documents/ -maxdepth 5 -path */callSiliconFlowAI*)"
+      "Bash(find c:/Users/mengx/Documents/ -maxdepth 5 -path */callSiliconFlowAI*)",
+      "Bash(xargs grep:*)",
+      "Bash(xargs wc:*)",
+      "Read(//Users/h4795m/**)",
+      "Bash(git remote:*)"
     ]
   }
 }

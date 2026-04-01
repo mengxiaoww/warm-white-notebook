@@ -247,7 +247,7 @@ Page({
       const restoredFormData = { ...currentFormData };
 
       Object.keys(tempInput.formData).forEach(key => {
-        if (!restoredFormData[key] || restoredFormData[key].trim() === '') {
+        if (!restoredFormData[key] || String(restoredFormData[key]).trim() === '') {
           restoredFormData[key] = tempInput.formData[key];
         }
       });
@@ -1154,6 +1154,7 @@ Page({
         ggt: false,
         ldh: false,
         che: false,
+        pa: false,
         tba: false,
         afp: false,
         pct: false
@@ -1225,8 +1226,9 @@ Page({
         { id: 'alp', name: 'ALP', min: '45', max: '125', unit: 'U/L' },
         { id: 'ggt', name: 'GGT', min: '10', max: '60', unit: 'U/L' },
         { id: 'ldh', name: 'LDH', min: '120', max: '250', unit: 'U/L' },
-        { id: 'che', name: 'CHE', min: '5.3', max: '12.9', unit: 'kU/L' },
-        { id: 'tba', name: 'TBA', min: '0', max: '15', unit: 'μmol/L' },
+        { id: 'che', name: '胆碱酯酶', min: '5320', max: '12920', unit: 'U/L' },
+        { id: 'pa', name: '前白蛋白', min: '200', max: '400', unit: 'mg/L' },
+        { id: 'tba', name: '总胆汁酸', min: '0', max: '15', unit: 'μmol/L' },
         { id: 'afp', name: 'AFP', min: '0', max: '20', unit: 'ng/mL' },
         { id: 'pct', name: 'PCT', min: '0', max: '0.25', unit: 'ng/mL' }
       ];
@@ -1308,7 +1310,7 @@ Page({
           alt: true, ast: true, tbil: true, dbil: true,
           tp: false, alb: false, glob: false, ag: false,
           alp: false, ggt: false, ldh: false, che: false,
-          tba: false, afp: false, pct: false
+          pa: false, tba: false, afp: false, pct: false
         },
         displayedBasicIndicators: [
           { id: 'alt', name: 'ALT', min: '9', max: '50', unit: 'U/L' },
@@ -2206,8 +2208,12 @@ ${confusionWarnings ? '\n**⚠️ 常见易混淆指标警告**：' + confusionW
    - "参考范围"列通常是"数字-数字"格式（如 5-40、15-40、3.40-17.10）
    - 必须提取"结果"列的数值，不要提取参考范围
 
-3. **严格匹配，宁缺勿错**：
-   - 如果某个指标在报告中不存在，绝对不要返回该指标
+3. **🚨 严禁编造数据（最高优先级规则）**：
+   - **只返回你在图片中亲眼看到的指标和数值**
+   - 如果某个指标在报告中不存在，**绝对不要返回该指标**，宁可少返回也不能编造
+   - 不要根据其他指标的值推算、估计、或凭医学知识补充任何数据
+   - 每个返回的value必须是你从图片中直接读取的数字，不是推测的
+   - 如果图片模糊看不清某个值，不要猜测，直接跳过该指标
    - 如果不确定某个值是否正确，宁可不返回
    - 只返回上述列出的指标，不要返回其他指标
    - 比值项（如AST:ALT、UN:CREA）不是单独指标的结果值

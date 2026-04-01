@@ -18,8 +18,12 @@
     <!-- 日期选择 -->
     <view class="date-section">
       <view class="date-selector" bindtap="showDatePicker">
-        <text class="date-text">{{selectedDate}}</text>
-        <t-icon name="caret-down" size="24rpx" color="#666" />
+        <t-icon name="calendar" size="40rpx" color="#FF8F00" />
+        <view class="date-info">
+          <text class="date-label">检查日期</text>
+          <text class="date-text">{{selectedDate}}</text>
+        </view>
+        <t-icon name="caret-down" size="24rpx" color="#999" />
       </view>
       <!-- AI智能导入按钮 -->
       <view class="ai-smart-import-btn" bindtap="showAIIdentifyOptions">
@@ -85,26 +89,6 @@
 
       <!-- 选项列表 -->
       <view class="ai-menu-options">
-        <view class="ai-option-item" bindtap="handleAICamera">
-          <view class="option-icon-wrapper camera">
-            <t-icon name="camera" size="48rpx" color="#FF9800" />
-          </view>
-          <view class="option-content">
-            <text class="option-title">拍照识别</text>
-            <text class="option-desc">拍摄检验报告自动识别</text>
-          </view>
-        </view>
-
-        <view class="ai-option-item" bindtap="handleAIAlbum">
-          <view class="option-icon-wrapper album">
-            <t-icon name="image" size="48rpx" color="#4CAF50" />
-          </view>
-          <view class="option-content">
-            <text class="option-title">相册选择</text>
-            <text class="option-desc">从相册选择报告图片</text>
-          </view>
-        </view>
-
         <view class="ai-option-item" bindtap="handleAIVoice">
           <view class="option-icon-wrapper voice">
             <t-icon name="sound" size="48rpx" color="#2196F3" />
@@ -182,6 +166,7 @@
         <view class="ai-header-left">
           <t-icon name="check-circle" size="40rpx" color="#FF9800" />
           <text class="ai-result-title">AI识别结果</text>
+          <text class="ai-generated-badge">AI生成</text>
         </view>
         <view class="ai-close-btn" catchtap="onAIResultClose">
           <t-icon name="close" size="28rpx" color="#666" />

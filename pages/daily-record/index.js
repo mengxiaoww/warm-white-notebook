@@ -8231,6 +8231,8 @@ Page({
 
       selectedDate: todayStr,
 
+      todayDate: todayStr,
+
       selectedDateText: this.formatDateText(today),
 
       selectedDateShort: this.formatDateShort(todayStr),
@@ -8291,6 +8293,8 @@ Page({
         dayName: dayNames[date.getDay()],
 
         isSelected: dateStr === this.data.selectedDate,
+
+        isToday: dateStr === this.data.todayDate,
 
         hasRecord: this.data.markedDates.includes(dateStr),
 
@@ -8357,6 +8361,8 @@ Page({
         isEmpty: false,
 
         isSelected: dateStr === this.data.selectedDate,
+
+        isToday: dateStr === this.data.todayDate,
 
         hasRecord: this.data.markedDates.includes(dateStr),
 
@@ -8473,6 +8479,45 @@ Page({
       this.adjustWeekViewToSelectedDate()
     }
 
+  },
+
+  // 快速跳转回今天
+  goToToday() {
+    const today = new Date()
+    const todayStr = this.formatDate(today)
+
+    // 如果已经是今天，不做任何操作
+    if (this.data.selectedDate === todayStr) return
+
+    // 更新todayDate（跨天场景）
+    this.setData({ todayDate: todayStr })
+
+    // 复用selectDate的逻辑
+    const dateObj = new Date(todayStr)
+    const dateText = this.formatDateText(dateObj)
+    const dayNames = ['日', '一', '二', '三', '四', '五', '六']
+
+    this.setData({
+      selectedDate: todayStr,
+      selectedDateText: dateText,
+      selectedDateShort: this.formatDateShort(todayStr),
+      selectedDayName: dayNames[dateObj.getDay()],
+      selectedDayNumber: dateObj.getDate(),
+      dateChanged: true,
+      currentYear: today.getFullYear(),
+      currentMonth: today.getMonth() + 1
+    })
+
+    setTimeout(() => {
+      this.setData({ dateChanged: false })
+    }, 600)
+
+    // 重新生成视图并加载数据
+    this.generateWeekView()
+    this.generateMonthView()
+    this.loadDataForDate(todayStr, false)
+
+    wx.vibrateShort({ type: 'light' }).catch(() => {})
   },
 
   // 更新日期选择状态

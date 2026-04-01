@@ -17,13 +17,6 @@ Component({
         selectedIcon: "edit-1-filled"
       },
       {
-        pagePath: "pages/ai-assistant/index",
-        text: "暖白记事本",
-        icon: "chat",
-        selectedIcon: "chat-filled",
-        isCenter: true  // 标记为中心按钮
-      },
-      {
         pagePath: "pages/records/index",
         text: "档案",
         icon: "folder",

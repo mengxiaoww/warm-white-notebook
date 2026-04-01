@@ -45,7 +45,7 @@
       <!-- 未展开状态：直接显示日期条在顶部 -->
       <view class="calendar-compact" wx:if="{{!calendarExpanded}}">
         <view class="calendar-week-strip">
-          <view class="calendar-day calendar-day-compact {{item.isSelected ? 'selected' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}} {{item.isHospitalized ? 'hospitalized' : ''}}" wx:for="{{weekDays}}"
+          <view class="calendar-day calendar-day-compact {{item.isSelected ? 'selected' : ''}} {{item.isToday && !item.isSelected ? 'today' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}} {{item.isHospitalized ? 'hospitalized' : ''}}" wx:for="{{weekDays}}"
             wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
             <text class="day-number">{{item.day}}</text>
             <text class="day-name">{{item.dayName}}</text>
@@ -79,7 +79,7 @@
         </view>
         <!-- 日期网格 -->
         <view class="calendar-month-grid">
-          <view class="calendar-day {{item.isSelected ? 'selected' : ''}} {{item.isEmpty ? 'empty' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}} {{item.isHospitalized ? 'hospitalized' : ''}}"
+          <view class="calendar-day {{item.isSelected ? 'selected' : ''}} {{item.isToday && !item.isSelected ? 'today' : ''}} {{item.isEmpty ? 'empty' : ''}} {{item.hasRecord ? 'has-record-mark' : ''}} {{item.isHospitalized ? 'hospitalized' : ''}}"
             wx:for="{{monthDays}}" wx:key="date" bindtap="selectDate" data-date="{{item.date}}">
             {{item.day}}
             <view wx:if="{{item.hasRecord && !item.isEmpty}}" class="record-indicator"></view>
@@ -95,6 +95,9 @@
       <view class="banner-text-wrapper">
         <text class="banner-date">{{selectedDateText}}</text>
         <text class="banner-hint">为这一天添加健康记录</text>
+      </view>
+      <view class="banner-today-btn" wx:if="{{selectedDate !== todayDate}}" bindtap="goToToday">
+        <text class="banner-today-text">跳转到今日</text>
       </view>
     </view>
 

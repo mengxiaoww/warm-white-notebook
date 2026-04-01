@@ -131,6 +131,7 @@
 /* 滚动容器 */
 .scroll-container {
   flex: 1;
+  height: 0;
   width: 100%;
   background: #f5f5f5;
 }

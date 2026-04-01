@@ -33,7 +33,7 @@
   border-radius: 30rpx !important; color: white !important; font-weight: 500 !important;
 }
 
-.scroll-container { flex: 1; }
+.scroll-container { flex: 1; height: 0; }
 .list-container { padding: 20rpx; padding-bottom: 40rpx; }
 
 .summary-card {

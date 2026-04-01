@@ -63,8 +63,11 @@
               <t-icon name="wechat" size="32rpx" color="white" />
               <text class="login-btn-text">{{loginBtnText}}</text>
             </view>
-            <view class="privacy-hint">
-              <text class="privacy-hint-text">登录即表示同意</text>
+            <view class="privacy-hint" catchtap="togglePrivacyAgreed">
+              <view class="privacy-checkbox {{privacyAgreed ? 'checked' : ''}}">
+                <t-icon wx:if="{{privacyAgreed}}" name="check" size="24rpx" color="#fff" />
+              </view>
+              <text class="privacy-hint-text">我已阅读并同意</text>
               <text class="privacy-hint-link" catchtap="showUserAgreement">《用户协议》</text>
               <text class="privacy-hint-text">和</text>
               <text class="privacy-hint-link" catchtap="showPrivacyPolicy">《隐私政策》</text>

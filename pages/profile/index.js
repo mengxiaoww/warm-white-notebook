@@ -10,6 +10,7 @@ Page({
     hasLoadedBefore: false, // 标记页面是否已加载过数据
     isFirstShow: true, // 标记是否是首次onShow
     loginBtnText: '微信登录',
+    privacyAgreed: false,
     userInfo: null,
     profiles: [],
     currentProfileId: '',
@@ -73,7 +74,7 @@ Page({
     // 设置TabBar选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 4
+        selected: 3
       });
     }
 
@@ -204,8 +205,25 @@ Page({
     }
   },
 
+  // 切换隐私协议勾选状态
+  togglePrivacyAgreed() {
+    this.setData({
+      privacyAgreed: !this.data.privacyAgreed
+    })
+  },
+
   // 处理登录
   async handleLogin() {
+    // 检查是否同意隐私协议
+    if (!this.data.privacyAgreed) {
+      wx.showToast({
+        title: '请先阅读并同意用户协议和隐私政策',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
     // 防止重复点击
     if (this.data.loginBtnText !== '微信登录') {
       return

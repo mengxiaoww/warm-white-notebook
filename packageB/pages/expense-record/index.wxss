@@ -113,8 +113,8 @@
 /* 滚动容器 */
 .scroll-container {
   flex: 1;
+  height: 0;
   width: 100%;
-  overflow-y: auto;
 }
 
 .form-container {

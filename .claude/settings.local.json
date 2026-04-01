@@ -8,7 +8,17 @@
       "Bash(xargs grep -l \"白细胞.*血小板.*血红蛋白.*中性粒细胞\")",
       "Bash(xargs grep -l \"ec-canvas\\\\|echarts\")",
       "Bash(xargs grep -l \"medications\\\\|collection.*medication\")",
-      "Bash(grep -rn \"//.*住院\\\\|//.*治疗\\\\|/\\\\*.*住院\\\\|/\\\\*.*治疗\" --include=\"*.js\")"
+      "Bash(grep -rn \"//.*住院\\\\|//.*治疗\\\\|/\\\\*.*住院\\\\|/\\\\*.*治疗\" --include=\"*.js\")",
+      "Bash(grep -r \"chooseMedia\\\\|chooseImage\\\\|voice\\\\|speech\\\\|AI\\\\|识别\" /c/Users/mengx/OneDrive/文档/warm-white-notebook --include=*.js)",
+      "Bash(find /c/Users/mengx/OneDrive/文档/warm-white-notebook -name *ai* -o -name *AI* -o -name *recognize*)",
+      "Bash(find C:Usersmengx -type d -name *record*)",
+      "Read(//c/Users/mengx/packageA/pages/blood-test/**)",
+      "Read(//c/Users/mengx/packageA/pages/liver-function/**)",
+      "Read(//c/Users/mengx/packageA/pages/kidney-function/**)",
+      "Read(//c/Users/mengx/packageC/pages/cmv-record/**)",
+      "Read(//c/Users/mengx/packageC/pages/ebv-record/**)",
+      "Read(//c/Users/mengx/packageC/pages/ldh-record/**)",
+      "Read(//c/Users/mengx/pages/daily-record/**)"
     ],
     "additionalDirectories": [
       "c:\\Users\\mengx\\iCloudDrive\\Documents\\cloudfunctions_backup\\callSiliconFlowAI"

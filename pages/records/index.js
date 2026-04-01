@@ -222,7 +222,7 @@ Page({
     // 设置TabBar选中状态
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
-        selected: 3
+        selected: 2
       });
     }
 
@@ -1751,7 +1751,7 @@ Page({
 
       dateMap.get(dateKey).bloodSugarData = {
         ...record, // 保留所有字段，包括 customValues
-        bloodSugar: record.bloodSugar,
+        bloodSugar: record.fbg, // 数据库字段为fbg（空腹血糖）
         hasData: true
       };
     });
@@ -2237,7 +2237,7 @@ Page({
 
       case 'bloodSugar':
         if (data.bloodSugar !== undefined && data.bloodSugar !== null && data.bloodSugar !== '') {
-          items.push({ label: '数值', value: data.bloodSugar });
+          items.push({ label: '血糖', value: data.bloodSugar + ' mmol/L' });
         }
         break;
 
@@ -4359,7 +4359,7 @@ Page({
   navigateToWaterIntake(e) {
     const date = e.currentTarget.dataset.date;
     wx.navigateTo({
-      url: `/packageA/pages/water-intake/index?date=${date}`
+      url: `/packageD/pages/water-intake/index?date=${date}`
     });
   },
 
@@ -4367,7 +4367,7 @@ Page({
   navigateToTemperature(e) {
     const date = e.currentTarget.dataset.date;
     wx.navigateTo({
-      url: `/packageA/pages/temperature/index?date=${date}`
+      url: `/packageD/pages/temperature/index?date=${date}`
     });
   },
 
@@ -4375,7 +4375,7 @@ Page({
   navigateToBodyMeasurement(e) {
     const date = e.currentTarget.dataset.date;
     wx.navigateTo({
-      url: `/packageA/pages/body-measurement/index?date=${date}`
+      url: `/packageD/pages/body-measurement/index?date=${date}`
     });
   },
 
@@ -4383,7 +4383,7 @@ Page({
   navigateToDiet(e) {
     const date = e.currentTarget.dataset.date;
     wx.navigateTo({
-      url: `/packageA/pages/diet/index?date=${date}`
+      url: `/packageD/pages/diet/index?date=${date}`
     });
   },
 
@@ -4393,20 +4393,20 @@ Page({
     const urlMap = {
       'navigateToBlood': `/packageA/pages/blood-test/index?date=${date}`,
       'navigateToCheckReport': `/packageB/pages/check-report/index?date=${date}`,
-      'navigateToEbv': `/packageA/pages/ebv-test/index?date=${date}`,
-      'navigateToCmv': `/packageA/pages/cmv-test/index?date=${date}`,
-      'navigateToLdh': `/packageA/pages/ldh-test/index?date=${date}`,
-      'navigateToLiver': `/packageA/pages/liver-test/index?date=${date}`,
-      'navigateToKidney': `/packageA/pages/kidney-test/index?date=${date}`,
+      'navigateToEbv': `/packageC/pages/ebv-record/index?date=${date}`,
+      'navigateToCmv': `/packageC/pages/cmv-record/index?date=${date}`,
+      'navigateToLdh': `/packageC/pages/ldh-record/index?date=${date}`,
+      'navigateToLiver': `/packageA/pages/liver-function/index?date=${date}`,
+      'navigateToKidney': `/packageA/pages/kidney-function/index?date=${date}`,
       'navigateToUrine': `/packageB/pages/urine-record/index?date=${date}`,
       'navigateToStool': `/packageB/pages/stool-record/index?date=${date}`,
       'navigateToBloodSugar': `/packageA/pages/blood-sugar/index?date=${date}`,
       'navigateToBloodOxygen': `/packageA/pages/blood-oxygen/index?date=${date}`,
       'navigateToBloodPressure': `/packageA/pages/blood-pressure/index?date=${date}`,
-      'navigateToWaterIntake': `/packageB/pages/water-intake/index?date=${date}`,
-      'navigateToTemperature': `/packageA/pages/temperature/index?date=${date}`,
-      'navigateToBodyMeasurement': `/packageA/pages/body-measurement/index?date=${date}`,
-      'navigateToDiet': `/packageB/pages/diet-record/index?date=${date}`,
+      'navigateToWaterIntake': `/packageD/pages/water-intake/index?date=${date}`,
+      'navigateToTemperature': `/packageD/pages/temperature/index?date=${date}`,
+      'navigateToBodyMeasurement': `/packageD/pages/body-measurement/index?date=${date}`,
+      'navigateToDiet': `/packageD/pages/diet/index?date=${date}`,
       'navigateToTreatment': '/packageB/pages/treatment-record/index',
       'navigateToHospitalization': '/packageB/pages/hospitalization-record/index',
     };
@@ -4434,6 +4434,21 @@ Page({
         });
       }
     });
+  },
+
+  // 分页获取数据库集合全量数据（突破客户端100条限制）
+  async fetchAllFromQuery(query) {
+    const batchSize = 100;
+    let skip = 0;
+    let allData = [];
+    while (true) {
+      const res = await query.skip(skip).limit(batchSize).get();
+      const batch = res.data || [];
+      allData = allData.concat(batch);
+      if (batch.length < batchSize) break;
+      skip += batchSize;
+    }
+    return { data: allData };
   },
 
   // 加载就医档案数据（包括检查报告和门诊记录）
@@ -4478,12 +4493,12 @@ Page({
         });
       }
 
-      // 并行查询
+      // 并行查询（分页取全量，突破客户端100条限制）
       const [checkReportRes, clinicRecordRes, hospitalizationRes, treatmentRes] = await Promise.all([
-        checkReportQuery.orderBy('date', 'desc').orderBy('createTime', 'desc').get(),
-        clinicRecordQuery.orderBy('date', 'desc').orderBy('updateTime', 'desc').get(),
-        db.collection('hospitalizationRecords').where({ openid, profileId: currentProfileId }).orderBy('admissionDate', 'desc').get(),
-        db.collection('treatmentRecords').where({ openid, profileId: currentProfileId }).orderBy('date', 'desc').get()
+        this.fetchAllFromQuery(checkReportQuery.orderBy('date', 'desc').orderBy('createTime', 'desc')),
+        this.fetchAllFromQuery(clinicRecordQuery.orderBy('date', 'desc').orderBy('updateTime', 'desc')),
+        this.fetchAllFromQuery(db.collection('hospitalizationRecords').where({ openid, profileId: currentProfileId }).orderBy('admissionDate', 'desc')),
+        this.fetchAllFromQuery(db.collection('treatmentRecords').where({ openid, profileId: currentProfileId }).orderBy('date', 'desc'))
       ]);
 
       const reports = checkReportRes.data || [];
