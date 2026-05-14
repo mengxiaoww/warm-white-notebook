@@ -1,0 +1,116 @@
+<!-- 遮罩层 -->
+<view class="si-overlay {{visible ? 'show' : ''}}" catchtap="onClose" wx:if="{{visible}}">
+</view>
+
+<!-- 底部面板 -->
+<view class="si-sheet {{visible ? 'show' : ''}}" wx:if="{{visible}}" catchtap="noop">
+  <!-- 顶部拖拽指示条 -->
+  <view class="si-handle"><view class="si-handle-bar"></view></view>
+
+  <!-- 标题 -->
+  <view class="si-header">
+    <view class="si-header-icon">
+      <t-icon name="scan" size="32rpx" color="#FF9800" />
+    </view>
+    <view class="si-header-text">
+      <text class="si-title">智能识别</text>
+      <text class="si-subtitle">拍照或语音，一键录入所有记录项</text>
+    </view>
+  </view>
+
+  <!-- 操作区域 -->
+  <view class="si-body">
+    <view class="si-grid">
+      <view class="si-grid-item" bindtap="handleCamera">
+        <view class="si-icon-wrap si-icon-camera">
+          <t-icon name="camera" size="52rpx" color="#F57C00" />
+        </view>
+        <text class="si-label">拍照识别</text>
+      </view>
+      <view class="si-grid-item" bindtap="handleAlbum">
+        <view class="si-icon-wrap si-icon-album">
+          <t-icon name="image" size="52rpx" color="#388E3C" />
+        </view>
+        <text class="si-label">相册导入</text>
+      </view>
+      <view class="si-grid-item" bindtap="handleVoice">
+        <view class="si-icon-wrap si-icon-voice">
+          <t-icon name="sound" size="52rpx" color="#1976D2" />
+        </view>
+        <text class="si-label">语音录入</text>
+      </view>
+    </view>
+    <view class="si-tip">AI自动识别报告类型与日期，一键归档</view>
+  </view>
+</view>
+
+<!-- 语音录制 -->
+<t-popup visible="{{voiceVisible}}" bind:visible-change="onVoiceClose" placement="bottom" show-overlay="{{true}}">
+  <view class="si-voice-panel">
+    <view class="si-voice-header">
+      <text class="si-voice-title">语音录入</text>
+      <view class="si-voice-close" catchtap="cancelVoice"><t-icon name="close" size="32rpx" color="#999" /></view>
+    </view>
+    <view class="si-voice-body">
+      <view class="si-voice-ring {{recording ? 'active' : ''}}">
+        <view class="ring r1"></view>
+        <view class="ring r2"></view>
+        <view class="ring r3"></view>
+        <view class="si-voice-center">
+          <t-icon name="sound" size="48rpx" color="{{recording ? '#FF5722' : '#FF9800'}}" />
+        </view>
+      </view>
+      <text class="si-voice-status">{{recording ? recordDuration + 's · 聆听中' : '点击开始录音'}}</text>
+      <view class="si-voice-text" wx:if="{{recognizedText}}"><text>{{recognizedText}}</text></view>
+    </view>
+    <view class="si-voice-actions">
+      <view class="si-voice-btn {{recording ? 'stop' : ''}}" bindtap="toggleVoice">
+        <t-icon name="{{recording ? 'pause' : 'sound'}}" size="44rpx" color="#FFF" />
+      </view>
+    </view>
+    <view class="si-safe-area"></view>
+  </view>
+</t-popup>
+
+<!-- 识别结果 -->
+<t-popup visible="{{resultVisible}}" bind:visible-change="onResultClose" placement="bottom" show-overlay="{{true}}" overlay-props="{{ { preventScrollThrough: true } }}">
+  <view class="si-result-panel">
+    <view class="si-result-header">
+      <view>
+        <text class="si-result-title">识别结果</text>
+        <text class="si-result-sub">共识别到 {{resultGroups.length}} 类报告，可编辑后保存</text>
+      </view>
+      <view class="si-result-close" catchtap="closeResult"><t-icon name="close" size="32rpx" color="#999" /></view>
+    </view>
+    <scroll-view scroll-y class="si-result-list">
+      <view class="si-group" wx:for="{{resultGroups}}" wx:for-item="group" wx:for-index="gi" wx:key="type">
+        <view class="si-group-header">
+          <view class="si-meta-badge">{{group.typeName || group.type}}</view>
+          <text class="si-meta-date">{{group.date || '今天'}}</text>
+        </view>
+        <view class="si-group-body">
+          <view class="si-result-row" wx:for="{{group.indicators}}" wx:for-item="item" wx:for-index="ii" wx:key="id">
+            <text class="si-row-name">{{item.label}}</text>
+            <view class="si-row-val">
+              <input class="si-row-input" type="digit" value="{{item.value}}" data-gi="{{gi}}" data-ii="{{ii}}" bindinput="onValueEdit" />
+              <text class="si-row-unit">{{item.unit}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="si-result-btns">
+      <view class="si-btn-cancel" bindtap="closeResult">取消</view>
+      <view class="si-btn-save" bindtap="saveResult">确认保存</view>
+    </view>
+    <view class="si-safe-area"></view>
+  </view>
+</t-popup>
+
+<!-- 加载 -->
+<view class="si-loading" wx:if="{{loading}}">
+  <view class="si-loading-card">
+    <view class="si-loading-spinner"></view>
+    <text class="si-loading-text">{{loadingText}}</text>
+  </view>
+</view>

@@ -81,6 +81,16 @@ Page({
 
   },
 
+  showSmartImport() {
+    this.selectComponent('#smartImport').show();
+  },
+
+  onSmartImportSaved() {
+    if (typeof this.loadAllData === 'function') {
+      this.loadAllData();
+    }
+  },
+
   onLoad() {
     console.log('📍 首页 onLoad 被调用');
     this.isDataReady = false;

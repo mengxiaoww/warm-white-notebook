@@ -17,10 +17,29 @@
       "Bash(ping -c 1 github.com)",
       "Bash(mkdir -p ~/.ssh)",
       "Bash(echo \"EXIT: $?\")",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://github.com)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://github.com)",
+      "Bash(ssh-keyscan -p 443 -H ssh.github.com)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(ssh-keyscan -p 443 ssh.github.com)",
+      "Bash(ssh -v -p 443 git@ssh.github.com)",
+      "Bash(ssh -v -T git@github.com)",
+      "Bash(printf \"\")",
+      "Bash(ssh -o StrictHostKeyChecking=accept-new -T git@github.com)",
+      "Bash(git log *)",
+      "Bash(git ls-tree *)",
+      "Bash(git checkout *)",
+      "Bash(node -c \"c:/Users/mengx/Documents/warm-white-notebook/pages/smart-import/index.js\")",
+      "Bash(node --check \"c:/Users/mengx/Documents/warm-white-notebook/pages/smart-import/index.js\")",
+      "Bash(node -c \"c:/Users/mengx/Documents/warm-white-notebook/custom-tab-bar/index.js\")",
+      "Bash(node -c \"c:/Users/mengx/Documents/warm-white-notebook/cloudfunctions/callSiliconFlowAI/config.js\")",
+      "Bash(node -c \"c:/Users/mengx/Documents/warm-white-notebook/components/smart-import/index.js\")",
+      "Bash(node -c \"c:/Users/mengx/Documents/warm-white-notebook/pages/home/index.js\")",
+      "Bash(node -c \"c:/Users/mengx/Documents/warm-white-notebook/pages/daily-record/index.js\")",
+      "Bash(node -c \"c:/Users/mengx/Documents/warm-white-notebook/pages/records/index.js\")"
     ],
     "additionalDirectories": [
-      "C:\\Users\\mengx\\.ssh"
+      "C:\\Users\\mengx\\.ssh",
+      "c:\\Users\\mengx\\.claude"
     ]
   }
 }

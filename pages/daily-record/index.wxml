@@ -1320,3 +1320,4 @@
   </view>
   <!-- 结束 content-wrapper -->
 </view>
+<smart-import id="smartImport" />

@@ -5,6 +5,7 @@
   "usingComponents": {
     "t-icon": "../../miniprogram_npm/tdesign-miniprogram/icon/icon",
     "t-popup": "../../miniprogram_npm/tdesign-miniprogram/popup/popup",
-    "ec-canvas": "../../ec-canvas/ec-canvas"
+    "ec-canvas": "../../ec-canvas/ec-canvas",
+    "smart-import": "../../components/smart-import/index"
   }
 }

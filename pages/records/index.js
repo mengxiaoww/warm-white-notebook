@@ -198,6 +198,16 @@ Page({
   },
 
   
+  showSmartImport() {
+    this.selectComponent('#smartImport').show();
+  },
+
+  onSmartImportSaved() {
+    if (typeof this.refreshAllData === 'function') {
+      this.refreshAllData();
+    }
+  },
+
   onLoad(options) {
     console.log('健康档案页面 - onLoad');
 

@@ -4,7 +4,8 @@
     "t-icon": "../../miniprogram_npm/tdesign-miniprogram/icon/icon",
     "t-popup": "../../miniprogram_npm/tdesign-miniprogram/popup/popup",
     "t-toast": "../../miniprogram_npm/tdesign-miniprogram/toast/toast",
-    "marked-calendar": "../../components/marked-calendar/index"
+    "marked-calendar": "../../components/marked-calendar/index",
+    "smart-import": "../../components/smart-import/index"
   },
   "enablePullDownRefresh": false,
   "backgroundTextStyle": "light",

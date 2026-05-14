@@ -9,8 +9,8 @@ module.exports = {
   API_URL: 'api.siliconflow.cn',
   API_PATH: '/v1/chat/completions',
 
-  // 模型配置 - 使用Qwen3-VL多模态模型
-  MODEL: 'Qwen/Qwen3-VL-30B-A3B-Instruct',
+  // 模型配置 - 使用Qwen2.5-VL-72B大模型，精度远高于30B-A3B
+  MODEL: 'Pro/Qwen/Qwen2.5-VL-72B-Instruct',
 
   // 默认参数
   DEFAULT_TEMPERATURE: 0.7,

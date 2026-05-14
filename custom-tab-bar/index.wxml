@@ -1,18 +1,46 @@
 <view class="tab-bar">
+  <!-- 左侧两个tab -->
   <view
     class="tab-bar-item"
-    wx:for="{{list}}"
+    wx:for="{{leftTabs}}"
     wx:key="index"
     bindtap="switchTab"
     data-path="{{item.pagePath}}"
-    data-index="{{index}}"
+    data-index="{{item.tabIndex}}"
   >
     <t-icon
-      name="{{selected === index ? item.selectedIcon : item.icon}}"
+      name="{{selected === item.tabIndex ? item.selectedIcon : item.icon}}"
       size="48rpx"
-      color="{{selected === index ? selectedColor : color}}"
+      color="{{selected === item.tabIndex ? selectedColor : color}}"
     />
-    <view class="tab-bar-text" style="color: {{selected === index ? selectedColor : color}}">
+    <view class="tab-bar-text" style="color: {{selected === item.tabIndex ? selectedColor : color}}">
+      {{item.text}}
+    </view>
+  </view>
+
+  <!-- 中间智能识别按钮 -->
+  <view class="tab-bar-center" bindtap="openSmartImport">
+    <view class="center-btn">
+      <t-icon name="scan" size="44rpx" color="#FFFFFF" />
+    </view>
+    <view class="center-label">智能识别</view>
+  </view>
+
+  <!-- 右侧两个tab -->
+  <view
+    class="tab-bar-item"
+    wx:for="{{rightTabs}}"
+    wx:key="index"
+    bindtap="switchTab"
+    data-path="{{item.pagePath}}"
+    data-index="{{item.tabIndex}}"
+  >
+    <t-icon
+      name="{{selected === item.tabIndex ? item.selectedIcon : item.icon}}"
+      size="48rpx"
+      color="{{selected === item.tabIndex ? selectedColor : color}}"
+    />
+    <view class="tab-bar-text" style="color: {{selected === item.tabIndex ? selectedColor : color}}">
       {{item.text}}
     </view>
   </view>

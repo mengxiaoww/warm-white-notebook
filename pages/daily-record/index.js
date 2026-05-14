@@ -622,6 +622,17 @@ Page({
 
   },
 
+  showSmartImport() {
+    this.selectComponent('#smartImport').show();
+  },
+
+  onSmartImportSaved() {
+    const currentDate = this.data.selectedDate || this.data.currentDate;
+    if (currentDate && typeof this.loadDataForDate === 'function') {
+      this.loadDataForDate(currentDate, false);
+    }
+  },
+
   onLoad() {
 
     // 初始化新日历组件

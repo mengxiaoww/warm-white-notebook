@@ -260,3 +260,4 @@
   </t-popup>
 </view>
 <!-- 结束 page-wrapper -->
+<smart-import id="smartImport" />
