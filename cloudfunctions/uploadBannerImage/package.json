@@ -1,0 +1,9 @@
+{
+  "name": "uploadBannerImage",
+  "version": "1.0.0",
+  "description": "上传轮播图图片到云存储",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
